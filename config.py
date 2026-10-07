@@ -96,8 +96,38 @@ TEAM_ABBR_TO_NAME = {
 }
 TEAM_NAME_TO_ABBR = {v: k for k, v in TEAM_ABBR_TO_NAME.items()}
 
-# TODO(1.6): neutral-site / international venues (London, Germany, Brazil,
-# Mexico City, ...) are not in stadium_coordinates; add them with the weather pull.
+# Neutral-site / international venues, keyed by the schedules table's stadium_id.
+# stadium_id (not home team) is what locates a game, since for a neutral-site game
+# the "home" team's own stadium is the wrong place. Entries: stadium_id -> (lat, lon).
+# International coordinates entered from memory; spot-check against a map.
+# Domestic neutral/relocated games reuse the home stadium's coordinates above.
+_DOMESTIC_VENUE_TEAMS = {
+    "PHO00": "Arizona Cardinals", "TAM00": "Tampa Bay Buccaneers",
+    "JAX00": "Jacksonville Jaguars", "LAX01": "Los Angeles Rams",
+    "DET00": "Detroit Lions", "VEG00": "Las Vegas Raiders",
+    "NOR00": "New Orleans Saints", "CLE00": "Cleveland Browns",
+    "IND00": "Indianapolis Colts", "MIA00": "Miami Dolphins",
+    "NYC01": "New York Giants", "PIT00": "Pittsburgh Steelers",
+    "SFO01": "San Francisco 49ers",
+}
+venue_coordinates = {
+    **{sid: stadium_coordinates[team][:2] for sid, team in _DOMESTIC_VENUE_TEAMS.items()},
+    "LON00": (51.5560, -0.2796),    # Wembley Stadium, London
+    "LON02": (51.6043, -0.0664),    # Tottenham Hotspur Stadium, London
+    "GER00": (48.2188, 11.6247),    # Allianz Arena, Munich
+    "MUN01": (48.2188, 11.6247),    # FC Bayern Munich Stadium (Allianz Arena)
+    "FRA00": (50.0686, 8.6455),     # Deutsche Bank Park, Frankfurt
+    "MEX00": (19.3029, -99.1505),   # Estadio Azteca / Banorte, Mexico City
+    "SAO00": (-23.5453, -46.4742),  # Arena Corinthians, Sao Paulo
+    "MAD01": (40.4531, -3.6883),    # Santiago Bernabeu, Madrid
+    "MEL00": (-37.8200, 144.9834),  # Melbourne Cricket Ground
+    "PAR00": (48.9245, 2.3601),     # Stade de France, Paris
+    "RIO00": (-22.9122, -43.2302),  # Maracana, Rio de Janeiro
+}
+
+# NWS requires a descriptive User-Agent with contact info. Set NWS_CONTACT (an
+# email or URL) in the environment; without it the NWS fallback is skipped.
+NWS_CONTACT_ENV = "NWS_CONTACT"
 
 
 def ensure_data_dirs() -> None:
