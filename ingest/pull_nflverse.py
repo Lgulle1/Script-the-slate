@@ -47,9 +47,9 @@ def ensure_players_view(db_path=config.DUCKDB_PATH):
 
 
 def pull_seasons() -> list[int]:
-    """Backtest seasons + locked holdout + the current season (deduplicated)."""
-    seasons = {*config.BACKTEST_SEASONS, config.HOLDOUT_SEASON, nflreadpy.get_current_season()}
-    return sorted(seasons)
+    """Every season from config.DATA_START_SEASON (2016) through the current season. This is what pulls cover;
+    which of those seasons models and features READ is config.FEATURE_HISTORY_START."""
+    return list(range(config.DATA_START_SEASON, nflreadpy.get_current_season() + 1))
 
 
 def _append_raw(table: str, df: pl.DataFrame, db_path, pulled_at: datetime | None = None) -> int:
@@ -218,6 +218,26 @@ ADVANCED_PULLS = {
 def pull_all_raw(seasons=None, db_path=config.RAW_DUCKDB_PATH) -> dict[str, int]:
     """Run every raw pull; returns rows appended per table."""
     return {name: fn(seasons, db_path) for name, fn in RAW_PULLS.items()}
+
+
+def pull_pre_feature_history(db_path=config.RAW_DUCKDB_PATH, tables=None) -> dict:
+    """One-off backfill: every table with data for DATA_START_SEASON .. FEATURE_HISTORY_START-1 (2016-2019),
+    appended with pulled_at into the same raw database. Data only: nothing reads these seasons until
+    FEATURE_HISTORY_START moves. FTN (2022+) and PFR (2018+) clip themselves via _pull; participation already
+    holds 2016-2025 so it is not re-pulled (it would only duplicate rows). Returns rows appended per table,
+    or the exception text for a table that failed (the others still run).
+    """
+    seasons = list(range(config.DATA_START_SEASON, config.FEATURE_HISTORY_START))
+    pulls = {**RAW_PULLS, **SNAPSHOT_PULLS, **{k: v for k, v in ADVANCED_PULLS.items() if k != "participation"}}
+    out = {}
+    for name, fn in pulls.items():
+        if tables and name not in tables:
+            continue
+        try:
+            out[name] = fn(seasons, db_path)
+        except Exception as e:  # noqa: BLE001 - report per table, keep going
+            out[name] = f"FAILED: {type(e).__name__}: {str(e)[:200]}"
+    return out
 
 
 if __name__ == "__main__":

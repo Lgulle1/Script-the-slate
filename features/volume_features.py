@@ -64,7 +64,7 @@ def build_team_volume(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.Data
     dropbacks = pass attempts + sacks suffered; plays = rush attempts + dropbacks. Also carries the team's
     rushing / passing yards and completions (for team efficiency rates).
     """
-    cap = f" AND season <= {config.cap_season(max_season)}"  # raises config.HoldoutError for 2025+
+    cap = config.season_sql(max_season)  # FEATURE_HISTORY_START .. cap; raises config.HoldoutError for 2025+
     con = duckdb.connect(str(raw_db), read_only=True)
     try:
         d = con.execute(

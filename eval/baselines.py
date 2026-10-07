@@ -220,8 +220,9 @@ def _latest(con, table, keys):
 
 
 def _season_cap(max_season) -> str:
-    """SQL season cap. Raises config.HoldoutError for 2025+; None means the last backtest season."""
-    return f" AND season <= {config.cap_season(max_season)}"
+    """SQL season window: config.FEATURE_HISTORY_START .. cap. Raises config.HoldoutError for 2025+; None
+    means the last backtest season."""
+    return config.season_sql(max_season)
 
 
 def build_team_game_log(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:

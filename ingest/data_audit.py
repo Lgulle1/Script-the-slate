@@ -96,7 +96,7 @@ def run_audit(raw_db=config.RAW_DUCKDB_PATH, main_db=config.DUCKDB_PATH, out_pat
         con = duckdb.connect(str(db), read_only=True)
         try:
             tables = [r[0] for r in con.execute(
-                "SELECT table_name FROM information_schema.tables ORDER BY 1").fetchall()]
+                "SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' ORDER BY 1").fetchall()]  # views (weather_observed, players_current) just repeat a table
             for t in tables:
                 if only is None or t in only:
                     report["tables"][t] = audit_table(con, t, IMPORTANT_COLUMNS.get(t, []))

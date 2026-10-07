@@ -18,6 +18,9 @@ DUCKDB_PATH = DATA_DIR / "script_the_slate.duckdb"
 RAW_DUCKDB_PATH = RAW_DIR / "raw.duckdb"
 
 DATA_START_SEASON = 2016  # first season the plan wants pulled (pulls still start at 2020 -- see docs/audit_vs_plan.md 2a)
+# First season any model, baseline or feature loader reads. Data before it (2016-2019) is pulled and stored but not
+# read by anything yet; moving this to DATA_START_SEASON is a separate decision.
+FEATURE_HISTORY_START = 2020
 BACKTEST_SEASONS = list(range(2020, 2025))  # 2020-2024 inclusive
 HOLDOUT_SEASON = 2025  # locked: never used for tuning or model selection
 PROSPECTIVE_START_SEASON = 2026  # first season predicted live, out of sample
@@ -160,6 +163,12 @@ def ensure_data_dirs() -> None:
     """Create the (git-ignored) data folders if they don't exist yet."""
     for d in (RAW_DIR, SNAPSHOT_DIR, PROCESSED_DIR):
         d.mkdir(parents=True, exist_ok=True)
+
+
+def season_sql(max_season=None) -> str:
+    """The SQL season window every training/evaluation loader applies: FEATURE_HISTORY_START through
+    cap_season(max_season). Raises HoldoutError for the holdout season or later."""
+    return f" AND season >= {FEATURE_HISTORY_START} AND season <= {cap_season(max_season)}"
 
 
 # --- Phase 2 weighting constants --------------------------------------------

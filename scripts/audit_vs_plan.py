@@ -132,7 +132,7 @@ def _table_seasons(con, t):
 
 def audit_pulls():
     con = duckdb.connect(str(config.RAW_DUCKDB_PATH), read_only=True)
-    tables = [r[0] for r in con.execute("SELECT table_name FROM information_schema.tables ORDER BY 1").fetchall()]
+    tables = [r[0] for r in con.execute("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' ORDER BY 1").fetchall()]
     expected_min = {"ftn_charting": 2022, "pfr_advstats_pass": 2018, "pfr_advstats_rec": 2018, "pfr_advstats_rush": 2018, "participation": 2016}
     spans, late = {}, []
     for t in tables:
@@ -144,8 +144,10 @@ def audit_pulls():
         if s and s[0] is not None and s[0] > want:
             late.append(f"{t} starts {s[0]} (plan {want})")
     add("2a", "start season of every pulled table", "every table from 2016 (FTN from 2022, PFR from 2018, participation 2016-2025) through the current season",
-        f"{len(late)} of {len(spans)} tables start later than the plan: " + "; ".join(late) if late else "all start at or before the plan",
-        loc("ingest/pull_nflverse.py", r"def pull_seasons") + " -> pull_seasons() = BACKTEST_SEASONS + HOLDOUT + current = 2020+", not late)
+        (f"{len(late)} of {len(spans)} nflverse tables start later than the plan: " + "; ".join(late)) if late else
+        f"all {len(spans)} nflverse tables start at the plan's season (2016; PFR 2018; FTN 2022). Not covered: the weather table is derived, "
+        "built from schedules + stadium coordinates, and is still 2020+ (pre-2020 OAK/SD/STL venues have no coordinates)",
+        loc("ingest/pull_nflverse.py", r"def pull_seasons") + ", " + loc("ingest/pull_nflverse.py", r"def pull_pre_feature_history"), not late)
     no_pulled = [t for t in tables if "pulled_at" not in {r[0] for r in con.execute(f"DESCRIBE {t}").fetchall()}]
     add("2b", "pulled_at on every raw table", "append-only with pulled_at", f"raw.duckdb tables missing pulled_at: {no_pulled or 'none'}",
         loc("ingest/pull_nflverse.py", r"def _append_raw"), not no_pulled)
@@ -167,7 +169,7 @@ def audit_pulls():
     add("2e", "FTN from 2022", "FTN pulled from 2022", f"ftn_charting seasons {ftn[0]}-{ftn[1]}; FTN_MIN_SEASON=2022 clips earlier seasons",
         loc("ingest/pull_nflverse.py", r"^FTN_MIN_SEASON"), ftn[0] == 2022)
     pfr = {t: spans[t] for t in spans if t.startswith("pfr_advstats")}
-    add("2f", "PFR from 2018", "PFR advanced stats from 2018", f"PFR_MIN_SEASON=2018 is set, but the default pull starts at 2020, so tables begin {sorted(set(v[0] for v in pfr.values()))}",
+    add("2f", "PFR from 2018", "PFR advanced stats from 2018", f"PFR_MIN_SEASON=2018 clips earlier seasons; PFR tables begin {sorted(set(v[0] for v in pfr.values()))}",
         loc("ingest/pull_nflverse.py", r"^PFR_MIN_SEASON"), all(v[0] == 2018 for v in pfr.values()))
 
 

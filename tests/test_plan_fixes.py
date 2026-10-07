@@ -132,11 +132,14 @@ def test_legacy_players_table_is_upgraded_in_place_and_new_pulls_win(monkeypatch
 
 @needs_db
 def test_master_id_joins_and_join_rates_are_unchanged_on_real_data():
-    """The view serves exactly the legacy table's rows, so every join output is identical."""
+    """players_current is exactly the latest pull per gsis_id of the players table (however many pulls it holds),
+    so master-id joins read one consistent row per player."""
     con = duckdb.connect(str(config.DUCKDB_PATH), read_only=True)
-    table = con.execute("SELECT gsis_id, pfr_id, espn_id FROM players WHERE gsis_id IS NOT NULL ORDER BY gsis_id").pl()
+    allrows = con.execute("SELECT gsis_id, pfr_id, espn_id, pulled_at FROM players WHERE gsis_id IS NOT NULL").pl()
+    latest = (allrows.sort("pulled_at", descending=True, nulls_last=True).unique(subset="gsis_id", keep="first", maintain_order=True)
+              .select("gsis_id", "pfr_id", "espn_id").sort("gsis_id"))
     view = ids._load_master(config.DUCKDB_PATH).sort("gsis_id")
-    assert table.equals(view) and view.height > 20_000
+    assert latest.equals(view) and view.height > 20_000 and view["gsis_id"].is_unique().all()
     raw = duckdb.connect(str(config.RAW_DUCKDB_PATH), read_only=True)
     for t, col, rate in (("player_stats", "player_id", 0.999), ("snap_counts", "pfr_player_id", 0.995), ("rosters_weekly", "pfr_id", 0.998)):
         df = raw.execute(f"SELECT DISTINCT {col} FROM {t} WHERE {col} IS NOT NULL").pl()
@@ -170,3 +173,62 @@ def test_committed_best_baseline_matches_the_choice_in_the_phase3_results():
     best = pl.read_parquet(root / "best_baseline.parquet")
     assert best["market"].n_unique() == 11 and best.filter(pl.col("is_best")).height == 11
     assert set(best["method"]) == set(bl.METHODS)
+
+
+# ------------------------------------------------------------------ 3.5.2b: FEATURE_HISTORY_START and the 2016-2019 backfill
+def test_feature_history_start_is_2020_and_in_every_loader_window():
+    assert config.FEATURE_HISTORY_START == 2020 and config.DATA_START_SEASON == 2016
+    sql = config.season_sql(None)
+    assert "season >= 2020" in sql and "season <= 2024" in sql
+    assert "season >= 2020" in config.season_sql(2022) and "season <= 2022" in config.season_sql(2022)
+    with pytest.raises(config.HoldoutError):
+        config.season_sql(2025)
+
+
+@needs_db
+def test_loaders_read_from_2020_on_even_though_older_seasons_are_stored():
+    con = duckdb.connect(str(config.RAW_DUCKDB_PATH), read_only=True)
+    older = con.execute("SELECT count(*) FROM schedules WHERE season < 2020").fetchone()[0]
+    if not older:
+        pytest.skip("2016-2019 not pulled in this database")
+    assert older > 0
+    tl = bl.build_team_game_log()
+    pg = bl.build_player_game_log()
+    ln = lu.build_lineups()
+    tv = vf.build_team_volume()
+    roles, _ = bl.build_role_table()
+    assert tl["season"].min() == pg["season"].min() == ln["season"].min() == roles["season"].min() == 2020
+    assert tv["game_id"].str.slice(0, 4).cast(pl.Int32).min() == 2020 and tl["season"].max() == 2024
+    data = bt.load_backtest_data()
+    assert data.team_log["season"].min() == data.player_log["season"].min() == 2020
+
+
+def test_pull_seasons_start_at_the_data_start_season(monkeypatch):
+    monkeypatch.setattr(pn.nflreadpy, "get_current_season", lambda: 2026)
+    seasons = pn.pull_seasons()
+    assert seasons[0] == config.DATA_START_SEASON == 2016 and seasons[-1] == 2026 and seasons == sorted(set(seasons))
+
+
+def test_backfill_pulls_only_2016_2019_and_clips_ftn_and_pfr_and_skips_participation(monkeypatch, tmp_path):
+    calls = {}
+
+    def fake(name):
+        def load(seasons, **kw):
+            calls.setdefault(name, []).append(list(seasons))
+            return pl.DataFrame({"season": list(seasons)})
+        return load
+
+    for fn in ("load_schedules", "load_pbp", "load_player_stats", "load_snap_counts", "load_rosters_weekly", "load_injuries",
+               "load_depth_charts", "load_ftn_charting", "load_nextgen_stats", "load_pfr_advstats", "load_ff_opportunity",
+               "load_officials", "load_participation"):
+        monkeypatch.setattr(pn.nflreadpy, fn, fake(fn))
+    out = pn.pull_pre_feature_history(tmp_path / "r.duckdb")
+    assert not [v for v in out.values() if isinstance(v, str)]                       # nothing failed
+    for name, seasons in calls.items():
+        assert all(s < config.FEATURE_HISTORY_START and s >= config.DATA_START_SEASON for call in seasons for s in call), name
+    assert calls["load_schedules"] == [[2016, 2017, 2018, 2019]]
+    assert calls["load_pfr_advstats"] == [[2018, 2019]] * 3                          # rush / rec / pass, clipped to 2018+
+    assert "load_ftn_charting" not in calls and out["ftn_charting"] == 0             # FTN starts in 2022
+    assert "load_participation" not in calls                                          # already stored for 2016-2025
+    con = duckdb.connect(str(tmp_path / "r.duckdb"))
+    assert con.execute("SELECT count(*) FROM schedules WHERE pulled_at IS NOT NULL").fetchone()[0] == 4
