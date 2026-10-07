@@ -140,3 +140,18 @@ def ensure_data_dirs() -> None:
     """Create the (git-ignored) data folders if they don't exist yet."""
     for d in (RAW_DIR, SNAPSHOT_DIR, PROCESSED_DIR):
         d.mkdir(parents=True, exist_ok=True)
+
+
+# --- Phase 2 weighting constants --------------------------------------------
+RECENCY_HALF_LIFE_GAMES = 6
+OFFSEASON_GAP_GAMES = 8  # an offseason counts as this many team games of decay
+QUALITY_WEIGHTS = {"observed": 1.0, "derived": 0.9, "estimated": 0.65}
+
+# Continuity penalties: market -> {factor: multiplier in (0, 1]}, applied when that
+# factor changed between a past game and the game being predicted. Factors:
+# QB, HC, OC, OL, role, RB_group, WR_TE_group.
+# INTENTIONALLY EMPTY: the guide's starting values have not been entered yet, and a
+# default of "no penalty" would silently disable continuity weighting. Fill this in
+# from the guide; continuity_weight() raises until a market has a full entry.
+CONTINUITY_FACTORS = ("QB", "HC", "OC", "OL", "role", "RB_group", "WR_TE_group")
+CONTINUITY_PENALTIES: dict[str, dict[str, float]] = {}
