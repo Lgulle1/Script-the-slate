@@ -41,6 +41,7 @@ class BacktestData:
     player_log: pl.DataFrame   # every player-game in the backtest seasons
     team_log: pl.DataFrame     # every team-game in the backtest seasons
     weeks: list                # [(season, week, cutoff_date)] in chronological order
+    game_extras: pl.DataFrame | None = None  # optional extra per-game actuals: game_id + numeric columns
 
 
 def assert_no_holdout(*frames: pl.DataFrame):
@@ -83,6 +84,10 @@ def eligible_markets(family: str, slot: int) -> tuple:
 
 
 def _week_targets(data: BacktestData, season: int, week: int):
+    extras = {}
+    if data.game_extras is not None:
+        extras = {r["game_id"]: {k: v for k, v in r.items() if k != "game_id"}
+                  for r in data.game_extras.iter_rows(named=True)}
     games = data.player_log.filter((pl.col("season") == season) & (pl.col("week") == week))
     ptargets, pactual = [], []
     for r in games.iter_rows(named=True):
@@ -100,7 +105,8 @@ def _week_targets(data: BacktestData, season: int, week: int):
         gtargets.append(bl.GameTarget(r["gameday"], season, r["team"], r["opponent"], r["team_game_num"], r["a_num"]))
         margin = r["pf"] - r["pa"]
         gactual.append({"spread": margin, "total": r["pf"] + r["pa"],
-                        "moneyline": None if margin == 0 else float(margin > 0)})  # ties dropped
+                        "moneyline": None if margin == 0 else float(margin > 0),  # ties dropped
+                        **extras.get(r["game_id"], {})})
         gids.append(r["game_id"])
     return ptargets, pactual, gtargets, gactual, gids
 
@@ -127,13 +133,14 @@ def walk_forward(name: str, data: BacktestData, player_predictor=None, game_pred
             preds = player_predictor(history, ptargets, cutoff)
             for t, p, a in zip(ptargets, preds, pactual):
                 for m, y in a.items():
-                    rows.append((name, PLAYER, m, season, week, t.gameday, t.player_id, p.get(m), float(y)))
+                    if m in p:  # a predictor only gets scored on the markets it returns
+                        rows.append((name, PLAYER, m, season, week, t.gameday, t.player_id, p.get(m), float(y)))
         if game_predictor and gtargets:
             _check(gtargets, cutoff)
             preds = game_predictor(history, gtargets, cutoff)
             for t, gid, p, a in zip(gtargets, gids, preds, gactual):
                 for m, y in a.items():
-                    if y is not None:
+                    if y is not None and m in p:
                         rows.append((name, GAME, m, season, week, t.gameday, gid, p.get(m), float(y)))
     schema = {"method": pl.String, "kind": pl.String, "market": pl.String, "season": pl.Int32, "week": pl.Int32,
               "gameday": pl.Date, "entity": pl.String, "prediction": pl.Float64, "actual": pl.Float64}
