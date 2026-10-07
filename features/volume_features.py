@@ -37,15 +37,19 @@ FAMILY_CODE = {"QB": 0, "RB": 1, "WR": 2, "TE": 3}
 
 # quantity -> player-level spec. `stats` are the own-history columns averaged; `share` is the
 # usage share (stat / team total of the same thing) averaged as an extra feature.
+# Spec keys: market (eligibility + continuity penalties), stats (columns averaged), share, and either
+# `label` (a stat column, volume) or `ratio` = (numerator, denominator) columns (efficiency; label =
+# num/den, undefined when den == 0). `pooled` = (name, num, den) pooled recency-weighted ratios.
 PLAYER_SPECS = {
-    "pass_att": dict(label="attempts", stats=["attempts", "completions", "passing_yards", "carries"],
+    "pass_att": dict(market="pass_att", label="attempts", stats=["attempts", "completions", "passing_yards", "carries"],
                      share=("attempts", "team_att")),
-    "rush_att": dict(label="carries", stats=["carries", "rushing_yards", "targets"],
+    "rush_att": dict(market="rush_att", label="carries", stats=["carries", "rushing_yards", "targets"],
                      share=("carries", "team_rush")),
-    "targets": dict(label="targets", stats=["targets", "receptions", "receiving_yards"],
+    "targets": dict(market="targets", label="targets", stats=["targets", "receptions", "receiving_yards"],
                     share=("targets", "team_att")),
 }
 TEAM_STATS = ["rush_att", "dropbacks", "plays", "pass_rate", "pts"]
+TEAM_EFF_STATS = ["ypc", "comp_pct", "yds_per_cmp", "ypa", "pts_per_play"]
 
 
 @dataclass
@@ -57,14 +61,17 @@ class FeatureTables:
 def build_team_volume(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
     """Team-game rush attempts / dropbacks / plays, summed over ALL players' stats (every position).
 
-    dropbacks = pass attempts + sacks suffered; plays = rush attempts + dropbacks.
+    dropbacks = pass attempts + sacks suffered; plays = rush attempts + dropbacks. Also carries the team's
+    rushing / passing yards and completions (for team efficiency rates).
     """
     cap = "" if max_season is None else f" AND season <= {int(max_season)}"
     con = duckdb.connect(str(raw_db), read_only=True)
     try:
         d = con.execute(
             "SELECT game_id, team, CAST(sum(carries) AS DOUBLE) AS rush_att, CAST(sum(attempts) AS DOUBLE) AS pass_att, "
-            "CAST(sum(coalesce(sacks_suffered, 0)) AS DOUBLE) AS sacks FROM "
+            "CAST(sum(coalesce(sacks_suffered, 0)) AS DOUBLE) AS sacks, "
+            "CAST(sum(rushing_yards) AS DOUBLE) AS rush_yds, CAST(sum(passing_yards) AS DOUBLE) AS pass_yds, "
+            "CAST(sum(completions) AS DOUBLE) AS completions FROM "
             "(SELECT DISTINCT ON (player_id, season, week) * FROM player_stats "
             " ORDER BY player_id, season, week, pulled_at DESC) "
             f"WHERE season_type = 'REG'{cap} GROUP BY game_id, team").pl()
@@ -106,20 +113,30 @@ def _key(k):
     return k[0] if isinstance(k, tuple) else k
 
 
-def build_team_side_features(team_log, team_volume, week_cutoff, clock) -> pl.DataFrame:
+def _team_frame(team_log, team_volume) -> pl.DataFrame:
+    """Team-game rows with every derived rate (volume and efficiency)."""
+    return (team_log.join(team_volume, on=["game_id", "team"], how="left")
+            .with_columns(pass_rate=pl.col("dropbacks") / pl.col("plays"), pts=pl.col("pf").cast(pl.Float64),
+                          ypc=pl.col("rush_yds") / pl.col("rush_att").clip(lower_bound=1),
+                          comp_pct=pl.col("completions") / pl.col("pass_att").clip(lower_bound=1),
+                          yds_per_cmp=pl.col("pass_yds") / pl.col("completions").clip(lower_bound=1),
+                          ypa=pl.col("pass_yds") / pl.col("pass_att").clip(lower_bound=1),
+                          pts_per_play=pl.col("pf") / pl.col("plays"))
+            .sort("team", "gameday"))
+
+
+def build_team_side_features(team_log, team_volume, week_cutoff, clock, stats=None) -> pl.DataFrame:
     """Per (team, season, week): the team's own rates (off_*) and what it allowed (def_*).
 
     Past games are those strictly before the week's cutoff; recency decay is in that team's own games.
+    `def_*` for team O is the offence-side stat of the teams that FACED O (so def_pts = points O allowed).
     """
-    tg = (team_log.join(team_volume, on=["game_id", "team"], how="left")
-          .with_columns(pass_rate=pl.col("dropbacks") / pl.col("plays"), pts=pl.col("pf").cast(pl.Float64))
-          .sort("team", "gameday"))
+    stats = stats or TEAM_STATS
+    tg = _team_frame(team_log, team_volume)
     nums = tg.select("game_id", opponent=pl.col("team"), o_num=pl.col("team_game_num"))
     allowed = (tg.join(nums, on=["game_id", "opponent"], how="left")
-               .select(team=pl.col("opponent"), gameday="gameday", season="season", team_game_num=pl.col("o_num"),
-                       rush_att="rush_att", dropbacks="dropbacks", plays="plays", pass_rate="pass_rate",
-                       pts=pl.col("pa").cast(pl.Float64))
-               .sort("team", "gameday"))
+               .with_columns(team_game_num=pl.col("o_num"), team=pl.col("opponent"))
+               .select("team", "gameday", "season", "team_game_num", *stats).sort("team", "gameday"))
     keys = tg.select("team", "season", "week", "team_game_num").unique().sort("team", "season", "week")
     tables = []
     for src, prefix in ((tg, "off_"), (allowed, "def_")):
@@ -133,11 +150,11 @@ def build_team_side_features(team_log, team_volume, week_cutoff, clock) -> pl.Da
                 gd = _day(g["gameday"])
                 j = int(np.searchsorted(gd, week_cutoff[(r["season"], r["week"])].toordinal(), side="left"))
             if not j:
-                feats.append(row | {prefix + s: np.nan for s in TEAM_STATS})
+                feats.append(row | {prefix + s: np.nan for s in stats})
                 continue
             ago = clock.a(r["season"], r["team_game_num"]) - clock.a(g["season"].to_numpy()[:j], g["team_game_num"].to_numpy()[:j])
             w = 0.5 ** (np.maximum(ago, 1.0) / HALF_LIFE)
-            feats.append(row | {prefix + s: _wavg(w, g[s].to_numpy()[:j].astype(float)) for s in TEAM_STATS})
+            feats.append(row | {prefix + s: _wavg(w, g[s].to_numpy()[:j].astype(float)) for s in stats})
         tables.append(pl.DataFrame(feats))
     return tables[0].join(tables[1], on=["team", "season", "week"])
 
@@ -161,29 +178,46 @@ def continuity_weights(penalties, lin_past, lin_target, slot_p, slot_t, fam_p, f
 
 
 # ------------------------------------------------------------------ player-level tables
-def build_player_features(quantity, player_log, team_log, team_volume, lineups, week_cutoff, clock, team_side,
-                          eligible) -> pl.DataFrame:
-    """Feature rows for one volume quantity: one row per eligible player-game."""
-    spec = PLAYER_SPECS[quantity]
-    pen = config.CONTINUITY_PENALTIES[config.BASELINE_TO_PENALTY_MARKET[quantity]]
-    stats, label_col = spec["stats"], spec["label"]
-    tv = team_volume.rename({"rush_att": "team_rush", "pass_att": "team_att"}).select("game_id", "team", "team_rush", "team_att")
+def build_player_features(quantity, spec, player_log, team_log, team_volume, lineups, week_cutoff, clock, team_side,
+                          eligible, team_cols=None) -> pl.DataFrame:
+    """Feature rows for one quantity: one row per eligible player-game.
+
+    Volume specs have `label` (a stat column); efficiency specs have `ratio` = (num, den) and the row's
+    `label` is num/den (NaN when den == 0), with `den` kept as the row's training weight. Rows with den == 0
+    stay in the table (a target's denominator is unknown before the game); trainers drop them.
+    """
+    market = spec["market"]
+    pen = config.CONTINUITY_PENALTIES[config.BASELINE_TO_PENALTY_MARKET[market]]
+    stats, pooled = spec["stats"], spec.get("pooled", [])
+    num_col, den_col = spec["ratio"] if "ratio" in spec else (spec["label"], None)
+    tv = (team_volume.rename({"rush_att": "team_rush", "pass_att": "team_att"})
+          .select("game_id", "team", "team_rush", "team_att"))
     base = (player_log.join(tv, on=["game_id", "team"], how="left")
             .join(team_log.select("game_id", "team", "is_home"), on=["game_id", "team"], how="left")
-            .with_columns(_share=pl.col(spec["share"][0]) / pl.col(spec["share"][1]).clip(lower_bound=1))
             .sort("player_id", "gameday"))
+    has_share = bool(spec.get("share"))
+    if has_share:
+        base = base.with_columns(_share=pl.col(spec["share"][0]) / pl.col(spec["share"][1]).clip(lower_bound=1))
+    else:
+        base = base.with_columns(_share=pl.lit(np.nan))
     lineup_ids = {(r["team"], r["season"], r["week"]): r for r in lineups.iter_rows(named=True)}
     team_codes = {t: i for i, t in enumerate(sorted(base["team"].unique()))}
 
-    # trailing-year "allowed to this role" means, via cumulative sums over date-sorted rows
+    def num_den(g):
+        n = g[num_col].to_numpy().astype(float)
+        d = g[den_col].to_numpy().astype(float) if den_col else np.ones(len(n))
+        return n, d
+
+    # trailing-year "allowed to this role" pooled means, via cumulative sums over date-sorted rows
     role = {}
     for k, g in base.sort("gameday").partition_by("opponent", "family", "slot", as_dict=True).items():
-        role[tuple(k)] = (_day(g["gameday"]), np.concatenate([[0.0], np.cumsum(g[label_col].to_numpy().astype(float))]))
+        n, d = num_den(g)
+        role[tuple(k)] = (_day(g["gameday"]), np.concatenate([[0.0], np.cumsum(n)]), np.concatenate([[0.0], np.cumsum(d)]))
 
     rows = []
     for k, g in base.partition_by("player_id", as_dict=True, maintain_order=True).items():
         pid = _key(k)
-        n = g.height
+        n_rows = g.height
         gd, season, week, tgn = _day(g["gameday"]), g["season"].to_numpy(), g["week"].to_numpy(), g["team_game_num"].to_numpy()
         teams_l, opp_l, fam_l = g["team"].to_list(), g["opponent"].to_list(), g["family"].to_list()
         team = np.array([team_codes[t] for t in teams_l])
@@ -191,11 +225,14 @@ def build_player_features(quantity, player_log, team_log, team_volume, lineups, 
         fam = np.array([FAMILY_CODE[f] for f in fam_l])
         A = clock.a(season, tgn)
         X = np.column_stack([g[s].to_numpy().astype(float) for s in stats])
-        share, label, home = g["_share"].to_numpy().astype(float), g[label_col].to_numpy().astype(float), g["is_home"].to_numpy()
+        P = [(nm, g[a].to_numpy().astype(float), g[b].to_numpy().astype(float)) for nm, a, b in pooled]
+        share, home = g["_share"].to_numpy().astype(float), g["is_home"].to_numpy()
+        lab_n, lab_d = num_den(g)
+        label = np.where(lab_d > 0, lab_n / np.where(lab_d > 0, lab_d, 1), np.nan) if den_col else lab_n
         lin = {c: np.array([(lineup_ids.get((teams_l[i], int(season[i]), int(week[i]))) or {}).get(c, -1)
-                            for i in range(n)], dtype=np.int64) for c in lu.COMPONENTS}
-        for i in range(n):
-            if quantity not in eligible(fam_l[i], int(slot[i])):
+                            for i in range(n_rows)], dtype=np.int64) for c in lu.COMPONENTS}
+        for i in range(n_rows):
+            if market not in eligible(fam_l[i], int(slot[i])):
                 continue
             cutoff = week_cutoff[(int(season[i]), int(week[i]))].toordinal()
             j = int(np.searchsorted(gd, cutoff, side="left"))
@@ -203,6 +240,8 @@ def build_player_features(quantity, player_log, team_log, team_volume, lineups, 
                  "week": int(week[i]), "team": teams_l[i], "opponent": opp_l[i], "label": label[i],
                  "slot": int(slot[i]), "family": int(fam[i]), "is_home": float(home[i]),
                  "team_game_num": int(tgn[i]), "n_hist": j}
+            if den_col:
+                r["den"] = float(lab_d[i])
             if j:
                 team_changed = team[:j] != team[i]
                 traded_same_season = (season[:j] == season[i]) & team_changed
@@ -213,59 +252,78 @@ def build_player_features(quantity, player_log, team_log, team_volume, lineups, 
                 w_both = w_rec * w_cont
                 for c, s in enumerate(stats):
                     r[f"rec_{s}"], r[f"rc_{s}"] = _wavg(w_rec, X[:j, c]), _wavg(w_both, X[:j, c])
-                r.update(rec_share=_wavg(w_rec, share[:j]), rc_share=_wavg(w_both, share[:j]), last_val=float(label[j - 1]),
-                         last3_val=float(np.mean(label[max(0, j - 3):j])), w_mass=float(w_both.sum()),
-                         cont_mean_last3=float(w_cont[-3:].mean()))
+                for nm, pn, pd_ in P:  # pooled ratios: sum(w*num) / sum(w*den), plus the weight mass behind them
+                    for tag, w in (("rec", w_rec), ("rc", w_both)):
+                        mass = float((w * pd_[:j]).sum())
+                        r[f"{tag}_{nm}"] = float((w * pn[:j]).sum() / mass) if mass > 0 else np.nan
+                        r[f"{tag}_{nm}_mass"] = mass
+                if has_share:
+                    r.update(rec_share=_wavg(w_rec, share[:j]), rc_share=_wavg(w_both, share[:j]))
+                r.update(last_val=float(label[j - 1]), w_mass=float(w_both.sum()), cont_mean_last3=float(w_cont[-3:].mean()))
+                sl = slice(max(0, j - 3), j)
+                dsum = lab_d[sl].sum()
+                r["last3_val"] = float(lab_n[sl].sum() / dsum) if dsum > 0 else np.nan
             else:
                 r.update({f"{p}_{s}": np.nan for s in stats for p in ("rec", "rc")})
-                r.update(rec_share=np.nan, rc_share=np.nan, last_val=np.nan, last3_val=np.nan, w_mass=0.0,
-                         cont_mean_last3=np.nan)
-            d, cs = role.get((opp_l[i], fam_l[i], int(slot[i])), (None, None))
+                for nm, _, _ in P:
+                    r.update({f"{p}_{nm}": np.nan for p in ("rec", "rc")} | {f"{p}_{nm}_mass": 0.0 for p in ("rec", "rc")})
+                if has_share:
+                    r.update(rec_share=np.nan, rc_share=np.nan)
+                r.update(last_val=np.nan, last3_val=np.nan, w_mass=0.0, cont_mean_last3=np.nan)
+            d, cn, cd = role.get((opp_l[i], fam_l[i], int(slot[i])), (None, None, None))
             r["opp_role_mean"], r["opp_role_n"] = np.nan, 0
             if d is not None:
                 lo = int(np.searchsorted(d, cutoff - config.ROLE_WINDOW_DAYS, "left"))
                 hi = int(np.searchsorted(d, cutoff, "left"))
-                if hi > lo:
-                    r["opp_role_mean"], r["opp_role_n"] = float((cs[hi] - cs[lo]) / (hi - lo)), hi - lo
+                if hi > lo and cd[hi] - cd[lo] > 0:
+                    r["opp_role_mean"], r["opp_role_n"] = float((cn[hi] - cn[lo]) / (cd[hi] - cd[lo])), hi - lo
             rows.append(r)
     df = pl.DataFrame(rows)
+    return _attach_team_sides(df, team_side)
+
+
+def _attach_team_sides(df, team_side):
     own = team_side.select("team", "season", "week", **{f"team_{c}": pl.col(c) for c in team_side.columns if c.startswith("off_")})
     opp = team_side.select(opponent="team", season="season", week="week",
                            **{f"opp_{c}": pl.col(c) for c in team_side.columns if c.startswith("def_")})
     return (df.join(own, on=["team", "season", "week"], how="left")
-              .join(opp, on=["opponent", "season", "week"], how="left").sort("player_id", "gameday"))
+              .join(opp, on=["opponent", "season", "week"], how="left").sort(*[c for c in ("player_id", "team") if c in df.columns], "gameday"))
 
 
-# ------------------------------------------------------------------ team-game table (game volume)
-def build_team_game_features(team_log, team_volume, week_cutoff, team_side) -> pl.DataFrame:
-    """One row per team-game: the team's rates vs the opponent's allowed rates; label = team plays."""
-    tg = team_log.join(team_volume.select("game_id", "team", "plays"), on=["game_id", "team"], how="left")
-    own = team_side.select("team", "season", "week", **{f"team_{c}": pl.col(c) for c in team_side.columns if c.startswith("off_")})
-    opp = team_side.select(opponent="team", season="season", week="week",
-                           **{f"opp_{c}": pl.col(c) for c in team_side.columns if c.startswith("def_")})
-    return (tg.select("game_id", "team", "opponent", "season", "week", "gameday", "team_game_num",
-                      is_home=pl.col("is_home").cast(pl.Float64), label=pl.col("plays").cast(pl.Float64))
-              .join(own, on=["team", "season", "week"], how="left")
-              .join(opp, on=["opponent", "season", "week"], how="left").sort("team", "gameday"))
+# ------------------------------------------------------------------ team-game table (game volume / efficiency)
+def build_team_game_features(team_log, team_volume, team_side, label="plays") -> pl.DataFrame:
+    """One row per team-game: the team's rates vs the opponent's allowed rates.
+
+    label = "plays" (volume) or "pts_per_play" (efficiency; `den` = plays is the training weight).
+    """
+    tg = _team_frame(team_log, team_volume)
+    cols = ["game_id", "team", "opponent", "season", "week", "gameday", "team_game_num",
+            pl.col("is_home").cast(pl.Float64).alias("is_home"), pl.col(label).cast(pl.Float64).alias("label")]
+    if label != "plays":
+        cols.append(pl.col("plays").alias("den"))
+    return _attach_team_sides(tg.select(cols), team_side)
+
+
+def week_cutoffs(team_log):
+    wk = team_log.group_by("season", "week").agg(cutoff=pl.col("gameday").min())
+    return {(r["season"], r["week"]): r["cutoff"] for r in wk.iter_rows(named=True)}
 
 
 def build_feature_tables(player_log, team_log, team_volume, lineups, eligible) -> FeatureTables:
-    """Build every quantity's feature table from already-loaded frames (no database access)."""
-    wk = team_log.group_by("season", "week").agg(cutoff=pl.col("gameday").min())
-    week_cutoff = {(r["season"], r["week"]): r["cutoff"] for r in wk.iter_rows(named=True)}
+    """Volume feature tables from already-loaded frames (no database access)."""
+    week_cutoff = week_cutoffs(team_log)
     clock = _Clock(team_log["season"].unique().to_list())
     side = build_team_side_features(team_log, team_volume, week_cutoff, clock)
-    players = {q: build_player_features(q, player_log, team_log, team_volume, lineups, week_cutoff, clock, side, eligible)
-               for q in PLAYER_SPECS}
-    return FeatureTables(players, build_team_game_features(team_log, team_volume, week_cutoff, side))
+    players = {q: build_player_features(q, spec, player_log, team_log, team_volume, lineups, week_cutoff, clock, side, eligible)
+               for q, spec in PLAYER_SPECS.items()}
+    return FeatureTables(players, build_team_game_features(team_log, team_volume, side, "plays"))
 
 
 def load_feature_tables(data, raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> FeatureTables:
-    """Feature tables for a backtest.BacktestData (seasons capped in SQL for the volume/lineup inputs)."""
+    """Volume feature tables for a backtest.BacktestData (seasons capped in SQL for the volume/lineup inputs)."""
     from eval import backtest as bt
     cap = max_season if max_season is not None else bt.MAX_BACKTEST_SEASON
     tv = build_team_volume(raw_db, cap)
     ln = lu.build_lineups(raw_db, cap)
-    for f in (tv.join(data.team_log.select("game_id", "season").unique(), on="game_id", how="inner"), ):
-        bt.assert_no_holdout(f)
+    bt.assert_no_holdout(tv.join(data.team_log.select("game_id", "season").unique(), on="game_id", how="inner"))
     return build_feature_tables(data.player_log, data.team_log, tv, ln, bt.eligible_markets)

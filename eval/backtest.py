@@ -42,6 +42,7 @@ class BacktestData:
     team_log: pl.DataFrame     # every team-game in the backtest seasons
     weeks: list                # [(season, week, cutoff_date)] in chronological order
     game_extras: pl.DataFrame | None = None  # optional extra per-game actuals: game_id + numeric columns
+    player_extras: object = None             # optional fn(player-game row dict) -> {name: extra actual}
 
 
 def assert_no_holdout(*frames: pl.DataFrame):
@@ -96,7 +97,10 @@ def _week_targets(data: BacktestData, season: int, week: int):
             continue
         ptargets.append(bl.PlayerTarget(r["player_id"], r["gameday"], season, r["team_game_num"], r["opponent"],
                                         r["family"], r["slot"], r["team"], week))
-        pactual.append({m: r[bl.PLAYER_MARKETS[m]] for m in mk})
+        actual = {m: r[bl.PLAYER_MARKETS[m]] for m in mk}
+        if data.player_extras is not None:
+            actual.update(data.player_extras(r))
+        pactual.append(actual)
     tl = data.team_log.filter((pl.col("season") == season) & (pl.col("week") == week))
     gtargets, gactual, gids = [], [], []
     home = tl.filter(pl.col("is_home"))

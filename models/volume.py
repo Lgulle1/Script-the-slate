@@ -26,7 +26,7 @@ PARAMS = dict(objective="l1", n_estimators=150, num_leaves=8, min_child_samples=
               colsample_bytree=0.8, random_state=0, n_jobs=1, deterministic=True, force_row_wise=True, verbose=-1)
 MIN_TRAIN_ROWS = 300  # no model (predictions are None) until a quantity has this many earlier rows
 
-_KEYS = ("player_id", "game_id", "gameday", "season", "week", "team", "opponent", "label")
+_KEYS = ("player_id", "game_id", "gameday", "season", "week", "team", "opponent", "label", "den")
 TEAM_PLAYS = "team_plays"
 
 
@@ -37,7 +37,8 @@ def feature_columns(df: pl.DataFrame) -> list[str]:
 def _fit(train: pl.DataFrame, params=PARAMS):
     cols = feature_columns(train)
     model = lgb.LGBMRegressor(**params)
-    model.fit(train.select(cols).to_pandas(), train["label"].to_numpy())
+    weight = train["den"].to_numpy() if "den" in train.columns else None  # efficiency rows weigh by their denominator
+    model.fit(train.select(cols).to_pandas(), train["label"].to_numpy(), sample_weight=weight)
     return model, cols
 
 
