@@ -8,6 +8,8 @@ SNAPSHOT_DIR = DATA_DIR / "snapshots"
 PROCESSED_DIR = DATA_DIR / "processed"
 
 DUCKDB_PATH = DATA_DIR / "script_the_slate.duckdb"
+# Raw, append-only nflverse pulls live in their own DuckDB file under data/raw/.
+RAW_DUCKDB_PATH = RAW_DIR / "raw.duckdb"
 
 BACKTEST_SEASONS = list(range(2020, 2025))  # 2020-2024 inclusive
 HOLDOUT_SEASON = 2025  # locked: never used for tuning or model selection
