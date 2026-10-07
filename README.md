@@ -29,3 +29,11 @@ Python 3.11+:
 pip install -e .
 pytest
 ```
+
+## Data rules
+
+- **Coaching identity comes from the `coaches` table, never from nflverse.** The
+  schedules table's `home_coach` / `away_coach` columns lag mid-season hires and
+  sometimes never update, so nothing may join or key on them.
+- **Player joins go through the master `players` table** (`ingest/ids.py`).
+- **Raw pulls are append-only**; downstream code keeps the latest `pulled_at`.
