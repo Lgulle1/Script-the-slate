@@ -150,8 +150,34 @@ QUALITY_WEIGHTS = {"observed": 1.0, "derived": 0.9, "estimated": 0.65}
 # Continuity penalties: market -> {factor: multiplier in (0, 1]}, applied when that
 # factor changed between a past game and the game being predicted. Factors:
 # QB, HC, OC, OL, role, RB_group, WR_TE_group.
-# INTENTIONALLY EMPTY: the guide's starting values have not been entered yet, and a
-# default of "no penalty" would silently disable continuity weighting. Fill this in
-# from the guide; continuity_weight() raises until a market has a full entry.
+# Starting values from the guide. A market missing from this table makes
+# continuity_weight() raise, rather than silently meaning "no penalty".
 CONTINUITY_FACTORS = ("QB", "HC", "OC", "OL", "role", "RB_group", "WR_TE_group")
-CONTINUITY_PENALTIES: dict[str, dict[str, float]] = {}
+CONTINUITY_PENALTIES: dict[str, dict[str, float]] = {
+    "pass_yds":         {"QB": 0.25, "HC": 0.85, "OC": 0.65, "OL": 0.90, "role": 0.50, "RB_group": 0.95, "WR_TE_group": 0.80},
+    "pass_tds":         {"QB": 0.25, "HC": 0.85, "OC": 0.65, "OL": 0.90, "role": 0.50, "RB_group": 0.95, "WR_TE_group": 0.75},
+    "rush_yds":         {"QB": 0.90, "HC": 0.85, "OC": 0.80, "OL": 0.65, "role": 0.35, "RB_group": 0.65, "WR_TE_group": 0.95},
+    "rush_att":         {"QB": 0.90, "HC": 0.85, "OC": 0.80, "OL": 0.65, "role": 0.35, "RB_group": 0.65, "WR_TE_group": 0.95},
+    "rec_yds":          {"QB": 0.55, "HC": 0.85, "OC": 0.70, "OL": 0.95, "role": 0.35, "RB_group": 0.90, "WR_TE_group": 0.65},
+    "rec":              {"QB": 0.55, "HC": 0.85, "OC": 0.70, "OL": 0.95, "role": 0.35, "RB_group": 0.90, "WR_TE_group": 0.65},
+    "rec_tds":          {"QB": 0.50, "HC": 0.85, "OC": 0.70, "OL": 0.95, "role": 0.30, "RB_group": 0.88, "WR_TE_group": 0.60},
+    "anytime_td":       {"QB": 0.60, "HC": 0.85, "OC": 0.70, "OL": 0.90, "role": 0.30, "RB_group": 0.70, "WR_TE_group": 0.70},
+    "game_total":       {"QB": 0.55, "HC": 0.80, "OC": 0.70, "OL": 0.90, "role": 0.90, "RB_group": 0.95, "WR_TE_group": 0.90},
+    "first_half_total": {"QB": 0.55, "HC": 0.80, "OC": 0.70, "OL": 0.90, "role": 0.90, "RB_group": 0.95, "WR_TE_group": 0.90},
+    "team_total":       {"QB": 0.50, "HC": 0.80, "OC": 0.68, "OL": 0.88, "role": 0.90, "RB_group": 0.92, "WR_TE_group": 0.88},
+}
+
+# --- Phase 2 baseline constants ---------------------------------------------
+# The 8 player markets and 3 game markets the baselines cover (names differ from the
+# continuity-penalty market names above; this maps the former onto the latter).
+# NOTE: this mapping is an assumption -- confirm it before continuity weights are
+# applied to baselines/models.
+BASELINE_TO_PENALTY_MARKET = {
+    "pass_att": "pass_yds", "pass_cmp": "pass_yds", "pass_yds": "pass_yds",
+    "rush_att": "rush_att", "rush_yds": "rush_yds",
+    "targets": "rec", "rec": "rec", "rec_yds": "rec_yds",
+    "spread": "game_total", "moneyline": "game_total", "total": "game_total",
+}
+BLEND_OWN_WEIGHT = 0.7  # player/team own average; the rest is the opponent-allowed average
+ROLE_WINDOW_DAYS = 365  # trailing window for role and opponent-allowed averages
+GAME_MARGIN_SD = 13.5   # NFL final-margin std dev (pts); turns a predicted margin into P(home win)

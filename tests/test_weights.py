@@ -40,7 +40,7 @@ def test_continuity_is_product_of_changed_factors():
 
 def test_continuity_fails_loudly_instead_of_silent_no_penalty():
     with pytest.raises(KeyError, match="no continuity penalties"):
-        w.continuity_weight({"QB": True}, "rec_yds")  # config table intentionally empty
+        w.continuity_weight({"QB": True}, "not_a_market")
     with pytest.raises(KeyError, match="no penalty for factor"):
         w.continuity_weight({"OC": True}, "rec_yds", TEST_PENALTIES)
     with pytest.raises(KeyError, match="unknown continuity factors"):
@@ -51,3 +51,15 @@ def test_quality_weights():
     assert [w.quality_weight(q) for q in ("observed", "derived", "estimated")] == [1.0, 0.9, 0.65]
     with pytest.raises(KeyError):
         w.quality_weight("guess")
+
+
+def test_guide_penalty_table_is_complete_and_sane():
+    import config
+    assert len(config.CONTINUITY_PENALTIES) == 11
+    for market, table in config.CONTINUITY_PENALTIES.items():
+        assert set(table) == set(config.CONTINUITY_FACTORS), market
+        assert all(0 < v <= 1 for v in table.values()), market
+    # spot checks against the guide
+    assert w.continuity_weight({"QB": True}, "pass_yds") == 0.25
+    assert w.continuity_weight({"QB": True, "OC": True}, "pass_yds") == pytest.approx(0.25 * 0.65)
+    assert set(config.BASELINE_TO_PENALTY_MARKET.values()) <= set(config.CONTINUITY_PENALTIES)
