@@ -23,10 +23,13 @@ def load_coaches(csv_path=SEED_CSV, db_path=config.DUCKDB_PATH) -> int:
     missing = [c for c in SEED_COLUMNS if c not in seed.columns]
     if missing:
         raise ValueError(f"{csv_path} is missing columns: {missing}")
+    # The CSV's start year often carries notes ("2026 (playcaller)", "unknown"). Keep the
+    # original text in start_year_raw and parse a leading 4-digit year into the typed column.
     seed = seed.select(SEED_COLUMNS).with_columns(
-        pl.col("start_year_with_team").cast(pl.Int32, strict=False),
+        pl.col("start_year_with_team").alias("start_year_raw"),
+        pl.col("start_year_with_team").str.extract(r"^\s*(\d{4})\b", 1).cast(pl.Int32),
         pl.lit(False).alias("hand_corrected"),
-    )
+    ).select([*SEED_COLUMNS, "start_year_raw", "hand_corrected"])
     con = duckdb.connect(str(db_path))
     try:
         exists = con.execute(
@@ -45,7 +48,7 @@ def load_coaches(csv_path=SEED_CSV, db_path=config.DUCKDB_PATH) -> int:
 
 def mark_hand_corrected(team: str, role: str, name: str, db_path=config.DUCKDB_PATH, **fields) -> None:
     """Apply a manual fix to one coaches row and flag it hand_corrected."""
-    allowed = set(SEED_COLUMNS) - set(KEY)
+    allowed = (set(SEED_COLUMNS) - set(KEY)) | {"start_year_raw"}
     bad = set(fields) - allowed
     if bad:
         raise ValueError(f"cannot set {sorted(bad)}; allowed: {sorted(allowed)}")

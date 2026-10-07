@@ -30,3 +30,12 @@ def test_errors(tmp_path):
     bad.write_text("team,role\nKC,HC\n")
     with pytest.raises(ValueError, match="missing columns"):
         lc.load_coaches(bad, tmp_path / "d.duckdb")
+
+
+def test_start_year_notes_are_kept_and_parsed(tmp_path):
+    csv, db = tmp_path / "c.csv", tmp_path / "d.duckdb"
+    csv.write_text(CSV.replace("2013", "2013 (with team since 2010)").replace("2023", "unknown"))
+    lc.load_coaches(csv, db)
+    rows = duckdb.connect(str(db)).execute(
+        "SELECT role, start_year_with_team, start_year_raw FROM coaches ORDER BY role").fetchall()
+    assert rows == [("HC", 2013, "2013 (with team since 2010)"), ("OC", None, "unknown")]
