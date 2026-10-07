@@ -19,6 +19,7 @@ dependencies = [
     "requests",
     "pytest",
     "python-dotenv",
+    "meteostat",
 ]
 
 [tool.setuptools]
@@ -26,3 +27,4 @@ packages = ["ingest", "features", "models", "sim", "eval", "app"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["network: hits a live external service"]

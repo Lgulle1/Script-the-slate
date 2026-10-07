@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 ROOT = Path(__file__).resolve().parent
 
-# Local secrets/settings (e.g. NWS_CONTACT) live in a git-ignored .env, if present.
+# Local secrets/settings live in a git-ignored .env, if present.
 if (ROOT / ".env").exists():
     load_dotenv(ROOT / ".env")
 DATA_DIR = ROOT / "data"
@@ -130,10 +130,6 @@ venue_coordinates = {
     "PAR00": (48.9245, 2.3601),     # Stade de France, Paris
     "RIO00": (-22.9122, -43.2302),  # Maracana, Rio de Janeiro
 }
-
-# NWS requires a descriptive User-Agent with contact info. Set NWS_CONTACT (an
-# email or URL) in the environment; without it the NWS fallback is skipped.
-NWS_CONTACT_ENV = "NWS_CONTACT"
 
 
 def ensure_data_dirs() -> None:

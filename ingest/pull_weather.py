@@ -1,140 +1,139 @@
-"""Pull game-time weather: Open-Meteo first, NWS fallback, else 'missing'.
+"""Pull game-time weather from Meteostat (hourly station observations).
 
 Input rows are dicts: {game_id, lat, lon, kickoff} with kickoff a datetime
-(naive = UTC). Output rows carry temp_f, wind_mph, precip_in, precip_prob_pct
-and a source tag in {"open-meteo", "nws", "missing"}. A failed lookup never
-raises: it yields a row with source "missing" and null values.
+(naive = UTC). Output rows carry temp_f, wind_mph, precip_in, a null
+precip_prob_pct (Meteostat has no forecast probability) and source in
+{"meteostat", "missing"}. A failed lookup never raises: it yields a row with
+source "missing" and null values.
 
-Roof state is NOT handled here -- weather is pulled for every game location
-and the schedules table's own roof column decides whether it matters.
+These are OBSERVED conditions at the nearest reporting stations, not a pregame
+forecast -- fine for training/backtests, but not what a bettor would have seen.
+Weather is also pulled for domed venues, where it is irrelevant to game
+conditions; roof state comes from the schedules table's own roof column, and the
+features layer must account for that so the model doesn't learn from indoor "weather".
 """
 import logging
-import os
-import re
 import time
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
+import meteostat as ms
 import polars as pl
-import requests
 
 import config
 from ingest.pull_nflverse import _append_raw
 
 log = logging.getLogger(__name__)
 
-OPEN_METEO_FORECAST = "https://api.open-meteo.com/v1/forecast"
-OPEN_METEO_ARCHIVE = "https://archive-api.open-meteo.com/v1/archive"
-NWS_POINTS = "https://api.weather.gov/points/{lat},{lon}"
-TIMEOUT_S = 15
-# The forecast endpoint only serves a limited window of past days; older
-# kickoffs go to Open-Meteo's archive endpoint (same provider, same tag).
-FORECAST_PAST_DAYS_LIMIT = 90
-
-SOURCE_OPEN_METEO, SOURCE_NWS, SOURCE_MISSING = "open-meteo", "nws", "missing"
+SOURCE_METEOSTAT, SOURCE_MISSING = "meteostat", "missing"
 WEATHER_TABLE = "weather"
-_HOURLY = "temperature_2m,wind_speed_10m,precipitation,precipitation_probability"
-
-
-RETRIES_ON_429 = 3
-TIMEOUT_RETRY_WAIT_S = 2
-REQUEST_PAUSE_S = 0.25  # polite spacing between games in a batch
-
-
-def _get(url, **kw):
-    """requests.get with exponential backoff on HTTP 429."""
-    for attempt in range(RETRIES_ON_429 + 1):
-        resp = requests.get(url, timeout=TIMEOUT_S, **kw)
-        if resp.status_code != 429 or attempt == RETRIES_ON_429:
-            return resp
-        time.sleep(2 ** (attempt + 1))
-    return resp
+N_STATIONS = 4               # nearest stations considered per venue
+MAX_HOUR_GAP = 1             # accept an observation up to this many hours from kickoff
+KMH_TO_MPH = 0.621371
+MM_TO_IN = 1 / 25.4
 
 
 def _utc(dt: datetime) -> datetime:
     return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
 
 
+def _naive_utc(dt: datetime) -> datetime:
+    return _utc(dt).replace(tzinfo=None)
+
+
 def _missing(game_id) -> dict:
-    return dict(game_id=game_id, temp_f=None, wind_mph=None, precip_in=None,
-                precip_prob_pct=None, source=SOURCE_MISSING, endpoint=None)
+    return dict(game_id=game_id, temp_f=None, wind_mph=None, precip_in=None, precip_prob_pct=None,
+                source=SOURCE_MISSING, station_id=None, station_km=None)
 
 
-def _open_meteo(lat, lon, kickoff: datetime) -> dict:
-    kickoff = _utc(kickoff)
-    age = datetime.now(timezone.utc) - kickoff
-    archive = age > timedelta(days=FORECAST_PAST_DAYS_LIMIT)
-    day = kickoff.date().isoformat()
-    params = dict(latitude=lat, longitude=lon, hourly=_HOURLY if not archive else "temperature_2m,wind_speed_10m,precipitation",
-                  temperature_unit="fahrenheit", wind_speed_unit="mph", precipitation_unit="inch",
-                  timezone="UTC", start_date=day, end_date=day)
-    url = OPEN_METEO_ARCHIVE if archive else OPEN_METEO_FORECAST
-    try:
-        resp = _get(url, params=params)
-    except requests.Timeout:
-        time.sleep(TIMEOUT_RETRY_WAIT_S)  # one retry on timeout before falling back to NWS
-        resp = _get(url, params=params)
-    resp.raise_for_status()
-    hourly = resp.json()["hourly"]
-    i = hourly["time"].index(kickoff.replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:00"))
-    temp, wind = hourly["temperature_2m"][i], hourly["wind_speed_10m"][i]
-    if temp is None or wind is None:
-        raise ValueError("open-meteo returned null values for kickoff hour")
-    return dict(temp_f=temp, wind_mph=wind, precip_in=hourly["precipitation"][i],
-                precip_prob_pct=(hourly.get("precipitation_probability") or [None] * (i + 1))[i],
-                source=SOURCE_OPEN_METEO, endpoint="archive" if archive else "forecast")
+def _load_station_hours(lat, lon, start: datetime, end: datetime) -> pl.DataFrame:
+    """Hourly observations (UTC) from the nearest stations over [start, end].
+
+    Columns: station, distance_m, time, temp_c, wspd_kmh, prcp_mm. This is the only
+    function that touches Meteostat (data comes from its bulk files, not a metered API).
+    """
+    point = ms.Point(lat, lon)
+    stations = ms.stations.nearby(point, limit=N_STATIONS)
+    df = ms.hourly(stations, start, end).fetch()
+    if df is None or len(df) == 0:
+        return pl.DataFrame(schema={"station": pl.String, "distance_m": pl.Float64, "time": pl.Datetime,
+                                    "temp_c": pl.Float64, "wspd_kmh": pl.Float64, "prcp_mm": pl.Float64})
+    dist = stations["distance"].astype(float).to_dict()
+    df = df.reset_index()
+    return pl.DataFrame({
+        "station": df["station"].astype(str).tolist(),
+        "distance_m": [dist.get(sid) for sid in df["station"]],
+        "time": df["time"].tolist(),
+        "temp_c": df["temp"].astype(float).tolist(),
+        "wspd_kmh": df["wspd"].astype(float).tolist(),
+        "prcp_mm": df["prcp"].astype(float).tolist(),
+    }, schema_overrides={"time": pl.Datetime}).with_columns(pl.col(pl.Float64).fill_nan(None))
 
 
-def _nws(lat, lon, kickoff: datetime) -> dict:
-    contact = os.environ.get(config.NWS_CONTACT_ENV)
-    if not contact:
-        raise RuntimeError(f"{config.NWS_CONTACT_ENV} not set; NWS fallback skipped")
-    headers = {"User-Agent": f"script-the-slate ({contact})", "Accept": "application/geo+json"}
-    pts = _get(NWS_POINTS.format(lat=round(lat, 4), lon=round(lon, 4)), headers=headers)
-    pts.raise_for_status()
-    hourly_url = pts.json()["properties"]["forecastHourly"]
-    resp = _get(hourly_url, headers=headers)
-    resp.raise_for_status()
-    kickoff = _utc(kickoff)
-    for p in resp.json()["properties"]["periods"]:
-        start = datetime.fromisoformat(p["startTime"]).astimezone(timezone.utc)
-        end = datetime.fromisoformat(p["endTime"]).astimezone(timezone.utc)
-        if start <= kickoff < end:
-            temp = p["temperature"]
-            if p.get("temperatureUnit", "F") == "C":
-                temp = temp * 9 / 5 + 32
-            speeds = [float(x) for x in re.findall(r"\d+(?:\.\d+)?", p["windSpeed"])]
-            if not speeds:
-                raise ValueError(f"unparseable NWS wind: {p['windSpeed']!r}")
-            prob = (p.get("probabilityOfPrecipitation") or {}).get("value")
-            return dict(temp_f=float(temp), wind_mph=max(speeds), precip_in=None,
-                        precip_prob_pct=prob, source=SOURCE_NWS, endpoint="forecastHourly")
-    raise ValueError("kickoff outside NWS forecast window")
+def _pick(obs: pl.DataFrame, kickoff: datetime):
+    """Closest usable observation: smallest time gap (<= MAX_HOUR_GAP h), then nearest station.
+
+    Usable = temperature and wind both present. Returns a row dict or None.
+    """
+    k = _naive_utc(kickoff)
+    cand = (obs.filter(pl.col("temp_c").is_not_null() & pl.col("wspd_kmh").is_not_null())
+            .with_columns(gap=(pl.col("time") - pl.lit(k)).abs().dt.total_seconds() / 3600)
+            .filter(pl.col("gap") <= MAX_HOUR_GAP)
+            .sort("gap", "distance_m"))
+    return cand.row(0, named=True) if cand.height else None
+
+
+def _row(game_id, obs_row) -> dict:
+    if obs_row is None:
+        return _missing(game_id)
+    prcp = obs_row["prcp_mm"]
+    return dict(game_id=game_id, temp_f=obs_row["temp_c"] * 9 / 5 + 32, wind_mph=obs_row["wspd_kmh"] * KMH_TO_MPH,
+                precip_in=None if prcp is None else prcp * MM_TO_IN, precip_prob_pct=None,
+                source=SOURCE_METEOSTAT, station_id=obs_row["station"],
+                station_km=None if obs_row["distance_m"] is None else obs_row["distance_m"] / 1000)
 
 
 def fetch_weather(game_id, lat, lon, kickoff: datetime) -> dict:
-    """Open-Meteo, then NWS, then a 'missing' row. Never raises."""
-    if lat is None or lon is None or kickoff is None:
-        return _missing(game_id)
-    for fetch in (_open_meteo, _nws):
+    """One game's weather from Meteostat, or a 'missing' row. Never raises."""
+    return pull_weather_rows([{"game_id": game_id, "lat": lat, "lon": lon, "kickoff": kickoff}])[0]
+
+
+def pull_weather_rows(rows) -> list[dict]:
+    """Weather rows for request dicts. One Meteostat load per venue per calendar year."""
+    rows = list(rows)
+    out: dict[int, dict] = {}
+    by_venue: dict[tuple, list[int]] = {}
+    for i, r in enumerate(rows):
+        if r.get("lat") is None or r.get("lon") is None or r.get("kickoff") is None:
+            out[i] = _missing(r["game_id"])
+        else:
+            # Meteostat blocks hourly requests longer than 3 years, so one load per venue per year.
+            key = (round(r["lat"], 4), round(r["lon"], 4), _naive_utc(r["kickoff"]).year)
+            by_venue.setdefault(key, []).append(i)
+    for (lat, lon, _year), idx in by_venue.items():
+        kicks = [_naive_utc(rows[i]["kickoff"]) for i in idx]
+        pad = timedelta(hours=MAX_HOUR_GAP + 1)
         try:
-            return {"game_id": game_id, **fetch(lat, lon, kickoff)}
+            obs = _load_station_hours(lat, lon, min(kicks) - pad, max(kicks) + pad)
         except Exception as e:
-            log.warning("weather %s: %s failed (%s)", game_id, fetch.__name__.strip("_"), e)
-    return _missing(game_id)
+            log.warning("weather: venue (%s, %s) failed (%s); %d games -> missing", lat, lon, e, len(idx))
+            obs = None
+        for i in idx:
+            try:
+                out[i] = _row(rows[i]["game_id"], None if obs is None else _pick(obs, rows[i]["kickoff"]))
+            except Exception as e:  # never raise for a single game
+                log.warning("weather %s: %s", rows[i]["game_id"], e)
+                out[i] = _missing(rows[i]["game_id"])
+    return [out[i] for i in range(len(rows))]
 
 
 def pull_weather(rows, db_path=config.RAW_DUCKDB_PATH) -> pl.DataFrame:
     """rows: iterable of dicts with game_id, lat, lon, kickoff. Appends to the weather table."""
-    out = []
-    for r in rows:
-        out.append(fetch_weather(r["game_id"], r.get("lat"), r.get("lon"), r.get("kickoff")))
-        time.sleep(REQUEST_PAUSE_S)
     df = pl.DataFrame(
-        out,
-        schema={"game_id": pl.String, "temp_f": pl.Float64, "wind_mph": pl.Float64,
-                "precip_in": pl.Float64, "precip_prob_pct": pl.Float64,
-                "source": pl.String, "endpoint": pl.String},
+        pull_weather_rows(rows),
+        schema={"game_id": pl.String, "temp_f": pl.Float64, "wind_mph": pl.Float64, "precip_in": pl.Float64,
+                "precip_prob_pct": pl.Float64, "source": pl.String, "station_id": pl.String,
+                "station_km": pl.Float64},
     )
     if df.height:
         _append_raw(WEATHER_TABLE, df, db_path)
@@ -177,7 +176,7 @@ def build_requests(schedule_rows) -> list[dict]:
     return out
 
 
-def pull_all_weather(db_path=config.RAW_DUCKDB_PATH, raw_db=config.RAW_DUCKDB_PATH, batch=100) -> dict:
+def pull_all_weather(db_path=config.RAW_DUCKDB_PATH, raw_db=config.RAW_DUCKDB_PATH, batch=500) -> dict:
     """Pull weather for every distinct game in the schedules table.
 
     Appends in batches (so an interrupted run keeps its progress) and returns a
@@ -194,7 +193,7 @@ def pull_all_weather(db_path=config.RAW_DUCKDB_PATH, raw_db=config.RAW_DUCKDB_PA
         ).pl().to_dicts()
     finally:
         con.close()
-    reqs = build_requests(games)
+    reqs = sorted(build_requests(games), key=lambda r: (r['lat'] is None, r['lat'], r['lon'], str(r['kickoff'])))
     frames = []
     for i in range(0, len(reqs), batch):
         frames.append(pull_weather(reqs[i:i + batch], db_path))
