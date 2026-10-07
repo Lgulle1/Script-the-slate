@@ -44,8 +44,18 @@ def loc(path: str, pattern: str, nth: int = 0) -> str:
     return f"{path}:{hits[nth]}" if len(hits) > nth else f"{path}:-"
 
 
+# Items the audit flagged and the owner decided to leave as they are (3.5.2): shown as DECIDED, not DIFF.
+DECIDED = {
+    "1a": "decided in 3.5.2: keep DUCKDB_PATH and RAW_DUCKDB_PATH (two databases is fine); no DB_PATH",
+    "5f": "decided in 3.5.2: WR1-WR3 + TE1 stays the WR/TE group definition (recorded in the features/weights.py header)",
+}
+
+
 def add(id_, item, plan, code, where, ok):
-    ITEMS.append(Item(id_, item, plan, code, where, "MATCH" if ok else "DIFF"))
+    status = "MATCH" if ok else ("DECIDED" if id_ in DECIDED else "DIFF")
+    if status == "DECIDED":
+        code = f"{code}  [{DECIDED[id_]}]"
+    ITEMS.append(Item(id_, item, plan, code, where, status))
 
 
 def has(path: str, pattern: str) -> bool:
@@ -61,35 +71,39 @@ def audit_config():
     add("1b", "DATA_START_SEASON", "= 2016", f"{getattr(c, 'DATA_START_SEASON', 'not defined')}", "config.py:-", getattr(c, "DATA_START_SEASON", None) == 2016)
     add("1c", "BACKTEST_SEASONS", "2020 through 2024", f"{c.BACKTEST_SEASONS}", loc("config.py", r"^BACKTEST_SEASONS"),
         c.BACKTEST_SEASONS == [2020, 2021, 2022, 2023, 2024])
-    guard = [loc("eval/backtest.py", r"locked"), loc("eval/backtest.py", r"def assert_no_holdout")]
-    loaders_guarded = has("eval/baselines.py", r"HOLDOUT_SEASON")
     try:
-        from eval import backtest as bt
-        try:
-            bt.walk_forward("x", None, seasons=[2025])
-            raised = False
-        except ValueError:
-            raised = True
-    except Exception as e:  # pragma: no cover
-        raised = False
+        from eval import backtest as bt, baselines as bl
+        results = {}
+        for name, fn in (("walk_forward", lambda: bt.walk_forward("x", None, seasons=[2025])),
+                         ("build_team_game_log", lambda: bl.build_team_game_log(max_season=2025)),
+                         ("build_player_game_log", lambda: bl.build_player_game_log(max_season=2026)),
+                         ("build_lineups", lambda: __import__("features.lineups", fromlist=["x"]).build_lineups(max_season=2025)),
+                         ("build_team_volume", lambda: __import__("features.volume_features", fromlist=["x"]).build_team_volume(max_season=2025))):
+            try:
+                fn()
+                results[name] = False
+            except ValueError:  # HoldoutError subclasses ValueError, as the harness error does
+                results[name] = True
+    except Exception:  # pragma: no cover
+        results = {}
     add("1d", "HOLDOUT_SEASON", "= 2025; any request for it raises an error",
-        f"HOLDOUT_SEASON={c.HOLDOUT_SEASON}; walk_forward(seasons=[2025]) raises ValueError={raised}; assert_no_holdout guards loaded frames; "
-        f"but the data loaders (build_team_game_log / build_player_game_log, max_season=) have no HOLDOUT check={not loaders_guarded}",
-        ", ".join(guard), c.HOLDOUT_SEASON == 2025 and raised and loaders_guarded)
+        f"HOLDOUT_SEASON={c.HOLDOUT_SEASON}; config.cap_season() raises HoldoutError for 2025+ and None means the last backtest season; raises: {results}",
+        loc("config.py", r"def cap_season") + ", " + loc("eval/backtest.py", r"def assert_no_holdout"), bool(results) and all(results.values()) and c.HOLDOUT_SEASON == 2025)
     add("1e", "PROSPECTIVE_START_SEASON", "= 2026", f"{getattr(c, 'PROSPECTIVE_START_SEASON', 'not defined')}", "config.py:-",
         getattr(c, "PROSPECTIVE_START_SEASON", None) == 2026)
     from ingest import ids
     add("1f", "MAX_UNMATCHED_FRACTION", "= 0.01 (in config)",
-        f"config has it={hasattr(c, 'MAX_UNMATCHED_FRACTION')}; defined in ingest/ids.py as {ids.MAX_UNMATCHED_FRACTION}",
-        loc("ingest/ids.py", r"^MAX_UNMATCHED_FRACTION"), getattr(c, "MAX_UNMATCHED_FRACTION", None) == 0.01)
+        f"config.MAX_UNMATCHED_FRACTION={getattr(c, 'MAX_UNMATCHED_FRACTION', None)}; ingest/ids.py imports it ({ids.MAX_UNMATCHED_FRACTION})",
+        loc("config.py", r"^MAX_UNMATCHED_FRACTION"), getattr(c, "MAX_UNMATCHED_FRACTION", None) == 0.01 and ids.MAX_UNMATCHED_FRACTION is c.MAX_UNMATCHED_FRACTION)
     add("1g", "GAME_MARGIN_SD", "= 13.5", f"{c.GAME_MARGIN_SD}", loc("config.py", r"^GAME_MARGIN_SD"), c.GAME_MARGIN_SD == 13.5)
     add("1h", "ROLE_WINDOW_DAYS", "= 365", f"{c.ROLE_WINDOW_DAYS}", loc("config.py", r"^ROLE_WINDOW_DAYS"), c.ROLE_WINDOW_DAYS == 365)
     plan_keys = {"pass_att", "pass_cmp", "pass_yds", "rush_att", "rush_yds", "targets", "rec", "rec_yds", "total", "spread", "moneyline"}
     m = getattr(c, "MARKETS", None)
+    ok_markets = isinstance(m, dict) and set(m) == plan_keys and all({"kind", "baseline_family", "stat", "pool", "penalty_key"} <= set(v) for v in m.values())
     add("1i", "MARKETS", "dict with exactly the 11 keys, each carrying its player pool and continuity-penalty key",
-        "no MARKETS in config. Pieces exist elsewhere: market list = eval/baselines.PLAYER_MARKETS + GAME_MARKETS; "
-        "player pools = eval/backtest.eligible_markets(); penalty keys = config.BASELINE_TO_PENALTY_MARKET",
-        loc("config.py", r"^BASELINE_TO_PENALTY_MARKET"), isinstance(m, dict) and set(m) == plan_keys)
+        f"config.MARKETS has {len(m) if isinstance(m, dict) else 0} keys with kind / baseline_family / stat / pool / penalty_key; eval/baselines.PLAYER_MARKETS, GAME_MARKETS, "
+        "eval/backtest.eligible_markets() and config.BASELINE_TO_PENALTY_MARKET (alias) all read from it",
+        loc("config.py", r"^MARKETS = "), ok_markets)
     plan_map = {"pass_att": "pass_yds", "pass_cmp": "pass_yds", "pass_yds": "pass_yds", "rush_att": "rush_att", "rush_yds": "rush_yds",
                 "targets": "rec", "rec": "rec", "rec_yds": "rec_yds", "total": "game_total", "spread": "game_total", "moneyline": "game_total"}
     add("1j", "market -> penalty key", "pass_att/pass_cmp/pass_yds->pass_yds; rush_att->rush_att; rush_yds->rush_yds; targets,rec->rec; "
@@ -137,10 +151,12 @@ def audit_pulls():
         loc("ingest/pull_nflverse.py", r"def _append_raw"), not no_pulled)
     main = duckdb.connect(str(config.DUCKDB_PATH), read_only=True)
     pcols = {r[0] for r in main.execute("DESCRIBE players").fetchall()}
+    views = {r[0] for r in main.execute("SELECT view_name FROM duckdb_views()").fetchall()}
     add("2c", "players (master id table) append-only", "every table pulled is append-only with pulled_at",
-        f"players is rebuilt with CREATE OR REPLACE on every pull (replaces prior pulls); has pulled_at={'pulled_at' in pcols}; "
-        f"coaches is also rebuilt each load (by design: hand-corrected rows are preserved)",
-        loc("ingest/pull_nflverse.py", r"CREATE OR REPLACE TABLE"), "pulled_at" in pcols and not has("ingest/pull_nflverse.py", r"CREATE OR REPLACE TABLE"))
+        f"players is appended per pull (no CREATE OR REPLACE TABLE); has pulled_at={'pulled_at' in pcols}; players_current view exists={'players_current' in views}; "
+        "ids._load_master reads the view. (coaches is rebuilt each load by design: hand-corrected rows are preserved)",
+        loc("ingest/pull_nflverse.py", r"def pull_players"), "pulled_at" in pcols and "players_current" in views
+        and not has("ingest/pull_nflverse.py", r"CREATE OR REPLACE TABLE"))
     part = spans.get("participation")
     cols = {r[0] for r in con.execute("DESCRIBE participation").fetchall()}
     add("2d", "participation", "2016-2025 only, tagged training-labels-only",
@@ -167,22 +183,22 @@ def audit_weather():
     con = duckdb.connect(str(config.RAW_DUCKDB_PATH), read_only=True)
     cols = {r[0] for r in con.execute("DESCRIBE weather").fetchall()}
     srcs = [r[0] for r in con.execute("SELECT DISTINCT source FROM weather ORDER BY 1").fetchall()]
-    add("3d", "source tag", "meteostat or missing", f"distinct source values in the weather table: {srcs}", loc("ingest/pull_weather.py", r"^SOURCE_METEOSTAT"),
-        set(srcs) == {"meteostat", "missing"})
+    add("3d", "source tag", "meteostat_observed, meteostat_forecast or missing (3.5.2 split)", f"distinct source values in the weather table: {srcs}", loc("ingest/pull_weather.py", r"^SOURCE_OBSERVED"),
+        set(srcs) <= {"meteostat_observed", "meteostat_forecast", "missing"} and "meteostat" not in srcs)
     nn = con.execute("SELECT count(precip_prob_pct) FROM weather").fetchone()[0]
     add("3e", "precip_prob_pct", "always null", f"non-null values in the weather table: {nn}", loc("ingest/pull_weather.py", r"precip_prob_pct=None"), nn == 0)
     indoor = [c for c in cols if "indoor" in c or "roof" in c or "dome" in c]
-    add("3f", "indoor flag column", "each row carries an indoor flag", f"weather columns: {sorted(cols)}; indoor/roof column present: {indoor or 'no'} "
-        f"(roof state lives in schedules; docstring says the features layer must handle it)", loc("ingest/pull_weather.py", r"domed venues"), bool(indoor))
-    row = con.execute("""SELECT count(*), sum((w.source='missing')::int), min(s.gameday) FILTER (WHERE w.source <> 'missing'),
-        max(s.gameday) FILTER (WHERE w.source <> 'missing'), max(w.pulled_at) FROM weather w JOIN
-        (SELECT DISTINCT ON (game_id) game_id, gameday, home_score FROM schedules ORDER BY game_id, pulled_at DESC) s USING (game_id)
-        WHERE s.home_score IS NULL""").fetchone()
-    n, miss, lo, hi, pulled = row
-    detail = (f"{miss} of {n} games without a final score are 'missing'. The other {n - miss} are NOT past games: kickoffs {lo} to {hi}, "
-              f"weather pulled {str(pulled)[:10]}, yet source = 'meteostat' with values -- Meteostat returns model/forecast data for the coming week, "
-              f"so the 'meteostat' tag mixes observed readings (past games) with forecasts (next ~8 days)") if n != miss else f"all {n} unplayed games are 'missing'"
-    add("3g", "unplayed games", "written as missing", detail, loc("ingest/pull_weather.py", r"_missing\(rows"), n == miss)
+    nulls = con.execute("SELECT count(*) FROM weather WHERE indoor IS NULL").fetchone()[0]
+    add("3f", "indoor flag column", "each row carries an indoor flag (fixed dome, or a retractable roof closed per schedules)", f"weather has an indoor column={'indoor' in cols}; "
+        f"{nulls} rows are NULL (retractable or international venue with unknown roof state)", loc("ingest/pull_weather.py", r"def indoor_flag"), "indoor" in cols)
+    bad_obs = con.execute("SELECT count(*) FROM weather WHERE source = 'meteostat_observed' AND hours_before_kickoff IS NOT NULL").fetchone()[0]
+    fc = con.execute("SELECT count(*), count(hours_before_kickoff), count(pulled_at) FROM weather WHERE source = 'meteostat_forecast'").fetchone()
+    view_n = con.execute("SELECT count(*) FROM weather_observed WHERE source <> 'meteostat_observed'").fetchone()[0]
+    add("3g", "unplayed games", "a kickoff still ahead at pull time is meteostat_forecast (with hours_before_kickoff and pulled_at) or missing, never observed; "
+        "baselines and backtests read observed rows only",
+        f"observed rows with hours_before_kickoff set: {bad_obs}; forecast rows: {fc[0]} (hours_before_kickoff on {fc[1]}, pulled_at on {fc[2]}); "
+        f"non-observed rows in the weather_observed view: {view_n}; pull_weather.load_weather() defaults to observed only",
+        loc("ingest/pull_weather.py", r"def load_weather"), bad_obs == 0 and fc[0] == fc[1] == fc[2] and view_n == 0)
 
 
 # ---------------------------------------------------------------------------------------------- 4-5. ids, weights
@@ -210,9 +226,9 @@ def audit_ids_weights():
     add("5a", "recency weight", "0.5 ** (games_ago / 6)", "0.5 ** (games_ago / half_life), half_life = config.RECENCY_HALF_LIFE_GAMES = 6", loc("features/weights.py", r"0\.5 \*\*"), ok)
     add("5b", "offseason gap", "offseason counts as 8 games", f"games_elapsed(2023,17,2024,1) = {w.games_elapsed(2023, 17, 2024, 1)} (8 offseason + 1); config.OFFSEASON_GAP_GAMES={config.OFFSEASON_GAP_GAMES}",
         loc("features/weights.py", r"OFFSEASON_GAP_GAMES"), w.games_elapsed(2023, 17, 2024, 1) == 9)
-    add("5c", "where continuity factors are detected", "features/weights.py", "weights.continuity_weight() only multiplies caller-supplied boolean flags and is NOT used by the feature builders; "
-        "detection and a second, vectorised penalty product live in features/volume_features.py:continuity_weights and features/lineups.py",
-        loc("features/volume_features.py", r"def continuity_weights"), False)
+    single = has("features/volume_features.py", r"from features\.weights import continuity_flags, continuity_weight") and not has("features/volume_features.py", r"def continuity_weights")
+    add("5c", "where continuity factors are detected", "features/weights.py", "weights.continuity_flags() detects the factors and weights.continuity_weight() takes the penalty product (scalar or array); "
+        "features/volume_features.py calls them and has no second implementation", loc("features/weights.py", r"def continuity_flags"), single)
     add("5d", "factor QB", "QB1 differs", "depth-chart QB slot 1 (weekly chart) id differs between past game and target", loc("features/lineups.py", r'"QB": \(pl.col'), True)
     add("5e", "factor RB group", "top 2 RBs differ", "RB depth slots 1-2 (position 'RB', FBs are listed as RB) as a set", loc("features/lineups.py", r'"RB": \(pl.col'), True)
     add("5f", "factor WR/TE group", "top 4 WR/TE differ", "WR depth 1-3 plus TE depth 1 as a set (four players, but fixed 3 WR + 1 TE, not the top four WR/TE by slot)", loc("features/lineups.py", r'"WRTE"'), False)
@@ -225,7 +241,8 @@ def audit_ids_weights():
     add("5j", "quality weight", "observed 1.0 / derived 0.9 / estimated 0.65", f"values {q}; quality_weight() is defined but called nowhere outside tests ({len(used)} call sites): no model or baseline applies it yet",
         loc("features/weights.py", r"def quality_weight"), q == {"observed": 1.0, "derived": 0.9, "estimated": 0.65})
     add("5k", "market -> penalty key through config.MARKETS", "every market resolves to a penalty key via config.MARKETS",
-        "feature builders use config.BASELINE_TO_PENALTY_MARKET[spec['market']] (same mapping, different name; config.MARKETS does not exist)", loc("features/volume_features.py", r"BASELINE_TO_PENALTY_MARKET"), hasattr(config, "MARKETS"))
+        "feature builders use config.MARKETS[market]['penalty_key']; BASELINE_TO_PENALTY_MARKET is an alias derived from it", loc("features/volume_features.py", r'MARKETS\[market\]\["penalty_key"\]'),
+        has("features/volume_features.py", r'config\.MARKETS\[market\]\["penalty_key"\]') and hasattr(config, "MARKETS"))
 
 
 # ---------------------------------------------------------------------------------------------- 6-7. baselines, harness
@@ -257,11 +274,13 @@ def audit_baselines_harness():
     fns = ["mean_absolute_error", "brier_score", "log_loss", "calibration_table", "pit_histogram", "pit_flatness", "predictive_scores", "skill_vs_baseline", "grade_backtest"]
     add("7b", "grading functions", "as in 2.4: MAE, Brier per rung, log loss, calibration (20% bands), whole-curve check, skill vs baseline", f"present: {[f for f in fns if hasattr(grade, f)]}; missing: {[f for f in fns if not hasattr(grade, f)] or 'none'}",
         loc("eval/grade.py", r"def calibration_table"), all(hasattr(grade, f) for f in fns))
-    br = pl.read_parquet(ROOT / "baseline_results.parquet")
-    has_best = "best_baseline" in set(br["metric"].to_list()) or any("best" in m for m in br["metric"].unique().to_list())
+    bp = ROOT / "best_baseline.parquet"
+    best = pl.read_parquet(bp) if bp.exists() else None
+    ok = best is not None and best["market"].n_unique() == 11 and best.filter(pl.col("is_best")).height == 11
     add("7c", "best baseline per market stored", "run_baseline_backtest.py stores the best baseline per market on identical rows",
-        f"baseline_results.parquet metrics: {sorted(br['metric'].unique().to_list())}: per-method scores only, no best-baseline record. The best baseline per market is chosen later, in eval/compare.py, and stored in volume_efficiency_results.parquet",
-        loc("eval/compare.py", r"best = min\(losses"), has_best)
+        (f"best_baseline.parquet: {best.filter(pl.col('is_best')).height} best rows over {best['market'].n_unique()} markets, graded on the rows all five baselines share "
+         "(baseline_results.parquet itself is unchanged)") if best is not None else "best_baseline.parquet not found",
+        loc("run_baseline_backtest.py", r"BEST_PATH"), ok)
 
 
 # ---------------------------------------------------------------------------------------------- 8-9. models, comparison
@@ -338,13 +357,15 @@ def render(items):
 def write_md(items, path):
     d = [i for i in items if i.status == "DIFF"]
     esc = lambda s: str(s).replace("|", "\\|").replace("\n", " ")
+    dec = [i for i in items if i.status == "DECIDED"]
     out = ["# Audit of built code vs the tightened plan", "",
-           "Generated by `scripts/audit_vs_plan.py`. Report only: no model, feature, baseline, config value or result was changed.", "",
-           f"**{len(items) - len(d)} MATCH, {len(d)} DIFF** across {len(items)} items.", "",
+           "Generated by `scripts/audit_vs_plan.py` (re-run after the 3.5.2 fixes). The script itself changes no model, feature, baseline, config value or result.", "",
+           f"**{len(items) - len(d) - len(dec)} MATCH, {len(dec)} DECIDED (flagged, owner chose to keep), {len(d)} DIFF still open** across {len(items)} items.", "",
            "| # | Item | Plan says | Code does | Where | |", "|---|---|---|---|---|---|"]
     for i in items:
-        out.append(f"| {i.id} | {esc(i.item)} | {esc(i.plan)} | {esc(i.code)} | `{i.where}` | {'**DIFF**' if i.status == 'DIFF' else 'MATCH'} |")
-    out += ["", "## DIFF items", ""] + [f"- **{i.id} {i.item}** — {i.code}" for i in d]
+        out.append(f"| {i.id} | {esc(i.item)} | {esc(i.plan)} | {esc(i.code)} | `{i.where}` | {'**' + i.status + '**' if i.status != 'MATCH' else 'MATCH'} |")
+    out += ["", "## DIFF items still open", ""] + [f"- **{i.id} {i.item}** — {i.code}" for i in d]
+    out += ["", "## DECIDED (kept as built)", ""] + [f"- **{i.id} {i.item}** — {DECIDED[i.id]}" for i in dec]
     path.parent.mkdir(exist_ok=True)
     path.write_text("\n".join(out) + "\n")
 
@@ -359,5 +380,6 @@ if __name__ == "__main__":
     print(render(ITEMS))
     write_md(ITEMS, ROOT / "docs/audit_vs_plan.md")
     d = [i for i in ITEMS if i.status == "DIFF"]
-    print(f"\n{len(ITEMS) - len(d)} MATCH, {len(d)} DIFF of {len(ITEMS)} items -> docs/audit_vs_plan.md")
+    dec = [i for i in ITEMS if i.status == "DECIDED"]
+    print(f"\n{len(ITEMS) - len(d) - len(dec)} MATCH, {len(dec)} DECIDED, {len(d)} DIFF of {len(ITEMS)} items -> docs/audit_vs_plan.md")
     print("DIFF: " + ", ".join(f"{i.id} {i.item}" for i in d))

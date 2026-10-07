@@ -29,7 +29,7 @@ def _sid(ids) -> int:
 
 def build_lineups(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
     """One row per (team, season, week): integer ids for QB / RB / WRTE / OL groups."""
-    cap = "" if max_season is None else f" AND season <= {int(max_season)}"
+    cap = f" AND season <= {config.cap_season(max_season)}"  # raises config.HoldoutError for 2025+
     con = duckdb.connect(str(raw_db), read_only=True)
     try:
         d = con.execute(

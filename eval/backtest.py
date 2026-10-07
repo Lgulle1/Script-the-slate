@@ -53,6 +53,7 @@ def assert_no_holdout(*frames: pl.DataFrame):
 
 
 def load_backtest_data(raw_db=config.RAW_DUCKDB_PATH) -> BacktestData:
+    config.cap_season(MAX_BACKTEST_SEASON)
     tl = bl.build_team_game_log(raw_db, max_season=MAX_BACKTEST_SEASON)
     pl_log = bl.build_player_game_log(raw_db, max_season=MAX_BACKTEST_SEASON)
     assert_no_holdout(tl, pl_log)
@@ -65,23 +66,11 @@ def _make_data(player_log, team_log) -> BacktestData:
 
 
 # --- who gets scored (pregame-known criteria, identical for every predictor) -----------------
-# QB markets: the team's QB1. Rushing: RB slots 1-2. Receiving: WR slots 1-3, TE and RB slots 1-2.
-# A player who does not appear in the game's stats has no row, so "didn't play" games are not scored.
-_PASS = ("pass_att", "pass_cmp", "pass_yds")
-_RUSH = ("rush_att", "rush_yds")
-_RECV = ("targets", "rec", "rec_yds")
-
-
+# The pools live in config.MARKETS: QB markets = the team's QB1, rushing = RB slots 1-2, receiving = WR
+# slots 1-3 + TE and RB slots 1-2. A player who does not appear in a game's stats has no row, so
+# "didn't play" games are not scored.
 def eligible_markets(family: str, slot: int) -> tuple:
-    if family == "QB":
-        return _PASS if slot == 1 else ()
-    if family == "RB":
-        return (_RUSH + _RECV) if slot in (1, 2) else ()
-    if family == "WR":
-        return _RECV if slot in (1, 2, 3) else ()
-    if family == "TE":
-        return _RECV if slot in (1, 2) else ()
-    return ()
+    return tuple(m for m, spec in config.MARKETS.items() if spec["kind"] == "player" and slot in spec["pool"].get(family, ()))
 
 
 def _week_targets(data: BacktestData, season: int, week: int):

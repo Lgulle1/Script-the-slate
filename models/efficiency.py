@@ -64,7 +64,7 @@ def build_efficiency_tables(player_log, team_log, team_volume, lineups, eligible
 def load_efficiency_tables(data, raw_db=None, max_season=None) -> vf.FeatureTables:
     import config
     raw_db = raw_db or config.RAW_DUCKDB_PATH
-    cap = max_season if max_season is not None else bt.MAX_BACKTEST_SEASON
+    cap = config.cap_season(max_season)  # raises config.HoldoutError for 2025+
     tv = vf.build_team_volume(raw_db, cap)
     ln = vf.lu.build_lineups(raw_db, cap)
     bt.assert_no_holdout(tv.join(data.team_log.select("game_id", "season").unique(), on="game_id", how="inner"))

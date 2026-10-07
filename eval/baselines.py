@@ -26,12 +26,8 @@ import config
 from features.weights import games_elapsed, recency_weight
 
 # market -> player_stats column
-PLAYER_MARKETS = {
-    "pass_att": "attempts", "pass_cmp": "completions", "pass_yds": "passing_yards",
-    "rush_att": "carries", "rush_yds": "rushing_yards",
-    "targets": "targets", "rec": "receptions", "rec_yds": "receiving_yards",
-}
-GAME_MARKETS = ("spread", "moneyline", "total")
+PLAYER_MARKETS = {m: spec["stat"] for m, spec in config.MARKETS.items() if spec["kind"] == "player"}  # market -> player_stats column
+GAME_MARKETS = tuple(m for m, spec in config.MARKETS.items() if spec["kind"] == "game")
 METHODS = ("last3", "season_avg", "recency", "blend_70_30", "role_avg")
 FAMILIES = ("QB", "RB", "WR", "TE")
 _POSITION_FAMILY = {"QB": "QB", "RB": "RB", "HB": "RB", "FB": "RB", "WR": "WR", "TE": "TE"}
@@ -224,14 +220,17 @@ def _latest(con, table, keys):
 
 
 def _season_cap(max_season) -> str:
-    return "" if max_season is None else f" AND season <= {int(max_season)}"
+    """SQL season cap. Raises config.HoldoutError for 2025+; None means the last backtest season."""
+    return f" AND season <= {config.cap_season(max_season)}"
 
 
 def build_team_game_log(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
     """One row per team per completed regular-season game: pf, pa, team game number.
 
-    `max_season` is applied in SQL, so later seasons (e.g. the locked holdout) are never loaded.
+    `max_season` is applied in SQL, so later seasons (e.g. the locked holdout) are never loaded; asking for
+    the holdout season or later raises config.HoldoutError.
     """
+    config.cap_season(max_season)
     con = duckdb.connect(str(raw_db), read_only=True)
     try:
         sched = con.execute(
@@ -260,6 +259,7 @@ def build_role_table(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> tuple[pl
     snapshots (dt/pos_rank). Both are mapped to (family, slot 1/2/3). The newer snapshots
     are matched to games as-of the day BEFORE the game, so they can't leak game-day moves.
     """
+    config.cap_season(max_season)
     con = duckdb.connect(str(raw_db), read_only=True)
     try:
         old = con.execute(
@@ -271,7 +271,7 @@ def build_role_table(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> tuple[pl
         new = (con.execute(
             "SELECT team, gsis_id, pos_abb AS position, pos_rank, dt FROM depth_charts WHERE season IS NULL "
             "AND pos_grp NOT IN ('Base 4-3 D', 'Base 3-4 D', 'Special Teams')").pl()
-            if max_season is None or max_season >= 2025 else
+            if config.cap_season(max_season) >= config.HOLDOUT_SEASON else
             pl.DataFrame(schema={"team": pl.String, "gsis_id": pl.String, "position": pl.String,
                                  "pos_rank": pl.String, "dt": pl.String}))
     finally:
@@ -290,8 +290,10 @@ def build_role_table(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> tuple[pl
 def build_player_game_log(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
     """One row per player-game (regular season, QB/RB/WR/TE): stats + pregame role.
 
-    `max_season` is applied in SQL, so later seasons are never loaded.
+    `max_season` is applied in SQL, so later seasons are never loaded; the holdout season or later raises
+    config.HoldoutError.
     """
+    config.cap_season(max_season)
     team_log = build_team_game_log(raw_db, max_season)
     old_roles, new_roles = build_role_table(raw_db, max_season)
     con = duckdb.connect(str(raw_db), read_only=True)

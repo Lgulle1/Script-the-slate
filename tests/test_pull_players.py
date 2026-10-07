@@ -14,5 +14,7 @@ def test_pull_players_writes_master_table(tmp_path):
     assert n > 10_000
     assert con.execute("SELECT count(*) FROM players").fetchone()[0] == n
     assert con.execute("SELECT count(*) FROM players WHERE gsis_id IS NOT NULL").fetchone()[0] > 0
-    # re-running replaces rather than appends
+    # re-running APPENDS (every pull keeps its pulled_at); players_current still serves one row per player
     assert pull_nflverse.pull_players(db) == n
+    assert con.execute("SELECT count(*) FROM players").fetchone()[0] == 2 * n
+    assert con.execute("SELECT count(*) FROM players_current").fetchone()[0] <= n

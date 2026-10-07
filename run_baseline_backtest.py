@@ -16,10 +16,11 @@ import pyarrow.parquet as pq
 import config
 from eval import backtest as bt
 from eval import baselines as bl
-from eval import grade
+from eval import compare, grade
 
 RESULTS_PATH = config.ROOT / "baseline_results.parquet"
 PREDICTIONS_PATH = config.PROCESSED_DIR / "baseline_predictions.parquet"
+BEST_PATH = config.ROOT / "best_baseline.parquet"
 PLAYER_MARKET_ORDER = list(bl.PLAYER_MARKETS)
 MARKET_ORDER = PLAYER_MARKET_ORDER + list(bl.GAME_MARKETS)
 
@@ -48,6 +49,9 @@ def run(save=True):
             b"data_fingerprint": fp.encode(), b"seasons": json.dumps(config.BACKTEST_SEASONS).encode(),
             b"skill_reference": config.SKILL_REFERENCE_METHOD.encode()})
         pq.write_table(table, RESULTS_PATH)
+        best = compare.best_baseline_per_market(preds).to_arrow().replace_schema_metadata({
+            b"data_fingerprint": fp.encode(), b"seasons": json.dumps(config.BACKTEST_SEASONS).encode()})
+        pq.write_table(best, BEST_PATH)  # the best baseline per market on identical rows; baseline_results.parquet is untouched
     return results, preds, fp
 
 

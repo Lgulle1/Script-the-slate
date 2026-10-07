@@ -17,8 +17,32 @@ DUCKDB_PATH = DATA_DIR / "script_the_slate.duckdb"
 # Raw, append-only nflverse pulls live in their own DuckDB file under data/raw/.
 RAW_DUCKDB_PATH = RAW_DIR / "raw.duckdb"
 
+DATA_START_SEASON = 2016  # first season the plan wants pulled (pulls still start at 2020 -- see docs/audit_vs_plan.md 2a)
 BACKTEST_SEASONS = list(range(2020, 2025))  # 2020-2024 inclusive
 HOLDOUT_SEASON = 2025  # locked: never used for tuning or model selection
+PROSPECTIVE_START_SEASON = 2026  # first season predicted live, out of sample
+
+# A master-id join may leave at most this share of a batch unmatched before it raises (ingest/ids.py).
+MAX_UNMATCHED_FRACTION = 0.01
+
+
+class HoldoutError(ValueError):
+    """A training or evaluation loader was asked for the locked holdout season (or later)."""
+
+
+def cap_season(max_season=None) -> int:
+    """The season cap every training/evaluation loader applies.
+
+    Raises HoldoutError for HOLDOUT_SEASON or later, exactly as the walk-forward harness does. ``None``
+    means "the last backtest season", never "everything", so a loader cannot return holdout rows by
+    default. The raw pull functions are exempt: they must keep fetching 2025 and 2026 data.
+    """
+    if max_season is None:
+        return max(BACKTEST_SEASONS)
+    if int(max_season) >= HOLDOUT_SEASON:
+        raise HoldoutError(f"max_season={max_season} reaches season {HOLDOUT_SEASON}+, which is the locked holdout; "
+                           f"training/evaluation loaders stop at {max(BACKTEST_SEASONS)}")
+    return int(max_season)
 
 OUTDOORS = "outdoors"
 DOME = "dome"
@@ -168,12 +192,26 @@ CONTINUITY_PENALTIES: dict[str, dict[str, float]] = {
 # continuity-penalty market names above; this maps the former onto the latter).
 # NOTE: this mapping is an assumption -- confirm it before continuity weights are
 # applied to baselines/models.
-BASELINE_TO_PENALTY_MARKET = {
-    "pass_att": "pass_yds", "pass_cmp": "pass_yds", "pass_yds": "pass_yds",
-    "rush_att": "rush_att", "rush_yds": "rush_yds",
-    "targets": "rec", "rec": "rec", "rec_yds": "rec_yds",
-    "spread": "game_total", "moneyline": "game_total", "total": "game_total",
+# The single market table. Per market: kind ("player"/"game"), `baseline_family` (which baseline routine
+# family scores it: the per-player functions or predict_game), `stat` (player_stats column for player
+# markets), `pool` (position family -> depth-chart slots that are scored; empty for game markets) and
+# `penalty_key` (its row in CONTINUITY_PENALTIES). Key order is iteration order everywhere.
+_RECV_POOL = {"WR": (1, 2, 3), "TE": (1, 2), "RB": (1, 2)}
+MARKETS = {
+    "pass_att": dict(kind="player", baseline_family="player", stat="attempts", pool={"QB": (1,)}, penalty_key="pass_yds"),
+    "pass_cmp": dict(kind="player", baseline_family="player", stat="completions", pool={"QB": (1,)}, penalty_key="pass_yds"),
+    "pass_yds": dict(kind="player", baseline_family="player", stat="passing_yards", pool={"QB": (1,)}, penalty_key="pass_yds"),
+    "rush_att": dict(kind="player", baseline_family="player", stat="carries", pool={"RB": (1, 2)}, penalty_key="rush_att"),
+    "rush_yds": dict(kind="player", baseline_family="player", stat="rushing_yards", pool={"RB": (1, 2)}, penalty_key="rush_yds"),
+    "targets": dict(kind="player", baseline_family="player", stat="targets", pool=_RECV_POOL, penalty_key="rec"),
+    "rec": dict(kind="player", baseline_family="player", stat="receptions", pool=_RECV_POOL, penalty_key="rec"),
+    "rec_yds": dict(kind="player", baseline_family="player", stat="receiving_yards", pool=_RECV_POOL, penalty_key="rec_yds"),
+    "spread": dict(kind="game", baseline_family="game", stat=None, pool={}, penalty_key="game_total"),
+    "moneyline": dict(kind="game", baseline_family="game", stat=None, pool={}, penalty_key="game_total"),
+    "total": dict(kind="game", baseline_family="game", stat=None, pool={}, penalty_key="game_total"),
 }
+# Alias kept for existing callers: market -> continuity-penalty key.
+BASELINE_TO_PENALTY_MARKET = {m: spec["penalty_key"] for m, spec in MARKETS.items()}
 BLEND_OWN_WEIGHT = 0.7  # player/team own average; the rest is the opponent-allowed average
 ROLE_WINDOW_DAYS = 365  # trailing window for role and opponent-allowed averages
 GAME_MARGIN_SD = 13.5   # NFL final-margin std dev (pts); turns a predicted margin into P(home win)

@@ -105,3 +105,24 @@ def compare_market(market: str, baseline_preds: pl.DataFrame, model_preds: pl.Da
     full["baseline_losses"] = {b: float(v.mean()) for b, v in losses.items()}
     full["verdict"] = verdict(full["gain"], full["ci_lo"], full["ci_hi"], full["seasons_won"])
     return {"summary": full, "by_season": by_season}
+
+
+def best_baseline_per_market(baseline_preds: pl.DataFrame) -> pl.DataFrame:
+    """The best of the five baselines per market, judged on IDENTICAL rows (rows where all five have a
+    prediction). Loss = mean absolute error (point markets) or Brier score (moneyline), the same losses
+    compare_market uses. Long table: market, method, metric, loss, n, is_best (n = the shared row count).
+
+    Note compare_market also requires the model's prediction, so on markets where two baselines are very
+    close its pick can differ from this baseline-only pick.
+    """
+    rows = []
+    for market in sorted(baseline_preds["market"].unique().to_list()):
+        wide = (baseline_preds.filter(pl.col("market") == market)
+                .pivot(on="method", index=[*KEY, "actual"], values="prediction").drop_nulls(list(BASELINE_METHODS)))
+        y = wide["actual"].to_numpy()
+        losses = {b: float(_loss(market, wide[b].to_numpy(), y).mean()) for b in BASELINE_METHODS}
+        best = min(losses, key=losses.get)
+        for b in BASELINE_METHODS:
+            rows.append(dict(market=market, method=b, metric="brier" if market == "moneyline" else "mae",
+                             loss=losses[b], n=wide.height, is_best=(b == best)))
+    return pl.DataFrame(rows).sort("market", "method")

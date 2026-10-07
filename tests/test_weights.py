@@ -63,3 +63,28 @@ def test_guide_penalty_table_is_complete_and_sane():
     assert w.continuity_weight({"QB": True}, "pass_yds") == 0.25
     assert w.continuity_weight({"QB": True, "OC": True}, "pass_yds") == pytest.approx(0.25 * 0.65)
     assert set(config.BASELINE_TO_PENALTY_MARKET.values()) <= set(config.CONTINUITY_PENALTIES)
+
+
+def test_continuity_weight_accepts_arrays_with_scalar_equivalence():
+    """The vectorised path used by the feature builders must equal the scalar path element by element."""
+    import numpy as np
+    import config
+    rng = np.random.default_rng(0)
+    flags = {f: rng.random(200) < 0.3 for f in ("HC", "OC", "role", "QB", "OL", "RB_group", "WR_TE_group")}
+    vec = w.continuity_weight(flags, "rush_att")
+    assert vec.shape == (200,)
+    for i in range(200):
+        assert vec[i] == w.continuity_weight({f: bool(v[i]) for f, v in flags.items()}, "rush_att")  # bit-identical
+    none = w.continuity_weight({f: np.zeros(5, bool) for f in flags}, "rush_att")
+    assert none.shape == (5,) and (none == 1.0).all()                          # nothing changed -> ones, still an array
+
+
+def test_continuity_flags_detection():
+    import numpy as np
+    lin_past = {"QB": np.array([5, 7, -1, 5]), "RB": np.array([1, 1, 1, 1]), "WRTE": np.array([2, 2, 2, 2]), "OL": np.array([3, 3, 3, 3])}
+    lin_tgt = {"QB": 5, "RB": 1, "WRTE": 2, "OL": 3}
+    team = np.array([False, False, False, True])
+    f = w.continuity_flags(lin_past, lin_tgt, np.array([1, 1, 1, 1]), 1, np.array([0, 0, 0, 0]), 0, team)
+    assert f["QB"].tolist() == [False, True, False, True]          # 7 != 5 changed; -1 (missing chart) is never a change; team change flags all
+    assert f["HC"].tolist() == f["OC"].tolist() == [False, False, False, True]   # only on a team change
+    assert list(f) == ["HC", "OC", "role", "QB", "OL", "RB_group", "WR_TE_group"]  # the order the product is taken in

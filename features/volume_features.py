@@ -15,9 +15,8 @@ context        depth slot, position family, home/away, team game number, week
 
 Weights come from features/weights.py semantics: recency half-life 6 team games with an 8-game
 offseason; continuity penalties from config.CONTINUITY_PENALTIES for the market a quantity maps to
-(config.BASELINE_TO_PENALTY_MARKET). Continuity factors QB / OL / RB_group / WR_TE_group come from
-depth-chart lineups (features/lineups.py), "role" from the slot bucket, and a team change flags all
-factors. HC and OC are never flagged -- there is no trustworthy historical coaching source yet.
+(config.MARKETS[market]["penalty_key"]). Continuity detection and the penalty product live in
+features/weights.py (the single implementation); the group ids come from features/lineups.py.
 No market lines (spread/total/odds) are used anywhere: this is the pure track.
 """
 from __future__ import annotations
@@ -30,6 +29,7 @@ import polars as pl
 
 import config
 from features import lineups as lu
+from features.weights import continuity_flags, continuity_weight
 
 OFFSEASON = float(config.OFFSEASON_GAP_GAMES)
 HALF_LIFE = float(config.RECENCY_HALF_LIFE_GAMES)
@@ -64,7 +64,7 @@ def build_team_volume(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.Data
     dropbacks = pass attempts + sacks suffered; plays = rush attempts + dropbacks. Also carries the team's
     rushing / passing yards and completions (for team efficiency rates).
     """
-    cap = "" if max_season is None else f" AND season <= {int(max_season)}"
+    cap = f" AND season <= {config.cap_season(max_season)}"  # raises config.HoldoutError for 2025+
     con = duckdb.connect(str(raw_db), read_only=True)
     try:
         d = con.execute(
@@ -159,24 +159,6 @@ def build_team_side_features(team_log, team_volume, week_cutoff, clock, stats=No
     return tables[0].join(tables[1], on=["team", "season", "week"])
 
 
-# ------------------------------------------------------------------ continuity
-def continuity_weights(penalties, lin_past, lin_target, slot_p, slot_t, fam_p, fam_t, team_changed) -> np.ndarray:
-    """Per past game: product of the penalties for every factor that changed vs the target game.
-
-    QB / OL / RB_group / WR_TE_group: the lineup-group id differs (a missing chart, id -1, on either
-    side is never a change). role: slot bucket or position family differs. A team change flags every
-    factor, HC and OC included. HC / OC are otherwise never flagged (no trusted historical source).
-    """
-    flags = {"HC": team_changed, "OC": team_changed, "role": (slot_p != slot_t) | (fam_p != fam_t) | team_changed}
-    for factor, comp in (("QB", "QB"), ("OL", "OL"), ("RB_group", "RB"), ("WR_TE_group", "WRTE")):
-        t = lin_target[comp]
-        flags[factor] = ((lin_past[comp] != t) & (lin_past[comp] != -1) & (t != -1)) | team_changed
-    w = np.ones(len(team_changed))
-    for factor, changed in flags.items():
-        w = w * np.where(changed, penalties[factor], 1.0)
-    return w
-
-
 # ------------------------------------------------------------------ player-level tables
 def build_player_features(quantity, spec, player_log, team_log, team_volume, lineups, week_cutoff, clock, team_side,
                           eligible, team_cols=None) -> pl.DataFrame:
@@ -187,7 +169,7 @@ def build_player_features(quantity, spec, player_log, team_log, team_volume, lin
     stay in the table (a target's denominator is unknown before the game); trainers drop them.
     """
     market = spec["market"]
-    pen = config.CONTINUITY_PENALTIES[config.BASELINE_TO_PENALTY_MARKET[market]]
+    penalty_key = config.MARKETS[market]["penalty_key"]
     stats, pooled = spec["stats"], spec.get("pooled", [])
     num_col, den_col = spec["ratio"] if "ratio" in spec else (spec["label"], None)
     tv = (team_volume.rename({"rush_att": "team_rush", "pass_att": "team_att"})
@@ -247,8 +229,8 @@ def build_player_features(quantity, spec, player_log, team_log, team_volume, lin
                 traded_same_season = (season[:j] == season[i]) & team_changed
                 ago = np.where(traded_same_season, np.maximum(1.0, week[i] - week[:j]), np.maximum(A[i] - A[:j], 1.0))
                 w_rec = 0.5 ** (ago / HALF_LIFE)
-                w_cont = continuity_weights(pen, {c: v[:j] for c, v in lin.items()}, {c: v[i] for c, v in lin.items()},
-                                            slot[:j], slot[i], fam[:j], fam[i], team_changed)
+                w_cont = continuity_weight(continuity_flags({c: v[:j] for c, v in lin.items()}, {c: v[i] for c, v in lin.items()},
+                                                            slot[:j], slot[i], fam[:j], fam[i], team_changed), penalty_key)
                 w_both = w_rec * w_cont
                 for c, s in enumerate(stats):
                     r[f"rec_{s}"], r[f"rc_{s}"] = _wavg(w_rec, X[:j, c]), _wavg(w_both, X[:j, c])
@@ -322,7 +304,7 @@ def build_feature_tables(player_log, team_log, team_volume, lineups, eligible) -
 def load_feature_tables(data, raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> FeatureTables:
     """Volume feature tables for a backtest.BacktestData (seasons capped in SQL for the volume/lineup inputs)."""
     from eval import backtest as bt
-    cap = max_season if max_season is not None else bt.MAX_BACKTEST_SEASON
+    cap = config.cap_season(max_season)  # raises config.HoldoutError for 2025+
     tv = build_team_volume(raw_db, cap)
     ln = lu.build_lineups(raw_db, cap)
     bt.assert_no_holdout(tv.join(data.team_log.select("game_id", "season").unique(), on="game_id", how="inner"))

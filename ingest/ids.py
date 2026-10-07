@@ -9,12 +9,12 @@ import duckdb
 import polars as pl
 
 import config
-from ingest.pull_nflverse import PLAYERS_TABLE
+from ingest.pull_nflverse import PLAYERS_CURRENT, ensure_players_view
 
 log = logging.getLogger(__name__)
 
 # Fail loudly if more than this share of a batch can't be matched to a gsis_id.
-MAX_UNMATCHED_FRACTION = 0.01
+MAX_UNMATCHED_FRACTION = config.MAX_UNMATCHED_FRACTION
 
 # Input column -> master-table column. pfr_player_id is the name some nflverse
 # tables (snap counts, PFR advstats) use for what the master table calls pfr_id.
@@ -26,11 +26,17 @@ class IdMatchError(ValueError):
 
 
 def _load_master(db_path) -> pl.DataFrame:
+    """The master id table = the players_current view (latest pull per player). Created on first use."""
     con = duckdb.connect(str(db_path), read_only=True)
     try:
-        return con.execute(
-            f"SELECT gsis_id, pfr_id, espn_id FROM {PLAYERS_TABLE} WHERE gsis_id IS NOT NULL"
-        ).pl()
+        has_view = con.execute("SELECT count(*) FROM information_schema.tables WHERE table_name = ?", [PLAYERS_CURRENT]).fetchone()[0]
+    finally:
+        con.close()
+    if not has_view:
+        ensure_players_view(db_path)
+    con = duckdb.connect(str(db_path), read_only=True)
+    try:
+        return con.execute(f"SELECT gsis_id, pfr_id, espn_id FROM {PLAYERS_CURRENT} WHERE gsis_id IS NOT NULL").pl()
     finally:
         con.close()
 

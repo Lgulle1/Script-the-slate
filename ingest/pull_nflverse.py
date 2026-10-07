@@ -10,6 +10,7 @@ import polars as pl
 import config
 
 PLAYERS_TABLE = "players"
+PLAYERS_CURRENT = "players_current"  # view: latest pull per player; the only thing master-id joins read
 log = logging.getLogger(__name__)
 
 FTN_MIN_SEASON = 2022
@@ -18,19 +19,29 @@ PARTICIPATION_SEASONS = range(2016, 2026)  # load_participation raises outside t
 
 
 def pull_players(db_path=config.DUCKDB_PATH) -> int:
-    """Pull load_players() once and save it as the master player id table.
+    """Pull load_players() and APPEND it to the master player table (every pull keeps its pulled_at).
 
-    Every script that joins player data must join through this table
-    (``players``, keyed by ``gsis_id``), never around it. Replaces any
-    existing copy. Returns the number of rows written.
+    Every master-id join reads the `players_current` view (the latest pull per gsis_id), never the raw
+    table and never around it. Returns the number of rows appended.
     """
     config.ensure_data_dirs()
-    players = nflreadpy.load_players()  # polars DataFrame
+    n = _append_raw(PLAYERS_TABLE, nflreadpy.load_players(), db_path)
+    ensure_players_view(db_path)
+    return n
+
+
+def ensure_players_view(db_path=config.DUCKDB_PATH):
+    """(Re)create players_current, adding pulled_at to a legacy table that predates append-only pulls.
+
+    Legacy rows keep a NULL pulled_at and lose to any dated pull, so the view equals the old table until the
+    first new pull arrives. Players without a gsis_id cannot be keyed and are excluded.
+    """
     con = duckdb.connect(str(db_path))
     try:
-        con.register("players_df", players.to_arrow())
-        con.execute(f"CREATE OR REPLACE TABLE {PLAYERS_TABLE} AS SELECT * FROM players_df")
-        return con.execute(f"SELECT count(*) FROM {PLAYERS_TABLE}").fetchone()[0]
+        if "pulled_at" not in {r[0] for r in con.execute(f"DESCRIBE {PLAYERS_TABLE}").fetchall()}:
+            con.execute(f"ALTER TABLE {PLAYERS_TABLE} ADD COLUMN pulled_at TIMESTAMP")
+        con.execute(f"CREATE OR REPLACE VIEW {PLAYERS_CURRENT} AS SELECT * FROM {PLAYERS_TABLE} WHERE gsis_id IS NOT NULL "
+                    "QUALIFY row_number() OVER (PARTITION BY gsis_id ORDER BY pulled_at DESC NULLS LAST) = 1")
     finally:
         con.close()
 
@@ -41,14 +52,15 @@ def pull_seasons() -> list[int]:
     return sorted(seasons)
 
 
-def _append_raw(table: str, df: pl.DataFrame, db_path) -> int:
+def _append_raw(table: str, df: pl.DataFrame, db_path, pulled_at: datetime | None = None) -> int:
     """Append df (plus a pulled_at UTC column) to a raw table; never overwrites.
 
     New columns upstream are added to the table; columns missing from df are NULL.
     Re-pulling the same season appends a second copy, distinguished by pulled_at.
     """
     config.ensure_data_dirs()
-    df = df.with_columns(pl.lit(datetime.now(timezone.utc).replace(tzinfo=None)).alias("pulled_at"))  # naive UTC
+    stamp = pulled_at if pulled_at is not None else datetime.now(timezone.utc).replace(tzinfo=None)  # naive UTC
+    df = df.with_columns(pl.lit(stamp).alias("pulled_at"))
     con = duckdb.connect(str(db_path))
     try:
         con.register("incoming", df.to_arrow())

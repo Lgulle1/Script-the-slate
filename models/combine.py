@@ -16,8 +16,8 @@ import math
 
 import config
 
-PLAYER_MARKETS = ("pass_att", "pass_cmp", "pass_yds", "rush_att", "rush_yds", "targets", "rec", "rec_yds")
-GAME_MARKETS = ("spread", "moneyline", "total")
+PLAYER_MARKETS = tuple(m for m, spec in config.MARKETS.items() if spec["kind"] == "player")
+GAME_MARKETS = tuple(m for m, spec in config.MARKETS.items() if spec["kind"] == "game")
 
 
 def _mul(*xs):

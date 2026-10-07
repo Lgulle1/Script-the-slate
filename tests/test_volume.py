@@ -6,10 +6,15 @@ import config
 from eval import backtest as bt
 from eval import baselines as bl
 from features import lineups as lu
+from features import weights
 from features import volume_features as vf
 from models import volume as vm
 
 PEN = config.CONTINUITY_PENALTIES["rush_att"]
+
+
+def _continuity(lin_past, tgt, slot_p, slot_t, fam_p, fam_t, team_changed):
+    return weights.continuity_weight(weights.continuity_flags(lin_past, tgt, slot_p, slot_t, fam_p, fam_t, team_changed), "rush_att")
 
 
 def test_continuity_weights_apply_only_changed_factors():
@@ -17,11 +22,11 @@ def test_continuity_weights_apply_only_changed_factors():
     lin_past = ids(OL=[5, 9, -1])                      # 2nd game: OL differs; 3rd: chart missing
     tgt = {c: 5 for c in lu.COMPONENTS}
     same = np.array([0, 0, 0])
-    w = vf.continuity_weights(PEN, lin_past, tgt, np.array([1, 1, 1]), 1, np.array([1, 1, 1]), 1, same.astype(bool))
+    w = _continuity(lin_past, tgt, np.array([1, 1, 1]), 1, np.array([1, 1, 1]), 1, same.astype(bool))
     assert w[0] == 1.0 and w[2] == 1.0                 # unchanged; missing chart is never a change
     assert w[1] == pytest.approx(PEN["OL"])
     # role change and a team change
-    w = vf.continuity_weights(PEN, ids(), tgt, np.array([2, 1, 1]), 1, np.array([1, 1, 1]), 1, np.array([False, False, True]))
+    w = _continuity(ids(), tgt, np.array([2, 1, 1]), 1, np.array([1, 1, 1]), 1, np.array([False, False, True]))
     assert w[0] == pytest.approx(PEN["role"])
     assert w[2] == pytest.approx(np.prod([PEN[f] for f in config.CONTINUITY_FACTORS]))  # team change flags everything
 
