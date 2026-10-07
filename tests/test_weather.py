@@ -86,3 +86,36 @@ def test_resolve_location():
 def test_kickoff_utc_converts_eastern():
     assert pw.kickoff_utc("2024-09-08", "13:00") == datetime(2024, 9, 8, 17, 0, tzinfo=timezone.utc)
     assert pw.kickoff_utc("2024-09-08", None) is None
+
+
+def test_open_meteo_retries_once_on_timeout(monkeypatch):
+    calls = []
+
+    def get(url, **kw):
+        calls.append(url)
+        if len(calls) == 1:
+            raise requests.Timeout("slow")
+        return FakeResp(om_payload(KICK))
+
+    monkeypatch.setattr(pw.requests, "get", get)
+    monkeypatch.setattr(pw.time, "sleep", lambda s: None)
+    assert pw.fetch_weather("g", 1, 2, KICK)["source"] == "open-meteo"
+    assert len(calls) == 2
+
+
+def test_two_timeouts_fall_through_to_missing(monkeypatch):
+    monkeypatch.delenv(config.NWS_CONTACT_ENV, raising=False)
+    monkeypatch.setattr(pw.requests, "get", lambda url, **kw: (_ for _ in ()).throw(requests.Timeout("x")))
+    monkeypatch.setattr(pw.time, "sleep", lambda s: None)
+    assert pw.fetch_weather("g", 1, 2, KICK)["source"] == "missing"
+
+
+def test_dotenv_loaded_by_config(tmp_path):
+    import subprocess, sys, shutil
+    repo = tmp_path / "r"
+    repo.mkdir()
+    shutil.copy(config.ROOT / "config.py", repo / "config.py")
+    (repo / ".env").write_text("NWS_CONTACT=from-dotenv@example.com\n")
+    out = subprocess.run([sys.executable, "-c", "import config, os; print(os.environ.get('NWS_CONTACT'))"],
+                         cwd=repo, capture_output=True, text=True, env={k: v for k, v in __import__('os').environ.items() if k != "NWS_CONTACT"})
+    assert out.stdout.strip() == "from-dotenv@example.com", out.stderr

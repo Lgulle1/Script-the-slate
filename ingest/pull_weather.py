@@ -37,6 +37,7 @@ _HOURLY = "temperature_2m,wind_speed_10m,precipitation,precipitation_probability
 
 
 RETRIES_ON_429 = 3
+TIMEOUT_RETRY_WAIT_S = 2
 REQUEST_PAUSE_S = 0.25  # polite spacing between games in a batch
 
 
@@ -68,7 +69,11 @@ def _open_meteo(lat, lon, kickoff: datetime) -> dict:
                   temperature_unit="fahrenheit", wind_speed_unit="mph", precipitation_unit="inch",
                   timezone="UTC", start_date=day, end_date=day)
     url = OPEN_METEO_ARCHIVE if archive else OPEN_METEO_FORECAST
-    resp = _get(url, params=params)
+    try:
+        resp = _get(url, params=params)
+    except requests.Timeout:
+        time.sleep(TIMEOUT_RETRY_WAIT_S)  # one retry on timeout before falling back to NWS
+        resp = _get(url, params=params)
     resp.raise_for_status()
     hourly = resp.json()["hourly"]
     i = hourly["time"].index(kickoff.replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:00"))
@@ -170,3 +175,37 @@ def build_requests(schedule_rows) -> list[dict]:
         out.append(dict(game_id=r["game_id"], lat=loc[0] if loc else None, lon=loc[1] if loc else None,
                         kickoff=kickoff_utc(r["gameday"], r.get("gametime"))))
     return out
+
+
+def pull_all_weather(db_path=config.RAW_DUCKDB_PATH, raw_db=config.RAW_DUCKDB_PATH, batch=100) -> dict:
+    """Pull weather for every distinct game in the schedules table.
+
+    Appends in batches (so an interrupted run keeps its progress) and returns a
+    summary: rows inserted, missing, and the source breakdown.
+    """
+    import duckdb
+
+    con = duckdb.connect(str(raw_db), read_only=True)
+    try:
+        games = con.execute(
+            "SELECT game_id, gameday, gametime, home_team, stadium_id, location FROM "
+            "(SELECT DISTINCT ON (game_id) * FROM schedules ORDER BY game_id, pulled_at DESC) "
+            "ORDER BY gameday, game_id"
+        ).pl().to_dicts()
+    finally:
+        con.close()
+    reqs = build_requests(games)
+    frames = []
+    for i in range(0, len(reqs), batch):
+        frames.append(pull_weather(reqs[i:i + batch], db_path))
+        log.info("weather: %d/%d games", min(i + batch, len(reqs)), len(reqs))
+    df = pl.concat(frames) if frames else pl.DataFrame()
+    by_source = df["source"].value_counts().sort("source").to_dicts() if df.height else []
+    return {"inserted": df.height, "missing": int((df["source"] == SOURCE_MISSING).sum()) if df.height else 0,
+            "by_source": {r["source"]: r["count"] for r in by_source}}
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    r = pull_all_weather()
+    print(f"weather pull: {r['inserted']} rows inserted, {r['missing']} missing, sources: {r['by_source']}")
