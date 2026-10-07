@@ -46,6 +46,8 @@ class PlayerTarget:
     opponent: str
     family: str             # QB / RB / WR / TE
     slot: int               # depth-chart slot bucket known pregame: 1, 2, 3 (3 = 3rd or lower), 0 = unlisted
+    team: str | None = None  # the player's team in the target game (needed to handle mid-season trades)
+    week: int | None = None  # regular-season week of the target game
 
 
 @dataclass(frozen=True)
@@ -87,13 +89,23 @@ def player_season_avg(log, target, cutoff):
     return _col_means(h.filter(pl.col("season") == target.season))
 
 
+def _games_back(season, team_game_num, team, week, target) -> float:
+    """Team games between a past game and the target. A past game for a DIFFERENT team in the same
+    season (mid-season trade) has team-game numbers that aren't comparable, so the week difference
+    is used instead (off by at most one game, when a bye falls in between)."""
+    if season == target.season and target.team is not None and target.week is not None and team != target.team:
+        return max(1.0, float(target.week - week))
+    return games_elapsed(season, team_game_num, target.season, target.team_game_num)
+
+
 def player_recency(log, target, cutoff):
     """Recency-weighted average over the player's whole prior history (decay in team games)."""
     h = _player_hist(log, target, cutoff)
     if not h.height:
         return {m: None for m in PLAYER_MARKETS}
-    w = [recency_weight(games_elapsed(s, g, target.season, target.team_game_num))
-         for s, g in zip(h["season"].to_list(), h["team_game_num"].to_list())]
+    w = [recency_weight(_games_back(s, g, team, wk, target))
+         for s, g, team, wk in zip(h["season"].to_list(), h["team_game_num"].to_list(),
+                                   h["team"].to_list(), h["week"].to_list())]
     out = {}
     for m, c in PLAYER_MARKETS.items():
         pairs = [(wi, v) for wi, v in zip(w, h[c].to_list()) if v is not None]
@@ -211,21 +223,28 @@ def _latest(con, table, keys):
     return f"(SELECT DISTINCT ON ({keys}) * FROM {table} ORDER BY {keys}, pulled_at DESC)"
 
 
-def build_team_game_log(raw_db=config.RAW_DUCKDB_PATH) -> pl.DataFrame:
-    """One row per team per completed regular-season game: pf, pa, team game number."""
+def _season_cap(max_season) -> str:
+    return "" if max_season is None else f" AND season <= {int(max_season)}"
+
+
+def build_team_game_log(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
+    """One row per team per completed regular-season game: pf, pa, team game number.
+
+    `max_season` is applied in SQL, so later seasons (e.g. the locked holdout) are never loaded.
+    """
     con = duckdb.connect(str(raw_db), read_only=True)
     try:
         sched = con.execute(
-            f"SELECT game_id, season, gameday, home_team, away_team, home_score, away_score "
+            f"SELECT game_id, season, week, gameday, home_team, away_team, home_score, away_score "
             f"FROM {_latest(con, 'schedules', 'game_id')} WHERE game_type = 'REG' "
-            f"AND home_score IS NOT NULL AND away_score IS NOT NULL").pl()
+            f"AND home_score IS NOT NULL AND away_score IS NOT NULL{_season_cap(max_season)}").pl()
     finally:
         con.close()
     sched = sched.with_columns(pl.col("gameday").str.to_date())
-    home = sched.select("game_id", "season", "gameday", team=pl.col("home_team"), opponent=pl.col("away_team"),
-                        pf=pl.col("home_score"), pa=pl.col("away_score"))
-    away = sched.select("game_id", "season", "gameday", team=pl.col("away_team"), opponent=pl.col("home_team"),
-                        pf=pl.col("away_score"), pa=pl.col("home_score"))
+    home = sched.select("game_id", "season", "week", "gameday", team=pl.col("home_team"), opponent=pl.col("away_team"),
+                        pf=pl.col("home_score"), pa=pl.col("away_score"), is_home=pl.lit(True))
+    away = sched.select("game_id", "season", "week", "gameday", team=pl.col("away_team"), opponent=pl.col("home_team"),
+                        pf=pl.col("away_score"), pa=pl.col("home_score"), is_home=pl.lit(False))
     return (pl.concat([home, away]).sort("team", "season", "gameday")
             .with_columns(team_game_num=pl.col("gameday").rank("ordinal").over("team", "season").cast(pl.Int32)))
 
@@ -234,7 +253,7 @@ def _slot_bucket(rank):
     return None if rank is None else min(max(int(rank), 1), 3)
 
 
-def build_role_table(raw_db=config.RAW_DUCKDB_PATH) -> tuple[pl.DataFrame, pl.DataFrame]:
+def build_role_table(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> tuple[pl.DataFrame, pl.DataFrame]:
     """Depth-chart roles as (weekly 2020-24 frame, timestamped 2025+ frame): family + slot bucket.
 
     2020-24 charts are weekly (season/week/depth_team); 2025+ charts are timestamped
@@ -246,11 +265,15 @@ def build_role_table(raw_db=config.RAW_DUCKDB_PATH) -> tuple[pl.DataFrame, pl.Da
         old = con.execute(
             "SELECT season, week, club_code AS team, gsis_id, position, depth_team FROM "
             "(SELECT DISTINCT ON (season, week, club_code, gsis_id, depth_team, position) * FROM depth_charts "
-            " WHERE season IS NOT NULL AND formation = 'Offense' ORDER BY season, week, club_code, gsis_id, "
+            f" WHERE season IS NOT NULL AND formation = 'Offense'{_season_cap(max_season)} ORDER BY season, week, club_code, gsis_id, "
             " depth_team, position, pulled_at DESC)").pl()
-        new = con.execute(
+        # Timestamped snapshots only exist from 2025; skip them entirely when capped below that.
+        new = (con.execute(
             "SELECT team, gsis_id, pos_abb AS position, pos_rank, dt FROM depth_charts WHERE season IS NULL "
             "AND pos_grp NOT IN ('Base 4-3 D', 'Base 3-4 D', 'Special Teams')").pl()
+            if max_season is None or max_season >= 2025 else
+            pl.DataFrame(schema={"team": pl.String, "gsis_id": pl.String, "position": pl.String,
+                                 "pos_rank": pl.String, "dt": pl.String}))
     finally:
         con.close()
     old = (old.with_columns(family=pl.col("position").replace_strict(_POSITION_FAMILY, default=None),
@@ -264,17 +287,20 @@ def build_role_table(raw_db=config.RAW_DUCKDB_PATH) -> tuple[pl.DataFrame, pl.Da
     return old, new
 
 
-def build_player_game_log(raw_db=config.RAW_DUCKDB_PATH) -> pl.DataFrame:
-    """One row per player-game (regular season, QB/RB/WR/TE): stats + pregame role."""
-    team_log = build_team_game_log(raw_db)
-    old_roles, new_roles = build_role_table(raw_db)
+def build_player_game_log(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
+    """One row per player-game (regular season, QB/RB/WR/TE): stats + pregame role.
+
+    `max_season` is applied in SQL, so later seasons are never loaded.
+    """
+    team_log = build_team_game_log(raw_db, max_season)
+    old_roles, new_roles = build_role_table(raw_db, max_season)
     con = duckdb.connect(str(raw_db), read_only=True)
     try:
         cols = ", ".join(PLAYER_MARKETS.values())
         ps = con.execute(
             f"SELECT player_id, season, week, game_id, team, opponent_team AS opponent, position, {cols} FROM "
             f"{_latest(con, 'player_stats', 'player_id, season, week')} WHERE season_type = 'REG' "
-            f"AND position IN ('QB','RB','HB','FB','WR','TE')").pl()
+            f"AND position IN ('QB','RB','HB','FB','WR','TE'){_season_cap(max_season)}").pl()
     finally:
         con.close()
     ps = ps.with_columns(family=pl.col("position").replace_strict(_POSITION_FAMILY, default=None))

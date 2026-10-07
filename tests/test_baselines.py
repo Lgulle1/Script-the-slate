@@ -151,3 +151,14 @@ def test_builders_on_real_data_and_real_leakage_check():
                            after.with_columns([pl.col(col) * 0 + 12345.0 for col in b.PLAYER_MARKETS.values()])])
     for m in b.METHODS:
         assert b.predict_player(m, plog, t) == b.predict_player(m, scrambled, t)
+
+
+def test_recency_handles_mid_season_trade():
+    """Past games for another team in the same season must not break (or distort) the decay."""
+    rows = make_log([("p1", 2024, 5, D(4), "X", "WR", 1, {"receiving_yards": 100.0}),
+                     ("p1", 2024, 6, D(5), "X", "WR", 1, {"receiving_yards": 50.0})]).with_columns(team=pl.lit("OLD"))
+    # traded: new team's game number (3) is below the old team's (5, 6)
+    t = b.PlayerTarget("p1", D(6), 2024, 3, "Y", "WR", 1, team="NEW", week=7)
+    got = b.player_recency(rows, t, t.gameday)["rec_yds"]
+    w6, w5 = w.recency_weight(7 - 6), w.recency_weight(7 - 5)   # week-difference decay
+    assert got == pytest.approx((100 * w5 + 50 * w6) / (w5 + w6))

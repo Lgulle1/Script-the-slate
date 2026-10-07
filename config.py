@@ -177,3 +177,26 @@ BASELINE_TO_PENALTY_MARKET = {
 BLEND_OWN_WEIGHT = 0.7  # player/team own average; the rest is the opponent-allowed average
 ROLE_WINDOW_DAYS = 365  # trailing window for role and opponent-allowed averages
 GAME_MARGIN_SD = 13.5   # NFL final-margin std dev (pts); turns a predicted margin into P(home win)
+
+# --- Phase 2 grading constants ------------------------------------------------
+# Threshold ladders: rung t means the event "actual > t" (half-integers, so no ties).
+# The rung values are my starting picks -- adjust to the lines you care about.
+# moneyline has a single event, "home team wins", predicted directly by the baseline.
+LADDERS = {
+    "pass_att": [24.5, 29.5, 34.5, 39.5],
+    "pass_cmp": [14.5, 19.5, 24.5, 29.5],
+    "pass_yds": [174.5, 224.5, 274.5, 324.5],
+    "rush_att": [7.5, 12.5, 17.5, 22.5],
+    "rush_yds": [29.5, 49.5, 69.5, 99.5],
+    "targets": [3.5, 5.5, 7.5, 9.5],
+    "rec": [2.5, 4.5, 6.5, 8.5],
+    "rec_yds": [29.5, 49.5, 74.5, 99.5],
+    "spread": [-6.5, -3.5, -0.5, 2.5, 6.5],   # home margin > t
+    "total": [38.5, 41.5, 44.5, 47.5, 50.5],
+}
+SKILL_REFERENCE_METHOD = "season_avg"  # the baseline every method's Brier skill is measured against
+MIN_RESIDUALS = 200       # prior residuals needed before a baseline gets a predictive distribution
+MIN_STRATUM_RESIDUALS = 60  # prior residuals needed in a predicted-value stratum before it is used
+N_STRATA = 3              # predicted-value strata (terciles of earlier predictions)
+PIT_JITTER_SEED = 20240    # seeded continuity jitter for PIT of integer outcomes (reproducibility)
+CALIBRATION_BAND_WIDTH = 0.2
