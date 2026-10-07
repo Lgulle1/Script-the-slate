@@ -200,3 +200,9 @@ MIN_STRATUM_RESIDUALS = 60  # prior residuals needed in a predicted-value stratu
 N_STRATA = 3              # predicted-value strata (terciles of earlier predictions)
 PIT_JITTER_SEED = 20240    # seeded continuity jitter for PIT of integer outcomes (reproducibility)
 CALIBRATION_BAND_WIDTH = 0.2
+
+# --- Phase 3 comparison constants ----------------------------------------------
+BOOTSTRAP_RESAMPLES = 10_000
+BOOTSTRAP_SEED = 20241
+BOOTSTRAP_CI = 0.95
+MIN_SEASONS_WON = 2  # the phase-3 gate: the model must beat the best baseline in more than one season separately
