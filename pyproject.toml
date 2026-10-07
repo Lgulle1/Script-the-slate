@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "script-the-slate"
+version = "0.1.0"
+description = "Script the slate"
+requires-python = ">=3.11"
+dependencies = [
+    "nflreadpy",
+    "polars",
+    "duckdb",
+    "numpy",
+    "scikit-learn",
+    "lightgbm",
+    "shap",
+    "streamlit",
+    "requests",
+    "pytest",
+]
+
+[tool.setuptools]
+packages = ["ingest", "features", "models", "sim", "eval", "app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
