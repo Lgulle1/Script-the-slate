@@ -54,3 +54,9 @@ stadium_coordinates = {
     "Tennessee Titans": (36.1665, -86.7713, OUTDOORS),
     "Washington Commanders": (38.9078, -76.8644, OUTDOORS),
 }
+
+
+def ensure_data_dirs() -> None:
+    """Create the (git-ignored) data folders if they don't exist yet."""
+    for d in (RAW_DIR, SNAPSHOT_DIR, PROCESSED_DIR):
+        d.mkdir(parents=True, exist_ok=True)
