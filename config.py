@@ -56,6 +56,48 @@ stadium_coordinates = {
 }
 
 
+# nflverse schedule abbreviation -> stadium_coordinates key (full team name).
+# Verified against nflreadpy.load_schedules for 2020-2024 (note LA, LV, JAX, WAS).
+TEAM_ABBR_TO_NAME = {
+    "ARI": "Arizona Cardinals",
+    "ATL": "Atlanta Falcons",
+    "BAL": "Baltimore Ravens",
+    "BUF": "Buffalo Bills",
+    "CAR": "Carolina Panthers",
+    "CHI": "Chicago Bears",
+    "CIN": "Cincinnati Bengals",
+    "CLE": "Cleveland Browns",
+    "DAL": "Dallas Cowboys",
+    "DEN": "Denver Broncos",
+    "DET": "Detroit Lions",
+    "GB": "Green Bay Packers",
+    "HOU": "Houston Texans",
+    "IND": "Indianapolis Colts",
+    "JAX": "Jacksonville Jaguars",
+    "KC": "Kansas City Chiefs",
+    "LA": "Los Angeles Rams",
+    "LAC": "Los Angeles Chargers",
+    "LV": "Las Vegas Raiders",
+    "MIA": "Miami Dolphins",
+    "MIN": "Minnesota Vikings",
+    "NE": "New England Patriots",
+    "NO": "New Orleans Saints",
+    "NYG": "New York Giants",
+    "NYJ": "New York Jets",
+    "PHI": "Philadelphia Eagles",
+    "PIT": "Pittsburgh Steelers",
+    "SEA": "Seattle Seahawks",
+    "SF": "San Francisco 49ers",
+    "TB": "Tampa Bay Buccaneers",
+    "TEN": "Tennessee Titans",
+    "WAS": "Washington Commanders",
+}
+TEAM_NAME_TO_ABBR = {v: k for k, v in TEAM_ABBR_TO_NAME.items()}
+
+# TODO(1.6): neutral-site / international venues (London, Germany, Brazil,
+# Mexico City, ...) are not in stadium_coordinates; add them with the weather pull.
+
+
 def ensure_data_dirs() -> None:
     """Create the (git-ignored) data folders if they don't exist yet."""
     for d in (RAW_DIR, SNAPSHOT_DIR, PROCESSED_DIR):

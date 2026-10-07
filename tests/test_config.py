@@ -16,3 +16,9 @@ def test_entries_valid():
 def test_seasons():
     assert config.BACKTEST_SEASONS == [2020, 2021, 2022, 2023, 2024]
     assert config.HOLDOUT_SEASON not in config.BACKTEST_SEASONS
+
+
+def test_abbreviation_map_matches_stadium_table():
+    assert len(config.TEAM_ABBR_TO_NAME) == 32
+    assert set(config.TEAM_ABBR_TO_NAME.values()) == set(config.stadium_coordinates)
+    assert config.TEAM_NAME_TO_ABBR["Los Angeles Rams"] == "LA"
