@@ -1,8 +1,8 @@
 """4c.0 -- component, market and search definitions for the comparables engine. CONSTANTS ONLY: no logic. Every other 4c task imports from here.
 
 Nothing below is to be added, dropped or renamed without asking. Where a requested feature has no source in the loaded tables it is listed in
-DROPPED (with the reason), not silently left out; where a feature rests on a source or a definition that was not in the 4c.0 request it carries
-status "needs_approval" and is listed in PENDING_APPROVAL, and 4c.1 must not use it until that is settled.
+DROPPED (with the reason), not silently left out. Every feature carries a data-quality tag (observed / derived / estimated, QUALITY_RULE) that
+the fingerprint vectors store and the similarity search weights with config.QUALITY_WEIGHTS.
 
 Source tables (data/raw/raw.duckdb): pbp (2016-), ftn_charting (2022-), pfr_advstats_pass / _rush / _rec (2018-), snap_counts (2016-),
 rosters_weekly (2016-), participation (2016-; man/zone and coverage type only partly filled before 2023). 2025+ is the locked holdout and is
@@ -19,7 +19,7 @@ class Feature(NamedTuple):
     columns: tuple         # the raw columns the feature is computed from
     space: str             # "base" or "extended"
     first_season: int      # first season with the source columns populated (>= 50% of rows)
-    status: str            # "ok" | "needs_approval"
+    quality: str           # "observed" | "derived" | "estimated" (see QUALITY_RULE)
     note: str              # one-line definition
 
 
@@ -45,8 +45,8 @@ MIN_PLAYS_RUN_DIRECTION = 30       # 4c S5: a run-direction interaction needs at
 _P = "pbp"
 
 
-def _f(name, source, columns, space, first_season, note, status="ok"):
-    return Feature(name, source, tuple(columns), space, first_season, status, note)
+def _f(name, source, columns, space, first_season, note, quality="observed"):
+    return Feature(name, source, tuple(columns), space, first_season, quality, note)
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------- 2. FEATURES
@@ -56,7 +56,7 @@ FEATURES = {
         _f("rush_success_rate", _P, ["success", "rush", "qb_kneel"], "base", 2016, "mean success on the same plays"),
         _f("yards_per_carry", _P, ["yards_gained", "rush", "qb_kneel"], "base", 2016, "mean yards_gained on the same plays"),
         _f("explosive_run_rate", _P, ["yards_gained", "rush"], "base", 2016, f"share of those plays with yards_gained >= {EXPLOSIVE_RUN_YARDS}"),
-        _f("rush_rate_over_expected", _P, ["pass_oe"], "base", 2016, "minus the mean of pass_oe over all team run/pass plays (derived; pass_oe is the pbp pass-over-expected)"),
+        _f("rush_rate_over_expected", _P, ["pass_oe"], "base", 2016, "minus the mean of pass_oe over all team run/pass plays (derived; pass_oe is the pbp pass-over-expected)", quality="derived"),
         _f("run_location_share_left", _P, ["run_location", "rush"], "base", 2016, "share of rush plays with a recorded run_location that went left"),
         _f("run_location_share_middle", _P, ["run_location", "rush"], "base", 2016, "same, middle"),
         _f("run_location_share_right", _P, ["run_location", "rush"], "base", 2016, "same, right"),
@@ -69,7 +69,7 @@ FEATURES = {
         _f("epa_per_dropback", _P, ["epa", "qb_dropback"], "base", 2016, "mean epa over team dropbacks (sacks and scrambles included)"),
         _f("cpoe", _P, ["cpoe", "pass"], "base", 2016, "mean cpoe over team pass attempts that have one"),
         _f("yards_per_attempt", _P, ["yards_gained", "pass", "sack"], "base", 2016, "mean yards_gained over team pass attempts (sacks out)"),
-        _f("explosive_pass_rate", _P, ["yards_gained", "pass", "sack"], "base", 2016, f"share of pass attempts with yards_gained >= {EXPLOSIVE_PASS_YARDS}", "needs_approval"),
+        _f("explosive_pass_rate", _P, ["yards_gained", "pass", "sack"], "base", 2016, f"share of pass attempts with yards_gained >= {EXPLOSIVE_PASS_YARDS}"),
         _f("average_depth_of_target", _P, ["air_yards", "pass"], "base", 2016, "mean air_yards over pass attempts that have it"),
         _f("sack_rate", _P, ["sack", "qb_dropback"], "base", 2016, "sacks / dropbacks"),
         _f("play_action_rate", "ftn_charting", ["is_play_action"], "extended", 2022, "share of pass plays flagged play-action"),
@@ -78,27 +78,27 @@ FEATURES = {
         _f("no_huddle_rate", _P, ["no_huddle"], "base", 2016, "share of team run/pass plays in no-huddle (pbp has it for every season, so it is BASE)"),
     ),
     "rb_rotation": (
-        _f("rb1_carry_share", f"{_P}, rosters_weekly", ["rusher_player_id", "rush", "position"], "base", 2016, "RB1 = the team's RB with the most carries that game; his share of team RB carries"),
-        _f("rb2_carry_share", f"{_P}, rosters_weekly", ["rusher_player_id", "rush", "position"], "base", 2016, "same, the second RB"),
-        _f("rb1_snap_share", "snap_counts", ["offense_pct", "position"], "base", 2016, "RB1's offense_pct that game", "needs_approval"),
-        _f("rb_target_share", f"{_P}, rosters_weekly", ["receiver_player_id", "pass", "position"], "base", 2016, "share of team targets that went to RBs"),
-        _f("goal_line_carry_share", f"{_P}, rosters_weekly", ["rusher_player_id", "yardline_100", "rush"], "base", 2016, f"RB1's share of team carries with yardline_100 <= {GOAL_LINE_YARDLINE}", "needs_approval"),
+        _f("rb1_carry_share", f"{_P}, rosters_weekly", ["rusher_player_id", "rush", "position"], "base", 2016, "RB1 = the team's RB with the most carries that game; his share of team RB carries", quality="derived"),
+        _f("rb2_carry_share", f"{_P}, rosters_weekly", ["rusher_player_id", "rush", "position"], "base", 2016, "same, the second RB", quality="derived"),
+        _f("rb1_snap_share", "snap_counts", ["offense_pct", "position"], "base", 2016, "RB1's offense_pct that game", quality="derived"),
+        _f("rb_target_share", f"{_P}, rosters_weekly", ["receiver_player_id", "pass", "position"], "base", 2016, "share of team targets that went to RBs", quality="derived"),
+        _f("goal_line_carry_share", f"{_P}, rosters_weekly", ["rusher_player_id", "yardline_100", "rush"], "base", 2016, f"RB1's share of team carries with yardline_100 <= {GOAL_LINE_YARDLINE}", quality="derived"),
     ),
     "ol_protection": (
         _f("sack_rate_allowed", _P, ["sack", "qb_dropback"], "base", 2016, "sacks taken / dropbacks"),
-        _f("pressure_rate_allowed", "pfr_advstats_pass", ["times_pressured", "team"], "extended", 2018, "sum over the team's QB rows of times_pressured / team dropbacks (pbp)"),
+        _f("pressure_rate_allowed", "pfr_advstats_pass", ["times_pressured", "team"], "extended", 2018, "sum over the team's QB rows of times_pressured / team dropbacks (pbp)", quality="derived"),
         _f("rush_epa_left", _P, ["epa", "run_location", "rush"], "base", 2016, "mean epa on rushes with run_location = left (run-block proxy)"),
         _f("rush_epa_middle", _P, ["epa", "run_location", "rush"], "base", 2016, "same, middle"),
         _f("rush_epa_right", _P, ["epa", "run_location", "rush"], "base", 2016, "same, right"),
     ),
     "receiver_usage": (
-        _f("top3_target_share", _P, ["receiver_player_id", "pass"], "base", 2016, "sum of the three largest player target shares of the team"),
-        _f("target_split_wr", f"{_P}, rosters_weekly", ["receiver_player_id", "position"], "base", 2016, "share of team targets to WRs"),
-        _f("target_split_te", f"{_P}, rosters_weekly", ["receiver_player_id", "position"], "base", 2016, "same, TEs"),
-        _f("target_split_rb", f"{_P}, rosters_weekly", ["receiver_player_id", "position"], "base", 2016, "same, RBs"),
-        _f("adot_wr", f"{_P}, rosters_weekly", ["air_yards", "receiver_player_id", "position"], "base", 2016, "mean air_yards on targets to WRs"),
-        _f("adot_te", f"{_P}, rosters_weekly", ["air_yards", "receiver_player_id", "position"], "base", 2016, "same, TEs"),
-        _f("adot_rb", f"{_P}, rosters_weekly", ["air_yards", "receiver_player_id", "position"], "base", 2016, "same, RBs"),
+        _f("top3_target_share", _P, ["receiver_player_id", "pass"], "base", 2016, "sum of the three largest player target shares of the team", quality="derived"),
+        _f("target_split_wr", f"{_P}, rosters_weekly", ["receiver_player_id", "position"], "base", 2016, "share of team targets to WRs", quality="derived"),
+        _f("target_split_te", f"{_P}, rosters_weekly", ["receiver_player_id", "position"], "base", 2016, "same, TEs", quality="derived"),
+        _f("target_split_rb", f"{_P}, rosters_weekly", ["receiver_player_id", "position"], "base", 2016, "same, RBs", quality="derived"),
+        _f("adot_wr", f"{_P}, rosters_weekly", ["air_yards", "receiver_player_id", "position"], "base", 2016, "mean air_yards on targets to WRs", quality="derived"),
+        _f("adot_te", f"{_P}, rosters_weekly", ["air_yards", "receiver_player_id", "position"], "base", 2016, "same, TEs", quality="derived"),
+        _f("adot_rb", f"{_P}, rosters_weekly", ["air_yards", "receiver_player_id", "position"], "base", 2016, "same, RBs", quality="derived"),
     ),
     "run_defense": (
         _f("rush_epa_allowed", _P, ["epa", "rush", "qb_kneel", "defteam"], "base", 2016, "mean epa on designed rushes against the defense"),
@@ -113,8 +113,8 @@ FEATURES = {
     "pass_rush": (
         _f("sack_rate", _P, ["sack", "qb_dropback", "defteam"], "base", 2016, "sacks / opposing dropbacks"),
         _f("pressure_rate", "pfr_advstats_pass", ["times_pressured", "opponent"], "extended", 2018,
-           "times_pressured by the opposing QB / dropbacks faced (PFR def_times_* columns are empty in the table, so this comes from the offense-side rows grouped by opponent)"),
-        _f("blitz_rate_pfr", "pfr_advstats_pass", ["times_blitzed", "opponent"], "extended", 2018, "opposing QB times_blitzed / dropbacks faced"),
+           "times_pressured by the opposing QB / dropbacks faced (PFR def_times_* columns are empty in the table, so this comes from the offense-side rows grouped by opponent)", quality="derived"),
+        _f("blitz_rate_pfr", "pfr_advstats_pass", ["times_blitzed", "opponent"], "extended", 2018, "opposing QB times_blitzed / dropbacks faced", quality="derived"),
         _f("blitz_rate_ftn", "ftn_charting", ["n_blitzers"], "extended", 2022, "share of pass plays with n_blitzers > 0 (kept apart from blitz_rate_pfr: different definitions)"),
         _f("qb_hit_rate", _P, ["qb_hit", "qb_dropback", "defteam"], "base", 2016, "qb_hit plays / opposing dropbacks"),
     ),
@@ -122,36 +122,36 @@ FEATURES = {
         _f("epa_per_dropback_allowed", _P, ["epa", "qb_dropback", "defteam"], "base", 2016, "mean epa on opposing dropbacks"),
         _f("cpoe_allowed", _P, ["cpoe", "pass", "defteam"], "base", 2016, "mean cpoe on opposing attempts"),
         _f("yards_per_attempt_allowed", _P, ["yards_gained", "pass", "sack", "defteam"], "base", 2016, "mean yards_gained on opposing attempts"),
-        _f("explosive_passes_allowed", _P, ["yards_gained", "pass", "sack", "defteam"], "base", 2016, f"share of opposing attempts with yards_gained >= {EXPLOSIVE_PASS_YARDS}", "needs_approval"),
-        _f("completion_rate_allowed_wr", f"{_P}, rosters_weekly", ["complete_pass", "receiver_player_id", "position"], "base", 2016, "completion rate on targets to WRs"),
-        _f("completion_rate_allowed_te", f"{_P}, rosters_weekly", ["complete_pass", "receiver_player_id", "position"], "base", 2016, "same, TEs"),
-        _f("completion_rate_allowed_rb", f"{_P}, rosters_weekly", ["complete_pass", "receiver_player_id", "position"], "base", 2016, "same, RBs"),
+        _f("explosive_passes_allowed", _P, ["yards_gained", "pass", "sack", "defteam"], "base", 2016, f"share of opposing attempts with yards_gained >= {EXPLOSIVE_PASS_YARDS}"),
+        _f("completion_rate_allowed_wr", f"{_P}, rosters_weekly", ["complete_pass", "receiver_player_id", "position"], "base", 2016, "completion rate on targets to WRs", quality="derived"),
+        _f("completion_rate_allowed_te", f"{_P}, rosters_weekly", ["complete_pass", "receiver_player_id", "position"], "base", 2016, "same, TEs", quality="derived"),
+        _f("completion_rate_allowed_rb", f"{_P}, rosters_weekly", ["complete_pass", "receiver_player_id", "position"], "base", 2016, "same, RBs", quality="derived"),
     ),
-    "coverage_mix": (      # EXTENDED space only; all three need the participation table, which was not in the request's source list
-        _f("man_rate", "participation", ["defense_man_zone_type"], "extended", 2018, "share of classified pass plays in man coverage (about 38% of plays are classified 2018-2022, ~100% from 2023)", "needs_approval"),
-        _f("zone_rate", "participation", ["defense_man_zone_type"], "extended", 2018, "same, zone", "needs_approval"),
+    "coverage_mix": (      # EXTENDED space only; the participation table (approved exception), quality `estimated`; first_season here = first season with ANY classified plays
+        _f("man_rate", "participation", ["defense_man_zone_type"], "extended", 2018, "share of classified pass plays in man coverage (about 38% of plays are classified 2018-2022, ~100% from 2023)", quality="estimated"),
+        _f("zone_rate", "participation", ["defense_man_zone_type"], "extended", 2018, "same, zone", quality="estimated"),
         _f("middle_closed_rate", "participation", ["defense_coverage_type"], "extended", 2023,
-           "share of classified plays in a single-high shell (COVER_1, COVER_3); two-high (COVER_2, 2_MAN, COVER_4, COVER_6) is middle open; classified on ~49% of plays from 2023 only", "needs_approval"),
+           "share of classified plays in a single-high shell (COVER_1, COVER_3); two-high (COVER_2, 2_MAN, COVER_4, COVER_6) is middle open; classified on ~49% of plays from 2023 only", quality="estimated"),
     ),
     "rb_archetype": (
-        _f("carry_share", f"{_P}, rosters_weekly", ["rusher_player_id", "rush"], "base", 2016, "player carries / team carries"),
+        _f("carry_share", f"{_P}, rosters_weekly", ["rusher_player_id", "rush"], "base", 2016, "player carries / team carries", quality="derived"),
         _f("yards_per_carry", _P, ["yards_gained", "rusher_player_id"], "base", 2016, "yards per carry"),
         _f("explosive_rate", _P, ["yards_gained", "rusher_player_id"], "base", 2016, f"share of carries with yards_gained >= {EXPLOSIVE_RUN_YARDS}"),
         _f("rush_epa", _P, ["epa", "rusher_player_id"], "base", 2016, "mean epa per carry"),
-        _f("target_share", _P, ["receiver_player_id", "pass"], "base", 2016, "targets / team targets"),
+        _f("target_share", _P, ["receiver_player_id", "pass"], "base", 2016, "targets / team targets", quality="derived"),
         _f("yards_after_contact", "pfr_advstats_rush", ["rushing_yards_after_contact_avg"], "extended", 2018, "PFR yards after contact per carry"),
-        _f("goal_line_share", _P, ["rusher_player_id", "yardline_100"], "base", 2016, f"share of the team's carries at yardline_100 <= {GOAL_LINE_YARDLINE} taken by the player", "needs_approval"),
-        _f("height", "rosters_weekly", ["height"], "base", 2016, "inches", "needs_approval"),
-        _f("weight", "rosters_weekly", ["weight"], "base", 2016, "pounds", "needs_approval"),
+        _f("goal_line_share", _P, ["rusher_player_id", "yardline_100"], "base", 2016, f"share of the team's carries at yardline_100 <= {GOAL_LINE_YARDLINE} taken by the player", quality="derived"),
+        _f("height", "rosters_weekly", ["height"], "base", 2016, "inches"),
+        _f("weight", "rosters_weekly", ["weight"], "base", 2016, "pounds"),
     ),
     "receiver_archetype": (
-        _f("target_share", _P, ["receiver_player_id", "pass"], "base", 2016, "targets / team targets"),
+        _f("target_share", _P, ["receiver_player_id", "pass"], "base", 2016, "targets / team targets", quality="derived"),
         _f("average_depth_of_target", _P, ["air_yards", "receiver_player_id"], "base", 2016, "mean air_yards per target"),
-        _f("air_yards_share", _P, ["air_yards", "receiver_player_id"], "base", 2016, "player air_yards / team air_yards"),
+        _f("air_yards_share", _P, ["air_yards", "receiver_player_id"], "base", 2016, "player air_yards / team air_yards", quality="derived"),
         _f("yards_after_catch", _P, ["yards_after_catch", "receiver_player_id", "complete_pass"], "base", 2016, "mean yards_after_catch per reception"),
-        _f("catch_rate_over_expected", _P, ["complete_pass", "cp", "receiver_player_id"], "base", 2016, "mean of (complete_pass - cp) over targets with a cp (derived: pbp has cp but no receiver-level CROE)"),
-        _f("height", "rosters_weekly", ["height"], "base", 2016, "inches", "needs_approval"),
-        _f("weight", "rosters_weekly", ["weight"], "base", 2016, "pounds", "needs_approval"),
+        _f("catch_rate_over_expected", _P, ["complete_pass", "cp", "receiver_player_id"], "base", 2016, "mean of (complete_pass - cp) over targets with a cp (derived: pbp has cp but no receiver-level CROE)", quality="derived"),
+        _f("height", "rosters_weekly", ["height"], "base", 2016, "inches"),
+        _f("weight", "rosters_weekly", ["weight"], "base", 2016, "pounds"),
     ),
     "qb_archetype": (
         _f("epa_per_dropback", _P, ["epa", "passer_player_id", "qb_dropback"], "base", 2016, "mean epa over the QB's dropbacks"),
@@ -170,12 +170,13 @@ DROPPED = (
     ("receiver_archetype", "slot rate", "same: no slot / alignment source"),
 )
 
-# Items that need a yes before 4c.1 may use them (every Feature with status "needs_approval" belongs to one of these).
-PENDING_APPROVAL = (
-    "1. snap_counts and rosters_weekly features (rb1_snap_share, height, weight, and the position joins) are placed in BASE because they cover 2016 on like pbp; BASE was defined as play-by-play only.",
-    "2. Definitions the request did not give: EXPLOSIVE_PASS_YARDS = 20, GOAL_LINE_YARDLINE = 5.",
-    "3. coverage_mix: man/zone and coverage type exist only in the participation table (not in the request's source list), and are classified on ~38% of plays 2018-2022, ~100% (man/zone) and ~49% (coverage type) from 2023.",
-)
+# Decisions (all approved): coverage_mix reads the participation table (an approved exception to the BASE / EXTENDED source list, scoped to
+# coverage_mix only) and is tagged `estimated`, with its per-season completeness logged; BASE includes snap_counts and rosters_weekly (same 2016+
+# coverage as pbp); EXPLOSIVE_PASS_YARDS = 20 and GOAL_LINE_YARDLINE = 5 stand as defined above.
+QUALITY_RULE = ("observed = a direct aggregate of a provided column of one table; derived = needs another table, a rank, a share of the team "
+                "total or a computed construct; estimated = the source is only partly populated (participation man/zone and coverage type)")
+# Seasons in which participation classifies a play, as a share of plays (rounded; 4c.1 logs the exact value per season in comp_completeness)
+PARTICIPATION_COMPLETENESS_NOTE = "man/zone ~38% of plays 2018-2022, ~100% from 2023; coverage type ~38% 2018-2022, ~49% from 2023; nothing before 2018"
 
 # ---------------------------------------------------------------------------------------------------------------------------------- 4. WINDOWS
 WINDOWS = ("last_3", "last_6", "season_to_date", "recency_weighted", "continuity_weighted")      # 4c.6 selects one per unit and market
