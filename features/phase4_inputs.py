@@ -52,6 +52,10 @@ def build_team_game_rates(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.
     share_<state>   share of plays run in that score state (the offense's lead before the snap)
     dropback_rate_<state>   dropbacks / plays within the state (null when the team ran no plays in it)
     States: trail9 (down 9+), trail1_8, tied, lead1_8, lead9 (up 9+).
+    Known exception: 2020_16_PHI_DAL (PHI) has plays = dropbacks + designed_runs + 1. One of its plays is typed `pass` but
+    flagged qb_scramble = 1 and sack = 1 (a scramble that ended in a sack); it is counted in dropbacks and in scrambles but not
+    in rush_attempts, so designed_runs (= rush_attempts - scrambles) comes out 1 too low for that team-game. Every other
+    team-game satisfies the identity.
     Note: Phase-3 team_volume counts dropbacks as attempts + sacks (scrambles are carries there); this table follows nflfastR.
     """
     config.cap_season(max_season)
