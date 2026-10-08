@@ -68,6 +68,7 @@ def load_play_rows(raw_db=config.RAW_DUCKDB_PATH, max_season=None, first_season=
     cap = config.cap_season(max_season)          # raises config.HoldoutError for 2025+
     con = duckdb.connect(str(raw_db), read_only=True)
     try:
+        con.execute("SET threads TO 1")          # a fixed summation order: floating-point sums are identical run to run
         d = con.execute(
             "SELECT season, week, game_id, posteam, defteam, "
             "CASE WHEN location = 'Neutral' THEN 0.0 WHEN posteam = home_team THEN 0.5 ELSE -0.5 END AS home, "
