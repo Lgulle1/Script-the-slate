@@ -676,7 +676,7 @@ def game_share_scenarios(frame: pl.DataFrame, shifts: Shifts, model: StatusModel
             if role == "other" or role not in role_prior:
                 return current
             n, mean = rh.get((pid, role), (0, None))
-            own = mean[st] if n else 0.0
+            own = mean[st] if (n and mean[st] is not None) else role_prior[role][st]     # no value in those games (e.g. no snap row): the role's
             return (n * own + ROLE_K * role_prior[role][st]) / (n + ROLE_K)
         players = players.with_columns([
             pl.struct("player_id", "role", f"base_{st}").map_elements(
