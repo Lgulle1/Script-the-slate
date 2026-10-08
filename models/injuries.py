@@ -624,8 +624,19 @@ def game_expected_shares(frame: pl.DataFrame, shifts: Shifts, model: StatusModel
     return out.with_columns(*cols, game_id=pl.lit(game_id), team=pl.lit(team))
 
 
+def role_prior_shares(frame: pl.DataFrame, cutoff: date) -> dict:
+    """Mean share of carries / targets / dropbacks / snaps per depth-chart role, over every earlier game the role holder played
+    (exit games excluded): what a role holder with no history of his own (a rookie, a new starter) is expected to get."""
+    h = frame.filter((pl.col("gameday") < cutoff) & pl.col("played") & (pl.col("role") != "other"))
+    if "early_exit" in h.columns:
+        h = h.filter(~pl.col("early_exit"))
+    g = h.group_by("role").agg([pl.col(f"{s}_share").mean().alias(s) for s in SHARE_STATS])
+    return {r["role"]: {s: r[s] for s in SHARE_STATS} for r in g.iter_rows(named=True)}
+
+
 def game_share_scenarios(frame: pl.DataFrame, shifts: Shifts, model: StatusModel, game_id: str, team: str, season: int, week: int,
-                         as_of: datetime, cutoff: date, *, status_fn, blocked_ids: set, player_groups: dict, min_q: float = 0.001) -> tuple:
+                         as_of: datetime, cutoff: date, *, status_fn, blocked_ids: set, player_groups: dict, min_q: float = 0.001,
+                         role_prior: dict | None = None) -> tuple:
     """The two ends of 4a.2's probability-weighted mixture, for a simulation that draws availability game by game.
 
     Returns (play, scenarios, q):
@@ -636,9 +647,18 @@ def game_share_scenarios(frame: pl.DataFrame, shifts: Shifts, model: StatusModel
     A simulated game draws each uncertain player out with probability q_i and uses  play + sum over out players (scenario_i - play).
     The probability-weighted average over those draws equals the mixture of game_expected_shares to first order (the redistribution is
     linear in q before clipping), which is what makes the simulated shares a distribution around the same expectation.
+
+    role_prior (role_prior_shares): a depth-chart role holder with NO baseline of his own (a rookie, a new starter) takes his role's
+    average share instead of 0 -- without it the simulation would give a first-time starting quarterback no dropbacks. (game_expected_shares,
+    the 4a.4 feature builder, keeps its original behaviour: its results are frozen.)
     """
     groups = {"QB": "QB", "RB1": "RB", "RB2FB": "RB", "WR1": "WR", "WR2": "WR", "WR3": "WR", "TE1": "TE", "TE2": "TE", "OL": "OL", "other": "WR"}
     players = _team_players(frame, game_id, team, cutoff)
+    if role_prior:
+        players = players.with_columns([
+            pl.struct("role", f"base_{st}").map_elements(
+                lambda r, st=st: r[f"base_{st}"] if r[f"base_{st}"] is not None else (role_prior.get(r["role"], {}).get(st)),
+                return_dtype=pl.Float64).alias(f"base_{st}") for st in SHARE_STATS])
     q, s = {}, {}
     for pid, role in zip(players["player_id"].to_list(), players["role"].to_list()):
         grp = (player_groups or {}).get(pid) or groups.get(role, "WR")

@@ -336,3 +336,29 @@ def test_baseline_games_contain_no_exit_games():
     assert pw.filter(pl.col("early_exit") & pl.col("ratio").is_not_null()).height == 0
     f = inj.build_role_frame(max_season=2024)
     assert f["early_exit"].sum() > 0
+
+
+def test_a_role_holder_with_no_history_takes_his_roles_average_share_in_the_simulation_path():
+    hist = _history()
+    target = _frame(_game("AAA", "t1", date(2023, 10, 8)))
+    target = target.with_columns([pl.when(pl.col("role") == "QB").then(None).otherwise(pl.col(c)).alias(c)
+                                  for c in ("base_carry", "base_target", "base_dropback", "base_snap")])      # a first-time starter: no baseline
+    frame = pl.concat([hist, target], how="diagonal_relaxed")
+    cut = date(2023, 10, 1)
+    model = inj.fit_status_model(_pw([_row(1, f"p{i}", date(2023, 9, 10), "none", "none", True) for i in range(50)]), cut)
+    status_fn = lambda pid, se, wk, ao: ("none", "none")
+    prior = inj.role_prior_shares(frame, cut)
+    assert prior["QB"]["dropback"] == pytest.approx(1.0)
+    kw = dict(status_fn=status_fn, blocked_ids=set(), player_groups={})
+    sh = inj.fit_shifts(hist, cut)
+    args = (frame, sh, model, "t1", "AAA", 2023, 1, inj.main_run_as_of(date(2023, 10, 8)), cut)
+    without, _, _ = inj.game_share_scenarios(*args, **kw)
+    with_prior, _, _ = inj.game_share_scenarios(*args, **kw, role_prior=prior)
+    qb = lambda df, c: df.filter(pl.col("player_id") == "AAA_QB")[c][0]
+    assert qb(without, "exp_dropback") == pytest.approx(0.0, abs=1e-9)         # old behaviour: a new starter gets nothing ...
+    assert qb(with_prior, "exp_dropback") > 0.9                                # ... with the prior he gets the starter's share
+    for st in inj.NORMALISED:
+        assert with_prior[f"exp_{st}"].sum() == pytest.approx(1.0)
+    # game_expected_shares (the frozen 4a.4 feature path) is unchanged
+    old = inj.game_expected_shares(frame, sh, model, None, None, "t1", "AAA", 2023, 1, date(2023, 10, 8), inj.main_run_as_of(date(2023, 10, 8)), cut, with_eff=False, **kw)
+    assert old.filter(pl.col("player_id") == "AAA_QB")["exp_dropback"][0] == pytest.approx(0.0, abs=1e-9)

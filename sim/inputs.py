@@ -136,7 +136,7 @@ class Calibration:
              .join(tot, on=["game_id", "team"], how="inner").join(act, on=["game_id", "team", "player_id"], how="left"))
         self._kappa = {}
         for st in STATS:
-            s, n = pl.col(f"exp_{st}"), pl.col(f"n_{st}")
+            s, n = pl.col(f"b_{st}"), pl.col(f"n_{st}")
             x = pl.col(f"x_{st}").fill_null(0.0)
             t = (d.filter((s >= 0.05) & (s <= 0.95) & (n > 0))
                  .with_columns(term=(x - n * s) ** 2 / (n * s * (1 - s)), one=pl.lit(1.0), nn=n))
@@ -356,6 +356,7 @@ def _detail_and_exit(data, raw_db, cap):
         if season > cap:
             continue
         model, shifts, exit_model = ij.fit_status_model(pw, cutoff), ij.fit_shifts(frame, cutoff), ij.fit_exit_model(pw, cutoff)
+        prior = ij.role_prior_shares(frame, cutoff)
         exit_pools[(season, week)] = ({g: np.asarray(v, dtype=float) for g, v in exit_model.shares.items()}, np.asarray(exit_model.all_shares, dtype=float))
         for g in data.team_log.filter((pl.col("season") == season) & (pl.col("week") == week)).iter_rows(named=True):
             out = ij.game_expected_shares(by_team[g["team"]], shifts, model, None, None, g["game_id"], g["team"], season, week, g["gameday"],
@@ -363,7 +364,7 @@ def _detail_and_exit(data, raw_db, cap):
                                           blocked_ids=blocked.get((season, week), set()), player_groups=groups, with_eff=False)
             play, scenarios, _ = ij.game_share_scenarios(by_team[g["team"]], shifts, model, g["game_id"], g["team"], season, week,
                                                          ij.main_run_as_of(g["gameday"]), cutoff, status_fn=status_fn,
-                                                         blocked_ids=blocked.get((season, week), set()), player_groups=groups)
+                                                         blocked_ids=blocked.get((season, week), set()), player_groups=groups, role_prior=prior)
             pmap = {r["player_id"]: r for r in play.iter_rows(named=True)}
             gmap = {"rest": "rest"}
             for r in out.iter_rows(named=True):
