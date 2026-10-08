@@ -419,3 +419,15 @@ def test_a_benched_former_starter_is_a_backup_in_the_baseline_not_a_second_start
     assert n == 0                                                                    # this week he is `other`: no games in that role yet
     base = (n * 0.0 + inj.ROLE_K * prior["other"]["dropback"]) / (n + inj.ROLE_K)
     assert base == pytest.approx(0.02)                                               # a benched starter gets the backup share, not 1.0
+
+
+def test_fixed_roles_keeps_the_charted_starters_share_when_baselines_overshoot():
+    sh = inj.fit_shifts(_history(), date(2023, 10, 1))
+    pl_ = _players().with_columns(group=pl.lit("QB"))
+    over = pl_.with_columns([pl.when(pl.col("player_id") == "AAA_QB").then(0.95).when(pl.col("player_id") == "AAA_o1").then(0.5).otherwise(pl.col("base_dropback")).alias("base_dropback")])
+    plain = inj.redistribute(sh, "AAA", over, {})
+    fixed = inj.redistribute(sh, "AAA", over, {}, fixed_roles=True)
+    get = lambda df, pid: df.filter(pl.col("player_id") == pid)["exp_dropback"][0]
+    assert get(plain, "AAA_QB") < 0.7                                    # old: everyone scaled down together
+    assert get(fixed, "AAA_QB") == pytest.approx(0.95) and get(fixed, "AAA_o1") == pytest.approx(0.05)
+    assert fixed["exp_dropback"].sum() == pytest.approx(1.0)

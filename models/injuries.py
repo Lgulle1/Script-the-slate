@@ -485,13 +485,17 @@ def absence_inputs(model: StatusModel, group: str, report: str, practice: str, b
     return q, s
 
 
-def redistribute(shifts: Shifts, team: str, players: pl.DataFrame, q: dict, s: dict | None = None) -> pl.DataFrame:
+def redistribute(shifts: Shifts, team: str, players: pl.DataFrame, q: dict, s: dict | None = None, fixed_roles: bool = False) -> pl.DataFrame:
     """Expected shares for one team-game.
 
     players: player_id, role, base_carry, base_target, base_dropback, base_snap (the players' trailing baselines; a player with
     a null baseline counts as 0). q[player_id] = probability he is out (default 0); s[player_id] = workload factor if he plays
     (default 1). Returns player_id, role, base_<stat> (normalised), exp_<stat>, plus a 'rest' row (unlisted players) for the
     three normalised stats.
+
+    fixed_roles (the simulation path): when the baselines add up to more than 1, the `other` players are scaled down to fit what the
+    depth-chart role holders leave over, instead of scaling everyone. A charted starting quarterback keeps his share; a backup who
+    started games while labelled `other` cannot take it from him.
     """
     s = s or {}
     grp_arr = players["group"].to_list() if "group" in players.columns else None
@@ -504,7 +508,18 @@ def redistribute(shifts: Shifts, team: str, players: pl.DataFrame, q: dict, s: d
         b = p[f"base_{st}"].to_numpy().astype(float)
         if st in NORMALISED:
             rest = max(0.0, 1.0 - b.sum())
-            b, rest = (b / b.sum(), 0.0) if b.sum() > 1.0 else (b, rest)
+            if b.sum() > 1.0:
+                if fixed_roles:
+                    oth = np.array([r == "other" for r in roles_])
+                    held = b[~oth].sum()
+                    if held >= 1.0:
+                        b = np.where(oth, 0.0, b / held)
+                    else:
+                        o_sum = b[oth].sum()
+                        b = np.where(oth, b * ((1.0 - held) / o_sum) if o_sum > 0 else 0.0, b)
+                    rest = max(0.0, 1.0 - b.sum())
+                else:
+                    b, rest = b / b.sum(), 0.0
         else:
             rest = 0.0
         raw = b * (1.0 - qv) * sv
@@ -689,12 +704,12 @@ def game_share_scenarios(frame: pl.DataFrame, shifts: Shifts, model: StatusModel
         q[pid], s[pid] = absence_inputs(model, grp, report, practice, blocked=pid in blocked_ids)
     players = players.with_columns(group=pl.struct("player_id", "role").map_elements(
         lambda r: (player_groups or {}).get(r["player_id"]) or groups.get(r["role"], "WR"), return_dtype=pl.String))
-    play = redistribute(shifts, team, players, {}, s).join(players.select("player_id", "group"), on="player_id", how="left")
+    play = redistribute(shifts, team, players, {}, s, fixed_roles=True).join(players.select("player_id", "group"), on="player_id", how="left")
     play = play.with_columns(p_out=pl.col("player_id").map_elements(lambda i: q.get(i, 0.0), return_dtype=pl.Float64))
     scen = []
     for pid, qi in q.items():
         if qi > min_q:
-            sc = redistribute(shifts, team, players, {pid: 1.0}, s)
+            sc = redistribute(shifts, team, players, {pid: 1.0}, s, fixed_roles=True)
             scen.append(sc.select("player_id", exp_carry="exp_carry", exp_target="exp_target", exp_dropback="exp_dropback").with_columns(out_player=pl.lit(pid)))
     scenarios = pl.concat(scen) if scen else pl.DataFrame(schema={"player_id": pl.String, "exp_carry": pl.Float64, "exp_target": pl.Float64,
                                                                   "exp_dropback": pl.Float64, "out_player": pl.String})

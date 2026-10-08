@@ -339,9 +339,18 @@ class SimData:
 
 
 # ====================================================================== builders
-def _detail_and_exit(data, raw_db, cap):
-    """Per team-game player lists with 4a.2 expected shares, plus the 4a.3 exit pools, fit week by week."""
+def _detail_and_exit(data, raw_db, cap, cache_dir=None):
+    """Per team-game player lists with 4a.2 expected shares, plus the 4a.3 exit pools, fit week by week.
+
+    cache_dir (development only): the week-by-week fitted status / shift / exit models are pickled there and reused, so a change to the
+    share logic does not refit them. Never used by the final run (run_sim_backtest.py), which builds everything from scratch."""
+    import pickle
+    from pathlib import Path
+
     from models import injuries as ij
+    fits_path = Path(cache_dir) / "week_fits.pkl" if cache_dir else None
+    cached = pickle.load(open(fits_path, "rb")) if fits_path and fits_path.exists() else {}
+    fresh = {}
 
     pw = ij.build_player_weeks(raw_db, cap)
     frame = ij.build_role_frame(raw_db, cap)
@@ -355,7 +364,11 @@ def _detail_and_exit(data, raw_db, cap):
     for season, week, cutoff in data.weeks:
         if season > cap:
             continue
-        model, shifts, exit_model = ij.fit_status_model(pw, cutoff), ij.fit_shifts(frame, cutoff), ij.fit_exit_model(pw, cutoff)
+        if (season, week) in cached:
+            model, shifts, exit_model = cached[(season, week)]
+        else:
+            model, shifts, exit_model = ij.fit_status_model(pw, cutoff), ij.fit_shifts(frame, cutoff), ij.fit_exit_model(pw, cutoff)
+            fresh[(season, week)] = (model, shifts, exit_model)
         prior, rhist = ij.role_prior_shares(frame, cutoff), ij.role_history(frame, cutoff)
         exit_pools[(season, week)] = ({g: np.asarray(v, dtype=float) for g, v in exit_model.shares.items()}, np.asarray(exit_model.all_shares, dtype=float))
         for g in data.team_log.filter((pl.col("season") == season) & (pl.col("week") == week)).iter_rows(named=True):
@@ -375,6 +388,9 @@ def _detail_and_exit(data, raw_db, cap):
                                  p_out=r["p_out"], b_carry=pb["exp_carry"], b_target=pb["exp_target"], b_dropback=pb["exp_dropback"]))
             for r in scenarios.iter_rows(named=True):
                 scen_rows.append(dict(game_id=g["game_id"], team=g["team"], **r))
+    if fits_path and fresh:
+        fits_path.parent.mkdir(parents=True, exist_ok=True)
+        pickle.dump({**cached, **fresh}, open(fits_path, "wb"))
     detail = pl.DataFrame(rows, infer_schema_length=None).sort("season", "week", "game_id", "team", "player_id")
     scen = pl.DataFrame(scen_rows, infer_schema_length=None).sort("game_id", "team", "out_player", "player_id")
     return detail, scen, exit_pools
@@ -420,20 +436,42 @@ def _residual_table(player_log: pl.DataFrame, wf_path) -> pl.DataFrame:
             .sort("key", "game_id", "team", "quantity"))
 
 
-def build_sim_data(raw_db=config.RAW_DUCKDB_PATH, seasons=config.BACKTEST_SEASONS, wf_path=None) -> SimData:
-    """Everything the simulation needs for `seasons` (2020-2024 only). Walk-forward throughout."""
+def build_sim_data(raw_db=config.RAW_DUCKDB_PATH, seasons=config.BACKTEST_SEASONS, wf_path=None, cache_dir=None, verbose=False) -> SimData:
+    """Everything the simulation needs for `seasons` (2020-2024 only). Walk-forward throughout.
+
+    cache_dir (development only) reuses the efficiency predictions and the week-by-week fitted models between runs; leave it None for
+    any run whose output is saved or compared."""
+    import time
+    from pathlib import Path
+
     from eval import backtest as bt
+    t0 = time.time()
+
+    def stage(name):
+        if verbose:
+            print(f"  [{time.time() - t0:5.0f}s] {name}", flush=True)
 
     if not set(seasons) <= set(config.BACKTEST_SEASONS):
         raise config.HoldoutError(f"seasons {tuple(seasons)} are outside the backtest seasons {config.BACKTEST_SEASONS}")
     cap = max(seasons)
     wf_path = wf_path or config.PROCESSED_DIR / "walkforward_predictions.parquet"
     data = bt.load_backtest_data(raw_db)
+    stage("data loaded")
     tables = gs.build_all(raw_db, cap, n_boot=0)
+    stage("4b tables")
     ge = tables["game_expectations"].filter(pl.col("season").is_in(list(seasons)))
     tgs = tables["team_game_state"]
-    detail, scen, exit_pools = _detail_and_exit(data, raw_db, cap)
-    eff = _efficiency_predictions(data, raw_db, cap)
+    detail, scen, exit_pools = _detail_and_exit(data, raw_db, cap, cache_dir)
+    stage("injury shares and scenarios")
+    eff_path = Path(cache_dir) / "eff.parquet" if cache_dir else None
+    if eff_path and eff_path.exists():
+        eff = pl.read_parquet(eff_path)
+    else:
+        eff = _efficiency_predictions(data, raw_db, cap)
+        if eff_path:
+            eff_path.parent.mkdir(parents=True, exist_ok=True)
+            eff.write_parquet(eff_path)
+    stage("efficiency predictions")
     res = _residual_table(data.player_log, wf_path)
     games = gs.load_games(raw_db, cap)
     pts = pl.concat([games.select("game_id", team="home_team", pf="home_score", pa="away_score"),
