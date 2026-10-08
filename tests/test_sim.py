@@ -202,7 +202,7 @@ def _res_frame():
 
 def _empty_calib(res):
     detail = pl.DataFrame(schema={"season": pl.Int64, "week": pl.Int64, "key": pl.Int64, "game_id": pl.String, "team": pl.String, "player_id": pl.String,
-                                  "exp_carry": pl.Float64, "exp_target": pl.Float64, "exp_dropback": pl.Float64})
+                                  "exp_carry": pl.Float64, "exp_target": pl.Float64, "exp_dropback": pl.Float64, "p_out": pl.Float64})
     log = pl.DataFrame(schema={"game_id": pl.String, "team": pl.String, "player_id": pl.String, "family": pl.String, "carries": pl.Int64, "targets": pl.Int64,
                                "attempts": pl.Int64, "rush_att_ex_kneel": pl.Float64})
     tgs = pl.DataFrame(schema={"season": pl.Int64, "week": pl.Int64, "game_id": pl.String, "team": pl.String, "exp_plays": pl.Float64, "plays": pl.Float64,
@@ -221,3 +221,42 @@ def test_team_shock_is_the_weighted_pairwise_covariance_of_earlier_residuals(mon
     # the 202010 game (0.5, 0.5) is only visible afterwards
     assert cal.shock("catch_rate", 202011) > 0.0
     assert cal.shock("comp_rate", 202002) == cal.shock("catch_rate", 202002)                        # QB quantities borrow the receivers' loading
+
+
+# ---------------------------------------------------------------- availability scenarios
+def _scenario_team(q=0.5):
+    """RB1 is out with probability q; when he is out RB2 takes his carries."""
+    t = _team("AAA", True, [0.0] * len(IDS))
+    play = {"carry": np.array([0.08, 0.55, 0.25, 0.02, 0.0, 0.0, 0.10]), "target": np.array([0.0, 0.10, 0.05, 0.30, 0.25, 0.20, 0.10]),
+            "dropback": np.array([0.97, 0.0, 0.0, 0.0, 0.0, 0.0, 0.03])}
+    out_c = np.array([0.08, 0.0, 0.70, 0.02, 0.0, 0.0, 0.20])
+    out_t = np.array([0.0, 0.0, 0.14, 0.33, 0.28, 0.22, 0.03])
+    t.play_shares = play
+    t.p_out = np.array([0.0, q, 0, 0, 0, 0])
+    t.scen_q, t.scen_k = np.array([q]), np.array([1])
+    t.scen_delta = {"carry": (out_c - play["carry"])[None, :], "target": (out_t - play["target"])[None, :], "dropback": np.zeros((1, 7))}
+    return t
+
+
+def test_availability_is_drawn_per_simulated_game_and_summaries_condition_on_playing():
+    g = _game()
+    g.home = _scenario_team(0.5)
+    s = sm.simulate_game(g, sm.FULL)
+    assert s.present[:, 1].mean() == pytest.approx(0.5, abs=0.02) and s.present[:, [0, 2, 3]].all()
+    c = sm.STAT_INDEX["rush_att"]
+    assert (s.stats[~s.present[:, 1], 1, c] == 0).all()                                       # out: no carries
+    assert s.stats[~s.present[:, 1], 2, c].mean() > 1.6 * s.stats[s.present[:, 1], 2, c].mean()   # RB2 takes them
+    assert s.stats[s.present[:, 1], 1, c].mean() > 0.9 * 0.55 * s.home.carries.mean() * 0.98    # conditional on playing he gets his full share
+    rows = {(r["market"], r["entity"]): r for r in sm.summarize_game(s, {"AAA_rb1": {"rush_att"}})}
+    r = rows[("rush_att", "AAA_rb1")]
+    assert r["p_play"] == pytest.approx(0.5, abs=0.02)
+    assert r["sim_mean"] == pytest.approx(s.stats[s.present[:, 1], 1, c].mean(), rel=1e-6)    # the summary is the conditional mean
+    unconditional = float(s.stats[:, 1, c].mean())
+    assert r["sim_mean"] > 1.8 * unconditional                                                 # not diluted by the games he is out of
+
+
+def test_a_player_out_in_nearly_every_game_gets_no_conditional_prediction():
+    g = _game()
+    g.home = _scenario_team(0.9995)
+    s = sm.simulate_game(g, sm.BACKTEST)
+    assert not [r for r in sm.summarize_game(s, {"AAA_rb1": {"rush_att"}}) if r["entity"] == "AAA_rb1"]

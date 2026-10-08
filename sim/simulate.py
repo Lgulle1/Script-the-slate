@@ -50,6 +50,7 @@ COUNT_STATS = ("dropbacks", "pass_att", "rush_att", "targets", "qb_rush_att")
 MARKET_STAT = {m: m for m in ("pass_att", "pass_cmp", "pass_yds", "rush_att", "rush_yds", "targets", "rec", "rec_yds", "qb_rush_att", "qb_rush_yds")}
 MIN_PLAYS, MAX_PLAYS = 30, 110
 MIN_TOTAL = 10.0
+MIN_PRESENT = 100        # simulated games a player must be in before a prediction conditional on his playing is made
 
 
 @dataclass(frozen=True)
@@ -76,6 +77,7 @@ def game_rng(game_id: str, seed: int = RUN_SEED) -> np.random.Generator:
 @dataclass
 class TeamSim:
     team: str
+    present: np.ndarray                 # (n_sim, K) False in the simulated games where that player is out
     plays: np.ndarray
     dropbacks: np.ndarray
     sacks: np.ndarray
@@ -99,6 +101,7 @@ class GameSim:
     teams: list
     roles: list
     stats: np.ndarray                   # (n_sim, n_players, len(PLAYER_STATS)) float32
+    present: np.ndarray                 # (n_sim, n_players) bool: False where the player is out of that simulated game
 
 
 # ====================================================================== one team
@@ -135,11 +138,13 @@ def _exit_factors(t: si.TeamInput, exit_pools: dict, exit_all: np.ndarray, n: in
 
 
 def _dirichlet_multinomial(shares: np.ndarray, factor: np.ndarray, kappa: float, total: np.ndarray, rng: np.random.Generator) -> np.ndarray:
-    """Counts (n, K + 1) of `total` draws over K players + `rest`: shares x early-exit factor, Dirichlet(kappa * share) mixed, multinomial."""
+    """Counts (n, K + 1) of `total` draws over K players + `rest`: shares (K + 1,) or per-simulation (n, K + 1) x early-exit factor,
+    Dirichlet(kappa * share) mixed, multinomial."""
     n, K = factor.shape
+    sh = np.broadcast_to(shares, (n, K + 1))
     w = np.empty((n, K + 1))
-    w[:, :K] = shares[None, :K] * factor
-    w[:, K] = shares[K]
+    w[:, :K] = sh[:, :K] * factor
+    w[:, K] = sh[:, K]
     w = np.maximum(w, 0.0)
     s = w.sum(axis=1, keepdims=True)
     p = np.where(s > 0, w / np.where(s > 0, s, 1.0), 1.0 / (K + 1))
@@ -165,10 +170,21 @@ def _simulate_team(t: si.TeamInput, tm: np.ndarray, g: si.GameInput, rng: np.ran
     n = len(tm)
     v = _team_volume(t, tm, cal, rng)
     K = len(t.player_ids)
+    # availability: each uncertain player is out in a share q of the simulated games; shares = everyone-plays shares + the redistribution
+    # that follows from whoever is out (4a.2 scenarios, superposed). Without scenario inputs the 4a.2 mixture shares are used as given.
+    present = np.ones((n, K), dtype=bool)
+    if t.play_shares is not None and t.scen_q is not None and len(t.scen_q):
+        out_flag = rng.random((n, len(t.scen_q))) < t.scen_q[None, :]
+        for m, k in enumerate(t.scen_k):
+            if k >= 0:
+                present[:, k] = ~out_flag[:, m]
+        shares = {st: np.clip(t.play_shares[st][None, :] + out_flag.astype(float) @ t.scen_delta[st], 0.0, None) for st in si.STATS}
+    else:
+        shares = t.play_shares if t.play_shares is not None else t.shares
     f = _exit_factors(t, g.exit_pools, g.exit_all, n, rng)
-    carries = _dirichlet_multinomial(t.shares["carry"], f, cal.kappa["carry"], v["Rc"], rng)[:, :K]
-    targets = _dirichlet_multinomial(t.shares["target"], f, cal.kappa["target"], v["T"], rng)[:, :K]
-    dropbacks = _dirichlet_multinomial(t.shares["dropback"], f, cal.kappa["dropback"], v["D"], rng)[:, :K]
+    carries = _dirichlet_multinomial(shares["carry"], f, cal.kappa["carry"], v["Rc"], rng)[:, :K]
+    targets = _dirichlet_multinomial(shares["target"], f, cal.kappa["target"], v["T"], rng)[:, :K]
+    dropbacks = _dirichlet_multinomial(shares["dropback"], f, cal.kappa["dropback"], v["D"], rng)[:, :K]
     # volumes always exist; completions / receptions / yardage need a Phase 3 efficiency prediction and stay NaN (no outcome) without one
     out = np.full((n, K, len(PLAYER_STATS)), np.nan, dtype=np.float32)
     for c in COUNT_STATS:
@@ -218,7 +234,7 @@ def _simulate_team(t: si.TeamInput, tm: np.ndarray, g: si.GameInput, rng: np.ran
     idx = have["qb_ypc"]
     if len(idx):
         out[:, idx, STAT_INDEX["qb_rush_yds"]] = np.rint(qb_att[:, idx] * draw("qb_ypc", idx, qb_att[:, idx]))
-    team = TeamSim(team=t.team, plays=v["plays"], dropbacks=v["D"], sacks=v["S"], scrambles=v["C"], pass_att=v["P"], rush_att=v["R"],
+    team = TeamSim(team=t.team, present=present, plays=v["plays"], dropbacks=v["D"], sacks=v["S"], scrambles=v["C"], pass_att=v["P"], rush_att=v["R"],
                    targets=v["T"], carries=v["Rc"], points=np.zeros(n))
     return team, out
 
@@ -235,7 +251,8 @@ def simulate_game(g: si.GameInput, mode: SimMode = BACKTEST, seed: int = RUN_SEE
     stats = np.concatenate([home_out, away_out], axis=1)
     return GameSim(game_id=g.game_id, mode=mode, margin=margin, total=total, home=home_ts, away=away_ts,
                    player_ids=[*g.home.player_ids, *g.away.player_ids], teams=[*([g.home.team] * len(g.home.player_ids)), *([g.away.team] * len(g.away.player_ids))],
-                   roles=[*g.home.roles, *g.away.roles], stats=stats)
+                   roles=[*g.home.roles, *g.away.roles], stats=stats,
+                   present=np.concatenate([home_ts.present, away_ts.present], axis=1))
 
 
 # ====================================================================== markets from simulated outcomes
@@ -250,14 +267,21 @@ def market_summary(values: np.ndarray, rungs) -> dict:
 
 def summarize_game(gsim: GameSim, eligible: dict, ladders: dict | None = None) -> list:
     """Rows (kind, market, entity, summary...) for every eligible player market of the game and the three game markets.
+    Player rows are CONDITIONAL on the player being in the game (the simulated games where he is out are dropped), because a player-game
+    only exists, and is only scored, when he played; p_play is the share of simulated games he is in.
 
     eligible: player_id -> iterable of markets the player-game is scored for."""
     ladders = ladders or config.LADDERS
     rows = []
     for k, pid in enumerate(gsim.player_ids):
+        pres = gsim.present[:, k]
         for m in sorted(eligible.get(pid, ())):
-            if m in MARKET_STAT and not np.isnan(gsim.stats[:, k, STAT_INDEX[MARKET_STAT[m]]]).any():
-                rows.append(dict(kind="player", market=m, entity=pid, team=gsim.teams[k], **market_summary(gsim.stats[:, k, STAT_INDEX[MARKET_STAT[m]]], ladders[m])))
+            if m not in MARKET_STAT:
+                continue
+            v = gsim.stats[:, k, STAT_INDEX[MARKET_STAT[m]]][pres]
+            if len(v) < MIN_PRESENT or np.isnan(v).any():
+                continue          # out in (nearly) every simulated game, or no efficiency prediction: no conditional prediction
+            rows.append(dict(kind="player", market=m, entity=pid, team=gsim.teams[k], p_play=float(pres.mean()), **market_summary(v, ladders[m])))
     rows.append(dict(kind="game", market="spread", entity=gsim.game_id, team=None, **market_summary(gsim.margin, ladders["spread"])))
     rows.append(dict(kind="game", market="total", entity=gsim.game_id, team=None, **market_summary(gsim.total, ladders["total"])))
     p_win = float((gsim.margin > 0).mean())
@@ -291,6 +315,7 @@ def store_game(gsim: GameSim, out_dir, mode: SimMode | None = None) -> dict:
             "player_id": np.tile(np.array(gsim.player_ids, dtype=object), n), "team": np.tile(np.array(gsim.teams, dtype=object), n)}
     for j, s in enumerate(PLAYER_STATS):
         cols[s] = (gsim.stats[:, :, j].reshape(-1)).astype(np.int16 if s in COUNT_STATS else np.float32)
+    cols["present"] = gsim.present.reshape(-1)
     players = pl.DataFrame(cols)
     gp, pp = out_dir / f"sim_games_{gsim.game_id}.parquet", out_dir / f"sim_players_{gsim.game_id}.parquet"
     games.write_parquet(gp, compression="zstd")

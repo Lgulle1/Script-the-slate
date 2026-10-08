@@ -624,6 +624,40 @@ def game_expected_shares(frame: pl.DataFrame, shifts: Shifts, model: StatusModel
     return out.with_columns(*cols, game_id=pl.lit(game_id), team=pl.lit(team))
 
 
+def game_share_scenarios(frame: pl.DataFrame, shifts: Shifts, model: StatusModel, game_id: str, team: str, season: int, week: int,
+                         as_of: datetime, cutoff: date, *, status_fn, blocked_ids: set, player_groups: dict, min_q: float = 0.001) -> tuple:
+    """The two ends of 4a.2's probability-weighted mixture, for a simulation that draws availability game by game.
+
+    Returns (play, scenarios, q):
+      play       player_id, role, group, p_out (q) and the expected shares IF EVERY PLAYER PLAYS (workload factors applied),
+                 b_carry / b_target / b_dropback, with a final `rest` row (shares of the unlisted players)
+      scenarios  for each player i with q_i > min_q: his shares in the world where ONLY i is out (everything else as in `play`)
+      q          player_id -> probability he is out
+    A simulated game draws each uncertain player out with probability q_i and uses  play + sum over out players (scenario_i - play).
+    The probability-weighted average over those draws equals the mixture of game_expected_shares to first order (the redistribution is
+    linear in q before clipping), which is what makes the simulated shares a distribution around the same expectation.
+    """
+    groups = {"QB": "QB", "RB1": "RB", "RB2FB": "RB", "WR1": "WR", "WR2": "WR", "WR3": "WR", "TE1": "TE", "TE2": "TE", "OL": "OL", "other": "WR"}
+    players = _team_players(frame, game_id, team, cutoff)
+    q, s = {}, {}
+    for pid, role in zip(players["player_id"].to_list(), players["role"].to_list()):
+        grp = (player_groups or {}).get(pid) or groups.get(role, "WR")
+        report, practice = status_fn(pid, season, week, as_of)
+        q[pid], s[pid] = absence_inputs(model, grp, report, practice, blocked=pid in blocked_ids)
+    players = players.with_columns(group=pl.struct("player_id", "role").map_elements(
+        lambda r: (player_groups or {}).get(r["player_id"]) or groups.get(r["role"], "WR"), return_dtype=pl.String))
+    play = redistribute(shifts, team, players, {}, s).join(players.select("player_id", "group"), on="player_id", how="left")
+    play = play.with_columns(p_out=pl.col("player_id").map_elements(lambda i: q.get(i, 0.0), return_dtype=pl.Float64))
+    scen = []
+    for pid, qi in q.items():
+        if qi > min_q:
+            sc = redistribute(shifts, team, players, {pid: 1.0}, s)
+            scen.append(sc.select("player_id", exp_carry="exp_carry", exp_target="exp_target", exp_dropback="exp_dropback").with_columns(out_player=pl.lit(pid)))
+    scenarios = pl.concat(scen) if scen else pl.DataFrame(schema={"player_id": pl.String, "exp_carry": pl.Float64, "exp_target": pl.Float64,
+                                                                  "exp_dropback": pl.Float64, "out_player": pl.String})
+    return play, scenarios, q
+
+
 # ====================================================================== 4a.3 in-game injury exits
 @dataclass
 class ExitModel:

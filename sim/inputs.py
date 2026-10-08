@@ -48,6 +48,7 @@ MIN_SHOCK_PAIR_WEIGHT = 300.0  # below this much pair weight the team shock is o
 MIN_POOL = 150                 # a (quantity, family) residual pool needs this many rows, else the quantity's pooled residuals
 IDIO_FLOOR = 0.25              # the idiosyncratic part never drops below this share of the pooled variance
 MIN_KAPPA_OBS = 400
+KAPPA_MAX_P_OUT = 0.02
 KAPPA_DEFAULT = {"carry": 30.0, "target": 30.0, "dropback": 300.0}   # carry / target: until MIN_KAPPA_OBS observations exist (early 2020); dropback: always
 KAPPA_RANGE = (2.0, 5000.0)
 MIN_PLAYS_SD_GAMES = 100
@@ -127,8 +128,12 @@ class Calibration:
                                                          n_dropback=pl.col("attempts").sum().cast(pl.Float64))
         act = player_log.select("game_id", "team", "player_id", x_carry=pl.col("carries").cast(pl.Float64),
                                 x_target=pl.col("targets").cast(pl.Float64), x_dropback=pl.col("attempts").cast(pl.Float64))
-        d = (detail.filter(pl.col("player_id") != "rest").join(tot, on=["game_id", "team"], how="inner")
-             .join(act, on=["game_id", "team", "player_id"], how="left"))
+        # Only team-games with no real availability uncertainty (every listed player's absence probability below KAPPA_MAX_P_OUT): there the
+        # mixture share IS the conditional share, so the dispersion left over is game-to-game noise in who gets the ball.
+        calm = (detail.filter(pl.col("player_id") != "rest").group_by("game_id", "team").agg(worst=pl.col("p_out").max())
+                .filter(pl.col("worst") < KAPPA_MAX_P_OUT).select("game_id", "team"))
+        d = (detail.filter(pl.col("player_id") != "rest").join(calm, on=["game_id", "team"], how="inner")
+             .join(tot, on=["game_id", "team"], how="inner").join(act, on=["game_id", "team", "player_id"], how="left"))
         self._kappa = {}
         for st in STATS:
             s, n = pl.col(f"exp_{st}"), pl.col(f"n_{st}")
@@ -237,6 +242,11 @@ class TeamInput:
     shares: dict                        # stat -> (K + 1,) expected shares, the last entry is `rest` (unlisted players)
     p_exit: np.ndarray                  # (K,)
     eff: dict                           # quantity -> (K,) Phase 3 efficiency prediction (nan where the player has none)
+    p_out: np.ndarray = None            # (K,) probability each simulated player is out (4a.1 / 4a.2)
+    play_shares: dict = None            # stat -> (K + 1,) expected shares if every player plays (workload factors applied)
+    scen_q: np.ndarray = None           # (M,) absence probability of each uncertain player (including linemen, who are not simulated)
+    scen_k: np.ndarray = None           # (M,) index of that player among the K simulated players, -1 if he is not simulated
+    scen_delta: dict = None             # stat -> (M, K + 1): shares when only that player is out, minus play_shares
 
 
 @dataclass
@@ -260,6 +270,7 @@ class SimData:
     games: pl.DataFrame                 # game_expectations (2020-2024 rows)
     tgs: pl.DataFrame                   # team_game_state
     detail: pl.DataFrame                # per team-game player list with expected shares
+    scen: pl.DataFrame                  # game_id, team, out_player, player_id, exp_*: shares when only out_player is out
     eff: pl.DataFrame                   # game_id, player_id, quantity, pred
     exit_pools: dict                    # (season, week) -> (group pools, pooled)
     calibration: Calibration
@@ -295,6 +306,19 @@ class SimData:
                 shares[st] = np.append(v, float(rest[f"exp_{st}"][0]) if rest.height else max(0.0, 1.0 - v.sum()))
             eff = self.eff.filter(pl.col("game_id") == game_id)
             ids = main["player_id"].to_list()
+            K = len(ids)
+            order = main["player_id"].to_list() + ["rest"]
+            bmap = {r["player_id"]: r for r in det.iter_rows(named=True)}
+            play = {st: np.array([bmap[i][f"b_{st}"] for i in order], dtype=float) for st in STATS}
+            sc = self.scen.filter((pl.col("game_id") == game_id) & (pl.col("team") == team))
+            outs = sorted(sc["out_player"].unique().to_list())
+            pout = {r["player_id"]: r["p_out"] for r in det.iter_rows(named=True)}
+            delta = {st: np.zeros((len(outs), K + 1)) for st in STATS}
+            for m, o in enumerate(outs):
+                rows_o = {r["player_id"]: r for r in sc.filter(pl.col("out_player") == o).iter_rows(named=True)}
+                for st in STATS:
+                    delta[st][m] = np.array([rows_o[i][f"exp_{st}"] if i in rows_o else play[st][j] for j, i in enumerate(order)]) - play[st]
+            pos = {i: j for j, i in enumerate(ids)}
             em = {q: np.full(len(ids), np.nan) for q in QUANTITIES}
             if eff.height:
                 lookup = {(r["player_id"], r["quantity"]): r["pred"] for r in eff.iter_rows(named=True)}
@@ -304,7 +328,10 @@ class SimData:
                                     db_rate=np.array([t[f"db_rate_{s}"] for s in gs.STATES], dtype=float), sack_rate=float(t["sack_rate"]),
                                     scramble_rate=float(t["scramble_rate"]), player_ids=ids, roles=main["role"].to_list(),
                                     groups=main["group"].to_list(), shares=shares,
-                                    p_exit=np.nan_to_num(main["p_exit"].to_numpy().astype(float)), eff=em)
+                                    p_exit=np.nan_to_num(main["p_exit"].to_numpy().astype(float)), eff=em,
+                                    p_out=np.array([pout[i] for i in ids], dtype=float), play_shares=play,
+                                    scen_q=np.array([pout[o] for o in outs], dtype=float), scen_k=np.array([pos.get(o, -1) for o in outs], dtype=int),
+                                    scen_delta=delta)
         pools, pooled = self.exit_pools[(season, week)]
         return GameInput(game_id=game_id, season=season, week=week, margin_mean=float(g["margin_mean"]), margin_sd=float(g["margin_sd"]),
                          total_mean=float(g["total_mean"]), total_sd=float(g["total_sd"]), home=teams["home"], away=teams["away"],
@@ -324,7 +351,7 @@ def _detail_and_exit(data, raw_db, cap):
                ros.filter(pl.col("roster_status").is_in(list(ij.BLOCKED_ROSTER_STATUSES))).partition_by("season", "week", as_dict=True).items()}
     groups = dict(pw.sort("gameday").group_by("gsis_id", maintain_order=True).agg(pl.col("group").last()).iter_rows())
     by_team = {k[0]: g for k, g in frame.partition_by("team", as_dict=True).items()}
-    rows, exit_pools = [], {}
+    rows, scen_rows, exit_pools = [], [], {}
     for season, week, cutoff in data.weeks:
         if season > cap:
             continue
@@ -334,14 +361,22 @@ def _detail_and_exit(data, raw_db, cap):
             out = ij.game_expected_shares(by_team[g["team"]], shifts, model, None, None, g["game_id"], g["team"], season, week, g["gameday"],
                                           ij.main_run_as_of(g["gameday"]), cutoff, exit_model=exit_model, status_fn=status_fn,
                                           blocked_ids=blocked.get((season, week), set()), player_groups=groups, with_eff=False)
+            play, scenarios, _ = ij.game_share_scenarios(by_team[g["team"]], shifts, model, g["game_id"], g["team"], season, week, g["gameday"],
+                                                         ij.main_run_as_of(g["gameday"]), cutoff, status_fn=status_fn,
+                                                         blocked_ids=blocked.get((season, week), set()), player_groups=groups)
+            pmap = {r["player_id"]: r for r in play.iter_rows(named=True)}
             gmap = {"rest": "rest"}
             for r in out.iter_rows(named=True):
+                pb = pmap[r["player_id"]]
                 rows.append(dict(season=season, week=week, key=season * 100 + week, game_id=g["game_id"], team=g["team"],
                                  player_id=r["player_id"], role=r["role"], group=groups.get(r["player_id"]) or gmap.get(r["player_id"]),
                                  exp_carry=r["exp_carry"], exp_target=r["exp_target"], exp_dropback=r["exp_dropback"], p_exit=r.get("p_exit"),
-                                 p_out=r["p_out"]))
+                                 p_out=r["p_out"], b_carry=pb["exp_carry"], b_target=pb["exp_target"], b_dropback=pb["exp_dropback"]))
+            for r in scenarios.iter_rows(named=True):
+                scen_rows.append(dict(game_id=g["game_id"], team=g["team"], **r))
     detail = pl.DataFrame(rows, infer_schema_length=None).sort("season", "week", "game_id", "team", "player_id")
-    return detail, exit_pools
+    scen = pl.DataFrame(scen_rows, infer_schema_length=None).sort("game_id", "team", "out_player", "player_id")
+    return detail, scen, exit_pools
 
 
 def _efficiency_predictions(data, raw_db, cap):
@@ -396,7 +431,7 @@ def build_sim_data(raw_db=config.RAW_DUCKDB_PATH, seasons=config.BACKTEST_SEASON
     tables = gs.build_all(raw_db, cap, n_boot=0)
     ge = tables["game_expectations"].filter(pl.col("season").is_in(list(seasons)))
     tgs = tables["team_game_state"]
-    detail, exit_pools = _detail_and_exit(data, raw_db, cap)
+    detail, scen, exit_pools = _detail_and_exit(data, raw_db, cap)
     eff = _efficiency_predictions(data, raw_db, cap)
     res = _residual_table(data.player_log, wf_path)
     games = gs.load_games(raw_db, cap)
@@ -406,4 +441,4 @@ def build_sim_data(raw_db=config.RAW_DUCKDB_PATH, seasons=config.BACKTEST_SEASON
                   .with_columns(margin=(pl.col("pf") - pl.col("pa")).cast(pl.Float64)))    # every team-game from 2019 on, realised margin
     calib = Calibration(res, detail, data.player_log, tgs, state_rows)
     elig = data.player_log.filter(pl.col("elig") != "").select("game_id", "player_id", "team", "elig")
-    return SimData(games=ge, tgs=tgs, detail=detail, eff=eff, exit_pools=exit_pools, calibration=calib, eligible=elig, seasons=tuple(seasons))
+    return SimData(games=ge, tgs=tgs, detail=detail, scen=scen, eff=eff, exit_pools=exit_pools, calibration=calib, eligible=elig, seasons=tuple(seasons))
