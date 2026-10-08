@@ -396,9 +396,26 @@ def test_a_new_starters_old_backup_games_do_not_dilute_his_baseline():
     frame = pl.DataFrame(rows).with_columns(pl.col("gameday").cast(pl.Date))
     prior = {"QB": {"carry": 0.05, "target": 0.0, "dropback": 0.9, "snap": 1.0}}
     rh = inj.role_history(frame, cut)
-    assert rh[("Q", "QB")][0] == 1 and ("Q", "other") not in rh                      # the backup games are not role games
+    assert rh[("Q", "QB")][0] == 1 and rh[("Q", "other")][0] == 5                    # backup games and starter games are different roles
     n, mean = rh[("Q", "QB")]
     base = (n * mean["dropback"] + inj.ROLE_K * prior["QB"]["dropback"]) / (n + inj.ROLE_K)
     assert base == pytest.approx(0.95)                                               # (1 x 1.0 + 0.9) / 2, not the all-games mean of about 0.19
     all_games = frame["dropback_share"].mean()
     assert all_games < 0.25 < base
+
+
+def test_a_benched_former_starter_is_a_backup_in_the_baseline_not_a_second_starter():
+    cut = date(2023, 10, 1)
+    rows = []
+    for i in range(4):      # he started four games ...
+        rows.append(dict(season=2023, week=1, game_id=f"s{i}", team="AAA", gameday=date(2023, 9, 3 + i), player_id="OLD", role="QB", played=True, carry_share=0.0,
+                         target_share=0.0, dropback_share=1.0, snap_share=1.0, base_carry=0.0, base_target=0.0, base_dropback=1.0, base_snap=1.0))
+    frame = pl.DataFrame(rows).with_columns(pl.col("gameday").cast(pl.Date))
+    extra = frame.with_columns(role=pl.lit("other"), dropback_share=0.02, player_id=pl.lit("BENCH"), game_id=pl.lit("x"))
+    frame = pl.concat([frame, extra])
+    prior = {"QB": {"carry": 0.0, "target": 0.0, "dropback": 0.95, "snap": 1.0}, "other": {"carry": 0.0, "target": 0.0, "dropback": 0.02, "snap": 0.3}}
+    rh = inj.role_history(frame, cut)
+    n, m = rh.get(("OLD", "other"), (0, None))
+    assert n == 0                                                                    # this week he is `other`: no games in that role yet
+    base = (n * 0.0 + inj.ROLE_K * prior["other"]["dropback"]) / (n + inj.ROLE_K)
+    assert base == pytest.approx(0.02)                                               # a benched starter gets the backup share, not 1.0

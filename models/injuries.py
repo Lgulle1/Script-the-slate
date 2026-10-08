@@ -625,9 +625,9 @@ def game_expected_shares(frame: pl.DataFrame, shifts: Shifts, model: StatusModel
 
 
 def role_prior_shares(frame: pl.DataFrame, cutoff: date) -> dict:
-    """Mean share of carries / targets / dropbacks / snaps per depth-chart role, over every earlier game the role holder played
-    (exit games excluded): what a role holder with no history of his own (a rookie, a new starter) is expected to get."""
-    h = frame.filter((pl.col("gameday") < cutoff) & pl.col("played") & (pl.col("role") != "other"))
+    """Mean share of carries / targets / dropbacks / snaps per depth-chart role (`other` = everyone not in a listed role), over every
+    earlier game the role holder played (exit games excluded): what a role holder with no history of his own (a rookie, a new starter) is expected to get."""
+    h = frame.filter((pl.col("gameday") < cutoff) & pl.col("played"))
     if "early_exit" in h.columns:
         h = h.filter(~pl.col("early_exit"))
     g = h.group_by("role").agg([pl.col(f"{s}_share").mean().alias(s) for s in SHARE_STATS])
@@ -638,9 +638,9 @@ ROLE_K = 1.0     # games' worth of weight on the role's league-average share in 
 
 
 def role_history(frame: pl.DataFrame, cutoff: date) -> dict:
-    """(player_id, role) -> (n, mean shares) over the player's last NORMAL_WINDOW games played in that depth-chart role, any team,
-    before the cutoff, exit games excluded."""
-    h = frame.filter((pl.col("gameday") < cutoff) & pl.col("played") & (pl.col("role") != "other"))
+    """(player_id, role) -> (n, mean shares) over the player's last NORMAL_WINDOW games played in that depth-chart role (`other` is a role:
+    a benched former starter's baseline is his usage as a backup), any team, before the cutoff, exit games excluded."""
+    h = frame.filter((pl.col("gameday") < cutoff) & pl.col("played"))
     if "early_exit" in h.columns:
         h = h.filter(~pl.col("early_exit"))
     h = h.sort("gameday").group_by("player_id", "role", maintain_order=True).tail(NORMAL_WINDOW)
@@ -662,7 +662,7 @@ def game_share_scenarios(frame: pl.DataFrame, shifts: Shifts, model: StatusModel
     The probability-weighted average over those draws equals the mixture of game_expected_shares to first order (the redistribution is
     linear in q before clipping), which is what makes the simulated shares a distribution around the same expectation.
 
-    role_prior / role_hist (role_prior_shares, role_history): a depth-chart role holder's baseline is the average of his last six games
+    role_prior / role_hist (role_prior_shares, role_history): every player's baseline (`other` is a role too) is the average of his last six games
     played IN THAT ROLE (on any team), shrunk toward the role's league average with n / (n + ROLE_K), n = those games. His all-games
     trailing baseline (4a.2) mixes jobs: a first-time starting quarterback's earlier backup games, a promoted backup, a rookie (n = 0 ->
     the role's average). (game_expected_shares, the 4a.4 feature builder, keeps its original behaviour: its results are frozen.)
@@ -673,7 +673,7 @@ def game_share_scenarios(frame: pl.DataFrame, shifts: Shifts, model: StatusModel
         rh = role_hist if role_hist is not None else role_history(frame, cutoff)
 
         def role_base(pid, role, st, current):
-            if role == "other" or role not in role_prior:
+            if role not in role_prior:
                 return current
             n, mean = rh.get((pid, role), (0, None))
             own = mean[st] if (n and mean[st] is not None) else role_prior[role][st]     # no value in those games (e.g. no snap row): the role's
