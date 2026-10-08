@@ -493,8 +493,9 @@ def redistribute(shifts: Shifts, team: str, players: pl.DataFrame, q: dict, s: d
     (default 1). Returns player_id, role, base_<stat> (normalised), exp_<stat>, plus a 'rest' row (unlisted players) for the
     three normalised stats.
 
-    fixed_roles (the simulation path): when the baselines add up to more than 1, the `other` players are scaled down to fit what the
-    depth-chart role holders leave over, instead of scaling everyone. A charted starting quarterback keeps his share; a backup who
+    fixed_roles (the simulation path, for the stats in FIXED_ROLE_STATS = dropbacks only): when the baselines add up to more than 1, the
+    `other` players are scaled down to fit what the depth-chart role holders leave over, instead of scaling everyone. Dropbacks belong to one
+    player; carries and targets are shared by several role holders, so they keep proportional scaling. A charted starting quarterback keeps his share; a backup who
     started games while labelled `other` cannot take it from him.
     """
     s = s or {}
@@ -509,7 +510,7 @@ def redistribute(shifts: Shifts, team: str, players: pl.DataFrame, q: dict, s: d
         if st in NORMALISED:
             rest = max(0.0, 1.0 - b.sum())
             if b.sum() > 1.0:
-                if fixed_roles:
+                if fixed_roles and st in FIXED_ROLE_STATS:
                     oth = np.array([r == "other" for r in roles_])
                     held = b[~oth].sum()
                     if held >= 1.0:
@@ -649,6 +650,7 @@ def role_prior_shares(frame: pl.DataFrame, cutoff: date) -> dict:
     return {r["role"]: {s: r[s] for s in SHARE_STATS} for r in g.iter_rows(named=True)}
 
 
+FIXED_ROLE_STATS = ("dropback",)
 ROLE_K = 1.0     # games' worth of weight on the role's league-average share in a role holder's baseline (chosen once, not tuned)
 
 
