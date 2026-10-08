@@ -202,7 +202,8 @@ def _res_frame():
 
 def _empty_calib(res):
     detail = pl.DataFrame(schema={"season": pl.Int64, "week": pl.Int64, "key": pl.Int64, "game_id": pl.String, "team": pl.String, "player_id": pl.String,
-                                  "exp_carry": pl.Float64, "exp_target": pl.Float64, "exp_dropback": pl.Float64, "p_out": pl.Float64})
+                                  "exp_carry": pl.Float64, "exp_target": pl.Float64, "exp_dropback": pl.Float64, "p_out": pl.Float64,
+                                  "b_carry": pl.Float64, "b_target": pl.Float64, "b_dropback": pl.Float64})
     log = pl.DataFrame(schema={"game_id": pl.String, "team": pl.String, "player_id": pl.String, "family": pl.String, "carries": pl.Int64, "targets": pl.Int64,
                                "attempts": pl.Int64, "rush_att_ex_kneel": pl.Float64})
     tgs = pl.DataFrame(schema={"season": pl.Int64, "week": pl.Int64, "game_id": pl.String, "team": pl.String, "exp_plays": pl.Float64, "plays": pl.Float64,
