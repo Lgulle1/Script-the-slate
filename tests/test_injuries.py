@@ -383,3 +383,22 @@ def test_a_promoted_backup_takes_the_role_average_while_an_established_starter_k
     assert get("AAA_QB", "exp_dropback") > 0.9                       # promoted: the role's average, not his 0.01
     wr1_base = target.filter(pl.col("player_id") == "AAA_wr1" if False else pl.col("role") == "WR1")["base_target"][0]
     assert get("AAA_WR1", "exp_target") != pytest.approx(0.20)       # an established WR1 (held the role all history) is NOT replaced by the prior
+
+
+def test_a_new_starters_old_backup_games_do_not_dilute_his_baseline():
+    cut = date(2023, 10, 1)
+    rows = []
+    for i in range(5):       # five games as an `other` backup with almost no dropbacks, then one game as the starter
+        rows.append(dict(season=2023, week=1, game_id=f"b{i}", team="OLD", gameday=date(2023, 9, 3 + i), player_id="Q", role="other", played=True,
+                         carry_share=0.0, target_share=0.0, dropback_share=0.02, snap_share=0.1, base_carry=0.0, base_target=0.0, base_dropback=0.02, base_snap=0.1))
+    rows.append(dict(season=2023, week=1, game_id="s0", team="OLD", gameday=date(2023, 9, 24), player_id="Q", role="QB", played=True,
+                     carry_share=0.05, target_share=0.0, dropback_share=1.0, snap_share=1.0, base_carry=0.0, base_target=0.0, base_dropback=0.02, base_snap=0.1))
+    frame = pl.DataFrame(rows).with_columns(pl.col("gameday").cast(pl.Date))
+    prior = {"QB": {"carry": 0.05, "target": 0.0, "dropback": 0.9, "snap": 1.0}}
+    rh = inj.role_history(frame, cut)
+    assert rh[("Q", "QB")][0] == 1 and ("Q", "other") not in rh                      # the backup games are not role games
+    n, mean = rh[("Q", "QB")]
+    base = (n * mean["dropback"] + inj.ROLE_K * prior["QB"]["dropback"]) / (n + inj.ROLE_K)
+    assert base == pytest.approx(0.95)                                               # (1 x 1.0 + 0.9) / 2, not the all-games mean of about 0.19
+    all_games = frame["dropback_share"].mean()
+    assert all_games < 0.25 < base

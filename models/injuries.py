@@ -634,9 +634,23 @@ def role_prior_shares(frame: pl.DataFrame, cutoff: date) -> dict:
     return {r["role"]: {s: r[s] for s in SHARE_STATS} for r in g.iter_rows(named=True)}
 
 
+ROLE_K = 1.0     # games' worth of weight on the role's league-average share in a role holder's baseline (chosen once, not tuned)
+
+
+def role_history(frame: pl.DataFrame, cutoff: date) -> dict:
+    """(player_id, role) -> (n, mean shares) over the player's last NORMAL_WINDOW games played in that depth-chart role, any team,
+    before the cutoff, exit games excluded."""
+    h = frame.filter((pl.col("gameday") < cutoff) & pl.col("played") & (pl.col("role") != "other"))
+    if "early_exit" in h.columns:
+        h = h.filter(~pl.col("early_exit"))
+    h = h.sort("gameday").group_by("player_id", "role", maintain_order=True).tail(NORMAL_WINDOW)
+    g = h.group_by("player_id", "role").agg(n=pl.len(), **{s: pl.col(f"{s}_share").mean() for s in SHARE_STATS})
+    return {(r["player_id"], r["role"]): (r["n"], {s: r[s] for s in SHARE_STATS}) for r in g.iter_rows(named=True)}
+
+
 def game_share_scenarios(frame: pl.DataFrame, shifts: Shifts, model: StatusModel, game_id: str, team: str, season: int, week: int,
                          as_of: datetime, cutoff: date, *, status_fn, blocked_ids: set, player_groups: dict, min_q: float = 0.001,
-                         role_prior: dict | None = None) -> tuple:
+                         role_prior: dict | None = None, role_hist: dict | None = None) -> tuple:
     """The two ends of 4a.2's probability-weighted mixture, for a simulation that draws availability game by game.
 
     Returns (play, scenarios, q):
@@ -648,27 +662,26 @@ def game_share_scenarios(frame: pl.DataFrame, shifts: Shifts, model: StatusModel
     The probability-weighted average over those draws equals the mixture of game_expected_shares to first order (the redistribution is
     linear in q before clipping), which is what makes the simulated shares a distribution around the same expectation.
 
-    role_prior (role_prior_shares): a depth-chart role holder who is NEW TO THE ROLE (none of his last six games played was in it: a
-    rookie, a new starter, a backup the depth chart has promoted) takes his role's average share instead of a baseline that describes
-    another job -- without it the simulation would give a first-time starting quarterback no dropbacks. (game_expected_shares,
-    the 4a.4 feature builder, keeps its original behaviour: its results are frozen.)
+    role_prior / role_hist (role_prior_shares, role_history): a depth-chart role holder's baseline is the average of his last six games
+    played IN THAT ROLE (on any team), shrunk toward the role's league average with n / (n + ROLE_K), n = those games. His all-games
+    trailing baseline (4a.2) mixes jobs: a first-time starting quarterback's earlier backup games, a promoted backup, a rookie (n = 0 ->
+    the role's average). (game_expected_shares, the 4a.4 feature builder, keeps its original behaviour: its results are frozen.)
     """
     groups = {"QB": "QB", "RB1": "RB", "RB2FB": "RB", "WR1": "WR", "WR2": "WR", "WR3": "WR", "TE1": "TE", "TE2": "TE", "OL": "OL", "other": "WR"}
     players = _team_players(frame, game_id, team, cutoff)
     if role_prior:
-        # new to the role = none of his last NORMAL_WINDOW games played (before the cutoff, on this team) was in the role he holds now
-        # (a rookie, a new starter, a backup the depth chart has promoted): his own trailing baseline describes another job
-        h = frame.filter((pl.col("gameday") < cutoff) & pl.col("played"))
-        if "early_exit" in h.columns:
-            h = h.filter(~pl.col("early_exit"))
-        h = h.sort("gameday").group_by("player_id", maintain_order=True).tail(NORMAL_WINDOW)
-        in_role = {(r["player_id"], r["role"]): r["n"] for r in h.group_by("player_id", "role").agg(n=pl.len()).iter_rows(named=True)}
+        rh = role_hist if role_hist is not None else role_history(frame, cutoff)
+
+        def role_base(pid, role, st, current):
+            if role == "other" or role not in role_prior:
+                return current
+            n, mean = rh.get((pid, role), (0, None))
+            own = mean[st] if n else 0.0
+            return (n * own + ROLE_K * role_prior[role][st]) / (n + ROLE_K)
         players = players.with_columns([
             pl.struct("player_id", "role", f"base_{st}").map_elements(
-                lambda r, st=st: (role_prior.get(r["role"], {}).get(st) if (r["role"] != "other" and r["role"] in role_prior
-                                                                          and (r[f"base_{st}"] is None or in_role.get((r["player_id"], r["role"]), 0) == 0))
-                                  else r[f"base_{st}"]),
-                return_dtype=pl.Float64).alias(f"base_{st}") for st in SHARE_STATS])
+                lambda r, st=st: role_base(r["player_id"], r["role"], st, r[f"base_{st}"]), return_dtype=pl.Float64).alias(f"base_{st}")
+            for st in SHARE_STATS])
     q, s = {}, {}
     for pid, role in zip(players["player_id"].to_list(), players["role"].to_list()):
         grp = (player_groups or {}).get(pid) or groups.get(role, "WR")

@@ -356,7 +356,7 @@ def _detail_and_exit(data, raw_db, cap):
         if season > cap:
             continue
         model, shifts, exit_model = ij.fit_status_model(pw, cutoff), ij.fit_shifts(frame, cutoff), ij.fit_exit_model(pw, cutoff)
-        prior = ij.role_prior_shares(frame, cutoff)
+        prior, rhist = ij.role_prior_shares(frame, cutoff), ij.role_history(frame, cutoff)
         exit_pools[(season, week)] = ({g: np.asarray(v, dtype=float) for g, v in exit_model.shares.items()}, np.asarray(exit_model.all_shares, dtype=float))
         for g in data.team_log.filter((pl.col("season") == season) & (pl.col("week") == week)).iter_rows(named=True):
             out = ij.game_expected_shares(by_team[g["team"]], shifts, model, None, None, g["game_id"], g["team"], season, week, g["gameday"],
@@ -364,7 +364,7 @@ def _detail_and_exit(data, raw_db, cap):
                                           blocked_ids=blocked.get((season, week), set()), player_groups=groups, with_eff=False)
             play, scenarios, _ = ij.game_share_scenarios(by_team[g["team"]], shifts, model, g["game_id"], g["team"], season, week,
                                                          ij.main_run_as_of(g["gameday"]), cutoff, status_fn=status_fn,
-                                                         blocked_ids=blocked.get((season, week), set()), player_groups=groups, role_prior=prior)
+                                                         blocked_ids=blocked.get((season, week), set()), player_groups=groups, role_prior=prior, role_hist=rhist)
             pmap = {r["player_id"]: r for r in play.iter_rows(named=True)}
             gmap = {"rest": "rest"}
             for r in out.iter_rows(named=True):
