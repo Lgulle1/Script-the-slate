@@ -14,8 +14,10 @@ volume x efficiency model on IDENTICAL rows:
 
 Gain = Phase 3 loss - simulation loss (positive = the simulation is better); 95% interval from the 3.3 season-week cluster
 bootstrap (config.BOOTSTRAP_RESAMPLES resamples, fixed seed); per-season gains and mean bias in the same row. No average across markets.
-sim_weight_probabilities / sim_weight_mean are fixed in advance (not tuned): 1.0 if gain > 0 and the simulation wins at least 2
-seasons separately on that metric, else 0.0 -- the simulation then stays at zero weight for that market and the market is flagged.
+sim_weight_probabilities / sim_weight_mean are fixed in advance (not tuned) and follow the same CLEARS / EDGE / NO standard as 3.3, 3.4
+and 4a.4 (eval.compare.verdict): 1.0 only when the metric CLEARS -- gain > 0, the 95% interval excludes zero, and the simulation wins at
+least config.MIN_SEASONS_WON seasons separately -- else 0.0. An EDGE (positive gain, interval touching or crossing zero) or a NO keeps the
+simulation at zero weight for that market and the market is flagged; nothing is dropped.
 
 --volume-source phase3 (default) anchors each player's simulated volume on the Phase 3 volume model's prediction (sim/simulate.py, step 6);
 --volume-source shares is the previous design (4a.2 shares alone) and writes the original, unsuffixed files, which are never overwritten by
@@ -52,9 +54,15 @@ def output_paths(volume_source: str, out_suffix: str = "") -> dict:
 
 RESULTS_PATH = output_paths("shares")["results"]          # the previous design's results (kept as the comparison reference)
 PHASE3_PREDICTIONS = config.PROCESSED_DIR / f"volume_efficiency_predictions_{VERSION}.parquet"
+
+
+def weight(verdict: str) -> float:
+    """Full weight only for a CLEARS; an EDGE or NO leaves the simulation at zero weight (flagged, not dropped)."""
+    return 1.0 if verdict == "CLEARS" else 0.0
+
+
 MARKET_ORDER = list(bl.PLAYER_MARKETS) + list(bl.GAME_MARKETS)
 SAMPLE_PER_GAME = 200
-MIN_SEASONS_FOR_WEIGHT = 2
 QUANTILES = (0.05, 0.25, 0.5, 0.75, 0.95)
 
 
@@ -140,7 +148,7 @@ def compare_markets(sim: pl.DataFrame, ph3: pl.DataFrame):
                        mean_gain=g["gain"], mean_gain_pct=100 * g["gain"] / float(e0.mean()), mean_ci_lo=g["lo"], mean_ci_hi=g["hi"],
                        mean_seasons_won=g["won"], mean_verdict=g["verdict"], median_gain=gm["gain"], median_ci_lo=gm["lo"], median_ci_hi=gm["hi"],
                        bias_phase3=float((p0 - y).mean()), bias_sim_mean=float((sm_mean - y).mean()), bias_sim_median=float((sm_med - y).mean()),
-                       sim_weight_mean=1.0 if (g["gain"] > 0 and g["won"] >= MIN_SEASONS_FOR_WEIGHT) else 0.0)
+                       sim_weight_mean=weight(g["verdict"]))
             row.update({f"mean_gain_{k}": v for k, v in g["per"].items()})
             ph3_cols = np.column_stack([t[f"ph3_p_over_{r}"].to_numpy() for r in rungs])
             sim_cols = np.column_stack([t[f"sim_p_over_{r}"].to_numpy() for r in rungs])
@@ -150,7 +158,7 @@ def compare_markets(sim: pl.DataFrame, ph3: pl.DataFrame):
         gb = _gain(b3 - bs, cluster, seasons)
         row.update(brier_phase3=float(b3.mean()), brier_sim=float(bs.mean()), brier_gain=gb["gain"], brier_gain_pct=100 * gb["gain"] / float(b3.mean()),
                    brier_ci_lo=gb["lo"], brier_ci_hi=gb["hi"], brier_seasons_won=gb["won"], brier_verdict=gb["verdict"],
-                   sim_weight_probabilities=1.0 if (gb["gain"] > 0 and gb["won"] >= MIN_SEASONS_FOR_WEIGHT) else 0.0)
+                   sim_weight_probabilities=weight(gb["verdict"]))
         row.update({f"brier_gain_{k}": v for k, v in gb["per"].items()})
         results.append(row)
         for src, idx in (("phase3", 0), ("simulation", 1)):
@@ -218,7 +226,7 @@ def run(save=True, sim_data=None, volume_source=sm.VOLUME_SOURCE, out_suffix="")
         meta = {b"seasons": json.dumps(config.BACKTEST_SEASONS).encode(), b"simulation_mode": sm.BACKTEST.name.encode(),
                 b"run_id": sm.run_id(sm.BACKTEST).encode(), b"volume_source": volume_source.encode(), b"draws_per_game": str(sm.BACKTEST.n_sim).encode(),
                 b"bootstrap": json.dumps(dict(resamples=config.BOOTSTRAP_RESAMPLES, seed=config.BOOTSTRAP_SEED, unit="season-week cluster")).encode(),
-                b"weight_rule": f"1.0 if gain > 0 and seasons_won >= {MIN_SEASONS_FOR_WEIGHT} else 0.0".encode()}
+                b"weight_rule": f"1.0 if verdict == CLEARS (gain > 0, 95% CI excludes zero, seasons_won >= {config.MIN_SEASONS_WON}) else 0.0".encode()}
         pq.write_table(results.to_arrow().replace_schema_metadata(meta), paths["results"])
         pq.write_table(calib.to_arrow().replace_schema_metadata(meta), paths["calibration"])
         pq.write_table(dtab.to_arrow().replace_schema_metadata(meta), paths["distributions"])
