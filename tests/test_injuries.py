@@ -111,3 +111,151 @@ def test_real_fit_ignores_later_seasons():
     a = inj.fit_status_model(pw, date(2022, 9, 8))
     b = inj.fit_status_model(pw.filter(pl.col("season") <= 2022), date(2022, 9, 8))
     assert a.play == b.play and a.ratio == b.ratio
+
+
+# ====================================================================== 4a.2 role redistribution
+import numpy as np
+
+ROLES = ["QB", "RB1", "WR1", "WR2", "WR3", "TE1"]
+BASE = {"QB": (0.0, 0.0, 1.0, 1.0), "RB1": (0.6, 0.10, 0.0, 0.8), "WR1": (0.0, 0.30, 0.0, 0.9), "WR2": (0.0, 0.20, 0.0, 0.85),
+        "WR3": (0.0, 0.10, 0.0, 0.7), "TE1": (0.0, 0.15, 0.0, 0.75)}
+
+
+def _game(team, gid, day, out=None, bump=None, season=2023):
+    """One team-game: every role present with its baseline share unless `out`; `bump` = {role: extra target share}."""
+    rows = []
+    for r in ROLES:
+        c, t, d, sn = BASE[r]
+        played = r != out
+        t2 = t + (bump or {}).get(r, 0.0) if played else 0.0
+        rows.append(dict(season=season, week=1, game_id=gid, team=team, gameday=day, player_id=f"{team}_{r}", role=r, played=played,
+                         carry_share=c if played else 0.0, target_share=t2, dropback_share=d if played else 0.0, snap_share=sn if played else 0.0,
+                         base_carry=c, base_target=t, base_dropback=d, base_snap=sn))
+    other_t = 1.0 - sum(BASE[r][1] for r in ROLES)
+    rows.append(dict(season=season, week=1, game_id=gid, team=team, gameday=day, player_id=f"{team}_o1", role="other", played=True,
+                     carry_share=0.4, target_share=other_t, dropback_share=0.0, snap_share=0.3, base_carry=0.4, base_target=other_t,
+                     base_dropback=0.0, base_snap=0.3))
+    return rows
+
+
+def _frame(rows):
+    return pl.DataFrame(rows).with_columns(pl.col("gameday").cast(pl.Date))
+
+
+def _history(wr1_out_games=3, bump=0.08):
+    rows = []
+    for i in range(wr1_out_games):      # WR1 missing: WR2 picks up targets
+        rows += _game("AAA", f"a{i}", date(2023, 9, 3 + i), out="WR1", bump={"WR2": bump})
+    for i in range(3):                  # healthy games
+        rows += _game("AAA", f"h{i}", date(2023, 9, 20 + i))
+    for t in ("BBB", "CCC"):            # league: WR1 out raises WR2 too
+        for i in range(3):
+            rows += _game(t, f"{t}{i}", date(2023, 9, 3 + i), out="WR1", bump={"WR2": 0.08})
+    return _frame(rows)
+
+
+def _players(team="AAA"):
+    cols = {c: [] for c in ("player_id", "role", "base_carry", "base_target", "base_dropback", "base_snap")}
+    for r in ROLES:
+        c, t, d, sn = BASE[r]
+        for k, v in zip(cols, (f"{team}_{r}", r, c, t, d, sn)):
+            cols[k].append(v)
+    ot = 1.0 - sum(BASE[r][1] for r in ROLES)
+    for k, v in zip(cols, (f"{team}_o1", "other", 0.4, ot, 0.0, 0.3)):
+        cols[k].append(v)
+    return pl.DataFrame(cols)
+
+
+def test_no_injury_output_equals_the_baseline_exactly():
+    sh = inj.fit_shifts(_history(), date(2023, 10, 1))
+    out = inj.redistribute(sh, "AAA", _players(), q={})
+    for st in inj.SHARE_STATS:
+        assert np.allclose(out[f"exp_{st}"].to_numpy(), out[f"base_{st}"].to_numpy(), atol=1e-12), st
+
+
+def test_shares_sum_to_one_for_every_team_with_players_out():
+    sh = inj.fit_shifts(_history(), date(2023, 10, 1))
+    for q in ({"AAA_WR1": 1.0}, {"AAA_WR1": 0.4, "AAA_RB1": 0.7}, {"AAA_QB": 1.0}, {"AAA_WR1": 1.0, "AAA_WR2": 1.0, "AAA_TE1": 1.0}):
+        out = inj.redistribute(sh, "AAA", _players(), q=q, s={"AAA_WR3": 0.6})
+        for st in inj.NORMALISED:
+            assert out[f"exp_{st}"].sum() == pytest.approx(1.0), (q, st)
+            assert (out[f"exp_{st}"] >= 0).all()
+
+
+def test_a_planted_missing_wr1_raises_the_other_receivers_in_the_direction_history_says():
+    sh = inj.fit_shifts(_history(), date(2023, 10, 1))
+    base = inj.redistribute(sh, "AAA", _players(), q={}).set_sorted("player_id")
+    out = inj.redistribute(sh, "AAA", _players(), q={"AAA_WR1": 1.0})
+    get = lambda df, pid, c: df.filter(pl.col("player_id") == pid)[c][0]
+    assert get(out, "AAA_WR1", "exp_target") == pytest.approx(0.0, abs=1e-9) or get(out, "AAA_WR1", "exp_target") < get(base, "AAA_WR1", "exp_target")
+    assert get(out, "AAA_WR2", "exp_target") > get(base, "AAA_WR2", "exp_target")                 # history: WR2 picks it up
+    gain_wr2 = get(out, "AAA_WR2", "exp_target") - get(base, "AAA_WR2", "exp_target")
+    gain_wr3 = get(out, "AAA_WR3", "exp_target") - get(base, "AAA_WR3", "exp_target")
+    assert gain_wr2 > gain_wr3                                                                     # and more than the WR3, who got nothing extra
+    half = inj.redistribute(sh, "AAA", _players(), q={"AAA_WR1": 0.5})                              # probability, not yes/no
+    assert get(base, "AAA_WR2", "exp_target") < get(half, "AAA_WR2", "exp_target") < get(out, "AAA_WR2", "exp_target")
+
+
+def test_team_shift_is_shrunk_toward_the_league_shift():
+    # one past WR1-out game for AAA with a big WR2 bump; league games with a small one
+    rows = _game("AAA", "a0", date(2023, 9, 3), out="WR1", bump={"WR2": 0.20})
+    for t in ("BBB", "CCC", "DDD"):
+        for i in range(4):
+            rows += _game(t, f"{t}{i}", date(2023, 9, 3 + i), out="WR1", bump={"WR2": 0.02})
+    sh = inj.fit_shifts(_frame(rows), date(2023, 10, 1), k=4)
+    team_raw, league = 0.20, (0.20 + 12 * 0.02) / 13
+    got = sh.get("AAA", "WR1", "WR2", "target")
+    assert got == pytest.approx((1 * team_raw + 4 * league) / 5)
+    assert league < got < team_raw
+    assert sh.get("ZZZ", "WR1", "WR2", "target") == pytest.approx(league)       # no team history -> the league shift
+
+
+def test_shifts_use_only_games_before_the_cutoff():
+    hist = _history()
+    later = _frame(_game("AAA", "late", date(2023, 12, 1), out="WR1", bump={"WR2": 0.9}))
+    a = inj.fit_shifts(hist, date(2023, 10, 1)).get("AAA", "WR1", "WR2", "target")
+    b = inj.fit_shifts(pl.concat([hist, later]), date(2023, 10, 1)).get("AAA", "WR1", "WR2", "target")
+    assert a == b
+
+
+def test_replacement_keeps_his_own_trailing_efficiency():
+    rows = []
+    for i in range(4):
+        for r, ypc, c in (("RB1", 5.5, 15), ("other", 3.0, 6)):
+            rows.append(dict(player_id=f"x_{r}", gameday=date(2023, 9, 3 + 7 * i), played=True, carries=float(c), rush_yds_ex=ypc * c,
+                             targets=0.0, rec_yds=0.0, receptions=0.0))
+    eff = inj.trailing_efficiency(pl.DataFrame(rows), date(2023, 10, 15)).sort("player_id")
+    assert dict(zip(eff["player_id"], eff["eff_ypc"])) == {"x_RB1": pytest.approx(5.5), "x_other": pytest.approx(3.0)}
+
+
+def test_absence_inputs():
+    m = inj.fit_status_model(_pw([_row(1, f"p{i}", date(2023, 9, 10), "none", "none", True) for i in range(60)]
+                                 + [_row(1, f"q{i}", date(2023, 9, 10), "Questionable", "LP", i % 2 == 0) for i in range(60)]),
+                             date(2023, 9, 17))
+    assert inj.absence_inputs(m, "WR", "none", "none") == (0.0, 1.0)
+    q, s = inj.absence_inputs(m, "WR", "Questionable", "LP")
+    assert 0.0 < q < 1.0 and 0.0 < s <= 1.0
+    assert inj.absence_inputs(m, "WR", "none", "none", blocked=True) == (1.0, 1.0)
+
+
+@pytestmark_db
+def test_real_game_shares_sum_to_one_and_use_no_future_information():
+    from features import phase4_inputs as p4
+
+    f = inj.build_role_frame(max_season=2024)
+    pw = inj.build_player_weeks(max_season=2024)
+    injr, ros = inj.load_injury_rows(max_season=2024), inj.load_roster_status(max_season=2024)
+    x = f.filter((pl.col("season") == 2023) & (pl.col("role") == "WR1") & (~pl.col("played"))).row(0, named=True)
+    wc = p4.week_cutoffs(max_season=2024).filter((pl.col("season") == 2023) & (pl.col("week") == x["week"]))["cutoff_date"][0]
+    args = (x["game_id"], x["team"], x["season"], x["week"], x["gameday"], inj.main_run_as_of(x["gameday"]), wc)
+    model, sh = inj.fit_status_model(pw, wc), inj.fit_shifts(f, wc)
+    out = inj.game_expected_shares(f, sh, model, injr, ros, *args)
+    for st in inj.NORMALISED:
+        assert out[f"exp_{st}"].sum() == pytest.approx(1.0)
+    assert out["player_id"].filter(out["player_id"] != "rest").is_unique().all()
+    # removing every later game from the frame changes nothing: the output is a function of games before the cutoff
+    f2 = f.filter((pl.col("gameday") < wc) | (pl.col("game_id") == x["game_id"]))
+    pw2 = pw.filter(pl.col("gameday") < wc)
+    out2 = inj.game_expected_shares(f2, inj.fit_shifts(f2, wc), inj.fit_status_model(pw2, wc), injr, ros, *args)
+    assert out.drop("p_out").equals(out2.drop("p_out")) or np.allclose(
+        out.sort("player_id", "role")["exp_target"].to_numpy(), out2.sort("player_id", "role")["exp_target"].to_numpy())

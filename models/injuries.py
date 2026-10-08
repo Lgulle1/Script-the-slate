@@ -278,3 +278,269 @@ def expected_snap_share(model: StatusModel, injuries: pl.DataFrame, rosters: pl.
     if normal_snap_pct is not None:
         out["expected_snap_pct"] = out["expected_snap_share"] * normal_snap_pct
     return out
+
+
+# ====================================================================== 4a.2 role redistribution
+"""When a teammate is likely out, move his workload to the right players.
+
+Roles (ROLES6): QB, RB1, RB2FB (RB2 and fullback), WR1, WR2, WR3, TE1, TE2, OL (the group of usual starters), other. `slot` is
+not a role here: no free source says who played the slot (see features/phase4_inputs.py). Roles come from the pre-game depth chart
+(player_game_roles.expected_role); OL starters are linemen whose trailing normal snap percentage is at least OL_STARTER_PCT.
+
+Measured shifts. For every past game before the cutoff in which EXACTLY ONE role r was missing (nobody in that role took an
+offensive snap; for OL, at least one starter missing) and the team's other roles were all present, each remaining role j's
+share of carries / targets / dropbacks / snaps is compared with that same player's own trailing baseline (the mean of his
+previous NORMAL_WINDOW games played). The team's average shift per (r, j, stat) is shrunk toward the league-wide shift with
+n / (n + SHIFT_K), n = the team's games of that kind (k = 4), so one past game never drives it. Players in `other` are pooled
+for measuring and spread over the other players in proportion to their baselines.
+
+Applying. A player's absence probability q = 1 - P(play | status) / P(play | healthy) from the status model (0 for a player with
+no designation; 1 for IR / PUP / suspended), and his workload factor s = snap_share_given_play / healthy value (<= 1). Expected raw
+share of a remaining player j = baseline_j + sum_i q_i * shift(role_i, role_j); of the player i himself = baseline_i * (1 - q_i) * s_i.
+Shares are clipped at 0 and rescaled so each team's carry, target and dropback shares sum to 1 (snap shares are clipped to
+[0, 1], they do not sum to 1). With nobody out (q = 0, s = 1) the output IS the normalised baseline.
+Replacement quality: each player carries his OWN trailing efficiency (yards per carry, yards per target, catch rate; league mean
+for his role only when he has no history), never the starter's.
+"""
+ROLES6 = ("QB", "RB1", "RB2FB", "WR1", "WR2", "WR3", "TE1", "TE2", "OL", "other")
+ROLE_OF_EXPECTED = {"QB1": "QB", "RB1": "RB1", "RB2": "RB2FB", "FB": "RB2FB", "WR1": "WR1", "WR2": "WR2", "WR3": "WR3", "TE1": "TE1",
+                    "TE2": "TE2"}
+SHARE_STATS = ("carry", "target", "dropback", "snap")
+NORMALISED = ("carry", "target", "dropback")
+SHIFT_K = 4
+OL_STARTER_PCT = 0.70
+
+
+def _trailing_mean_shares(frame: pl.DataFrame) -> pl.DataFrame:
+    """Adds base_<stat>: the player's mean share over his previous NORMAL_WINDOW games PLAYED (null with no earlier game)."""
+    frame = frame.sort("player_id", "gameday")
+    cols = {s: frame[f"{s}_share"].fill_null(0.0).to_numpy() for s in SHARE_STATS}
+    played, pid = frame["played"].to_numpy(), frame["player_id"].to_numpy()
+    out = {s: np.full(frame.height, np.nan) for s in SHARE_STATS}
+    bounds = np.flatnonzero(np.r_[True, pid[1:] != pid[:-1], True])
+    for a, b in zip(bounds[:-1], bounds[1:]):
+        hist = {s: [] for s in SHARE_STATS}
+        for i in range(a, b):
+            if hist["carry"]:
+                for s in SHARE_STATS:
+                    out[s][i] = float(np.mean(hist[s][-NORMAL_WINDOW:]))
+            if played[i]:
+                for s in SHARE_STATS:
+                    hist[s].append(cols[s][i])
+    return frame.with_columns([pl.Series(f"base_{s}", out[s]).fill_nan(None) for s in SHARE_STATS])
+
+
+def build_role_frame(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
+    """One row per (team-game, player) in a role: everyone who took an offensive snap, plus the depth-chart player of every
+    role who did not (played = False), plus the usual OL starters. Columns: season, week, game_id, team, gameday, player_id, role,
+    played, carry_share, target_share, dropback_share, snap_share, carries, rush_yds, targets, rec_yds, receptions, base_*."""
+    from features import phase4_inputs as p4
+
+    cutoffs = p4.week_cutoffs(raw_db, max_season)
+    roles = p4.build_player_game_roles(raw_db, max_season)
+    chart = p4._expected_roles(raw_db, max_season, cutoffs)
+    log = bl.build_player_game_log(raw_db, max_season).select("game_id", "player_id", "rush_yds_ex_kneel", "rushing_yards", "carries",
+                                                               "targets", "receiving_yards", "receptions")
+    games = bl.build_team_game_log(raw_db, max_season).select("season", "week", "team", "game_id", "gameday")
+    played = roles.select("season", "week", "game_id", "team", "player_id", role=pl.col("expected_role").replace_strict(ROLE_OF_EXPECTED, default="other"),
+                          played=pl.lit(True), carry_share=pl.col("carry_share").fill_null(0.0), target_share=pl.col("target_share").fill_null(0.0),
+                          dropback_share=pl.col("dropback_share").fill_null(0.0), snap_share=pl.col("snap_share"))
+    played = played.join(log, on=["game_id", "player_id"], how="left")
+    missing = (chart.filter(pl.col("expected_role").is_in(list(ROLE_OF_EXPECTED))).join(games, on=["season", "week", "team"], how="inner")
+               .join(played.select("game_id", "player_id"), on=["game_id", "player_id"], how="anti")
+               .select("season", "week", "game_id", "team", "player_id", role=pl.col("expected_role").replace_strict(ROLE_OF_EXPECTED),
+                       played=pl.lit(False), carry_share=pl.lit(0.0), target_share=pl.lit(0.0), dropback_share=pl.lit(0.0), snap_share=pl.lit(0.0)))
+    pw = build_player_weeks(raw_db, max_season)
+    ol = (pw.filter((pl.col("group") == "OL") & (pl.col("normal_snap_pct") >= OL_STARTER_PCT))
+          .join(games, on=["season", "week", "team"], how="inner")
+          .select("season", "week", "game_id", "team", player_id="gsis_id", role=pl.lit("OL"), played="played", carry_share=pl.lit(0.0),
+                  target_share=pl.lit(0.0), dropback_share=pl.lit(0.0), snap_share=pl.col("snap_pct").fill_null(0.0)))
+    frame = pl.concat([played, missing, ol], how="diagonal_relaxed").join(games.select("game_id", "team", "gameday"), on=["game_id", "team"], how="left")
+    for c in ("rush_yds_ex_kneel", "rushing_yards", "carries", "targets", "receiving_yards", "receptions"):
+        frame = frame.with_columns(pl.col(c).fill_null(0.0).cast(pl.Float64))
+    frame = frame.rename({"rush_yds_ex_kneel": "rush_yds_ex", "rushing_yards": "rush_yds", "receiving_yards": "rec_yds"})
+    return _trailing_mean_shares(frame).sort("season", "week", "game_id", "team", "role", "player_id")
+
+
+# ---------------------------------------------------------------- measuring the shifts
+def _absent_role(g: pl.DataFrame):
+    """The single role missing from a team-game, or None (zero or several missing)."""
+    roles, played = g["role"].to_list(), g["played"].to_list()
+    miss = set()
+    for r in set(roles) - {"other"}:
+        flags = [p for rr, p in zip(roles, played) if rr == r]
+        if (r == "OL" and not all(flags)) or (r != "OL" and not any(flags)):   # OL: any starter missing; others: nobody in the role played
+            miss.add(r)
+    return next(iter(miss)) if len(miss) == 1 else None
+
+
+def measure_shifts(frame: pl.DataFrame, cutoff: date) -> pl.DataFrame:
+    """Per (team, absent role r, remaining role j, stat): n games, mean delta (share - own baseline). Only games dated before
+    `cutoff` are read. Players in `other` are pooled into one entity (shares and baselines summed)."""
+    h = frame.filter(pl.col("gameday") < cutoff)
+    rows = []
+    for (game_id, team), g in h.group_by(["game_id", "team"], maintain_order=True):
+        r = _absent_role(g)
+        if r is None:
+            continue
+        here = g.filter(pl.col("played") & (pl.col("role") != r))
+        for role_j, gj in here.group_by("role", maintain_order=True):
+            role_j = role_j[0]
+            for s in SHARE_STATS:
+                base = gj[f"base_{s}"]
+                if base.null_count():
+                    continue
+                if role_j == "other":
+                    delta = float(gj[f"{s}_share"].sum() - base.sum())
+                else:
+                    delta = float((gj[f"{s}_share"] - base).sum())    # one player per role by construction
+                rows.append((team, r, role_j, s, game_id, delta))
+    return pl.DataFrame(rows, schema={"team": pl.String, "absent_role": pl.String, "role": pl.String, "stat": pl.String, "game_id": pl.String,
+                                      "delta": pl.Float64}, orient="row")
+
+
+class Shifts:
+    """Team shifts shrunk toward the league shifts with n / (n + k)."""
+
+    def __init__(self, measured: pl.DataFrame, k: float = SHIFT_K):
+        self.k = k
+        self.league = {key[:3]: v for key, v in
+                       ((tuple(r[c] for c in ("absent_role", "role", "stat")), r["m"]) for r in
+                        measured.group_by("absent_role", "role", "stat").agg(m=pl.col("delta").mean()).iter_rows(named=True))}
+        self.team = {(r["team"], r["absent_role"], r["role"], r["stat"]): (r["n"], r["m"]) for r in
+                     measured.group_by("team", "absent_role", "role", "stat").agg(n=pl.len(), m=pl.col("delta").mean()).iter_rows(named=True)}
+
+    def get(self, team: str, absent_role: str, role: str, stat: str) -> float:
+        lg = self.league.get((absent_role, role, stat), 0.0)
+        n, m = self.team.get((team, absent_role, role, stat), (0, lg))
+        return (n * m + self.k * lg) / (n + self.k)
+
+
+def fit_shifts(frame: pl.DataFrame, cutoff: date, k: float = SHIFT_K) -> Shifts:
+    return Shifts(measure_shifts(frame, cutoff), k)
+
+
+# ---------------------------------------------------------------- trailing efficiency (replacement quality)
+def trailing_efficiency(frame: pl.DataFrame, cutoff: date) -> pl.DataFrame:
+    """Per player, from his own previous NORMAL_WINDOW games played before the cutoff: yards per carry, yards per target, catch
+    rate (null when he has no carries / targets)."""
+    h = frame.filter((pl.col("gameday") < cutoff) & pl.col("played")).sort("player_id", "gameday")
+    h = h.group_by("player_id", maintain_order=True).tail(NORMAL_WINDOW)
+    return (h.group_by("player_id").agg(c=pl.col("carries").sum(), ry=pl.col("rush_yds_ex").sum(), t=pl.col("targets").sum(),
+                                        ty=pl.col("rec_yds").sum(), rec=pl.col("receptions").sum())
+            .select("player_id", eff_ypc=pl.when(pl.col("c") > 0).then(pl.col("ry") / pl.col("c")),
+                    eff_yds_per_target=pl.when(pl.col("t") > 0).then(pl.col("ty") / pl.col("t")),
+                    eff_catch_rate=pl.when(pl.col("t") > 0).then(pl.col("rec") / pl.col("t"))))
+
+
+# ---------------------------------------------------------------- applying them
+def absence_inputs(model: StatusModel, group: str, report: str, practice: str, blocked: bool = False) -> tuple[float, float]:
+    """(q, s): probability the player is out beyond his healthy baseline, and his workload factor if he plays (<= 1)."""
+    if blocked:
+        return 1.0, 1.0
+    r, h = model.rates(group, report, practice), model.rates(group, NONE, NONE)
+    q = min(1.0, max(0.0, 1.0 - r["p_play"] / h["p_play"])) if h["p_play"] > 0 else 0.0
+    s = min(1.0, r["snap_share_given_play"] / h["snap_share_given_play"]) if h["snap_share_given_play"] > 0 else 1.0
+    return q, s
+
+
+def redistribute(shifts: Shifts, team: str, players: pl.DataFrame, q: dict, s: dict | None = None) -> pl.DataFrame:
+    """Expected shares for one team-game.
+
+    players: player_id, role, base_carry, base_target, base_dropback, base_snap (the players' trailing baselines; a player with
+    a null baseline counts as 0). q[player_id] = probability he is out (default 0); s[player_id] = workload factor if he plays
+    (default 1). Returns player_id, role, base_<stat> (normalised), exp_<stat>, plus a 'rest' row (unlisted players) for the
+    three normalised stats.
+    """
+    s = s or {}
+    p = players.select("player_id", "role", *[pl.col(f"base_{x}").fill_null(0.0) for x in SHARE_STATS])
+    ids_, roles_ = p["player_id"].to_list(), p["role"].to_list()
+    qv = np.array([float(q.get(i, 0.0)) for i in ids_])
+    sv = np.array([float(s.get(i, 1.0)) for i in ids_])
+    out = {"player_id": ids_ + ["rest"], "role": roles_ + ["rest"]}
+    for st in SHARE_STATS:
+        b = p[f"base_{st}"].to_numpy().astype(float)
+        if st in NORMALISED:
+            rest = max(0.0, 1.0 - b.sum())
+            b, rest = (b / b.sum(), 0.0) if b.sum() > 1.0 else (b, rest)
+        else:
+            rest = 0.0
+        raw = b * (1.0 - qv) * sv
+        add = np.zeros(len(b))
+        is_other = np.array([r == "other" for r in roles_])
+        snap_b = p["base_snap"].to_numpy().astype(float)
+        members = {r: [k for k, rr in enumerate(roles_) if rr == r] for r in set(roles_)}
+
+        def weight(k):       # a player's part of his role: by baseline snaps (equal split when none)
+            m = members[roles_[k]]
+            tot = snap_b[m].sum()
+            return snap_b[k] / tot if tot > 0 else 1.0 / len(m)
+
+        for i in np.flatnonzero(qv > 0):
+            wi = weight(i)
+            for j, rj in enumerate(roles_):
+                if j == i or rj == "other" or rj == roles_[i]:
+                    continue
+                add[j] += qv[i] * wi * shifts.get(team, roles_[i], rj, st) * weight(j) * (1.0 - qv[j])
+            pool = shifts.get(team, roles_[i], "other", st) * qv[i] * wi
+            w = np.where(is_other, b, 0.0)
+            if w.sum() > 0:
+                add += pool * w / w.sum()
+        raw = np.clip(raw + add, 0.0, None)
+        if st in NORMALISED:
+            full = np.append(raw, rest)
+            tot = full.sum()
+            if tot < 1.0 - 1e-12:      # freed share the measured shifts did not hand on: to the next men up, else the unlisted
+                w = np.where(is_other, np.maximum(b, 0.0), 0.0)
+                w = w if w.sum() > 0 else is_other.astype(float)
+                if w.sum() > 0:
+                    full[:-1] += (1.0 - tot) * w / w.sum()
+                else:
+                    full[-1] += 1.0 - tot
+            else:
+                full = full / tot
+            out[f"base_{st}"] = list(np.append(b, rest))
+            out[f"exp_{st}"] = list(full)
+        else:
+            out[f"base_{st}"] = list(np.append(b, 0.0))
+            out[f"exp_{st}"] = list(np.append(np.clip(raw, 0.0, 1.0), 0.0))
+    return pl.DataFrame(out)
+
+
+# ---------------------------------------------------------------- one team-game, end to end
+def _team_players(frame: pl.DataFrame, game_id: str, team: str, cutoff: date) -> pl.DataFrame:
+    """The team's players for a pre-game prediction: the depth-chart role holders of this game (baselines are trailing means that
+    exclude it), plus the `other` players seen in the team's previous 4 games (baselines = mean share over their last NORMAL_WINDOW
+    games played before the cutoff). Who actually played in this game is NOT used."""
+    g = frame.filter((pl.col("game_id") == game_id) & (pl.col("team") == team) & (pl.col("role") != "other"))
+    prev = frame.filter((pl.col("team") == team) & (pl.col("gameday") < cutoff))
+    recent = sorted(prev["gameday"].unique().to_list())[-4:]
+    others = (prev.filter((pl.col("role") == "other") & pl.col("gameday").is_in(recent)).select("player_id").unique()
+              .join(g.select("player_id"), on="player_id", how="anti"))      # a role holder this game is not also an `other`
+    hist = (frame.filter((pl.col("gameday") < cutoff) & pl.col("played")).join(others, on="player_id", how="inner")
+            .sort("player_id", "gameday").group_by("player_id", maintain_order=True).tail(NORMAL_WINDOW))
+    o = hist.group_by("player_id").agg(**{f"base_{s}": pl.col(f"{s}_share").mean() for s in SHARE_STATS}).with_columns(role=pl.lit("other"))
+    keep = ["player_id", "role", *[f"base_{s}" for s in SHARE_STATS]]
+    return pl.concat([g.select(keep), o.select(keep)], how="vertical_relaxed")
+
+
+def game_expected_shares(frame: pl.DataFrame, shifts: Shifts, model: StatusModel, injuries: pl.DataFrame, rosters: pl.DataFrame,
+                         game_id: str, team: str, season: int, week: int, gameday: date, as_of: datetime, cutoff: date,
+                         groups: dict | None = None) -> pl.DataFrame:
+    """Expected carry / target / dropback / snap shares for one team-game before it is played: statuses as of `as_of`
+    (status model -> q, s per player; IR / PUP / suspended -> out), shifts from `shifts` (fit on games before `cutoff`), each
+    player's trailing efficiency from games before the cutoff. `groups` maps role -> status-model position group."""
+    groups = groups or {"QB": "QB", "RB1": "RB", "RB2FB": "RB", "WR1": "WR", "WR2": "WR", "WR3": "WR", "TE1": "TE", "TE2": "TE", "OL": "OL",
+                        "other": "WR"}
+    players = _team_players(frame, game_id, team, cutoff)
+    blocked_ids = set(rosters.filter((pl.col("season") == season) & (pl.col("week") == week)
+                                     & pl.col("roster_status").is_in(list(BLOCKED_ROSTER_STATUSES)))["gsis_id"].to_list())
+    q, s = {}, {}
+    for pid, role in zip(players["player_id"].to_list(), players["role"].to_list()):
+        report, practice = status_as_of(injuries, pid, season, week, as_of)
+        q[pid], s[pid] = absence_inputs(model, groups.get(role, "WR"), report, practice, blocked=pid in blocked_ids)
+    out = redistribute(shifts, team, players, q, s)
+    eff = trailing_efficiency(frame, cutoff)
+    return (out.join(eff, on="player_id", how="left")
+               .with_columns(p_out=pl.col("player_id").map_elements(lambda i: q.get(i, 0.0), return_dtype=pl.Float64),
+                             game_id=pl.lit(game_id), team=pl.lit(team)))
