@@ -64,7 +64,7 @@ OLD_PLAYER_MARKETS = {"pass_att": "attempts", "pass_cmp": "completions", "pass_y
                       "rush_yds": "rushing_yards", "targets": "targets", "rec": "receptions", "rec_yds": "receiving_yards"}
 
 
-def _old_eligible(family, slot):   # the pre-3.5.2 hard-coded pools, kept here as the reference
+def _old_eligible(family, slot):   # the slot pools of slotpool_v1 (RB 1-2, WR 1-3, TE 1-2), kept here for reference only
     _PASS, _RUSH, _RECV = ("pass_att", "pass_cmp", "pass_yds"), ("rush_att", "rush_yds"), ("targets", "rec", "rec_yds")
     if family == "QB":
         return _PASS if slot == 1 else ()
@@ -77,15 +77,21 @@ def _old_eligible(family, slot):   # the pre-3.5.2 hard-coded pools, kept here a
     return ()
 
 
-def test_markets_dict_resolves_to_exactly_the_old_behaviour():
-    assert list(config.MARKETS) == list(OLD_PENALTY_MAP)                       # eleven keys, same order
-    assert {m: s["penalty_key"] for m, s in config.MARKETS.items()} == OLD_PENALTY_MAP
-    assert config.BASELINE_TO_PENALTY_MARKET == OLD_PENALTY_MAP                # the alias
-    assert bl.PLAYER_MARKETS == OLD_PLAYER_MARKETS and list(bl.PLAYER_MARKETS) == list(OLD_PLAYER_MARKETS)
+def test_markets_dict_keeps_the_original_eleven_and_adds_the_two_qb_rushing_markets():
+    qb = ["qb_rush_att", "qb_rush_yds"]
+    assert len(config.MARKETS) == 13 and set(config.MARKETS) == set(OLD_PENALTY_MAP) | set(qb)
+    assert {m: s["penalty_key"] for m, s in config.MARKETS.items() if m not in qb} == OLD_PENALTY_MAP   # the original eleven, unchanged
+    assert {m: config.MARKETS[m]["penalty_key"] for m in qb} == {"qb_rush_att": "rush_att", "qb_rush_yds": "rush_yds"}  # assumption
+    assert config.BASELINE_TO_PENALTY_MARKET == {m: s["penalty_key"] for m, s in config.MARKETS.items()}   # the alias
+    assert {m: c for m, c in bl.PLAYER_MARKETS.items() if m not in qb} == OLD_PLAYER_MARKETS
+    assert {m: bl.PLAYER_MARKETS[m] for m in qb} == {"qb_rush_att": "rush_att_ex_kneel", "qb_rush_yds": "rush_yds_ex_kneel"}
     assert bl.GAME_MARKETS == ("spread", "moneyline", "total")
-    for fam in ("QB", "RB", "WR", "TE", "K", "DB"):
-        for slot in range(0, 6):
-            assert bt.eligible_markets(fam, slot) == _old_eligible(fam, slot), (fam, slot)
+    for m in ("pass_att", "pass_cmp", "pass_yds"):                              # QB1 is unchanged
+        assert config.MARKETS[m]["pool"] == {"QB": (1,)}
+    for m in ("rush_att", "rush_yds", "targets", "rec", "rec_yds"):          # the five rule-driven markets (3.5.2c)
+        assert config.MARKETS[m]["pool"] == "ELIGIBLE_PLAYER_RULE"
+    for m in ("qb_rush_att", "qb_rush_yds"):
+        assert config.MARKETS[m]["pool"] == "QB_RUSH_RULE" and config.QB_RUSH_MIN_ATT == 4
     for spec in config.MARKETS.values():
         assert {"kind", "baseline_family", "stat", "pool", "penalty_key"} <= set(spec)
         assert spec["penalty_key"] in config.CONTINUITY_PENALTIES
@@ -167,11 +173,11 @@ def test_best_baseline_per_market_uses_identical_rows():
 @needs_db
 def test_committed_best_baseline_matches_the_choice_in_the_phase3_results():
     from pathlib import Path
-    root = config.ROOT
-    if not (root / "best_baseline.parquet").exists():
-        pytest.skip("best_baseline.parquet not generated yet")
-    best = pl.read_parquet(root / "best_baseline.parquet")
-    assert best["market"].n_unique() == 11 and best.filter(pl.col("is_best")).height == 11
+    path = config.result_path("best_baseline")
+    if not path.exists():
+        pytest.skip(f"{path.name} not generated yet")
+    best = pl.read_parquet(path)
+    assert best["market"].n_unique() == 13 and best.filter(pl.col("is_best")).height == 13   # 11 original + 2 QB-rushing
     assert set(best["method"]) == set(bl.METHODS)
 
 

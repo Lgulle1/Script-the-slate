@@ -44,6 +44,9 @@ EFFICIENCY_SPECS = {
                       pooled=[("catch_pct", "receptions", "targets"), ("yds_per_tgt", "receiving_yards", "targets")]),
     "yds_per_rec": dict(market="rec_yds", ratio=("receiving_yards", "receptions"), stats=_REC_STATS,
                         pooled=[("yds_per_rec", "receiving_yards", "receptions"), ("catch_pct", "receptions", "targets")]),
+    # QB yards per (kneel-excluded) carry: the efficiency side of qb_rush_yds
+    "qb_ypc": dict(market="qb_rush_yds", ratio=("rush_yds_ex_kneel", "rush_att_ex_kneel"), stats=["rush_yds_ex_kneel", "rush_att_ex_kneel"],
+                   pooled=[("qb_ypc", "rush_yds_ex_kneel", "rush_att_ex_kneel")]),
 }
 TEAM_FEATURE_STATS = vf.TEAM_EFF_STATS + ["pass_rate"]
 PTS_PER_PLAY = "pts_per_play"
@@ -51,12 +54,12 @@ PTS_PER_PLAY = "pts_per_play"
 _BOUNDS = {"comp_pct": (0.0, 1.0), "catch_pct": (0.0, 1.0)}
 
 
-def build_efficiency_tables(player_log, team_log, team_volume, lineups, eligible=bt.eligible_markets) -> vf.FeatureTables:
+def build_efficiency_tables(player_log, team_log, team_volume, lineups) -> vf.FeatureTables:
     """Efficiency feature tables from already-loaded frames (no database access)."""
     week_cutoff = vf.week_cutoffs(team_log)
     clock = vf._Clock(team_log["season"].unique().to_list())
     side = vf.build_team_side_features(team_log, team_volume, week_cutoff, clock, stats=TEAM_FEATURE_STATS)
-    players = {q: vf.build_player_features(q, spec, player_log, team_log, team_volume, lineups, week_cutoff, clock, side, eligible)
+    players = {q: vf.build_player_features(q, spec, player_log, team_log, team_volume, lineups, week_cutoff, clock, side)
                for q, spec in EFFICIENCY_SPECS.items()}
     return vf.FeatureTables(players, vf.build_team_game_features(team_log, team_volume, side, PTS_PER_PLAY))
 
@@ -118,7 +121,7 @@ def efficiency_predictors(tables: vf.FeatureTables, params=vm.PARAMS, min_train=
 # ---- actuals the harness needs to score efficiency quantities
 def efficiency_player_actuals(row: dict) -> dict:
     """Extra actuals for one player-game row: each ratio the player is eligible for, when its denominator > 0."""
-    elig = bt.eligible_markets(row["family"], row["slot"])
+    elig = bt.eligible_markets(row)
     out = {}
     for q, spec in EFFICIENCY_SPECS.items():
         num, den = spec["ratio"]

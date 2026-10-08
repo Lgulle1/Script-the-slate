@@ -25,6 +25,7 @@ import polars as pl
 
 import config
 from eval import baselines as bl
+from eval import eligibility as elig
 
 PLAYER, GAME = "player", "game"
 MAX_BACKTEST_SEASON = max(config.BACKTEST_SEASONS)
@@ -65,12 +66,14 @@ def _make_data(player_log, team_log) -> BacktestData:
     return BacktestData(player_log, team_log, [(r["season"], r["week"], r["cutoff"]) for r in wk.iter_rows(named=True)])
 
 
-# --- who gets scored (pregame-known criteria, identical for every predictor) -----------------
-# The pools live in config.MARKETS: QB markets = the team's QB1, rushing = RB slots 1-2, receiving = WR
-# slots 1-3 + TE and RB slots 1-2. A player who does not appear in a game's stats has no row, so
-# "didn't play" games are not scored.
-def eligible_markets(family: str, slot: int) -> tuple:
-    return tuple(m for m, spec in config.MARKETS.items() if spec["kind"] == "player" and slot in spec["pool"].get(family, ()))
+# --- who gets scored ------------------------------------------------------------------------
+# One rule for everything (config.ELIGIBLE_PLAYER_RULE, applied in eval/eligibility.py when the player-game log
+# is built): QB markets = the team's QB1; rush_att, rush_yds, targets, rec, rec_yds = RB1/RB2/FB1/WR1-3/TE1 on the
+# pre-game depth chart, or >= 5 carries / 2 targets a game over the previous 4 games played. A player who does not
+# appear in a game's stats has no row, so "didn't play" games are not scored.
+def eligible_markets(row: dict) -> tuple:
+    """The markets a player-game row is scored for (its `elig` column)."""
+    return elig.markets_of(row["elig"])
 
 
 def _week_targets(data: BacktestData, season: int, week: int):
@@ -81,7 +84,7 @@ def _week_targets(data: BacktestData, season: int, week: int):
     games = data.player_log.filter((pl.col("season") == season) & (pl.col("week") == week))
     ptargets, pactual = [], []
     for r in games.iter_rows(named=True):
-        mk = eligible_markets(r["family"], r["slot"])
+        mk = eligible_markets(r)
         if not mk:
             continue
         ptargets.append(bl.PlayerTarget(r["player_id"], r["gameday"], season, r["team_game_num"], r["opponent"],

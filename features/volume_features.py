@@ -47,6 +47,8 @@ PLAYER_SPECS = {
                      share=("carries", "team_rush")),
     "targets": dict(market="targets", label="targets", stats=["targets", "receptions", "receiving_yards"],
                     share=("targets", "team_att")),
+    "qb_rush_att": dict(market="qb_rush_att", label="rush_att_ex_kneel", stats=["rush_att_ex_kneel", "rush_yds_ex_kneel", "attempts"],
+                        share=("rush_att_ex_kneel", "team_rush")),
 }
 TEAM_STATS = ["rush_att", "dropbacks", "plays", "pass_rate", "pts"]
 TEAM_EFF_STATS = ["ypc", "comp_pct", "yds_per_cmp", "ypa", "pts_per_play"]
@@ -160,9 +162,9 @@ def build_team_side_features(team_log, team_volume, week_cutoff, clock, stats=No
 
 
 # ------------------------------------------------------------------ player-level tables
-def build_player_features(quantity, spec, player_log, team_log, team_volume, lineups, week_cutoff, clock, team_side,
-                          eligible, team_cols=None) -> pl.DataFrame:
-    """Feature rows for one quantity: one row per eligible player-game.
+def build_player_features(quantity, spec, player_log, team_log, team_volume, lineups, week_cutoff, clock, team_side) -> pl.DataFrame:
+    """Feature rows for one quantity: one row per player-game eligible for the quantity's market
+    (the log's `elig` column, from config.ELIGIBLE_PLAYER_RULE).
 
     Volume specs have `label` (a stat column); efficiency specs have `ratio` = (num, den) and the row's
     `label` is num/den (NaN when den == 0), with `den` kept as the row's training weight. Rows with den == 0
@@ -202,6 +204,7 @@ def build_player_features(quantity, spec, player_log, team_log, team_volume, lin
         n_rows = g.height
         gd, season, week, tgn = _day(g["gameday"]), g["season"].to_numpy(), g["week"].to_numpy(), g["team_game_num"].to_numpy()
         teams_l, opp_l, fam_l = g["team"].to_list(), g["opponent"].to_list(), g["family"].to_list()
+        elig_l = g["elig"].to_list()
         team = np.array([team_codes[t] for t in teams_l])
         slot = g["slot"].to_numpy()
         fam = np.array([FAMILY_CODE[f] for f in fam_l])
@@ -214,7 +217,7 @@ def build_player_features(quantity, spec, player_log, team_log, team_volume, lin
         lin = {c: np.array([(lineup_ids.get((teams_l[i], int(season[i]), int(week[i]))) or {}).get(c, -1)
                             for i in range(n_rows)], dtype=np.int64) for c in lu.COMPONENTS}
         for i in range(n_rows):
-            if market not in eligible(fam_l[i], int(slot[i])):
+            if market not in elig_l[i].split(","):
                 continue
             cutoff = week_cutoff[(int(season[i]), int(week[i]))].toordinal()
             j = int(np.searchsorted(gd, cutoff, side="left"))
@@ -291,12 +294,12 @@ def week_cutoffs(team_log):
     return {(r["season"], r["week"]): r["cutoff"] for r in wk.iter_rows(named=True)}
 
 
-def build_feature_tables(player_log, team_log, team_volume, lineups, eligible) -> FeatureTables:
+def build_feature_tables(player_log, team_log, team_volume, lineups) -> FeatureTables:
     """Volume feature tables from already-loaded frames (no database access)."""
     week_cutoff = week_cutoffs(team_log)
     clock = _Clock(team_log["season"].unique().to_list())
     side = build_team_side_features(team_log, team_volume, week_cutoff, clock)
-    players = {q: build_player_features(q, spec, player_log, team_log, team_volume, lineups, week_cutoff, clock, side, eligible)
+    players = {q: build_player_features(q, spec, player_log, team_log, team_volume, lineups, week_cutoff, clock, side)
                for q, spec in PLAYER_SPECS.items()}
     return FeatureTables(players, build_team_game_features(team_log, team_volume, side, "plays"))
 
@@ -308,4 +311,4 @@ def load_feature_tables(data, raw_db=config.RAW_DUCKDB_PATH, max_season=None) ->
     tv = build_team_volume(raw_db, cap)
     ln = lu.build_lineups(raw_db, cap)
     bt.assert_no_holdout(tv.join(data.team_log.select("game_id", "season").unique(), on="game_id", how="inner"))
-    return build_feature_tables(data.player_log, data.team_log, tv, ln, bt.eligible_markets)
+    return build_feature_tables(data.player_log, data.team_log, tv, ln)

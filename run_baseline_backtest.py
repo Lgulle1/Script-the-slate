@@ -3,8 +3,9 @@ grade them, and save the results.
 
   python run_baseline_backtest.py
 
-Writes baseline_results.parquet (graded long table, tracked in git; the data fingerprint is in
-its metadata) and data/processed/baseline_predictions.parquet (every prediction/actual, git-ignored).
+Writes baseline_results_<pool version>.parquet (graded long table, tracked in git; the data fingerprint is in
+its metadata), best_baseline_<pool version>.parquet and data/processed/baseline_predictions_<pool version>.parquet
+(every prediction/actual, git-ignored).
 Running it twice on the same data gives identical numbers. The 2025 holdout is never loaded.
 """
 import hashlib
@@ -18,9 +19,11 @@ from eval import backtest as bt
 from eval import baselines as bl
 from eval import compare, grade
 
-RESULTS_PATH = config.ROOT / "baseline_results.parquet"
-PREDICTIONS_PATH = config.PROCESSED_DIR / "baseline_predictions.parquet"
-BEST_PATH = config.ROOT / "best_baseline.parquet"
+# Result files carry the player-pool version in their name (config.ELIGIBLE_PLAYER_RULE["version"]) so a new pool
+# can never overwrite an older version's results (baseline_results_slotpool_v1.parquet is the slot-pool original).
+RESULTS_PATH = config.result_path("baseline_results")
+PREDICTIONS_PATH = config.PROCESSED_DIR / f"baseline_predictions_{config.ELIGIBLE_PLAYER_RULE['version']}.parquet"
+BEST_PATH = config.result_path("best_baseline")
 PLAYER_MARKET_ORDER = list(bl.PLAYER_MARKETS)
 MARKET_ORDER = PLAYER_MARKET_ORDER + list(bl.GAME_MARKETS)
 

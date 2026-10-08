@@ -89,7 +89,7 @@ def test_efficiency_features_never_see_the_future(real):
     for q in ef.EFFICIENCY_SPECS:
         a = et.players[q].filter(pl.col("gameday") < D).sort("player_id", "game_id")
         b = et2.players[q].filter(pl.col("gameday") < D).sort("player_id", "game_id")
-        assert a.height == b.height > 500
+        assert a.height == b.height > 250   # qb_ypc is the smallest table
         for c in vm.feature_columns(a):
             assert np.allclose(a[c].to_numpy().astype(float), b[c].to_numpy().astype(float), equal_nan=True), f"{q}.{c}"
     a, b = (t.teams.filter(pl.col("gameday") < D).sort("team", "gameday") for t in (et, et2))

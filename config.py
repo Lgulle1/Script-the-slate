@@ -203,22 +203,67 @@ CONTINUITY_PENALTIES: dict[str, dict[str, float]] = {
 # applied to baselines/models.
 # The single market table. Per market: kind ("player"/"game"), `baseline_family` (which baseline routine
 # family scores it: the per-player functions or predict_game), `stat` (player_stats column for player
-# markets), `pool` (position family -> depth-chart slots that are scored; empty for game markets) and
+# markets), `pool` (position family -> depth-chart slots that are scored; empty for game markets; or the name of a rule:
+# "ELIGIBLE_PLAYER_RULE" for the RB-group / receiving markets, "QB_RUSH_RULE" for the QB-rushing markets) and
 # `penalty_key` (its row in CONTINUITY_PENALTIES). Key order is iteration order everywhere.
-_RECV_POOL = {"WR": (1, 2, 3), "TE": (1, 2), "RB": (1, 2)}
+_RULE = "ELIGIBLE_PLAYER_RULE"  # pool marker: who is scored for this market comes from ELIGIBLE_PLAYER_RULE below
 MARKETS = {
     "pass_att": dict(kind="player", baseline_family="player", stat="attempts", pool={"QB": (1,)}, penalty_key="pass_yds"),
     "pass_cmp": dict(kind="player", baseline_family="player", stat="completions", pool={"QB": (1,)}, penalty_key="pass_yds"),
     "pass_yds": dict(kind="player", baseline_family="player", stat="passing_yards", pool={"QB": (1,)}, penalty_key="pass_yds"),
-    "rush_att": dict(kind="player", baseline_family="player", stat="carries", pool={"RB": (1, 2)}, penalty_key="rush_att"),
-    "rush_yds": dict(kind="player", baseline_family="player", stat="rushing_yards", pool={"RB": (1, 2)}, penalty_key="rush_yds"),
-    "targets": dict(kind="player", baseline_family="player", stat="targets", pool=_RECV_POOL, penalty_key="rec"),
-    "rec": dict(kind="player", baseline_family="player", stat="receptions", pool=_RECV_POOL, penalty_key="rec"),
-    "rec_yds": dict(kind="player", baseline_family="player", stat="receiving_yards", pool=_RECV_POOL, penalty_key="rec_yds"),
+    "rush_att": dict(kind="player", baseline_family="player", stat="carries", pool=_RULE, penalty_key="rush_att"),
+    "rush_yds": dict(kind="player", baseline_family="player", stat="rushing_yards", pool=_RULE, penalty_key="rush_yds"),
+    "targets": dict(kind="player", baseline_family="player", stat="targets", pool=_RULE, penalty_key="rec"),
+    "rec": dict(kind="player", baseline_family="player", stat="receptions", pool=_RULE, penalty_key="rec"),
+    "rec_yds": dict(kind="player", baseline_family="player", stat="receiving_yards", pool=_RULE, penalty_key="rec_yds"),
+    # ASSUMPTION: the two QB-rushing markets borrow the RB rushing continuity penalties (rush_att / rush_yds). The guide
+    # has no QB-rushing penalty row; the QB-change factor in those rows (0.90) is the one that matters most for a QB.
+    "qb_rush_att": dict(kind="player", baseline_family="player", stat="rush_att_ex_kneel", pool="QB_RUSH_RULE", penalty_key="rush_att"),
+    "qb_rush_yds": dict(kind="player", baseline_family="player", stat="rush_yds_ex_kneel", pool="QB_RUSH_RULE", penalty_key="rush_yds"),
     "spread": dict(kind="game", baseline_family="game", stat=None, pool={}, penalty_key="game_total"),
     "moneyline": dict(kind="game", baseline_family="game", stat=None, pool={}, penalty_key="game_total"),
     "total": dict(kind="game", baseline_family="game", stat=None, pool={}, penalty_key="game_total"),
 }
+# Who is graded (and trained on) for rush_att, rush_yds, targets, rec and rec_yds -- ONE rule, used everywhere
+# (eval/eligibility.py applies it; the harness, baselines and models all read the result). It replaces the older
+# depth-chart-slot pools (RB slots 1-2, WR 1-3, TE 1-2), preserved as *_slotpool_v1 results.
+# A player is eligible for a game when, on the PRE-GAME depth chart, he is RB1, RB2, FB1, WR1-WR3 or TE1,
+# OR he averaged at least 5 carries or 2 targets over his previous 4 games played.
+# RUSHING IS RB-GROUP ONLY: rush_att and rush_yds are scored for the RB group (RB1, RB2, FB1, and any other RB or
+# fullback who meets the usage clause) -- never for QBs, WRs or TEs, however many carries they average. Running
+# quarterbacks have their own markets (qb_rush_att, qb_rush_yds) with their own pool, below.
+#   depth_chart  position group -> depth_team numbers counted ("RB" = non-fullback backs, ranked by depth_team;
+#                "FB" = fullbacks; "WR"/"TE" by depth_team; QBs are never chart-eligible here)
+#   usage        window_games previous games PLAYED (up to 4, at least 1; seasons from FEATURE_HISTORY_START on);
+#                min_carries / min_targets are per-game averages over that window
+#   scope        "per_market": a clause only counts for the markets it is about -- the chart slots of RB/FB make a
+#                player eligible for rushing AND receiving markets, WR/TE slots for receiving markets only, the
+#                carries clause for rushing markets only, the targets clause for receiving markets only.
+#                "all_markets": any clause makes the player eligible for all five markets (the literal reading).
+# QB1 (pass_att, pass_cmp, pass_yds) is unchanged and still comes from MARKETS[...]["pool"].
+ELIGIBLE_PLAYER_RULE = {
+    "version": "eligibility_v2",
+    "depth_chart": {"RB": (1, 2), "FB": (1,), "WR": (1, 2, 3), "TE": (1,)},
+    "usage": {"window_games": 4, "min_carries": 5.0, "min_targets": 2.0},
+    "scope": "per_market",
+    "rush_markets": ("rush_att", "rush_yds"),
+    "receiving_markets": ("targets", "rec", "rec_yds"),
+    "chart_markets": {"RB": "both", "FB": "both", "WR": "receiving", "TE": "receiving"},
+    "rush_families": ("RB",),   # position families (player_stats position, FB/HB folded into RB) allowed in the rushing markets
+}
+
+# Running quarterbacks: qb_rush_att and qb_rush_yds are scored for a game when the team's QB1 on the pre-game depth
+# chart averaged at least QB_RUSH_MIN_ATT rush attempts over his previous 4 games played. Designed runs and scrambles
+# count; kneel-downs do NOT (they are removed from both attempts and yards using the play-by-play).
+QB_RUSH_MIN_ATT = 4
+
+
+def result_path(stem: str, version: str | None = None):
+    """Path of a result file for a pool version, e.g. baseline_results_eligibility_v2.parquet. Results are always
+    written with the rule's version in the name, so a new pool can never overwrite an older version's file."""
+    return ROOT / f"{stem}_{version or ELIGIBLE_PLAYER_RULE['version']}.parquet"
+
+
 # Alias kept for existing callers: market -> continuity-penalty key.
 BASELINE_TO_PENALTY_MARKET = {m: spec["penalty_key"] for m, spec in MARKETS.items()}
 BLEND_OWN_WEIGHT = 0.7  # player/team own average; the rest is the opponent-allowed average
@@ -238,6 +283,8 @@ LADDERS = {
     "targets": [3.5, 5.5, 7.5, 9.5],
     "rec": [2.5, 4.5, 6.5, 8.5],
     "rec_yds": [29.5, 49.5, 74.5, 99.5],
+    "qb_rush_att": [3.5, 5.5, 7.5, 9.5],      # my starting picks for the two QB-rushing markets
+    "qb_rush_yds": [14.5, 24.5, 39.5, 54.5],
     "spread": [-6.5, -3.5, -0.5, 2.5, 6.5],   # home margin > t
     "total": [38.5, 41.5, 44.5, 47.5, 50.5],
 }

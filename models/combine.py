@@ -2,7 +2,7 @@
 
   pass_att / rush_att / targets   = the volume prediction itself
   pass_cmp  = pass_att x comp_pct               pass_yds = pass_att x comp_pct x yds_per_cmp
-  rush_yds  = rush_att x ypc
+  rush_yds  = rush_att x ypc                    qb_rush_yds = qb_rush_att x qb_ypc   (kneel-downs excluded from both)
   rec       = targets x catch_pct               rec_yds  = targets x catch_pct x yds_per_rec
   games     = home pts = plays_home x ppp_home, away pts likewise;
               total = home + away, spread = home - away (same sign as nflverse spread_line),
@@ -31,6 +31,8 @@ def combine_player(vol: dict, eff: dict) -> dict:
         "pass_yds": _mul(vol.get("pass_att"), eff.get("comp_pct"), eff.get("yds_per_cmp")),
         "rush_att": vol.get("rush_att"),
         "rush_yds": _mul(vol.get("rush_att"), eff.get("ypc")),
+        "qb_rush_att": vol.get("qb_rush_att"),
+        "qb_rush_yds": _mul(vol.get("qb_rush_att"), eff.get("qb_ypc")),
         "targets": vol.get("targets"),
         "rec": _mul(vol.get("targets"), eff.get("catch_pct")),
         "rec_yds": _mul(vol.get("targets"), eff.get("catch_pct"), eff.get("yds_per_rec")),

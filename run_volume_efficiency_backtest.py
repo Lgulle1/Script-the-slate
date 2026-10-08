@@ -5,7 +5,7 @@
 Runs the five baselines and the combined volume (3.1) x efficiency (3.2) model through the same
 walk-forward harness for all 11 markets over 2020-2024 (2025 is never loaded), compares each market's
 model with its best baseline on identical rows, bootstraps a 95% CI on the gain, and writes
-volume_efficiency_results.parquet (long format; see `results_table`). Re-running on the same data and
+volume_efficiency_results_<pool version>.parquet (long format; see `results_table`). Re-running on the same data and
 library versions gives identical numbers.
 """
 import json
@@ -24,8 +24,9 @@ from features import volume_features as vf
 from models import combine, efficiency, volume
 from run_baseline_backtest import fingerprint
 
-RESULTS_PATH = config.ROOT / "volume_efficiency_results.parquet"
-PREDICTIONS_PATH = config.PROCESSED_DIR / "volume_efficiency_predictions.parquet"
+# Versioned by player pool, like the baseline results (volume_efficiency_results_slotpool_v1.parquet is the original).
+RESULTS_PATH = config.result_path("volume_efficiency_results")
+PREDICTIONS_PATH = config.PROCESSED_DIR / f"volume_efficiency_predictions_{config.ELIGIBLE_PLAYER_RULE['version']}.parquet"
 MODEL = "vol_x_eff"
 MARKET_ORDER = list(bl.PLAYER_MARKETS) + list(bl.GAME_MARKETS)
 SCHEMA = {"table": pl.String, "market": pl.String, "method": pl.String, "season": pl.Int32, "metric": pl.String,

@@ -48,7 +48,7 @@ def real():
     data = bt.load_backtest_data()
     tv = vf.build_team_volume(max_season=2024)
     ln = lu.build_lineups(max_season=2024)
-    return data, tv, ln, vf.build_feature_tables(data.player_log, data.team_log, tv, ln, bt.eligible_markets)
+    return data, tv, ln, vf.build_feature_tables(data.player_log, data.team_log, tv, ln)
 
 
 def test_recency_feature_matches_phase2_baseline(real):
@@ -82,13 +82,13 @@ def test_features_never_see_the_future(real):
     ln2 = ln.with_columns([pl.when(pl.struct("season", "week").map_elements(lambda r: (r["season"], r["week"]) in late_wk,
                                                                           return_dtype=pl.Boolean))
                            .then(pl.col(c) + 1).otherwise(pl.col(c)).alias(c) for c in lu.COMPONENTS])
-    ft2 = vf.build_feature_tables(pl2, tl2, tv2, ln2, bt.eligible_markets)
+    ft2 = vf.build_feature_tables(pl2, tl2, tv2, ln2)
     for q in vf.PLAYER_SPECS:
         a, b = ft.players[q], ft2.players[q]
         cols = [c for c in vm.feature_columns(a)]
         early = lambda df: df.filter(pl.col("gameday") < D).sort("player_id", "game_id")  # noqa: E731
         ea, eb = early(a), early(b)
-        assert ea.height == eb.height > 1000
+        assert ea.height == eb.height > 300   # the QB-rushing table is small (a few hundred games)
         for c in cols:
             x, y = ea[c].to_numpy().astype(float), eb[c].to_numpy().astype(float)
             assert np.allclose(x, y, equal_nan=True), f"{q}.{c} changed when only the future was altered"
@@ -105,7 +105,7 @@ def test_volume_predictors_through_the_harness_are_deterministic_and_capped(real
     a = bt.walk_forward("v", d, pp, gp, seasons=[2022])
     b = bt.walk_forward("v", d, pp, gp, seasons=[2022])
     assert a.equals(b) and a.height > 5000
-    assert set(a["market"].unique()) == {"pass_att", "rush_att", "targets", "plays_home", "plays_away"}
+    assert set(a["market"].unique()) == {"pass_att", "rush_att", "targets", "qb_rush_att", "plays_home", "plays_away"}
     assert a["season"].max() == 2022
     assert a["prediction"].min() >= 0
     with pytest.raises(ValueError, match="locked"):

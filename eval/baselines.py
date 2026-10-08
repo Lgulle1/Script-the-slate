@@ -23,6 +23,7 @@ import duckdb
 import polars as pl
 
 import config
+from eval import eligibility as elig
 from features.weights import games_elapsed, recency_weight
 
 # market -> player_stats column
@@ -288,8 +289,67 @@ def build_role_table(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> tuple[pl
     return old, new
 
 
+# Stats that are not player_stats columns: kneel-excluded rushing (nflverse's carries and rushing yards include QB
+# kneel-downs). They are built in build_player_game_log as carries/yards minus the play-by-play's kneels.
+DERIVED_STATS = {"rush_att_ex_kneel": ("carries", "kneels"), "rush_yds_ex_kneel": ("rushing_yards", "kneel_yards")}
+
+
+def build_kneels(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
+    """QB kneel-downs per (game_id, player_id): count and (negative) yards, from the play-by-play."""
+    config.cap_season(max_season)
+    con = duckdb.connect(str(raw_db), read_only=True)
+    try:
+        return con.execute(
+            "SELECT game_id, rusher_player_id AS player_id, CAST(count(*) AS DOUBLE) AS kneels, "
+            "CAST(coalesce(sum(yards_gained), 0) AS DOUBLE) AS kneel_yards FROM "
+            "(SELECT DISTINCT ON (game_id, play_id) * FROM pbp "
+            f" WHERE qb_kneel = 1 AND rusher_player_id IS NOT NULL{_season_cap(max_season)} "
+            " ORDER BY game_id, play_id, pulled_at DESC) GROUP BY 1, 2").pl()
+    finally:
+        con.close()
+
+
+def build_chart_flags(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
+    """Pre-game depth-chart eligibility flags per (season, week, team, gsis_id), from the weekly charts:
+
+      chart_rb  non-fullback back ranked RB1/RB2 (dense rank of depth_team among the team's non-FB RBs)
+      chart_fb  fullback ranked FB1 (fullbacks are listed as position FB, or as an RB row whose depth_position is FB)
+      chart_wr  WR at depth_team 1-3        chart_te  TE at depth_team 1
+    The depth_team numbers counted come from config.ELIGIBLE_PLAYER_RULE["depth_chart"].
+    """
+    config.cap_season(max_season)
+    rule = config.ELIGIBLE_PLAYER_RULE["depth_chart"]
+    con = duckdb.connect(str(raw_db), read_only=True)
+    try:
+        d = con.execute(
+            "SELECT season, week, club_code AS team, gsis_id, position, depth_position, depth_team FROM "
+            "(SELECT DISTINCT ON (season, week, club_code, gsis_id, depth_team, position) * FROM depth_charts "
+            f" WHERE season IS NOT NULL AND week IS NOT NULL AND game_type = 'REG' AND formation = 'Offense'{_season_cap(max_season)} "
+            " ORDER BY season, week, club_code, gsis_id, depth_team, position, pulled_at DESC)").pl()
+    finally:
+        con.close()
+    key = ["season", "week", "team"]
+    d = d.with_columns(dt=pl.col("depth_team").cast(pl.Int32, strict=False),
+                       is_fb=(pl.col("position") == "FB") | (pl.col("depth_position") == "FB")).drop_nulls("dt")
+    rb = d.filter((pl.col("position") == "RB") & ~pl.col("is_fb")).with_columns(r=pl.col("dt").rank("dense").over(key))
+    fb = d.filter(pl.col("is_fb")).with_columns(r=pl.col("dt").rank("dense").over(key))
+    flags = [
+        rb.filter(pl.col("r").is_in(list(rule["RB"]))).select(*key, "gsis_id", chart_rb=pl.lit(True)),
+        fb.filter(pl.col("r").is_in(list(rule["FB"]))).select(*key, "gsis_id", chart_fb=pl.lit(True)),
+        d.filter((pl.col("position") == "WR") & pl.col("dt").is_in(list(rule["WR"]))).select(*key, "gsis_id", chart_wr=pl.lit(True)),
+        d.filter((pl.col("position") == "TE") & pl.col("dt").is_in(list(rule["TE"]))).select(*key, "gsis_id", chart_te=pl.lit(True)),
+    ]
+    out = d.select(*key, "gsis_id").unique()
+    for f in flags:
+        out = out.join(f.unique(), on=[*key, "gsis_id"], how="left")
+    return out.with_columns([pl.col(c).fill_null(False) for c in ("chart_rb", "chart_fb", "chart_wr", "chart_te")])
+
+
 def build_player_game_log(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
-    """One row per player-game (regular season, QB/RB/WR/TE): stats + pregame role.
+    """One row per player-game (regular season, QB/RB/WR/TE): stats + pregame role + eligibility.
+
+    `elig` lists the markets each player-game is scored for (eval/eligibility.py applies
+    config.ELIGIBLE_PLAYER_RULE to the pre-game depth-chart flags and the previous-4-games usage).
 
     `max_season` is applied in SQL, so later seasons are never loaded; the holdout season or later raises
     config.HoldoutError.
@@ -299,7 +359,7 @@ def build_player_game_log(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.
     old_roles, new_roles = build_role_table(raw_db, max_season)
     con = duckdb.connect(str(raw_db), read_only=True)
     try:
-        cols = ", ".join(PLAYER_MARKETS.values())
+        cols = ", ".join(dict.fromkeys(c for c in PLAYER_MARKETS.values() if c not in DERIVED_STATS))
         ps = con.execute(
             f"SELECT player_id, season, week, game_id, team, opponent_team AS opponent, position, {cols} FROM "
             f"{_latest(con, 'player_stats', 'player_id, season, week')} WHERE season_type = 'REG' "
@@ -308,6 +368,12 @@ def build_player_game_log(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.
         con.close()
     ps = ps.with_columns(family=pl.col("position").replace_strict(_POSITION_FAMILY, default=None))
     ps = ps.join(team_log.select("game_id", "team", "gameday", "team_game_num"), on=["game_id", "team"], how="inner")
+    # kneel-excluded rushing (designed runs and scrambles count, kneel-downs do not)
+    ps = ps.join(build_kneels(raw_db, max_season), on=["game_id", "player_id"], how="left").with_columns(
+        pl.col("kneels").fill_null(0.0), pl.col("kneel_yards").fill_null(0.0))
+    ps = ps.with_columns(
+        (pl.col("carries").cast(pl.Float64) - pl.col("kneels")).clip(lower_bound=0).alias("rush_att_ex_kneel"),
+        (pl.col("rushing_yards").cast(pl.Float64) - pl.col("kneel_yards")).alias("rush_yds_ex_kneel")).drop("kneels", "kneel_yards")
     # weekly (2020-24) roles
     ps = ps.join(old_roles.rename({"gsis_id": "player_id", "slot": "slot_old"}).drop("family"),
                  on=["season", "week", "team", "player_id"], how="left")
@@ -318,4 +384,9 @@ def build_player_game_log(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.
                       strategy="backward", allow_exact_matches=False, check_sortedness=False)
     ps = ps.with_columns(slot=pl.coalesce("slot_old", "slot_new").fill_null(0).cast(pl.Int32)).drop(
         "slot_old", "slot_new", "snap", "game_start", "position")
-    return ps.drop_nulls("family").sort("player_id", "gameday")
+    # eligibility: pre-game depth-chart flags + usage over the previous games played
+    flags = build_chart_flags(raw_db, max_season).rename({"gsis_id": "player_id"})
+    ps = ps.join(flags, on=["season", "week", "team", "player_id"], how="left")
+    ps = ps.with_columns([pl.col(c).fill_null(False) for c in elig.CHART_COLUMNS])
+    ps = elig.add_usage_averages(ps.drop_nulls("family").sort("player_id", "gameday"))
+    return elig.add_eligibility(ps).sort("player_id", "gameday")
