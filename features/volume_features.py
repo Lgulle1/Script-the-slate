@@ -304,11 +304,21 @@ def build_feature_tables(player_log, team_log, team_volume, lineups) -> FeatureT
     return FeatureTables(players, build_team_game_features(team_log, team_volume, side, "plays"))
 
 
-def load_feature_tables(data, raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> FeatureTables:
-    """Volume feature tables for a backtest.BacktestData (seasons capped in SQL for the volume/lineup inputs)."""
+def load_feature_tables(data, raw_db=config.RAW_DUCKDB_PATH, max_season=None, injury=None) -> FeatureTables:
+    """Volume feature tables for a backtest.BacktestData (seasons capped in SQL for the volume/lineup inputs).
+
+    `injury` (features.injury_features.build_injury_features output) adds the 4a injury columns as extra features; None = Phase 3."""
     from eval import backtest as bt
     cap = config.cap_season(max_season)  # raises config.HoldoutError for 2025+
     tv = build_team_volume(raw_db, cap)
     ln = lu.build_lineups(raw_db, cap)
     bt.assert_no_holdout(tv.join(data.team_log.select("game_id", "season").unique(), on="game_id", how="inner"))
-    return build_feature_tables(data.player_log, data.team_log, tv, ln)
+    tables = build_feature_tables(data.player_log, data.team_log, tv, ln)
+    return _with_injury(tables, injury, data)
+
+
+def _with_injury(tables, injury, data):
+    if injury is None:
+        return tables
+    from features import injury_features as inf
+    return inf.attach(tables, injury, data.team_log.select("game_id", "team", "opponent"))

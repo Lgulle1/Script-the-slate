@@ -275,6 +275,8 @@ def fit_status_model(pw: pl.DataFrame, cutoff: date, k: float = SHRINK_K) -> Sta
                if cols else h.select(n=pl.len(), p=pl.col("played").mean(), n_r=pl.col("ratio").drop_nulls().len(), r=pl.col("ratio").mean()))
         for row in agg.iter_rows(named=True):
             key = tuple(row[c] for c in cols)
+            if not row["n"]:
+                continue                       # nothing before the cutoff: the defaults in rates() apply
             model.play[key] = (row["n"], row["p"])
             if row["n_r"]:
                 model.ratio[key] = (row["n_r"], row["r"])
@@ -562,26 +564,55 @@ def _team_players(frame: pl.DataFrame, game_id: str, team: str, cutoff: date) ->
     return pl.concat([g.select(keep), o.select(keep)], how="vertical_relaxed")
 
 
-def game_expected_shares(frame: pl.DataFrame, shifts: Shifts, model: StatusModel, injuries: pl.DataFrame, rosters: pl.DataFrame,
+def make_status_lookup(injuries: pl.DataFrame):
+    """Fast `status_fn(gsis_id, season, week, as_of) -> (report, practice)` over the injuries rows (same rule as status_as_of)."""
+    rows: dict = {}
+    for r in injuries.sort("date_modified").iter_rows(named=True):
+        rows.setdefault((r["gsis_id"], r["season"], r["week"]), []).append((r["date_modified"], r["report_status"], r["practice_status"]))
+
+    def status_fn(gsis_id, season, week, as_of):
+        last = None
+        for dm, rep, pra in rows.get((gsis_id, season, week), ()):
+            if dm <= _utc(as_of):
+                last = (clean_report(rep), clean_practice(pra))
+        return last or (NONE, NONE)
+    return status_fn
+
+
+def game_expected_shares(frame: pl.DataFrame, shifts: Shifts, model: StatusModel, injuries: pl.DataFrame | None, rosters: pl.DataFrame | None,
                          game_id: str, team: str, season: int, week: int, gameday: date, as_of: datetime, cutoff: date,
-                         groups: dict | None = None) -> pl.DataFrame:
+                         groups: dict | None = None, *, exit_model: "ExitModel | None" = None, status_fn=None, blocked_ids: set | None = None,
+                         player_groups: dict | None = None, with_eff: bool = True) -> pl.DataFrame:
     """Expected carry / target / dropback / snap shares for one team-game before it is played: statuses as of `as_of`
     (status model -> q, s per player; IR / PUP / suspended -> out), shifts from `shifts` (fit on games before `cutoff`), each
-    player's trailing efficiency from games before the cutoff. `groups` maps role -> status-model position group."""
+    player's trailing efficiency from games before the cutoff. `groups` maps role -> status-model position group;
+    `player_groups` (gsis_id -> group) overrides it per player. With `exit_model`, also p_exit. exp_snap_share is the 4a.1 output
+    P(play) * snap_share_given_play for the player's status. `status_fn`/`blocked_ids` are the fast paths used by the feature build."""
     groups = groups or {"QB": "QB", "RB1": "RB", "RB2FB": "RB", "WR1": "WR", "WR2": "WR", "WR3": "WR", "TE1": "TE", "TE2": "TE", "OL": "OL",
                         "other": "WR"}
     players = _team_players(frame, game_id, team, cutoff)
-    blocked_ids = set(rosters.filter((pl.col("season") == season) & (pl.col("week") == week)
-                                     & pl.col("roster_status").is_in(list(BLOCKED_ROSTER_STATUSES)))["gsis_id"].to_list())
-    q, s = {}, {}
+    if blocked_ids is None:
+        blocked_ids = set(rosters.filter((pl.col("season") == season) & (pl.col("week") == week)
+                                         & pl.col("roster_status").is_in(list(BLOCKED_ROSTER_STATUSES)))["gsis_id"].to_list())
+    status_fn = status_fn or (lambda pid, se, wk, ao: status_as_of(injuries, pid, se, wk, ao))
+    q, s, snap, pex = {}, {}, {}, {}
     for pid, role in zip(players["player_id"].to_list(), players["role"].to_list()):
-        report, practice = status_as_of(injuries, pid, season, week, as_of)
-        q[pid], s[pid] = absence_inputs(model, groups.get(role, "WR"), report, practice, blocked=pid in blocked_ids)
+        grp = (player_groups or {}).get(pid) or groups.get(role, "WR")
+        report, practice = status_fn(pid, season, week, as_of)
+        blocked = pid in blocked_ids
+        q[pid], s[pid] = absence_inputs(model, grp, report, practice, blocked=blocked)
+        r = model.rates(grp, report, practice)
+        snap[pid] = 0.0 if blocked else r["p_play"] * r["snap_share_given_play"]
+        if exit_model is not None:
+            pex[pid] = exit_model.p_exit(pid, grp)
     out = redistribute(shifts, team, players, q, s)
-    eff = trailing_efficiency(frame, cutoff)
-    return (out.join(eff, on="player_id", how="left")
-               .with_columns(p_out=pl.col("player_id").map_elements(lambda i: q.get(i, 0.0), return_dtype=pl.Float64),
-                             game_id=pl.lit(game_id), team=pl.lit(team)))
+    if with_eff:
+        out = out.join(trailing_efficiency(frame, cutoff), on="player_id", how="left")
+    cols = [pl.col("player_id").map_elements(lambda i: q.get(i, 0.0), return_dtype=pl.Float64).alias("p_out"),
+            pl.col("player_id").map_elements(lambda i: snap.get(i), return_dtype=pl.Float64).alias("exp_snap_share")]
+    if exit_model is not None:
+        cols.append(pl.col("player_id").map_elements(lambda i: pex.get(i), return_dtype=pl.Float64).alias("p_exit"))
+    return out.with_columns(*cols, game_id=pl.lit(game_id), team=pl.lit(team))
 
 
 # ====================================================================== 4a.3 in-game injury exits
