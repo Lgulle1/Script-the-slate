@@ -406,3 +406,217 @@ def build_expectations(raw_db=config.RAW_DUCKDB_PATH, max_season=None, ratings: 
     feats = pregame_features(inp, ratings, status_models_by_week(inp, raw_db, max_season))
     tp, coefs = walk_forward(feats)
     return ratings, feats, tp, game_expectations(tp, inp.games), coefs
+
+
+# ====================================================================== 4b.3 states, dropback rate by state, play accounting
+"""
+STATES (score difference before the snap, from the offense's point of view): trail9 (down 9+), trail1_8, tied, lead1_8,
+lead9 (up 9+) -- the same states and the same play definition as the Phase 4 table team_game_rates (features/phase4_inputs.py):
+plays are play_type pass or run (kneels, spikes, no-plays excluded), dropbacks are qb_dropback plays.
+
+STATE SHARES: a multinomial logistic regression of the state a play is run in on the team's pregame expected margin (from
+4b.2, the team's point of view; features x/14 and (x/14)^2). Every team-game contributes its plays in each state as weights,
+so the fitted curve is the expected share of plays per state. Walk-forward: the curve for week W is fit on earlier
+team-games only. `state_shares(model, margin)` turns any margin into five shares that sum to 1. The same fitter takes
+x_col="margin" to fit on the realized final margin instead -- the right curve when a simulation draws a FINAL margin.
+
+DROPBACK RATE per team per state: (team dropbacks in the state + STATE_K * league rate) / (team plays in the state + STATE_K),
+STATE_K = 100 plays, i.e. the observed rate shrunk toward the league rate for that state with n / (n + k). Plays and dropbacks
+are recency-weighted (features/weights.py half-life, offseason gap) over every earlier game, so n is the effective play count.
+Sacks and scrambles per dropback: the team's (recency-weighted) rate shrunk the same way toward the league rate with
+RATE_K = 200 dropbacks.
+
+ACCOUNTING (exactly):
+    dropbacks     = plays * sum over states (state share * dropback rate in that state)
+    sacks         = dropbacks * sack rate,        scrambles = dropbacks * scramble rate
+    pass attempts = dropbacks - sacks - scrambles
+    rush attempts = plays - dropbacks + scrambles
+"""
+STATES = ("trail9", "trail1_8", "tied", "lead1_8", "lead9")
+STATE_K = 100.0
+RATE_K = 200.0
+MARGIN_SCALE = 14.0
+MIN_STATE_FIT_ROWS = 200
+
+
+def state_of(score_diff: pl.Expr) -> pl.Expr:
+    return (pl.when(score_diff <= -9).then(pl.lit("trail9")).when(score_diff < 0).then(pl.lit("trail1_8"))
+            .when(score_diff == 0).then(pl.lit("tied")).when(score_diff < 9).then(pl.lit("lead1_8")).otherwise(pl.lit("lead9")))
+
+
+def load_state_rows(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
+    """One row per team-game (FIRST_FEATURE_SEASON..cap): plays, dropbacks, sacks, scrambles, and plays_<state>, db_<state>."""
+    cap = _cap(max_season)
+    con = duckdb.connect(str(raw_db), read_only=True)
+    try:
+        con.execute("SET threads TO 1")
+        d = con.execute(
+            "SELECT game_id, season, week, posteam AS team, coalesce(qb_dropback, 0) AS db, coalesce(qb_scramble, 0) AS scr, "
+            "coalesce(sack, 0) AS sk, score_differential FROM (SELECT DISTINCT ON (game_id, play_id) * FROM pbp "
+            f"WHERE season_type = 'REG' AND season >= {FIRST_FEATURE_SEASON} AND season <= {cap} ORDER BY game_id, play_id, pulled_at DESC) "
+            "WHERE play_type IN ('pass', 'run') AND posteam IS NOT NULL AND score_differential IS NOT NULL").pl()
+    finally:
+        con.close()
+    d = d.with_columns(state=state_of(pl.col("score_differential")))
+    key = ["game_id", "season", "week", "team"]
+    out = d.group_by(key).agg(plays=pl.len().cast(pl.Float64), dropbacks=pl.col("db").sum().cast(pl.Float64),
+                              sacks=pl.col("sk").sum().cast(pl.Float64), scrambles=pl.col("scr").sum().cast(pl.Float64))
+    per = d.group_by([*key, "state"]).agg(n=pl.len().cast(pl.Float64), db=pl.col("db").sum().cast(pl.Float64))
+    for s_ in STATES:
+        p = per.filter(pl.col("state") == s_).select(*key, **{f"plays_{s_}": pl.col("n"), f"db_{s_}": pl.col("db")})
+        out = out.join(p, on=key, how="left")
+    return out.with_columns([pl.col(c).fill_null(0.0) for s_ in STATES for c in (f"plays_{s_}", f"db_{s_}")]).sort("season", "week", "game_id", "team")
+
+
+# ---------------------------------------------------------------- state shares
+@dataclass
+class StateShareModel:
+    intercept: np.ndarray        # (5,)
+    coef: np.ndarray             # (5, 2): on x / MARGIN_SCALE and (x / MARGIN_SCALE)^2
+    n_rows: int
+
+
+def _share_features(x) -> np.ndarray:
+    z = np.asarray(x, dtype=float).reshape(-1) / MARGIN_SCALE
+    return np.column_stack([z, z ** 2])
+
+
+def fit_state_shares(rows: pl.DataFrame, x_col: str = "exp_margin") -> StateShareModel:
+    """Multinomial logistic regression of the play's state on x_col, each team-game weighted by its plays in each state."""
+    from sklearn.linear_model import LogisticRegression
+
+    r = rows.filter(pl.col(x_col).is_not_null())
+    F = _share_features(r[x_col].to_numpy())
+    X = np.vstack([F] * len(STATES))
+    y = np.repeat(np.arange(len(STATES)), r.height)
+    w = np.concatenate([r[f"plays_{s_}"].to_numpy().astype(float) for s_ in STATES])
+    keep = w > 0
+    m = LogisticRegression(C=1e4, max_iter=2000, tol=1e-10)
+    m.fit(X[keep], y[keep], sample_weight=w[keep])
+    return StateShareModel(intercept=m.intercept_.copy(), coef=m.coef_.copy(), n_rows=r.height)
+
+
+def state_shares(model: StateShareModel, margin) -> np.ndarray:
+    """Shares of plays in each of STATES for each margin (rows sum to 1)."""
+    z = _share_features(margin) @ model.coef.T + model.intercept
+    z = z - z.max(axis=1, keepdims=True)
+    e = np.exp(z)
+    return e / e.sum(axis=1, keepdims=True)
+
+
+# ---------------------------------------------------------------- dropback rate by state, sack and scramble rates
+def shrunk_rate(num: float, den: float, league: float, k: float) -> float:
+    """(num + k * league) / (den + k): the observed rate num / den shrunk toward the league rate with den / (den + k)."""
+    return (num + k * league) / (den + k)
+
+
+def team_rates(state_rows: pl.DataFrame, clock: dict, season: int, week: int) -> pl.DataFrame:
+    """Per team, as of (season, week): dropback rate in each state (STATE_K) and sack / scramble rates per dropback (RATE_K),
+    all from recency-weighted earlier games and shrunk toward the league."""
+    here = clock[(season, week)]
+    past = state_rows.filter((pl.col("season") < season) | ((pl.col("season") == season) & (pl.col("week") < week)))
+    if not past.height:
+        return pl.DataFrame()
+    pos = np.array([clock[(a, b)] for a, b in zip(past["season"].to_list(), past["week"].to_list())])
+    w = 0.5 ** ((here - pos) / config.RECENCY_HALF_LIFE_GAMES)
+    teams = sorted(set(past["team"].to_list()))
+    ti = np.array([teams.index(t) for t in past["team"].to_list()])
+    S = lambda c: np.bincount(ti, weights=w * past[c].to_numpy().astype(float), minlength=len(teams))
+    out = {"team": teams}
+    for s_ in STATES:
+        n, d = S(f"plays_{s_}"), S(f"db_{s_}")
+        league = d.sum() / n.sum() if n.sum() > 0 else 0.5
+        out[f"db_rate_{s_}"] = [(dd + STATE_K * league) / (nn + STATE_K) for nn, dd in zip(n, d)]
+        out[f"n_{s_}"] = list(n)
+    db, sk, sc = S("dropbacks"), S("sacks"), S("scrambles")
+    lsk, lsc = sk.sum() / db.sum(), sc.sum() / db.sum()
+    out["sack_rate"] = [shrunk_rate(a, b, lsk, RATE_K) for a, b in zip(sk, db)]
+    out["scramble_rate"] = [shrunk_rate(a, b, lsc, RATE_K) for a, b in zip(sc, db)]
+    return pl.DataFrame(out)
+
+
+# ---------------------------------------------------------------- the accounting
+def play_accounting(plays, shares, db_rates, sack_rate, scramble_rate) -> dict:
+    """The accounting, exactly as written (works on floats, numpy arrays or fractions.Fraction):
+        dropbacks = plays * sum(share_s * dropback_rate_s);  sacks = dropbacks * sack_rate;  scrambles = dropbacks * scramble_rate
+        pass_att  = dropbacks - sacks - scrambles;            rush_att = plays - dropbacks + scrambles"""
+    mix = sum(sh * r for sh, r in zip(shares, db_rates))
+    dropbacks = plays * mix
+    sacks = dropbacks * sack_rate
+    scrambles = dropbacks * scramble_rate
+    return dict(plays=plays, dropbacks=dropbacks, sacks=sacks, scrambles=scrambles,
+                pass_att=dropbacks - sacks - scrambles, rush_att=plays - dropbacks + scrambles)
+
+
+# ---------------------------------------------------------------- walk-forward assembly
+def state_inputs(state_rows: pl.DataFrame, team_preds: pl.DataFrame, games: pl.DataFrame) -> tuple[pl.DataFrame, dict]:
+    """Per team-game with a 4b.2 prediction: expected margin (team view), state shares (curve fit on earlier team-games),
+    shrunk rates, and the accounting applied to the 4b.2 expected plays. Returns (frame, {(season, week): StateShareModel})."""
+    tp = team_preds.select("season", "week", "game_id", "team", "opp", "pts_mean", "exp_plays")
+    em = tp.join(tp.select("game_id", opp="team", opp_pts_mean="pts_mean"), on=["game_id", "opp"], how="inner").with_columns(
+        exp_margin=pl.col("pts_mean") - pl.col("opp_pts_mean"))
+    rows = state_rows.join(em.select("game_id", "team", "exp_margin", "exp_plays"), on=["game_id", "team"], how="left")
+    pts = pl.concat([games.select("game_id", team="home_team", pf="home_score", pa="away_score"),
+                     games.select("game_id", team="away_team", pf="away_score", pa="home_score")])
+    rows = rows.join(pts, on=["game_id", "team"], how="left").with_columns(margin=(pl.col("pf") - pl.col("pa")).cast(pl.Float64))
+    clock = _clock(games)
+    out, models = [], {}
+    weeks = rows.filter(pl.col("exp_margin").is_not_null()).select("season", "week").unique().sort("season", "week").rows()
+    for s, w in weeks:
+        prior = rows.filter(((pl.col("season") < s) | ((pl.col("season") == s) & (pl.col("week") < w))) & pl.col("exp_margin").is_not_null())
+        if prior.height < MIN_STATE_FIT_ROWS:
+            continue
+        model = fit_state_shares(prior, "exp_margin")
+        models[(s, w)] = model
+        rates = team_rates(state_rows, clock, s, w)
+        cur = rows.filter((pl.col("season") == s) & (pl.col("week") == w) & pl.col("exp_margin").is_not_null()).join(rates, on="team", how="left")
+        sh = state_shares(model, cur["exp_margin"].to_numpy())
+        rec = cur.with_columns([pl.Series(f"share_{s_}", sh[:, i]) for i, s_ in enumerate(STATES)])
+        acc = play_accounting(rec["exp_plays"].to_numpy(), [rec[f"share_{s_}"].to_numpy() for s_ in STATES],
+                              [rec[f"db_rate_{s_}"].to_numpy() for s_ in STATES], rec["sack_rate"].to_numpy(), rec["scramble_rate"].to_numpy())
+        rec = rec.with_columns(**{f"exp_{k}": pl.Series(v) for k, v in acc.items() if k != "plays"})
+        out.append(rec)
+    return pl.concat(out, how="diagonal_relaxed").sort("season", "week", "game_id", "team"), models
+
+
+# ====================================================================== build + persist
+TABLES = ("team_ratings", "game_expectations", "team_game_state", "game_state_coefficients")
+
+
+def build_all(raw_db=config.RAW_DUCKDB_PATH, max_season=None, n_boot: int = tr.BOOTSTRAP_N) -> dict:
+    """The 4b tables for HISTORY_START..max_season (2025+ never loaded). Rows before FEATURE_HISTORY_START are history."""
+    inp = load_inputs(raw_db, max_season)
+    ratings = tr.compute_ratings(inp.plays, n_boot=n_boot).with_columns(is_history=pl.col("season") < config.FEATURE_HISTORY_START)
+    feats = pregame_features(inp, ratings, status_models_by_week(inp, raw_db, max_season))
+    tp, coefs = walk_forward(feats)
+    ge = game_expectations(tp, inp.games)
+    si, _ = state_inputs(load_state_rows(raw_db, max_season), tp, inp.games)
+    cut = inp.games.group_by("season", "week").agg(cutoff_date=pl.col("gameday").min())
+    from datetime import timedelta
+
+    def timing(df):
+        return df.join(cut, on=["season", "week"], how="left").with_columns(outcome_known_from=pl.col("gameday") + timedelta(days=1))
+
+    keep = ["exp_margin", *[f"share_{s_}" for s_ in STATES], *[f"db_rate_{s_}" for s_ in STATES], "sack_rate", "scramble_rate",
+            "exp_dropbacks", "exp_sacks", "exp_scrambles", "exp_pass_att", "exp_rush_att", "plays", "dropbacks", "sacks", "scrambles",
+            *[f"plays_{s_}" for s_ in STATES], *[f"db_{s_}" for s_ in STATES], "margin"]
+    tgs = (tp.join(si.select("game_id", "team", *keep), on=["game_id", "team"], how="left")
+             .with_columns(is_history=pl.col("season") < config.FEATURE_HISTORY_START))
+    return {"team_ratings": ratings.sort("season", "week", "team"),
+            "game_expectations": timing(ge).sort("season", "week", "game_id"),
+            "team_game_state": timing(tgs).sort("season", "week", "game_id", "team"),
+            "game_state_coefficients": qb_points_per_tenth(coefs).sort("season", "week")}
+
+
+def persist(tables: dict, db_path=config.DUCKDB_PATH, out_dir=config.PROCESSED_DIR) -> None:
+    """data/processed/<name>.parquet and DuckDB tables (CREATE OR REPLACE), like features/phase4_inputs.persist."""
+    config.ensure_data_dirs()
+    con = duckdb.connect(str(db_path))
+    try:
+        for name, t in tables.items():
+            t.write_parquet(out_dir / f"{name}.parquet")
+            con.register("_t", t.to_arrow())
+            con.execute(f"CREATE OR REPLACE TABLE {name} AS SELECT * FROM _t")
+            con.unregister("_t")
+    finally:
+        con.close()
