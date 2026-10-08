@@ -646,7 +646,8 @@ def role_prior_shares(frame: pl.DataFrame, cutoff: date) -> dict:
     h = frame.filter((pl.col("gameday") < cutoff) & pl.col("played"))
     if "early_exit" in h.columns:
         h = h.filter(~pl.col("early_exit"))
-    g = h.group_by("role").agg([pl.col(f"{s}_share").mean().alias(s) for s in SHARE_STATS])
+    h = h.sort("gameday", "player_id", "game_id")      # a fixed row order: float means must not depend on thread / partition order
+    g = h.group_by("role", maintain_order=True).agg([pl.col(f"{s}_share").mean().alias(s) for s in SHARE_STATS])
     return {r["role"]: {s: r[s] for s in SHARE_STATS} for r in g.iter_rows(named=True)}
 
 
@@ -660,8 +661,8 @@ def role_history(frame: pl.DataFrame, cutoff: date) -> dict:
     h = frame.filter((pl.col("gameday") < cutoff) & pl.col("played"))
     if "early_exit" in h.columns:
         h = h.filter(~pl.col("early_exit"))
-    h = h.sort("gameday").group_by("player_id", "role", maintain_order=True).tail(NORMAL_WINDOW)
-    g = h.group_by("player_id", "role").agg(n=pl.len(), **{s: pl.col(f"{s}_share").mean() for s in SHARE_STATS})
+    h = h.sort("gameday", "player_id", "game_id").group_by("player_id", "role", maintain_order=True).tail(NORMAL_WINDOW)
+    g = h.group_by("player_id", "role", maintain_order=True).agg(n=pl.len(), **{s: pl.col(f"{s}_share").mean() for s in SHARE_STATS})
     return {(r["player_id"], r["role"]): (r["n"], {s: r[s] for s in SHARE_STATS}) for r in g.iter_rows(named=True)}
 
 
