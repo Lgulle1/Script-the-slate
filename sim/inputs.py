@@ -48,7 +48,7 @@ MIN_SHOCK_PAIR_WEIGHT = 300.0  # below this much pair weight the team shock is o
 MIN_POOL = 150                 # a (quantity, family) residual pool needs this many rows, else the quantity's pooled residuals
 IDIO_FLOOR = 0.25              # the idiosyncratic part never drops below this share of the pooled variance
 MIN_KAPPA_OBS = 400
-KAPPA_DEFAULT = {"carry": 30.0, "target": 30.0, "dropback": 200.0}   # until MIN_KAPPA_OBS observations exist (early 2020)
+KAPPA_DEFAULT = {"carry": 30.0, "target": 30.0, "dropback": 300.0}   # carry / target: until MIN_KAPPA_OBS observations exist (early 2020); dropback: always
 KAPPA_RANGE = (2.0, 5000.0)
 MIN_PLAYS_SD_GAMES = 100
 PLAYS_SD_DEFAULT = 9.0
@@ -88,9 +88,10 @@ class WeekCalib:
 class Calibration:
     """Prefix-sum tables over (season, week) so any week's constants use only earlier weeks."""
 
-    def __init__(self, res: pl.DataFrame, detail: pl.DataFrame, player_log: pl.DataFrame, tgs: pl.DataFrame):
+    def __init__(self, res: pl.DataFrame, detail: pl.DataFrame, player_log: pl.DataFrame, tgs: pl.DataFrame, state_rows: pl.DataFrame | None = None):
         self._res = res.sort("key", "game_id", "team", "quantity")
         self._tgs = tgs
+        self._state_rows = state_rows if state_rows is not None else tgs
         self._build_pairs()
         self._build_kappa(detail, player_log)
         self._build_plays(tgs)
@@ -137,6 +138,10 @@ class Calibration:
             self._kappa[st] = _prefix(t, "key", ["term", "one", "nn"])
 
     def kappa(self, stat: str, key: int) -> float:
+        if stat == "dropback":
+            # Not estimated: the only dropback shares between 0.05 and 0.95 are quarterback-availability games, whose dispersion is
+            # availability uncertainty (carried by the mixture share itself), not game-to-game noise in a healthy starter's share.
+            return KAPPA_DEFAULT["dropback"]
         k, t, c, n = self._kappa[stat]
         i = _before(k, key)
         if not i or c[i - 1] < MIN_KAPPA_OBS:
@@ -180,7 +185,7 @@ class Calibration:
     # ---- final-margin state curve
     def state_model(self, key: int):
         if key not in self._state_cache:
-            rows = self._tgs.filter((pl.col("season") * 100 + pl.col("week") < key) & pl.col("margin").is_not_null() & pl.col("plays").is_not_null())
+            rows = self._state_rows.filter((pl.col("season") * 100 + pl.col("week") < key) & pl.col("margin").is_not_null() & pl.col("plays").is_not_null())
             self._state_cache[key] = gs.fit_state_shares(rows, "margin") if rows.height >= gs.MIN_STATE_FIT_ROWS else None
         return self._state_cache[key]
 
@@ -394,6 +399,11 @@ def build_sim_data(raw_db=config.RAW_DUCKDB_PATH, seasons=config.BACKTEST_SEASON
     detail, exit_pools = _detail_and_exit(data, raw_db, cap)
     eff = _efficiency_predictions(data, raw_db, cap)
     res = _residual_table(data.player_log, wf_path)
-    calib = Calibration(res, detail, data.player_log, tgs)
+    games = gs.load_games(raw_db, cap)
+    pts = pl.concat([games.select("game_id", team="home_team", pf="home_score", pa="away_score"),
+                     games.select("game_id", team="away_team", pf="away_score", pa="home_score")])
+    state_rows = (gs.load_state_rows(raw_db, cap).join(pts, on=["game_id", "team"], how="left")
+                  .with_columns(margin=(pl.col("pf") - pl.col("pa")).cast(pl.Float64)))    # every team-game from 2019 on, realised margin
+    calib = Calibration(res, detail, data.player_log, tgs, state_rows)
     elig = data.player_log.filter(pl.col("elig") != "").select("game_id", "player_id", "team", "elig")
     return SimData(games=ge, tgs=tgs, detail=detail, eff=eff, exit_pools=exit_pools, calibration=calib, eligible=elig, seasons=tuple(seasons))

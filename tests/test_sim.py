@@ -57,7 +57,7 @@ def _game(game_id="2023_05_AAA_BBB", **kw):
 def test_same_game_same_seed_is_identical_and_other_games_differ():
     a = sm.simulate_game(_game(), sm.BACKTEST)
     b = sm.simulate_game(_game(), sm.BACKTEST)
-    assert np.array_equal(a.stats, b.stats) and np.array_equal(a.margin, b.margin)
+    assert np.array_equal(a.stats, b.stats, equal_nan=True) and np.array_equal(a.margin, b.margin)
     c = sm.simulate_game(_game("2023_05_CCC_DDD"), sm.BACKTEST)
     assert not np.array_equal(a.margin, c.margin)
     assert sm.run_id(sm.BACKTEST) == sm.run_id(sm.BACKTEST) != sm.run_id(sm.FULL)

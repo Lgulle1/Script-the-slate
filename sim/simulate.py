@@ -46,6 +46,7 @@ from sim import inputs as si
 RUN_SEED = 20260101
 PLAYER_STATS = ("dropbacks", "pass_att", "pass_cmp", "pass_yds", "rush_att", "rush_yds", "targets", "rec", "rec_yds", "qb_rush_att", "qb_rush_yds")
 STAT_INDEX = {s: i for i, s in enumerate(PLAYER_STATS)}
+COUNT_STATS = ("dropbacks", "pass_att", "rush_att", "targets", "qb_rush_att")
 MARKET_STAT = {m: m for m in ("pass_att", "pass_cmp", "pass_yds", "rush_att", "rush_yds", "targets", "rec", "rec_yds", "qb_rush_att", "qb_rush_yds")}
 MIN_PLAYS, MAX_PLAYS = 30, 110
 MIN_TOTAL = 10.0
@@ -168,7 +169,10 @@ def _simulate_team(t: si.TeamInput, tm: np.ndarray, g: si.GameInput, rng: np.ran
     carries = _dirichlet_multinomial(t.shares["carry"], f, cal.kappa["carry"], v["Rc"], rng)[:, :K]
     targets = _dirichlet_multinomial(t.shares["target"], f, cal.kappa["target"], v["T"], rng)[:, :K]
     dropbacks = _dirichlet_multinomial(t.shares["dropback"], f, cal.kappa["dropback"], v["D"], rng)[:, :K]
-    out = np.zeros((n, K, len(PLAYER_STATS)), dtype=np.float32)
+    # volumes always exist; completions / receptions / yardage need a Phase 3 efficiency prediction and stay NaN (no outcome) without one
+    out = np.full((n, K, len(PLAYER_STATS)), np.nan, dtype=np.float32)
+    for c in COUNT_STATS:
+        out[:, :, STAT_INDEX[c]] = 0.0
     fam = [si.FAMILY_OF_GROUP.get(gr) or si.FAMILY_OF_ROLE.get(ro, "other") for gr, ro in zip(t.groups, t.roles)]
     is_qb = np.array([f_ == "QB" for f_ in fam])
     pa = np.rint(dropbacks * (v["P"] / np.maximum(v["D"], 1))[:, None]).astype(np.int64)
@@ -252,7 +256,7 @@ def summarize_game(gsim: GameSim, eligible: dict, ladders: dict | None = None) -
     rows = []
     for k, pid in enumerate(gsim.player_ids):
         for m in sorted(eligible.get(pid, ())):
-            if m in MARKET_STAT:
+            if m in MARKET_STAT and not np.isnan(gsim.stats[:, k, STAT_INDEX[MARKET_STAT[m]]]).any():
                 rows.append(dict(kind="player", market=m, entity=pid, team=gsim.teams[k], **market_summary(gsim.stats[:, k, STAT_INDEX[MARKET_STAT[m]]], ladders[m])))
     rows.append(dict(kind="game", market="spread", entity=gsim.game_id, team=None, **market_summary(gsim.margin, ladders["spread"])))
     rows.append(dict(kind="game", market="total", entity=gsim.game_id, team=None, **market_summary(gsim.total, ladders["total"])))
@@ -286,7 +290,7 @@ def store_game(gsim: GameSim, out_dir, mode: SimMode | None = None) -> dict:
     cols = {"simulation_run_id": [rid] * (n * P), "game_id": [gsim.game_id] * (n * P), "simulation_id": np.repeat(sid, P),
             "player_id": np.tile(np.array(gsim.player_ids, dtype=object), n), "team": np.tile(np.array(gsim.teams, dtype=object), n)}
     for j, s in enumerate(PLAYER_STATS):
-        cols[s] = (gsim.stats[:, :, j].reshape(-1)).astype(np.float32 if s.endswith("yds") else np.int16)
+        cols[s] = (gsim.stats[:, :, j].reshape(-1)).astype(np.int16 if s in COUNT_STATS else np.float32)
     players = pl.DataFrame(cols)
     gp, pp = out_dir / f"sim_games_{gsim.game_id}.parquet", out_dir / f"sim_players_{gsim.game_id}.parquet"
     games.write_parquet(gp, compression="zstd")
