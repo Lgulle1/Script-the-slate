@@ -97,17 +97,17 @@ def audit_config():
         loc("config.py", r"^MAX_UNMATCHED_FRACTION"), getattr(c, "MAX_UNMATCHED_FRACTION", None) == 0.01 and ids.MAX_UNMATCHED_FRACTION is c.MAX_UNMATCHED_FRACTION)
     add("1g", "GAME_MARGIN_SD", "= 13.5", f"{c.GAME_MARGIN_SD}", loc("config.py", r"^GAME_MARGIN_SD"), c.GAME_MARGIN_SD == 13.5)
     add("1h", "ROLE_WINDOW_DAYS", "= 365", f"{c.ROLE_WINDOW_DAYS}", loc("config.py", r"^ROLE_WINDOW_DAYS"), c.ROLE_WINDOW_DAYS == 365)
-    plan_keys = {"pass_att", "pass_cmp", "pass_yds", "rush_att", "rush_yds", "targets", "rec", "rec_yds", "total", "spread", "moneyline"}
+    plan_keys = {"pass_att", "pass_cmp", "pass_yds", "rush_att", "rush_yds", "targets", "rec", "rec_yds", "total", "spread", "moneyline", "qb_rush_att", "qb_rush_yds"}
     m = getattr(c, "MARKETS", None)
     ok_markets = isinstance(m, dict) and set(m) == plan_keys and all({"kind", "baseline_family", "stat", "pool", "penalty_key"} <= set(v) for v in m.values())
-    add("1i", "MARKETS", "dict with exactly the 11 keys, each carrying its player pool and continuity-penalty key",
+    add("1i", "MARKETS", "dict with exactly the 13 keys (11 + qb_rush_att, qb_rush_yds), each carrying its player pool and continuity-penalty key",
         f"config.MARKETS has {len(m) if isinstance(m, dict) else 0} keys with kind / baseline_family / stat / pool / penalty_key; eval/baselines.PLAYER_MARKETS, GAME_MARKETS, "
         "eval/backtest.eligible_markets() and config.BASELINE_TO_PENALTY_MARKET (alias) all read from it",
         loc("config.py", r"^MARKETS = "), ok_markets)
     plan_map = {"pass_att": "pass_yds", "pass_cmp": "pass_yds", "pass_yds": "pass_yds", "rush_att": "rush_att", "rush_yds": "rush_yds",
-                "targets": "rec", "rec": "rec", "rec_yds": "rec_yds", "total": "game_total", "spread": "game_total", "moneyline": "game_total"}
+                "targets": "rec", "rec": "rec", "rec_yds": "rec_yds", "qb_rush_att": "rush_att", "qb_rush_yds": "rush_yds", "total": "game_total", "spread": "game_total", "moneyline": "game_total"}
     add("1j", "market -> penalty key", "pass_att/pass_cmp/pass_yds->pass_yds; rush_att->rush_att; rush_yds->rush_yds; targets,rec->rec; "
-        "rec_yds->rec_yds; total/spread/moneyline->game_total", f"BASELINE_TO_PENALTY_MARKET == plan mapping: {c.BASELINE_TO_PENALTY_MARKET == plan_map}",
+        "rec_yds->rec_yds; qb_rush_att->rush_att; qb_rush_yds->rush_yds (3.5.2c); total/spread/moneyline->game_total", f"BASELINE_TO_PENALTY_MARKET == plan mapping: {c.BASELINE_TO_PENALTY_MARKET == plan_map}",
         loc("config.py", r"^BASELINE_TO_PENALTY_MARKET"), c.BASELINE_TO_PENALTY_MARKET == plan_map)
     p = c.CONTINUITY_PENALTIES
     ok = len(p) == 11 and all(set(v) == set(c.CONTINUITY_FACTORS) and all(0 < x <= 1 for x in v.values()) for v in p.values())
@@ -250,16 +250,23 @@ def audit_ids_weights():
 # ---------------------------------------------------------------------------------------------- 6-7. baselines, harness
 def audit_baselines_harness():
     from eval import backtest as bt, baselines as bl, grade
-    preds = pl.read_parquet(ROOT / "data/processed/baseline_predictions.parquet") if (ROOT / "data/processed/baseline_predictions.parquet").exists() else None
+    pp = config.PROCESSED_DIR / f"baseline_predictions_{config.ELIGIBLE_PLAYER_RULE['version']}.parquet"
+    preds = pl.read_parquet(pp) if pp.exists() else None
     combos = preds.select("method", "market").unique().height if preds is not None else None
-    add("6a", "five baselines x eleven markets", "last3, season_avg, recency, 70/30 blend, role average on all 11 markets",
+    add("6a", "five baselines x thirteen markets", "last3, season_avg, recency, 70/30 blend, role average on all 13 markets",
         f"METHODS={bl.METHODS}; markets={len(bl.PLAYER_MARKETS)} player + {len(bl.GAME_MARKETS)} game; (method, market) pairs in the saved backtest = {combos}",
-        loc("eval/baselines.py", r"^METHODS"), len(bl.METHODS) == 5 and len(bl.PLAYER_MARKETS) + len(bl.GAME_MARKETS) == 11 and combos == 55)
-    rb_slots = [s for s in range(0, 5) if "rush_att" in bt.eligible_markets("RB", s)]
-    add("6b", "RB group", "RB1, RB2, other RBs and fullbacks", f"history log holds every RB/HB/FB at every slot (FB mapped to RB), but the SCORED rushing/receiving pool is RB slots {rb_slots} only: RB3+ and unlisted RBs are never graded",
-        loc("eval/backtest.py", r'if family == "RB"'), rb_slots == [1, 2, 3, 0] or set(rb_slots) == {0, 1, 2, 3})
-    add("6c", "targets pool", "WR, TE and RB", f"WR slots {[s for s in range(5) if 'targets' in bt.eligible_markets('WR', s)]}, TE slots {[s for s in range(5) if 'targets' in bt.eligible_markets('TE', s)]}, RB slots {[s for s in range(5) if 'targets' in bt.eligible_markets('RB', s)]}",
-        loc("eval/backtest.py", r"def eligible_markets"), all("targets" in bt.eligible_markets(f, 1) for f in ("WR", "TE", "RB")))
+        loc("eval/baselines.py", r"^METHODS"), len(bl.METHODS) == 5 and len(bl.PLAYER_MARKETS) + len(bl.GAME_MARKETS) == 13 and combos == 65)
+    from eval import eligibility as elig
+    plog = bl.build_player_game_log(max_season=config.BACKTEST_SEASONS[-1])
+    scored = {f: sorted({m for e in plog.filter(pl.col("family") == f)["elig"].unique().to_list() for m in elig.markets_of(e)}) for f in bl.FAMILIES}
+    rb = plog.filter(pl.col("family") == "RB")
+    ok6b = "rush_att" in scored["RB"] and "rush_att" not in scored["WR"] and "rush_att" not in scored["TE"] and "rush_att" not in scored["QB"] and rb.filter(pl.col("chart_fb")).height > 0
+    add("6b", "RB group", "RB1, RB2 and fullbacks (eligibility_v2: depth-chart RB1-2 / FB1, or >= 5 carries a game over the previous 4)",
+        f"rushing markets are scored for the RB family only (QBs are in qb_rush_*); markets scored per family: {scored}",
+        loc("eval/eligibility.py", r"rush_families"), ok6b)
+    add("6c", "targets pool", "WR, TE and RB (eligibility_v2: WR1-3, TE1, RB1-2/FB1 or >= 2 targets over the previous 4)",
+        f"receiving markets scored for: {[f for f in bl.FAMILIES if 'targets' in scored[f]]}",
+        loc("eval/eligibility.py", r"def eligibility_expr"), all("targets" in scored[f] for f in ("WR", "TE", "RB")) and "targets" not in scored["QB"])
     add("6d", "role / opponent-allowed window", "use ROLE_WINDOW_DAYS", f"_window() subtracts config.ROLE_WINDOW_DAYS ({config.ROLE_WINDOW_DAYS}) days for role average, opponent-allowed average and the league-average game baseline",
         loc("eval/baselines.py", r"config.ROLE_WINDOW_DAYS"), has("eval/baselines.py", r"timedelta\(days=config\.ROLE_WINDOW_DAYS\)"))
     import math
@@ -276,12 +283,12 @@ def audit_baselines_harness():
     fns = ["mean_absolute_error", "brier_score", "log_loss", "calibration_table", "pit_histogram", "pit_flatness", "predictive_scores", "skill_vs_baseline", "grade_backtest"]
     add("7b", "grading functions", "as in 2.4: MAE, Brier per rung, log loss, calibration (20% bands), whole-curve check, skill vs baseline", f"present: {[f for f in fns if hasattr(grade, f)]}; missing: {[f for f in fns if not hasattr(grade, f)] or 'none'}",
         loc("eval/grade.py", r"def calibration_table"), all(hasattr(grade, f) for f in fns))
-    bp = ROOT / "best_baseline.parquet"
+    bp = config.result_path("best_baseline")
     best = pl.read_parquet(bp) if bp.exists() else None
-    ok = best is not None and best["market"].n_unique() == 11 and best.filter(pl.col("is_best")).height == 11
+    ok = best is not None and best["market"].n_unique() == 13 and best.filter(pl.col("is_best")).height == 13
     add("7c", "best baseline per market stored", "run_baseline_backtest.py stores the best baseline per market on identical rows",
-        (f"best_baseline.parquet: {best.filter(pl.col('is_best')).height} best rows over {best['market'].n_unique()} markets, graded on the rows all five baselines share "
-         "(baseline_results.parquet itself is unchanged)") if best is not None else "best_baseline.parquet not found",
+        (f"{bp.name}: {best.filter(pl.col('is_best')).height} best rows over {best['market'].n_unique()} markets, graded on the rows all five baselines share "
+         "(the baseline results file itself is unchanged)") if best is not None else f"{bp.name} not found",
         loc("run_baseline_backtest.py", r"BEST_PATH"), ok)
 
 
@@ -293,9 +300,9 @@ def audit_models_compare(rerun: bool):
         loc("models/volume.py", r"^PARAMS"), (P["objective"], P["n_estimators"], P["num_leaves"], P["min_child_samples"]) == ("l1", 150, 8, 30))
     from features import volume_features as vf
     add("8b", "volume quantities", "one LightGBM per volume quantity", f"{list(vf.PLAYER_SPECS)} + team_plays (game markets)", loc("features/volume_features.py", r"^PLAYER_SPECS"),
-        set(vf.PLAYER_SPECS) == {"pass_att", "rush_att", "targets"})
+        set(vf.PLAYER_SPECS) == {"pass_att", "rush_att", "targets", "qb_rush_att"})
     add("8c", "efficiency quantities", "one LightGBM per efficiency quantity", f"{list(efficiency.EFFICIENCY_SPECS)} + pts_per_play (game markets)", loc("models/efficiency.py", r"^EFFICIENCY_SPECS"),
-        set(efficiency.EFFICIENCY_SPECS) == {"comp_pct", "yds_per_cmp", "ypc", "catch_pct", "yds_per_rec"})
+        set(efficiency.EFFICIENCY_SPECS) == {"comp_pct", "yds_per_cmp", "ypc", "catch_pct", "yds_per_rec", "qb_ypc"})
     add("8d", "features", "own recency+continuity-weighted stats, team rates (rush attempts, dropback rate), opponent-allowed rates",
         f"team stats {vf.TEAM_STATS} (off_* and def_*), own history rec_*/rc_* (recency and recency x continuity), opp_role_mean; no comparables/injuries/simulation/market lines",
         loc("features/volume_features.py", r"^TEAM_STATS"), "rush_att" in vf.TEAM_STATS and "pass_rate" in vf.TEAM_STATS)
@@ -310,7 +317,7 @@ def audit_models_compare(rerun: bool):
     from eval import compare as cp
     add("9a", "bootstrap", "season-week bootstrap, 10,000 resamples, fixed seed", f"resamples={config.BOOTSTRAP_RESAMPLES}, seed={config.BOOTSTRAP_SEED}, cluster = season*100+week", loc("eval/compare.py", r"def cluster_bootstrap"),
         config.BOOTSTRAP_RESAMPLES == 10000 and has("eval/compare.py", r"cluster = \(t\[\"season\"\]"))
-    ve = pl.read_parquet(ROOT / "volume_efficiency_results.parquet")
+    ve = pl.read_parquet(config.result_path("volume_efficiency_results"))
     s = ve.filter(pl.col("table") == "summary")
     mets = set(s["metric"].to_list())
     add("9b", "row-level interval, per-season gains, mean bias", "all three reported", f"row-level: {'ci_lo_iid' in mets}; per-season gains: {ve.filter((pl.col('table') == 'by_season') & (pl.col('metric') == 'gain')).height} rows; mean bias: {'model_bias' in mets} (moneyline has none: it is a probability)",
@@ -322,7 +329,7 @@ def audit_models_compare(rerun: bool):
         import run_volume_efficiency_backtest as rv
         _, again, _ = rv.run(save=False)
         same = again.equals(ve)
-        add("9d", "second run identical", "a second run gives a byte-identical parquet", f"fresh in-memory re-run == committed volume_efficiency_results.parquet (all {ve.height} rows, exact float equality): {same}. "
+        add("9d", "second run identical", "a second run gives a byte-identical parquet", f"fresh in-memory re-run == committed volume_efficiency_results_<pool version>.parquet (all {ve.height} rows, exact float equality): {same}. "
             "(Byte equality of the written file was checked separately with cmp when the results were produced.)", loc("run_volume_efficiency_backtest.py", r"pq.write_table"), same)
     else:
         add("9d", "second run identical", "a second run gives a byte-identical parquet", "SKIPPED (--skip-rerun)", "-", False)
