@@ -149,7 +149,7 @@ def _expected_roles(raw_db, max_season, cutoffs: pl.DataFrame) -> pl.DataFrame:
           .unique(["season", "week", "team", "player_id"], keep="first", maintain_order=True).drop("_g"))
     d = d.join(cutoffs, on=["season", "week"], how="left").sort("cutoff_date")
     usage = _trailing_usage(raw_db, max_season, cutoffs).sort("gameday")
-    d = d.join_asof(usage, left_on="cutoff_date", right_on="gameday", by="player_id", strategy="backward", allow_exact_matches=False)
+    d = d.join_asof(usage, left_on="cutoff_date", right_on="gameday", by="player_id", strategy="backward", allow_exact_matches=False, check_sortedness=False)
     d = d.with_columns(use=pl.when(pl.col("group") == "RB").then(pl.col("use_carries")).otherwise(pl.col("use_targets")).fill_null(-1.0))
     key = ["season", "week", "team", "group"]
     d = d.sort([*key, "dt", "use", "player_id"], descending=[False, False, False, False, False, True, False]).with_columns(
