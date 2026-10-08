@@ -648,16 +648,26 @@ def game_share_scenarios(frame: pl.DataFrame, shifts: Shifts, model: StatusModel
     The probability-weighted average over those draws equals the mixture of game_expected_shares to first order (the redistribution is
     linear in q before clipping), which is what makes the simulated shares a distribution around the same expectation.
 
-    role_prior (role_prior_shares): a depth-chart role holder with NO baseline of his own (a rookie, a new starter) takes his role's
-    average share instead of 0 -- without it the simulation would give a first-time starting quarterback no dropbacks. (game_expected_shares,
+    role_prior (role_prior_shares): a depth-chart role holder who is NEW TO THE ROLE (none of his last six games played was in it: a
+    rookie, a new starter, a backup the depth chart has promoted) takes his role's average share instead of a baseline that describes
+    another job -- without it the simulation would give a first-time starting quarterback no dropbacks. (game_expected_shares,
     the 4a.4 feature builder, keeps its original behaviour: its results are frozen.)
     """
     groups = {"QB": "QB", "RB1": "RB", "RB2FB": "RB", "WR1": "WR", "WR2": "WR", "WR3": "WR", "TE1": "TE", "TE2": "TE", "OL": "OL", "other": "WR"}
     players = _team_players(frame, game_id, team, cutoff)
     if role_prior:
+        # new to the role = none of his last NORMAL_WINDOW games played (before the cutoff, on this team) was in the role he holds now
+        # (a rookie, a new starter, a backup the depth chart has promoted): his own trailing baseline describes another job
+        h = frame.filter((pl.col("gameday") < cutoff) & pl.col("played"))
+        if "early_exit" in h.columns:
+            h = h.filter(~pl.col("early_exit"))
+        h = h.sort("gameday").group_by("player_id", maintain_order=True).tail(NORMAL_WINDOW)
+        in_role = {(r["player_id"], r["role"]): r["n"] for r in h.group_by("player_id", "role").agg(n=pl.len()).iter_rows(named=True)}
         players = players.with_columns([
-            pl.struct("role", f"base_{st}").map_elements(
-                lambda r, st=st: r[f"base_{st}"] if r[f"base_{st}"] is not None else (role_prior.get(r["role"], {}).get(st)),
+            pl.struct("player_id", "role", f"base_{st}").map_elements(
+                lambda r, st=st: (role_prior.get(r["role"], {}).get(st) if (r["role"] != "other" and r["role"] in role_prior
+                                                                          and (r[f"base_{st}"] is None or in_role.get((r["player_id"], r["role"]), 0) == 0))
+                                  else r[f"base_{st}"]),
                 return_dtype=pl.Float64).alias(f"base_{st}") for st in SHARE_STATS])
     q, s = {}, {}
     for pid, role in zip(players["player_id"].to_list(), players["role"].to_list()):

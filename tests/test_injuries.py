@@ -362,3 +362,24 @@ def test_a_role_holder_with_no_history_takes_his_roles_average_share_in_the_simu
     # game_expected_shares (the frozen 4a.4 feature path) is unchanged
     old = inj.game_expected_shares(frame, sh, model, None, None, "t1", "AAA", 2023, 1, date(2023, 10, 8), inj.main_run_as_of(date(2023, 10, 8)), cut, with_eff=False, **kw)
     assert old.filter(pl.col("player_id") == "AAA_QB")["exp_dropback"][0] == pytest.approx(0.0, abs=1e-9)
+
+
+def test_a_promoted_backup_takes_the_role_average_while_an_established_starter_keeps_his_own_baseline():
+    hist = _history()
+    cut = date(2023, 10, 1)
+    # in the target game a depth-chart QB1 'AAA_QB' has never held the role (his games were as `other`): give him a tiny backup baseline
+    target = _frame(_game("AAA", "t1", date(2023, 10, 8)))
+    qb_row = pl.col("player_id") == "AAA_QB"
+    target = target.with_columns([pl.when(qb_row).then(0.01).otherwise(pl.col(c)).alias(c) for c in ("base_dropback",)])
+    hist = hist.with_columns(role=pl.when(pl.col("player_id") == "AAA_QB").then(pl.lit("other")).otherwise(pl.col("role")))
+    frame = pl.concat([hist, target], how="diagonal_relaxed")
+    model = inj.fit_status_model(_pw([_row(1, f"p{i}", date(2023, 9, 10), "none", "none", True) for i in range(50)]), cut)
+    kw = dict(status_fn=lambda pid, se, wk, ao: ("none", "none"), blocked_ids=set(), player_groups={})
+    sh = inj.fit_shifts(hist, cut)
+    prior = {"QB": {"carry": 0.05, "target": 0.0, "dropback": 0.95, "snap": 1.0}, "WR1": {"carry": 0.0, "target": 0.20, "dropback": 0.0, "snap": 0.9}}
+    args = (frame, sh, model, "t1", "AAA", 2023, 1, inj.main_run_as_of(date(2023, 10, 8)), cut)
+    play, _, _ = inj.game_share_scenarios(*args, **kw, role_prior=prior)
+    get = lambda pid, c: play.filter(pl.col("player_id") == pid)[c][0]
+    assert get("AAA_QB", "exp_dropback") > 0.9                       # promoted: the role's average, not his 0.01
+    wr1_base = target.filter(pl.col("player_id") == "AAA_wr1" if False else pl.col("role") == "WR1")["base_target"][0]
+    assert get("AAA_WR1", "exp_target") != pytest.approx(0.20)       # an established WR1 (held the role all history) is NOT replaced by the prior
