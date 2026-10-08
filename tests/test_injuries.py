@@ -259,3 +259,80 @@ def test_real_game_shares_sum_to_one_and_use_no_future_information():
     out2 = inj.game_expected_shares(f2, inj.fit_shifts(f2, wc), inj.fit_status_model(pw2, wc), injr, ros, *args)
     assert out.drop("p_out").equals(out2.drop("p_out")) or np.allclose(
         out.sort("player_id", "role")["exp_target"].to_numpy(), out2.sort("player_id", "role")["exp_target"].to_numpy())
+
+
+# ====================================================================== 4a.3 in-game exits
+def _seq(pcts, injury_flags, pid="x", start=date(2023, 9, 3)):
+    from datetime import timedelta
+    rows = []
+    for i, (p, f) in enumerate(zip(pcts, injury_flags)):
+        rows.append(dict(season=2023, week=i + 1, team="AAA", gsis_id=pid, position="WR", group="WR", gameday=start + timedelta(days=7 * i),
+                         report_status="none", practice_status="none", played=True, snap_pct=p, next_week_injury=f))
+    return pl.DataFrame(rows)
+
+
+def test_early_exit_rule_and_baseline_exclusion():
+    pcts = [0.80, 0.80, 0.80, 0.30, 0.80, 0.30, 0.80]            # games 4 and 6 are low
+    flags = [False, False, False, True, False, False, False]       # only game 4 is followed by an injury listing
+    out = inj._trailing_normal(_seq(pcts, flags)).sort("gameday")
+    assert out["early_exit"].to_list() == [False, False, False, True, False, False, False]   # game 6: low snaps but no injury -> ordinary
+    n = out["normal_snap_pct"].to_list()
+    assert n[4] == pytest.approx(0.8)                              # game 4 (0.30) is NOT in the baseline that follows it
+    assert n[6] == pytest.approx((0.8 * 4 + 0.3) / 5)              # game 6 (an ordinary low game) is
+    assert out["ratio"][3] is None and out["work"][3] == pytest.approx(0.3 / 0.8)
+
+
+def test_not_half_of_usual_is_required():
+    out = inj._trailing_normal(_seq([0.8, 0.8, 0.8, 0.6], [False, False, False, True])).sort("gameday")
+    assert not out["early_exit"].any()                             # 0.6 is 75% of usual, injury or not
+
+
+def test_exit_model_shrinks_the_players_own_rate_toward_the_position():
+    rows = []
+    for i in range(300):                                           # 300 WR games, 3% exits
+        rows += _seq([0.8] * 1, [False], pid=f"w{i}").to_dicts()
+    pw = pl.DataFrame(rows).with_columns(early_exit=pl.Series([i % 33 == 0 for i in range(300)]), normal_snap_pct=0.8, work=0.8)
+    pw = pw.with_columns(work=pl.when(pl.col("early_exit")).then(0.3).otherwise(0.8))
+    m = inj.fit_exit_model(pw, date(2024, 1, 1))
+    pos = m.position_rate("WR")
+    m.player["hot"] = (2, 2)                                       # two games, two exits: raw rate 100%
+    assert pos < m.p_exit("hot", "WR") < 0.2                       # pulled toward the position rate: (2 + 15 pos) / 17
+    assert m.p_exit("hot", "WR") == pytest.approx((2 + 15 * pos) / 17)
+    assert m.p_exit("nobody", "WR") == pytest.approx(pos)          # no history -> the position rate
+    draws = m.sampler("WR")(np.random.default_rng(0), 1000)
+    assert ((0 <= draws) & (draws < inj.EXIT_FRACTION)).all()
+
+
+def test_exit_model_ignores_games_on_or_after_the_cutoff():
+    rows = _seq([0.8] * 6, [False] * 6)
+    pw = rows.with_columns(early_exit=pl.lit(False), normal_snap_pct=0.8, work=0.8)
+    later = pw.with_columns(pl.col("gameday") + pl.duration(days=300), early_exit=pl.lit(True))
+    a = inj.fit_exit_model(pw, date(2024, 1, 1))
+    b = inj.fit_exit_model(pl.concat([pw, later]), date(2024, 1, 1))
+    assert a.position == b.position and a.player == b.player
+
+
+@pytestmark_db
+def test_baseline_plus_exit_draw_reproduces_the_historical_mean_workload_within_3_percent():
+    pw = inj.build_player_weeks(max_season=2024)
+    cut = date(2024, 9, 1)
+    m = inj.fit_exit_model(pw, cut)                                # fit on 2020-2023 only
+    test = pw.filter((pl.col("gameday") >= cut) & pl.col("played") & (pl.col("normal_snap_pct") >= inj.MIN_NORMAL_PCT) & pl.col("work").is_not_null())
+    pred = [(1 - p) * m.mean_ne[g] + p * m.mean_exit.get(g, float(np.mean(m.all_shares)))
+            for p, g in ((m.p_exit(i, g), g) for i, g in zip(test["gsis_id"].to_list(), test["group"].to_list()))]
+    actual = test["work"].mean()
+    assert abs(np.mean(pred) / actual - 1) < 0.03
+    # and in sample (2020-2024 fit on everything)
+    full = inj.fit_exit_model(pw, date(2025, 1, 1))
+    ins = pw.filter(pl.col("played") & (pl.col("normal_snap_pct") >= inj.MIN_NORMAL_PCT) & pl.col("work").is_not_null())
+    pred_in = [(1 - full.p_exit(i, g)) * full.mean_ne[g] + full.p_exit(i, g) * full.mean_exit.get(g, 0.25)
+               for i, g in zip(ins["gsis_id"].to_list(), ins["group"].to_list())]
+    assert abs(np.mean(pred_in) / ins["work"].mean() - 1) < 0.03
+
+
+@pytestmark_db
+def test_baseline_games_contain_no_exit_games():
+    pw = inj.build_player_weeks(max_season=2024)
+    assert pw.filter(pl.col("early_exit") & pl.col("ratio").is_not_null()).height == 0
+    f = inj.build_role_frame(max_season=2024)
+    assert f["early_exit"].sum() > 0

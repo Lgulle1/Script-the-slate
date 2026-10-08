@@ -1,4 +1,14 @@
-"""Injury layer (Phase 4a): status-to-probability model (4a.1); role redistribution is added below it (4a.2).
+"""Injury layer (Phase 4a): status-to-probability model (4a.1), role redistribution (4a.2), in-game exits (4a.3).
+
+EARLY-EXIT GAME (4a.3) -- the one rule, used everywhere in this file:
+    a player-game is an early-exit game when the player (1) took snaps but fewer than half of his usual snaps (his snap
+    percentage that game < EXIT_FRACTION = 0.5 x his trailing normal snap percentage), AND (2) is on the NEXT week's injury report
+    (his team's next game week, same season) with an injury listed as the primary injury (not "illness", "not injury related",
+    "resting player", "personal matter"). The injuries table does not say which game an injury came from, so "tied to that game"
+    is read as "listed with a real injury on the very next report". Games that fail the rule are ordinary games, however
+    few snaps they were. Early-exit games are excluded from every workload baseline (the trailing normal snap percentage, the
+    snap_share_given_play ratios, the 4a.2 trailing share baselines) so the same tail event is never in both the baseline and
+    the exit draw.
 
 4a.1  From past games, what does a player's injury-report status say about (a) whether he plays and (b) how much?
 
@@ -41,6 +51,9 @@ MIN_OBS = 10                       # a group below this never carries half the w
 NORMAL_WINDOW = 6                  # games in the trailing "normal" snap share
 MIN_NORMAL_GAMES = 2
 MIN_NORMAL_PCT = 0.10             # only players with a regular workload are in the fit (see fit_status_model)
+EXIT_FRACTION = 0.5               # early exit: played less than this fraction of his usual snaps (rule in the header)
+EXIT_K = 15                       # shrinkage of a player's own exit rate toward his position's
+NOT_AN_INJURY = ("illness", "not injury", "rest", "personal")
 RATIO_CAP = 2.0                    # a single game above twice his usual load is clipped
 BLOCKED_ROSTER_STATUSES = ("RES", "PUP", "SUS", "NWT", "RSN", "EXE")
 NONE = "none"
@@ -93,15 +106,19 @@ def snap_side_pct(group: str):
 
 # ------------------------------------------------------------------ data
 def _trailing_normal(pw: pl.DataFrame) -> pl.DataFrame:
-    """Adds normal_snap_pct (his usual snap percentage BEFORE the game) and ratio (snap_pct / normal for games he played).
+    """Adds normal_snap_pct (his usual snap percentage BEFORE the game), early_exit (the 4a.3 rule), work (snap_pct / normal for
+    games he played) and ratio (work, for games that are NOT early exits).
 
-    Normal = mean snap_pct over his previous NORMAL_WINDOW games played with no injury designation; if fewer than
-    MIN_NORMAL_GAMES such games, over his previous NORMAL_WINDOW games played; otherwise null. Only earlier games count.
+    Normal = mean snap_pct over his previous NORMAL_WINDOW games played, not early exits, with no injury designation; if fewer
+    than MIN_NORMAL_GAMES such games, over his previous NORMAL_WINDOW non-exit games played; otherwise null. Only earlier games
+    count, and an early-exit game never enters the history.
     """
     pw = pw.sort("gsis_id", "gameday")
     normal = np.full(pw.height, np.nan)
+    exit_ = np.zeros(pw.height, dtype=bool)
     gid, healthy_flag = pw["gsis_id"].to_numpy(), (pw["report_status"] == NONE).to_numpy()
     played, pct = pw["played"].to_numpy(), pw["snap_pct"].fill_null(0.0).to_numpy()
+    cand = pw["next_week_injury"].to_numpy()
     bounds = np.flatnonzero(np.r_[True, gid[1:] != gid[:-1], True])
     for a, b in zip(bounds[:-1], bounds[1:]):
         hist_all: list = []
@@ -113,13 +130,18 @@ def _trailing_normal(pw: pl.DataFrame) -> pl.DataFrame:
                 normal[i] = float(np.mean(ok))
             elif len(al) >= MIN_NORMAL_GAMES:
                 normal[i] = float(np.mean(al))
-            if played[i]:
-                hist_all.append(pct[i])
-                if healthy_flag[i]:
-                    hist_ok.append(pct[i])
-    pw = pw.with_columns(normal_snap_pct=pl.Series(normal).fill_nan(None))
-    return pw.with_columns(ratio=pl.when(pl.col("played") & (pl.col("normal_snap_pct") > 0))
-                           .then((pl.col("snap_pct") / pl.col("normal_snap_pct")).clip(0.0, RATIO_CAP)))
+            if not played[i]:
+                continue
+            if cand[i] and normal[i] > 0 and pct[i] < EXIT_FRACTION * normal[i]:
+                exit_[i] = True                       # early-exit game: kept out of every baseline
+                continue
+            hist_all.append(pct[i])
+            if healthy_flag[i]:
+                hist_ok.append(pct[i])
+    pw = pw.with_columns(normal_snap_pct=pl.Series(normal).fill_nan(None), early_exit=pl.Series(exit_))
+    pw = pw.with_columns(work=pl.when(pl.col("played") & (pl.col("normal_snap_pct") > 0))
+                         .then((pl.col("snap_pct") / pl.col("normal_snap_pct")).clip(0.0, RATIO_CAP)))
+    return pw.with_columns(ratio=pl.when(~pl.col("early_exit")).then(pl.col("work")))
 
 
 def build_player_weeks(raw_db=config.RAW_DUCKDB_PATH, max_season=None, as_of_fn=main_run_as_of) -> pl.DataFrame:
@@ -140,7 +162,8 @@ def build_player_weeks(raw_db=config.RAW_DUCKDB_PATH, max_season=None, as_of_fn=
             f"ORDER BY season, week, team, gsis_id, pulled_at DESC) WHERE game_type = 'REG' AND gsis_id IS NOT NULL "
             f"AND status IN ('ACT', 'INA'){cap}").pl()
         inj = con.execute(
-            "SELECT CAST(season AS INTEGER) AS season, CAST(week AS INTEGER) AS week, team, gsis_id, report_status, practice_status, date_modified "
+            "SELECT CAST(season AS INTEGER) AS season, CAST(week AS INTEGER) AS week, team, gsis_id, report_status, practice_status, date_modified, "
+            "report_primary_injury, practice_primary_injury "
             "FROM (SELECT DISTINCT ON (season, week, team, gsis_id) * FROM injuries ORDER BY season, week, team, gsis_id, pulled_at DESC) "
             f"WHERE game_type = 'REG' AND gsis_id IS NOT NULL{cap}").pl()
         sn = con.execute(
@@ -158,7 +181,16 @@ def build_player_weeks(raw_db=config.RAW_DUCKDB_PATH, max_season=None, as_of_fn=
     pw = pw.with_columns(snap_pct=pl.when(pl.col("group").is_in(list(OFFENSE_GROUPS))).then(pl.col("offense_pct"))
                          .when(pl.col("group").is_in(list(SPECIAL_GROUPS))).then(pl.col("st_pct")).otherwise(pl.col("defense_pct")))
     inj = inj.with_columns(date_modified=pl.col("date_modified").dt.convert_time_zone("UTC"))
-    pw = pw.join(inj, on=["season", "week", "team", "gsis_id"], how="left")
+    # 4a.3: is he on the NEXT report (his team's next game week) with a real primary injury?
+    nxt_week = games.select("season", "team", "week").unique().sort("season", "team", "week").with_columns(
+        next_week=pl.col("week").shift(-1).over("season", "team"))
+    text = pl.concat_str([pl.col("report_primary_injury").fill_null(""), pl.lit(" "), pl.col("practice_primary_injury").fill_null("")]).str.to_lowercase()
+    real = (text.str.strip_chars() != "") & ~pl.any_horizontal([text.str.contains(w) for w in NOT_AN_INJURY])
+    nx = (inj.select("season", next_week=pl.col("week"), gsis_id=pl.col("gsis_id"), next_week_injury=real)
+             .filter(pl.col("next_week_injury")).unique(["season", "next_week", "gsis_id"]))
+    pw = (pw.join(nxt_week, on=["season", "team", "week"], how="left").join(nx, on=["season", "next_week", "gsis_id"], how="left")
+            .with_columns(next_week_injury=pl.col("next_week_injury").fill_null(False)).drop("next_week"))
+    pw = pw.join(inj.drop("report_primary_injury", "practice_primary_injury"), on=["season", "week", "team", "gsis_id"], how="left")
     asof = pl.Series([None if g is None else as_of_fn(g) for g in pw["gameday"].to_list()], dtype=pl.Datetime("us", "UTC"))
     posted = (pl.col("date_modified") <= asof)
     pw = pw.with_columns(report_status=pl.when(posted).then(pl.col("report_status")).otherwise(None),
@@ -167,7 +199,7 @@ def build_player_weeks(raw_db=config.RAW_DUCKDB_PATH, max_season=None, as_of_fn=
                          practice_status=pl.col("practice_status").map_elements(clean_practice, return_dtype=pl.String, skip_nulls=False))
     pw = _trailing_normal(pw)
     return pw.select("season", "week", "team", "gsis_id", "position", "group", "gameday", "report_status", "practice_status",
-                     "played", "snap_pct", "normal_snap_pct", "ratio").sort("season", "week", "team", "gsis_id")
+                     "played", "snap_pct", "normal_snap_pct", "ratio", "work", "early_exit", "next_week_injury").sort("season", "week", "team", "gsis_id")
 
 
 def load_injury_rows(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
@@ -316,6 +348,7 @@ def _trailing_mean_shares(frame: pl.DataFrame) -> pl.DataFrame:
     frame = frame.sort("player_id", "gameday")
     cols = {s: frame[f"{s}_share"].fill_null(0.0).to_numpy() for s in SHARE_STATS}
     played, pid = frame["played"].to_numpy(), frame["player_id"].to_numpy()
+    exit_ = frame["early_exit"].to_numpy() if "early_exit" in frame.columns else np.zeros(frame.height, dtype=bool)
     out = {s: np.full(frame.height, np.nan) for s in SHARE_STATS}
     bounds = np.flatnonzero(np.r_[True, pid[1:] != pid[:-1], True])
     for a, b in zip(bounds[:-1], bounds[1:]):
@@ -324,7 +357,7 @@ def _trailing_mean_shares(frame: pl.DataFrame) -> pl.DataFrame:
             if hist["carry"]:
                 for s in SHARE_STATS:
                     out[s][i] = float(np.mean(hist[s][-NORMAL_WINDOW:]))
-            if played[i]:
+            if played[i] and not exit_[i]:          # an early-exit game is never part of a baseline (4a.3)
                 for s in SHARE_STATS:
                     hist[s].append(cols[s][i])
     return frame.with_columns([pl.Series(f"base_{s}", out[s]).fill_nan(None) for s in SHARE_STATS])
@@ -356,6 +389,9 @@ def build_role_frame(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataF
           .select("season", "week", "game_id", "team", player_id="gsis_id", role=pl.lit("OL"), played="played", carry_share=pl.lit(0.0),
                   target_share=pl.lit(0.0), dropback_share=pl.lit(0.0), snap_share=pl.col("snap_pct").fill_null(0.0)))
     frame = pl.concat([played, missing, ol], how="diagonal_relaxed").join(games.select("game_id", "team", "gameday"), on=["game_id", "team"], how="left")
+    exits = pw.filter(pl.col("early_exit")).join(games, on=["season", "week", "team"], how="inner").select("game_id", "team", player_id="gsis_id",
+                                                                                                         early_exit=pl.lit(True))
+    frame = frame.join(exits, on=["game_id", "team", "player_id"], how="left").with_columns(early_exit=pl.col("early_exit").fill_null(False))
     for c in ("rush_yds_ex_kneel", "rushing_yards", "carries", "targets", "receiving_yards", "receptions"):
         frame = frame.with_columns(pl.col(c).fill_null(0.0).cast(pl.Float64))
     frame = frame.rename({"rush_yds_ex_kneel": "rush_yds_ex", "rushing_yards": "rush_yds", "receiving_yards": "rec_yds"})
@@ -384,6 +420,8 @@ def measure_shifts(frame: pl.DataFrame, cutoff: date) -> pl.DataFrame:
         if r is None:
             continue
         here = g.filter(pl.col("played") & (pl.col("role") != r))
+        if "early_exit" in g.columns:
+            here = here.filter(~pl.col("early_exit"))      # a player who left hurt is the exit draw's business, not a redistribution
         for role_j, gj in here.group_by("role", maintain_order=True):
             role_j = role_j[0]
             for s in SHARE_STATS:
@@ -544,3 +582,63 @@ def game_expected_shares(frame: pl.DataFrame, shifts: Shifts, model: StatusModel
     return (out.join(eff, on="player_id", how="left")
                .with_columns(p_out=pl.col("player_id").map_elements(lambda i: q.get(i, 0.0), return_dtype=pl.Float64),
                              game_id=pl.lit(game_id), team=pl.lit(team)))
+
+
+# ====================================================================== 4a.3 in-game injury exits
+@dataclass
+class ExitModel:
+    """P(early exit) by position, adjusted by the player's own history, and the share of the game he completes when he exits.
+
+    p_exit(player) = (own exits + k * position rate) / (own games + k),   k = EXIT_K = 15   (n / (n + k) shrinkage toward the position)
+    Share completed = his snap percentage that game / his normal, for his position's early-exit games (an empirical distribution).
+    Fit on player-games dated before the cutoff, among players with a regular workload (normal >= MIN_NORMAL_PCT).
+    """
+    cutoff: date
+    k: float
+    position: dict = field(default_factory=dict)     # group -> (games, exits)
+    player: dict = field(default_factory=dict)       # gsis_id -> (games, exits)
+    shares: dict = field(default_factory=dict)       # group -> sorted array of share completed (0 <= x < EXIT_FRACTION)
+    all_shares: np.ndarray = field(default_factory=lambda: np.array([0.25]))
+    mean_ne: dict = field(default_factory=dict)      # group -> mean workload of NON-exit played games (the baseline's side)
+    mean_exit: dict = field(default_factory=dict)    # group -> mean share completed
+
+    def position_rate(self, group: str) -> float:
+        n, e = self.position.get(group, (0, 0))
+        tn = sum(v[0] for v in self.position.values())
+        te = sum(v[1] for v in self.position.values())
+        return (e + 0.0) / n if n else (te / tn if tn else 0.0)
+
+    def p_exit(self, player_id: str | None, group: str) -> float:
+        n, e = self.player.get(player_id, (0, 0))
+        return (e + self.k * self.position_rate(group)) / (n + self.k)
+
+    def sampler(self, group: str):
+        """A function (rng, size=None) -> share of the game completed given an early exit, drawn from his position's history."""
+        pool = self.shares.get(group)
+        pool = pool if pool is not None and len(pool) >= 20 else self.all_shares
+        return lambda rng, size=None: rng.choice(pool, size=size, replace=True)
+
+
+def fit_exit_model(pw: pl.DataFrame, cutoff: date, k: float = EXIT_K) -> ExitModel:
+    """Fit on played games before `cutoff` (the week's first kickoff); later rows are never read."""
+    h = pw.filter((pl.col("gameday") < cutoff) & pl.col("played") & (pl.col("normal_snap_pct") >= MIN_NORMAL_PCT))
+    m = ExitModel(cutoff=cutoff, k=k)
+    for r in h.group_by("group").agg(n=pl.len(), e=pl.col("early_exit").sum()).iter_rows(named=True):
+        m.position[r["group"]] = (r["n"], r["e"])
+    for r in h.group_by("gsis_id").agg(n=pl.len(), e=pl.col("early_exit").sum()).iter_rows(named=True):
+        m.player[r["gsis_id"]] = (r["n"], r["e"])
+    ex = h.filter(pl.col("early_exit"))
+    for g, v in ex.group_by("group").agg(v=pl.col("work")).iter_rows():
+        m.shares[g] = np.sort(np.clip(np.array(v, dtype=float), 0.0, EXIT_FRACTION))
+        m.mean_exit[g] = float(np.mean(m.shares[g]))
+    if ex.height:
+        m.all_shares = np.sort(np.clip(ex["work"].to_numpy().astype(float), 0.0, EXIT_FRACTION))
+    for r in h.filter(~pl.col("early_exit")).group_by("group").agg(w=pl.col("work").mean()).iter_rows(named=True):
+        m.mean_ne[r["group"]] = r["w"]
+    return m
+
+
+def early_exit_for(model: ExitModel, player_id: str | None, group: str):
+    """(P(early exit), sampler) for a player in a game: the sampler draws the share of the game he completes when he exits, for
+    the 4b simulation (`sampler(rng, size=None)`)."""
+    return model.p_exit(player_id, group), model.sampler(group)
