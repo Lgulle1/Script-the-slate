@@ -40,6 +40,7 @@ SHOCK_SOURCE = {"catch_rate": "catch_rate", "yds_per_rec": "yds_per_rec", "comp_
                 "ypc": "ypc", "qb_ypc": "ypc"}   # a QB has no same-team pairs: his quantities borrow the receivers' / backs' loading
 SHOCK_KIND = {"comp_rate": "pass", "yds_per_cmp": "pass", "catch_rate": "pass", "yds_per_rec": "pass", "ypc": "rush", "qb_ypc": "rush"}
 STATS = ("carry", "target", "dropback")
+VOLUME_QUANTITIES = ("pass_att", "rush_att", "targets", "qb_rush_att")
 FAMILY_OF_ROLE = {"QB1": "QB", "RB1": "RB", "RB2": "RB", "FB": "RB", "WR1": "WR", "WR2": "WR", "WR3": "WR", "slot": "WR", "TE1": "TE",
                   "TE2": "TE", "QB": "QB", "RB2FB": "RB", "other": "other"}
 FAMILY_OF_GROUP = {"QB": "QB", "RB": "RB", "WR": "WR", "TE": "TE"}
@@ -77,6 +78,7 @@ def _before(keys: np.ndarray, key: int) -> int:
 class WeekCalib:
     key: int
     kappa: dict
+    kappa_anchor: dict          # stat -> Dirichlet-multinomial concentration around the Phase 3 volume anchors (carry / target / dropback)
     shock: dict                 # quantity -> relative SD of the shared team shock
     pool: dict                  # (quantity, family) -> scaled standardised residuals (np.ndarray, sorted)
     plays_sd: float
@@ -89,7 +91,8 @@ class WeekCalib:
 class Calibration:
     """Prefix-sum tables over (season, week) so any week's constants use only earlier weeks."""
 
-    def __init__(self, res: pl.DataFrame, detail: pl.DataFrame, player_log: pl.DataFrame, tgs: pl.DataFrame, state_rows: pl.DataFrame | None = None):
+    def __init__(self, res: pl.DataFrame, detail: pl.DataFrame, player_log: pl.DataFrame, tgs: pl.DataFrame, state_rows: pl.DataFrame | None = None,
+                 vol: pl.DataFrame | None = None):
         self._res = res.sort("key", "game_id", "team", "quantity")
         self._tgs = tgs
         self._state_rows = state_rows if state_rows is not None else tgs
@@ -97,6 +100,7 @@ class Calibration:
         self._build_kappa(detail, player_log)
         self._build_plays(tgs)
         self._build_ratios(player_log, tgs)
+        self._build_kappa_anchor(vol, detail, player_log, tgs)
         self._pools = {}
         for (q, fam), g in self._res.partition_by("quantity", "family", as_dict=True).items():
             self._pools[(q, fam)] = g
@@ -148,6 +152,55 @@ class Calibration:
             # availability uncertainty (carried by the mixture share itself), not game-to-game noise in a healthy starter's share.
             return KAPPA_DEFAULT["dropback"]
         k, t, c, n = self._kappa[stat]
+        i = _before(k, key)
+        if not i or c[i - 1] < MIN_KAPPA_OBS:
+            return KAPPA_DEFAULT[stat]
+        phi, nbar = t[i - 1] / c[i - 1], n[i - 1] / c[i - 1]
+        if phi <= 1.0 + 1e-9:
+            return KAPPA_RANGE[1]
+        return float(np.clip((nbar - phi) / (phi - 1.0), *KAPPA_RANGE))
+
+    # ---- kappa around the Phase 3 volume anchors
+    def _build_kappa_anchor(self, vol, detail: pl.DataFrame, player_log: pl.DataFrame, tgs: pl.DataFrame):
+        """Dispersion of actual counts around  team total x (Phase 3 volume prediction / expected team total): the same Pearson
+        method as kappa(), but the centre is the Phase 3 anchor, so the player-level spread of a simulated count carries the Phase 3
+        model's own prediction error (it is a point prediction, not a share known in advance). Calm team-games only."""
+        self._kappa_anchor = {st: None for st in STATS}
+        if vol is None or not vol.height:
+            return
+        keys = sorted(set((tgs["season"] * 100 + tgs["week"]).to_list()))
+        ratio = {k: self.ratios(k) for k in keys}
+        tot = player_log.group_by("game_id", "team").agg(n_carry=pl.col("carries").sum().cast(pl.Float64), n_target=pl.col("targets").sum().cast(pl.Float64),
+                                                         n_dropback=pl.col("attempts").sum().cast(pl.Float64))
+        calm = (detail.filter(pl.col("player_id") != "rest").group_by("game_id", "team").agg(worst=pl.col("p_out").max())
+                .filter(pl.col("worst") < KAPPA_MAX_P_OUT).select("game_id", "team"))
+        act = player_log.select("game_id", "team", "player_id", "family", x_carry=pl.col("carries").cast(pl.Float64), x_target=pl.col("targets").cast(pl.Float64),
+                                x_dropback=pl.col("attempts").cast(pl.Float64))
+        team = tgs.select("game_id", "team", "season", "week", "exp_pass_att", "exp_rush_att").with_columns(key=pl.col("season") * 100 + pl.col("week"))
+        team = team.with_columns(
+            tr=pl.col("key").replace_strict({k: v[0] for k, v in ratio.items()}, default=RATIO_DEFAULT[0], return_dtype=pl.Float64),
+            cr=pl.col("key").replace_strict({k: v[1] for k, v in ratio.items()}, default=RATIO_DEFAULT[1], return_dtype=pl.Float64),
+            qk=pl.col("key").replace_strict({k: v[2] for k, v in ratio.items()}, default=RATIO_DEFAULT[2], return_dtype=pl.Float64))
+        base = (vol.join(act, on=["game_id", "player_id"], how="inner").join(calm, on=["game_id", "team"], how="inner")
+                .join(tot, on=["game_id", "team"], how="inner").join(team, on=["game_id", "team"], how="inner"))
+        specs = {"carry": [("rush_att", pl.col("family") != "QB", pl.col("exp_rush_att") * pl.col("cr"), 1.0),
+                           ("qb_rush_att", pl.col("family") == "QB", pl.col("exp_rush_att") * pl.col("cr"), None)],
+                 "target": [("targets", pl.lit(True), pl.col("exp_pass_att") * pl.col("tr"), 1.0)]}
+        for st, parts in specs.items():
+            frames = []
+            for quantity, cond, nbar, _ in parts:
+                f = base.filter((pl.col("quantity") == quantity) & cond)
+                pred = pl.col("pred") / pl.col("qk") if quantity == "qb_rush_att" else pl.col("pred")
+                frames.append(f.with_columns(pi=(pred / nbar).clip(1e-6, 1 - 1e-6), x=pl.col(f"x_{st}"), n=pl.col(f"n_{st}")))
+            t = pl.concat(frames).filter((pl.col("pi") >= 0.05) & (pl.col("pi") <= 0.95) & (pl.col("n") > 0))
+            t = t.with_columns(key=pl.col("season") * 100 + pl.col("week"), term=(pl.col("x") - pl.col("n") * pl.col("pi")) ** 2 / (pl.col("n") * pl.col("pi") * (1 - pl.col("pi"))),
+                               one=pl.lit(1.0))
+            self._kappa_anchor[st] = _prefix(t, "key", ["term", "one", "n"])
+
+    def kappa_anchor(self, stat: str, key: int) -> float:
+        if stat == "dropback" or self._kappa_anchor.get(stat) is None:
+            return KAPPA_DEFAULT[stat]
+        k, t, c, n = self._kappa_anchor[stat]
         i = _before(k, key)
         if not i or c[i - 1] < MIN_KAPPA_OBS:
             return KAPPA_DEFAULT[stat]
@@ -223,7 +276,7 @@ class Calibration:
         key = season * 100 + week
         shock = {q: self.shock(q, key) for q in QUANTITIES}
         tr_, cr_, qk_ = self.ratios(key)
-        return WeekCalib(key=key, kappa={s: self.kappa(s, key) for s in STATS}, shock=shock, pool=self.pools(key, shock),
+        return WeekCalib(key=key, kappa={s: self.kappa(s, key) for s in STATS}, kappa_anchor={s: self.kappa_anchor(s, key) for s in STATS}, shock=shock, pool=self.pools(key, shock),
                          plays_sd=self.plays_sd(key), target_ratio=tr_, carry_ratio=cr_, qb_keep=qk_, state_model=self.state_model(key))
 
 
@@ -247,6 +300,7 @@ class TeamInput:
     scen_q: np.ndarray = None           # (M,) absence probability of each uncertain player (including linemen, who are not simulated)
     scen_k: np.ndarray = None           # (M,) index of that player among the K simulated players, -1 if he is not simulated
     scen_delta: dict = None             # stat -> (M, K + 1): shares when only that player is out, minus play_shares
+    vol: dict = None                    # quantity (pass_att / rush_att / targets / qb_rush_att) -> (K,) Phase 3 volume prediction (nan where none)
 
 
 @dataclass
@@ -272,6 +326,7 @@ class SimData:
     detail: pl.DataFrame                # per team-game player list with expected shares
     scen: pl.DataFrame                  # game_id, team, out_player, player_id, exp_*: shares when only out_player is out
     eff: pl.DataFrame                   # game_id, player_id, quantity, pred
+    vol: pl.DataFrame                   # game_id, player_id, quantity, pred: the Phase 3 VOLUME model's prediction for every eligible player-game
     exit_pools: dict                    # (season, week) -> (group pools, pooled)
     calibration: Calibration
     eligible: pl.DataFrame              # player-game rows eligible for at least one market (game_id, player_id, elig)
@@ -319,6 +374,9 @@ class SimData:
                 for st in STATS:
                     delta[st][m] = np.array([rows_o[i][f"exp_{st}"] if i in rows_o else play[st][j] for j, i in enumerate(order)]) - play[st]
             pos = {i: j for j, i in enumerate(ids)}
+            vl = self.vol.filter(pl.col("game_id") == game_id)
+            vmap = {(r["player_id"], r["quantity"]): r["pred"] for r in vl.iter_rows(named=True)}
+            vm = {q: np.array([vmap.get((p, q), np.nan) for p in ids], dtype=float) for q in VOLUME_QUANTITIES}
             em = {q: np.full(len(ids), np.nan) for q in QUANTITIES}
             if eff.height:
                 lookup = {(r["player_id"], r["quantity"]): r["pred"] for r in eff.iter_rows(named=True)}
@@ -331,7 +389,7 @@ class SimData:
                                     p_exit=np.nan_to_num(main["p_exit"].to_numpy().astype(float)), eff=em,
                                     p_out=np.array([pout[i] for i in ids], dtype=float), play_shares=play,
                                     scen_q=np.array([pout[o] for o in outs], dtype=float), scen_k=np.array([pos.get(o, -1) for o in outs], dtype=int),
-                                    scen_delta=delta)
+                                    scen_delta=delta, vol=vm)
         pools, pooled = self.exit_pools[(season, week)]
         return GameInput(game_id=game_id, season=season, week=week, margin_mean=float(g["margin_mean"]), margin_sd=float(g["margin_sd"]),
                          total_mean=float(g["total_mean"]), total_sd=float(g["total_sd"]), home=teams["home"], away=teams["away"],
@@ -422,6 +480,32 @@ def _efficiency_predictions(data, raw_db, cap):
         "game_id", "player_id", "quantity")
 
 
+def _volume_predictions(data, raw_db, cap):
+    """The Phase 3 VOLUME model's walk-forward prediction (pass attempts, carries, targets, QB kneel-free carries) for EVERY eligible
+    player-game, run week by week through the same cutoffs as the harness. These are the simulation's expected player volumes."""
+    from eval import backtest as bt
+    from features import volume_features as vf
+    from models import volume
+
+    vt = vf.load_feature_tables(data, raw_db=raw_db, max_season=cap)
+    player, _ = volume.volume_predictors(vt)
+    gid = dict(zip(zip(data.player_log["player_id"].to_list(), data.player_log["gameday"].to_list()), data.player_log["game_id"].to_list()))
+    rows = []
+    for season, week, cutoff in data.weeks:
+        if season > cap:
+            continue
+        history = bt.History(data.player_log.filter(pl.col("gameday") < cutoff), data.team_log.filter(pl.col("gameday") < cutoff))
+        targets, _, _, _, _ = bt._week_targets(data, season, week)
+        if not targets:
+            continue
+        for t, p in zip(targets, player(history, targets, cutoff)):
+            for q, v in p.items():
+                if v is not None:
+                    rows.append(dict(game_id=gid[(t.player_id, t.gameday)], player_id=t.player_id, quantity=q, pred=float(v)))
+    return pl.DataFrame(rows, schema={"game_id": pl.String, "player_id": pl.String, "quantity": pl.String, "pred": pl.Float64}).sort(
+        "game_id", "player_id", "quantity")
+
+
 def _residual_table(player_log: pl.DataFrame, wf_path) -> pl.DataFrame:
     """Walk-forward residuals of the Phase 3 efficiency model (data/processed/walkforward_predictions.parquet, built by
     build_phase4_tables.py), with the denominators of the games they came from."""
@@ -472,12 +556,21 @@ def build_sim_data(raw_db=config.RAW_DUCKDB_PATH, seasons=config.BACKTEST_SEASON
             eff_path.parent.mkdir(parents=True, exist_ok=True)
             eff.write_parquet(eff_path)
     stage("efficiency predictions")
+    vol_path = Path(cache_dir) / "vol.parquet" if cache_dir else None
+    if vol_path and vol_path.exists():
+        vol = pl.read_parquet(vol_path)
+    else:
+        vol = _volume_predictions(data, raw_db, cap)
+        if vol_path:
+            vol_path.parent.mkdir(parents=True, exist_ok=True)
+            vol.write_parquet(vol_path)
+    stage("volume predictions")
     res = _residual_table(data.player_log, wf_path)
     games = gs.load_games(raw_db, cap)
     pts = pl.concat([games.select("game_id", team="home_team", pf="home_score", pa="away_score"),
                      games.select("game_id", team="away_team", pf="away_score", pa="home_score")])
     state_rows = (gs.load_state_rows(raw_db, cap).join(pts, on=["game_id", "team"], how="left")
                   .with_columns(margin=(pl.col("pf") - pl.col("pa")).cast(pl.Float64)))    # every team-game from 2019 on, realised margin
-    calib = Calibration(res, detail, data.player_log, tgs, state_rows)
+    calib = Calibration(res, detail, data.player_log, tgs, state_rows, vol)
     elig = data.player_log.filter(pl.col("elig") != "").select("game_id", "player_id", "team", "elig")
-    return SimData(games=ge, tgs=tgs, detail=detail, scen=scen, eff=eff, exit_pools=exit_pools, calibration=calib, eligible=elig, seasons=tuple(seasons))
+    return SimData(games=ge, tgs=tgs, detail=detail, scen=scen, eff=eff, vol=vol, exit_pools=exit_pools, calibration=calib, eligible=elig, seasons=tuple(seasons))

@@ -31,7 +31,8 @@ def _calib(shock=0.08):
     rng = np.random.default_rng(0)
     pool = {(q, fam): np.sort(rng.normal(0, 1.0, 400) * (0.5 if q in ("comp_rate", "catch_rate") else 6.0 if "yds" in q or q == "ypc" else 1.0))
             for q in si.QUANTITIES for fam in ("QB", "RB", "WR", "TE", "other")}
-    return si.WeekCalib(key=202305, kappa={"carry": 40.0, "target": 40.0, "dropback": 300.0}, shock={q: shock for q in si.QUANTITIES}, pool=pool,
+    return si.WeekCalib(key=202305, kappa={"carry": 40.0, "target": 40.0, "dropback": 300.0},
+                        kappa_anchor={"carry": 25.0, "target": 25.0, "dropback": 300.0}, shock={q: shock for q in si.QUANTITIES}, pool=pool,
                         plays_sd=8.0, target_ratio=0.96, carry_ratio=1.05, qb_keep=0.95, state_model=_state_model())
 
 
@@ -261,3 +262,91 @@ def test_a_player_out_in_nearly_every_game_gets_no_conditional_prediction():
     g.home = _scenario_team(0.9995)
     s = sm.simulate_game(g, sm.BACKTEST)
     assert not [r for r in sm.summarize_game(s, {"AAA_rb1": {"rush_att"}}) if r["entity"] == "AAA_rb1"]
+
+
+# ---------------------------------------------------------------- Phase 3 volume anchors
+def _anchored_team(exit_p=None, q_rb1=None):
+    """RB1 14 carries, RB2 6; WR1 8 targets, WR2 6, TE 5, RB1 3; QB 31 attempts (the synthetic team throws about 33). WR3-like players have no prediction (none here)."""
+    t = _team("AAA", True, exit_p if exit_p is not None else [0.0] * len(IDS))
+    nan = np.nan
+    t.vol = {"pass_att": np.array([31.0, nan, nan, nan, nan, nan]), "rush_att": np.array([nan, 14.0, 6.0, nan, nan, nan]),
+             "targets": np.array([nan, 3.0, 2.0, 8.0, 6.0, 5.0]), "qb_rush_att": np.array([2.0, nan, nan, nan, nan, nan])}
+    t.play_shares = {"carry": np.array([0.08, 0.55, 0.25, 0.02, 0.0, 0.0, 0.10]), "target": np.array([0.0, 0.10, 0.05, 0.30, 0.25, 0.20, 0.10]),
+                     "dropback": np.array([0.97, 0.0, 0.0, 0.0, 0.0, 0.0, 0.03])}
+    if q_rb1 is not None:
+        out_c = np.array([0.08, 0.0, 0.70, 0.02, 0.0, 0.0, 0.20])
+        out_t = np.array([0.0, 0.0, 0.14, 0.33, 0.28, 0.22, 0.03])
+        t.p_out = np.array([0.0, q_rb1, 0, 0, 0, 0])
+        t.scen_q, t.scen_k = np.array([q_rb1]), np.array([1])
+        t.scen_delta = {"carry": (out_c - t.play_shares["carry"])[None, :], "target": (out_t - t.play_shares["target"])[None, :], "dropback": np.zeros((1, 7))}
+    return t
+
+
+def _anchored_game(**kw):
+    g = _game()
+    g.home = _anchored_team(**kw)
+    return g
+
+
+def test_anchored_players_average_their_phase_3_prediction():
+    s = sm.simulate_game(_anchored_game(), sm.FULL)
+    c, tg = sm.STAT_INDEX["rush_att"], sm.STAT_INDEX["targets"]
+    assert s.stats[:, 1, c].mean() == pytest.approx(14.0, abs=0.3)          # RB1's carries = his Phase 3 prediction
+    assert s.stats[:, 2, c].mean() == pytest.approx(6.0, abs=0.3)
+    assert s.stats[:, 3, tg].mean() == pytest.approx(8.0, abs=0.3)          # WR1's targets
+    assert s.stats[:, 4, tg].mean() == pytest.approx(6.0, abs=0.3)
+    assert s.stats[:, 0, sm.STAT_INDEX["pass_att"]].mean() == pytest.approx(31.0, abs=0.6)
+    old = sm.simulate_game(_anchored_game(), sm.FULL, volume_source="shares")
+    assert old.stats[:, 1, c].mean() != pytest.approx(s.stats[:, 1, c].mean(), abs=0.5)   # the previous design gives another number
+
+
+def test_anchored_counts_still_add_up_to_the_team_totals_and_move_with_the_game_script():
+    s = sm.simulate_game(_anchored_game(), sm.FULL)
+    K = len(IDS)
+    c = sm.STAT_INDEX["rush_att"]
+    assert (s.stats[:, :K, c].sum(axis=1) <= s.home.carries).all()
+    big = s.home.carries >= np.quantile(s.home.carries, 0.8)
+    small = s.home.carries <= np.quantile(s.home.carries, 0.2)
+    assert s.stats[big, 1, c].mean() > 1.3 * s.stats[small, 1, c].mean()     # a big rushing day for the team is a big day for RB1
+    for t in (s.home, s.away):                                                 # the team accounting is untouched by the volume source
+        assert (t.pass_att == t.dropbacks - t.sacks - t.scrambles).all() and (t.rush_att == t.plays - t.dropbacks + t.scrambles).all()
+
+
+def test_anchors_that_exceed_the_team_total_are_scaled_down_proportionally():
+    g = _anchored_game()
+    g.home.vol["rush_att"] = np.array([np.nan, 40.0, 30.0, np.nan, np.nan, np.nan])         # 70 carries predicted for a team that runs ~27
+    s = sm.simulate_game(g, sm.FULL)
+    c = sm.STAT_INDEX["rush_att"]
+    got = s.stats[:, :6, c].sum(axis=1)
+    assert got.mean() == pytest.approx(s.home.carries.mean(), abs=0.5)                       # they take (almost) the whole team total ...
+    assert s.stats[:, 1, c].mean() / s.stats[:, 2, c].mean() == pytest.approx(40 / 30, rel=0.06)   # ... in the ratio of their predictions
+
+
+def test_the_injury_ratio_applies_only_when_a_teammate_may_be_out():
+    none = sm.simulate_game(_anchored_game(), sm.FULL)
+    out = sm.simulate_game(_anchored_game(q_rb1=0.5), sm.FULL)
+    c = sm.STAT_INDEX["rush_att"]
+    present = out.present[:, 1]
+    assert present.mean() == pytest.approx(0.5, abs=0.02)
+    rb2_in, rb2_out = out.stats[present, 2, c].mean(), out.stats[~present, 2, c].mean()
+    assert rb2_out > 1.8 * rb2_in                                             # RB1 out: RB2's carries rise by the 4a.2 ratio (0.70 / 0.25 -> x2.8, capped at 3)
+    assert out.stats[present, 2, c].mean() == pytest.approx(none.stats[:, 2, c].mean(), rel=0.12)   # RB1 in: the Phase 3 anchor stands
+    assert (out.stats[~present, 1, c] == 0).all()                              # and the absent anchored player has no volume
+
+
+def test_early_exit_still_scales_an_anchored_players_volume():
+    base = sm.simulate_game(_anchored_game(exit_p=[0.0] * 6), sm.FULL)
+    hurt = sm.simulate_game(_anchored_game(exit_p=[0.0, 1.0, 0.0, 0.0, 0.0, 0.0]), sm.FULL)
+    c = sm.STAT_INDEX["rush_att"]
+    assert hurt.stats[:, 1, c].mean() < 0.45 * base.stats[:, 1, c].mean()
+    assert hurt.stats[:, 1, c].mean() > 0.10 * base.stats[:, 1, c].mean()
+    # the carries he gives up go to the un-anchored players and the unlisted rest, not to another anchored player (his anchor is fixed)
+    assert hurt.stats[:, 2, c].mean() == pytest.approx(base.stats[:, 2, c].mean(), abs=0.2)
+    assert hurt.stats[:, :6, c].sum(axis=1).mean() < base.stats[:, :6, c].sum(axis=1).mean()
+
+
+def test_the_margin_total_and_plays_do_not_depend_on_the_volume_source():
+    a = sm.simulate_game(_anchored_game(), sm.BACKTEST)
+    b = sm.simulate_game(_anchored_game(), sm.BACKTEST, volume_source="shares")
+    assert np.array_equal(a.margin, b.margin) and np.array_equal(a.total, b.total) and np.array_equal(a.home.plays, b.home.plays)
+    assert np.array_equal(a.home.dropbacks, b.home.dropbacks) and np.array_equal(a.home.pass_att, b.home.pass_att)

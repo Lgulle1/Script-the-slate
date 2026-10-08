@@ -11,7 +11,20 @@ For each simulated game, in this order (every step vectorised over the simulated
  5. ONE shared passing-efficiency shock and ONE shared rushing-efficiency shock per team (standard normal), loaded onto every
     efficiency quantity with that quantity's RELATIVE shock SD (sim/inputs.py: set from the historical covariance of same-team
     residuals), so players on the same team move together.
- 6. each player: his early exit (4a.3: P(exit) from his history, share of the game completed drawn from his position's empirical
+ 6. each player's volume. VOLUME_SOURCE "phase3" (the default): his expected volume IS the Phase 3 volume model's walk-forward prediction
+    for that player-game (pass attempts, carries, targets, QB kneel-free carries -- it is conditional on his playing, like the scored
+    rows). The simulation adds variance and correlation around that anchor: his anchor share of the team total (prediction / the
+    simulated team's mean total) times the simulated team total, drawn Dirichlet-multinomial (kappa estimated from how far actual counts
+    sat from the Phase 3 anchors), so counts add up to the team totals exactly and move with the game script; his early exit (4a.3)
+    scales his share. The 4a.2 redistribution is a SECONDARY signal in exactly two places: (a) the injury ratio -- in a simulated game in
+    which a teammate is out, an anchored player's share is multiplied by (his 4a.2 share with that teammate out) / (his 4a.2 share with
+    everyone in), clipped to [0, 3] and used only where his baseline share is at least 2%; Phase 3 has no injury information, so it
+    cannot reflect the change itself; with nobody likely out the ratio is 1 and the anchor stands untouched -- and (b) players with no
+    Phase 3 volume prediction for the stat (RB3, WR4, a QB's receptions...) keep their 4a.2 shares. Reconciliation: anchored players
+    keep their anchor shares and the un-anchored players and the unlisted `rest` fill what is left of the team total; if the anchors
+    alone exceed the team total they are scaled down proportionally (so counts always sum to the team total exactly).
+    VOLUME_SOURCE "shares" is the previous design: each player's share of the team total comes from 4a.2 alone.
+    Either way: his early exit (4a.3: P(exit) from his history, share of the game completed drawn from his position's empirical
     distribution) scales his expected share; shares are then drawn Dirichlet-multinomial (kappa estimated from history) over the team's
     carries (rush attempts x the league carries-per-rush ratio), targets (pass attempts x the league targets-per-attempt ratio) and
     dropbacks, so counts add up to the team totals exactly. Efficiency = the Phase 3 efficiency prediction x (1 + shock) + a player
@@ -48,6 +61,9 @@ PLAYER_STATS = ("dropbacks", "pass_att", "pass_cmp", "pass_yds", "rush_att", "ru
 STAT_INDEX = {s: i for i, s in enumerate(PLAYER_STATS)}
 COUNT_STATS = ("dropbacks", "pass_att", "rush_att", "targets", "qb_rush_att")
 MARKET_STAT = {m: m for m in ("pass_att", "pass_cmp", "pass_yds", "rush_att", "rush_yds", "targets", "rec", "rec_yds", "qb_rush_att", "qb_rush_yds")}
+VOLUME_SOURCE = "phase3"          # "phase3": player volume anchored on the Phase 3 volume model; "shares": 4a.2 shares alone (the previous design)
+INJURY_RATIO_MIN_BASE = 0.02      # the 4a.2 injury ratio is only applied to a player whose in-play baseline share is at least this
+INJURY_RATIO_CAP = 3.0
 MIN_PLAYS, MAX_PLAYS = 30, 110
 MIN_TOTAL = 10.0
 MIN_PRESENT = 100        # simulated games a player must be in before a prediction conditional on his playing is made
@@ -148,7 +164,39 @@ def _dirichlet_multinomial(shares: np.ndarray, factor: np.ndarray, kappa: float,
     w = np.maximum(w, 0.0)
     s = w.sum(axis=1, keepdims=True)
     p = np.where(s > 0, w / np.where(s > 0, s, 1.0), 1.0 / (K + 1))
-    g = rng.gamma(np.maximum(kappa * p, 1e-4))
+    g = np.where(p > 0, rng.gamma(np.maximum(kappa * p, 1e-4)), 0.0)
+    pv = g / g.sum(axis=1, keepdims=True)
+    return rng.multinomial(total, pv)
+
+
+def _anchored_counts(play: np.ndarray, scen: np.ndarray, anchor: np.ndarray, present: np.ndarray, factor: np.ndarray, kappa: float,
+                     total: np.ndarray, rng: np.random.Generator) -> np.ndarray:
+    """Counts (n, K + 1) of `total` draws over K players + `rest`, centred on the Phase 3 anchors.
+
+    play    (K + 1,) 4a.2 in-play shares (everyone plays);  scen (n, K + 1) 4a.2 shares in each simulated game's availability scenario
+    anchor  (K,) Phase 3 prediction / expected team total (nan = no prediction: the player follows the 4a.2 scenario share)
+    present (n, K) False where the player is out of that simulated game;  factor (n, K) early-exit factor
+    Anchored players keep anchor x injury ratio x exit factor; the others and `rest` share what is left (see the module docstring)."""
+    n, K = factor.shape
+    has = ~np.isnan(anchor)
+    ratio = np.ones((n, K))
+    ok = has & (play[:K] >= INJURY_RATIO_MIN_BASE)
+    if ok.any():
+        ratio[:, ok] = np.clip(scen[:, :K][:, ok] / play[:K][ok], 0.0, INJURY_RATIO_CAP)
+    a = np.where(has, anchor, 0.0)[None, :] * ratio * factor * present
+    a_sum = a.sum(axis=1)
+    a = np.where((a_sum > 1.0)[:, None], a / np.where(a_sum > 1.0, a_sum, 1.0)[:, None], a)
+    remainder = np.clip(1.0 - a.sum(axis=1), 0.0, None)
+    w = np.zeros((n, K + 1))
+    w[:, :K] = np.where(has[None, :], 0.0, scen[:, :K] * factor)
+    w[:, K] = scen[:, K]
+    w = np.clip(w, 0.0, None)
+    ws = w.sum(axis=1)
+    w = np.where((ws > 0)[:, None], w / np.where(ws > 0, ws, 1.0)[:, None] * remainder[:, None], 0.0)
+    w[:, K] += np.where(ws > 0, 0.0, remainder)
+    p = w
+    p[:, :K] += a
+    g = np.where(p > 0, rng.gamma(np.maximum(kappa * p, 1e-4)), 0.0)          # a player with no share (out, or none) gets exactly none
     pv = g / g.sum(axis=1, keepdims=True)
     return rng.multinomial(total, pv)
 
@@ -165,7 +213,22 @@ def draw_efficiency(pred: np.ndarray, shock: float, team_z: np.ndarray, pools: l
     return np.clip(eff, *bounds)
 
 
-def _simulate_team(t: si.TeamInput, tm: np.ndarray, g: si.GameInput, rng: np.random.Generator) -> tuple[TeamSim, np.ndarray]:
+def _anchors(t: si.TeamInput, v: dict, cal: si.WeekCalib, fam: list) -> dict:
+    """stat -> (K,) Phase 3 anchor as a share of the simulated team's MEAN total (nan where the player has no prediction for the stat)."""
+    K = len(t.player_ids)
+    out = {}
+    is_qb = np.array([f_ == "QB" for f_ in fam])
+    if t.vol is None:
+        return {st: np.full(K, np.nan) for st in si.STATS}
+    nbar = {"carry": max(float(v["Rc"].mean()), 1.0), "target": max(float(v["T"].mean()), 1.0), "dropback": max(float(v["P"].mean()), 1.0)}
+    rush = np.where(is_qb, t.vol["qb_rush_att"] / max(cal.qb_keep, 1e-6), t.vol["rush_att"])      # carries include kneels; the QB anchor is kneel-free
+    out["carry"] = rush / nbar["carry"]
+    out["target"] = t.vol["targets"] / nbar["target"]
+    out["dropback"] = np.where(is_qb, t.vol["pass_att"], np.nan) / nbar["dropback"]
+    return out
+
+
+def _simulate_team(t: si.TeamInput, tm: np.ndarray, g: si.GameInput, rng: np.random.Generator, volume_source: str = "phase3") -> tuple[TeamSim, np.ndarray]:
     cal = g.calib
     n = len(tm)
     v = _team_volume(t, tm, cal, rng)
@@ -173,23 +236,33 @@ def _simulate_team(t: si.TeamInput, tm: np.ndarray, g: si.GameInput, rng: np.ran
     # availability: each uncertain player is out in a share q of the simulated games; shares = everyone-plays shares + the redistribution
     # that follows from whoever is out (4a.2 scenarios, superposed). Without scenario inputs the 4a.2 mixture shares are used as given.
     present = np.ones((n, K), dtype=bool)
+    scen_shares = None
     if t.play_shares is not None and t.scen_q is not None and len(t.scen_q):
         out_flag = rng.random((n, len(t.scen_q))) < t.scen_q[None, :]
         for m, k in enumerate(t.scen_k):
             if k >= 0:
                 present[:, k] = ~out_flag[:, m]
         shares = {st: np.clip(t.play_shares[st][None, :] + out_flag.astype(float) @ t.scen_delta[st], 0.0, None) for st in si.STATS}
+        scen_shares = shares
     else:
         shares = t.play_shares if t.play_shares is not None else t.shares
     f = _exit_factors(t, g.exit_pools, g.exit_all, n, rng)
-    carries = _dirichlet_multinomial(shares["carry"], f, cal.kappa["carry"], v["Rc"], rng)[:, :K]
-    targets = _dirichlet_multinomial(shares["target"], f, cal.kappa["target"], v["T"], rng)[:, :K]
-    dropbacks = _dirichlet_multinomial(shares["dropback"], f, cal.kappa["dropback"], v["D"], rng)[:, :K]
+    fam = [si.FAMILY_OF_GROUP.get(gr) or si.FAMILY_OF_ROLE.get(ro, "other") for gr, ro in zip(t.groups, t.roles)]
+    if volume_source == "phase3" and t.vol is not None:
+        base = t.play_shares if t.play_shares is not None else t.shares
+        sc = scen_shares if scen_shares is not None else {st: np.broadcast_to(base[st], (n, K + 1)) for st in si.STATS}
+        anchors = _anchors(t, v, cal, fam)
+        carries = _anchored_counts(base["carry"], sc["carry"], anchors["carry"], present, f, cal.kappa_anchor["carry"], v["Rc"], rng)[:, :K]
+        targets = _anchored_counts(base["target"], sc["target"], anchors["target"], present, f, cal.kappa_anchor["target"], v["T"], rng)[:, :K]
+        dropbacks = _anchored_counts(base["dropback"], sc["dropback"], anchors["dropback"], present, f, cal.kappa_anchor["dropback"], v["D"], rng)[:, :K]
+    else:
+        carries = _dirichlet_multinomial(shares["carry"], f, cal.kappa["carry"], v["Rc"], rng)[:, :K]
+        targets = _dirichlet_multinomial(shares["target"], f, cal.kappa["target"], v["T"], rng)[:, :K]
+        dropbacks = _dirichlet_multinomial(shares["dropback"], f, cal.kappa["dropback"], v["D"], rng)[:, :K]
     # volumes always exist; completions / receptions / yardage need a Phase 3 efficiency prediction and stay NaN (no outcome) without one
     out = np.full((n, K, len(PLAYER_STATS)), np.nan, dtype=np.float32)
     for c in COUNT_STATS:
         out[:, :, STAT_INDEX[c]] = 0.0
-    fam = [si.FAMILY_OF_GROUP.get(gr) or si.FAMILY_OF_ROLE.get(ro, "other") for gr, ro in zip(t.groups, t.roles)]
     is_qb = np.array([f_ == "QB" for f_ in fam])
     pa = np.rint(dropbacks * (v["P"] / np.maximum(v["D"], 1))[:, None]).astype(np.int64)
     qb_att = np.rint(carries * cal.qb_keep).astype(np.int64)
@@ -239,14 +312,14 @@ def _simulate_team(t: si.TeamInput, tm: np.ndarray, g: si.GameInput, rng: np.ran
     return team, out
 
 
-def simulate_game(g: si.GameInput, mode: SimMode = BACKTEST, seed: int = RUN_SEED) -> GameSim:
+def simulate_game(g: si.GameInput, mode: SimMode = BACKTEST, seed: int = RUN_SEED, volume_source: str = VOLUME_SOURCE) -> GameSim:
     """All simulated games of one real game, in the order of the module docstring, from this game's own fixed random stream."""
     rng = game_rng(g.game_id, seed)
     n = mode.n_sim
     margin = rng.normal(g.margin_mean, g.margin_sd, n)
     total = np.maximum(rng.normal(g.total_mean, g.total_sd, n), MIN_TOTAL)
-    home_ts, home_out = _simulate_team(g.home, margin, g, rng)
-    away_ts, away_out = _simulate_team(g.away, -margin, g, rng)
+    home_ts, home_out = _simulate_team(g.home, margin, g, rng, volume_source)
+    away_ts, away_out = _simulate_team(g.away, -margin, g, rng, volume_source)
     home_ts.points, away_ts.points = (total + margin) / 2.0, (total - margin) / 2.0
     stats = np.concatenate([home_out, away_out], axis=1)
     return GameSim(game_id=g.game_id, mode=mode, margin=margin, total=total, home=home_ts, away=away_ts,

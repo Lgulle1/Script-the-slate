@@ -1,6 +1,6 @@
 """4b.5: the game simulation through the walk-forward backtest, against the Phase 3 model.
 
-  python run_sim_backtest.py [--time-slate SEASON WEEK]
+  python run_sim_backtest.py [--volume-source phase3|shares] [--out-suffix TEXT] [--time-slate SEASON WEEK]
 
 Simulates every 2020-2024 game with 2,000 draws (sim.simulate.BACKTEST, flagged backtest_mode in every output; 2025 never loaded),
 every input walk-forward (sim/inputs.py). For every market the simulated outcomes become a mean, a median and threshold
@@ -16,6 +16,11 @@ Gain = Phase 3 loss - simulation loss (positive = the simulation is better); 95%
 bootstrap (config.BOOTSTRAP_RESAMPLES resamples, fixed seed); per-season gains and mean bias in the same row. No average across markets.
 sim_weight_probabilities / sim_weight_mean are fixed in advance (not tuned): 1.0 if gain > 0 and the simulation wins at least 2
 seasons separately on that metric, else 0.0 -- the simulation then stays at zero weight for that market and the market is flagged.
+
+--volume-source phase3 (default) anchors each player's simulated volume on the Phase 3 volume model's prediction (sim/simulate.py, step 6);
+--volume-source shares is the previous design (4a.2 shares alone) and writes the original, unsuffixed files, which are never overwritten by
+the default run. The phase3 variant writes sim_backtest_*_anchored_<pool version>.parquet. --out-suffix adds more text to the file names
+(used to check that two from-scratch runs give identical files).
 
 Also written: the 20% calibration table of the simulated and the Phase 3 probabilities (sim_backtest_calibration_*.parquet) and the simulated
 vs actual margin / total / team-plays distributions (sim_backtest_distributions_*.parquet, docs/sim_backtest_distributions_*.png).
@@ -38,10 +43,14 @@ from sim import simulate as sm
 from sim.inputs import build_sim_data
 
 VERSION = config.ELIGIBLE_PLAYER_RULE["version"]
-RESULTS_PATH = config.result_path("sim_backtest_results")
-CALIBRATION_PATH = config.result_path("sim_backtest_calibration")
-DISTRIBUTIONS_PATH = config.result_path("sim_backtest_distributions")
-PLOT_PATH = config.ROOT / "docs" / f"sim_backtest_distributions_{VERSION}.png"
+def output_paths(volume_source: str, out_suffix: str = "") -> dict:
+    tag = ("" if volume_source == "shares" else "_anchored") + out_suffix
+    return {"results": config.result_path(f"sim_backtest_results{tag}"), "calibration": config.result_path(f"sim_backtest_calibration{tag}"),
+            "distributions": config.result_path(f"sim_backtest_distributions{tag}"),
+            "plot": config.ROOT / "docs" / f"sim_backtest_distributions{tag}_{VERSION}.png"}
+
+
+RESULTS_PATH = output_paths("shares")["results"]          # the previous design's results (kept as the comparison reference)
 PHASE3_PREDICTIONS = config.PROCESSED_DIR / f"volume_efficiency_predictions_{VERSION}.parquet"
 MARKET_ORDER = list(bl.PLAYER_MARKETS) + list(bl.GAME_MARKETS)
 SAMPLE_PER_GAME = 200
@@ -50,7 +59,7 @@ QUANTILES = (0.05, 0.25, 0.5, 0.75, 0.95)
 
 
 # ====================================================================== simulate everything
-def simulate_all(sd, mode=sm.BACKTEST):
+def simulate_all(sd, mode=sm.BACKTEST, volume_source=sm.VOLUME_SOURCE):
     """Summaries for every eligible (player, market) and game market, plus per-game distribution material."""
     by_game = {}
     for r in sd.eligible.iter_rows(named=True):
@@ -63,7 +72,7 @@ def simulate_all(sd, mode=sm.BACKTEST):
         if g is None:
             skipped.append(gid)
             continue
-        gsim = sm.simulate_game(g, mode)
+        gsim = sm.simulate_game(g, mode, volume_source=volume_source)
         m = meta[gid]
         for r in sm.summarize_game(gsim, by_game.get(gid, {})):
             rows.append(dict(season=m["season"], week=m["week"], game_id=gid, **r))
@@ -198,25 +207,26 @@ def plot_distributions(dist: pl.DataFrame, path):
 
 
 # ====================================================================== run
-def run(save=True, sim_data=None):
+def run(save=True, sim_data=None, volume_source=sm.VOLUME_SOURCE, out_suffix=""):
     sd = sim_data or build_sim_data()
-    sim, dist, skipped = simulate_all(sd)
+    sim, dist, skipped = simulate_all(sd, volume_source=volume_source)
+    paths = output_paths(volume_source, out_suffix)
     ph3 = pl.read_parquet(PHASE3_PREDICTIONS).filter(pl.col("method") == "vol_x_eff")
     results, calib = compare_markets(sim, ph3)
     dtab = distribution_table(dist)
     if save:
         meta = {b"seasons": json.dumps(config.BACKTEST_SEASONS).encode(), b"simulation_mode": sm.BACKTEST.name.encode(),
-                b"run_id": sm.run_id(sm.BACKTEST).encode(), b"draws_per_game": str(sm.BACKTEST.n_sim).encode(),
+                b"run_id": sm.run_id(sm.BACKTEST).encode(), b"volume_source": volume_source.encode(), b"draws_per_game": str(sm.BACKTEST.n_sim).encode(),
                 b"bootstrap": json.dumps(dict(resamples=config.BOOTSTRAP_RESAMPLES, seed=config.BOOTSTRAP_SEED, unit="season-week cluster")).encode(),
                 b"weight_rule": f"1.0 if gain > 0 and seasons_won >= {MIN_SEASONS_FOR_WEIGHT} else 0.0".encode()}
-        pq.write_table(results.to_arrow().replace_schema_metadata(meta), RESULTS_PATH)
-        pq.write_table(calib.to_arrow().replace_schema_metadata(meta), CALIBRATION_PATH)
-        pq.write_table(dtab.to_arrow().replace_schema_metadata(meta), DISTRIBUTIONS_PATH)
-        plot_distributions(dist, PLOT_PATH)
+        pq.write_table(results.to_arrow().replace_schema_metadata(meta), paths["results"])
+        pq.write_table(calib.to_arrow().replace_schema_metadata(meta), paths["calibration"])
+        pq.write_table(dtab.to_arrow().replace_schema_metadata(meta), paths["distributions"])
+        plot_distributions(dist, paths["plot"])
     return results, calib, dtab, skipped, sim
 
 
-def time_slate(sd, season: int, week: int, store_dir=None):
+def time_slate(sd, season: int, week: int, store_dir=None, volume_source=sm.VOLUME_SOURCE):
     """Wall-clock of one week's slate at 20,000 draws per game (simulate, summarise and, if store_dir, store each game once)."""
     games = sd.games.filter((pl.col("season") == season) & (pl.col("week") == week)).sort("game_id")["game_id"].to_list()
     by_game = {}
@@ -228,12 +238,29 @@ def time_slate(sd, season: int, week: int, store_dir=None):
         g = sd.game_input(gid)
         if g is None:
             continue
-        gsim = sm.simulate_game(g, sm.FULL)
+        gsim = sm.simulate_game(g, sm.FULL, volume_source=volume_source)
         sm.summarize_game(gsim, by_game.get(gid, {}))
         if store_dir:
             sm.store_game(gsim, store_dir)
         n += 1
     return n, time.time() - t0
+
+
+def print_comparison(results: pl.DataFrame):
+    """Market by market against the previous design (4a.2 shares), read from its saved results file."""
+    if not RESULTS_PATH.exists():
+        return
+    old = pl.read_parquet(RESULTS_PATH)
+    keep = ["market", "mean_gain", "mean_seasons_won", "mean_verdict", "brier_gain", "brier_seasons_won", "brier_verdict", "sim_weight_mean", "sim_weight_probabilities"]
+    j = results.select(keep).join(old.select(keep), on="market", suffix="_shares").select(
+        "market", mean_gain_anchored=pl.col("mean_gain").round(3), mean_gain_shares=pl.col("mean_gain_shares").round(3),
+        verdict_anchored="mean_verdict", verdict_shares="mean_verdict_shares", brier_gain_anchored=pl.col("brier_gain").round(5),
+        brier_gain_shares=pl.col("brier_gain_shares").round(5), bverdict_anchored="brier_verdict", bverdict_shares="brier_verdict_shares",
+        weight_mean_anchored="sim_weight_mean", weight_mean_shares="sim_weight_mean_shares", weight_prob_anchored="sim_weight_probabilities",
+        weight_prob_shares="sim_weight_probabilities_shares")
+    print("\nAnchored (Phase 3 volume) vs the previous design (4a.2 shares), same Phase 3 yardstick:")
+    with pl.Config(tbl_rows=20, tbl_cols=20, tbl_width_chars=250, tbl_hide_dataframe_shape=True):
+        print(j)
 
 
 def print_summary(results, dtab, skipped):
@@ -260,6 +287,8 @@ def print_summary(results, dtab, skipped):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--time-slate", nargs=2, type=int, metavar=("SEASON", "WEEK"))
+    ap.add_argument("--volume-source", choices=("phase3", "shares"), default=sm.VOLUME_SOURCE)
+    ap.add_argument("--out-suffix", default="")
     a = ap.parse_args()
     t0 = time.time()
     sd = build_sim_data()
@@ -267,10 +296,13 @@ if __name__ == "__main__":
     if a.time_slate:
         import tempfile
         with tempfile.TemporaryDirectory() as d:
-            n, secs = time_slate(sd, *a.time_slate, store_dir=d)
+            n, secs = time_slate(sd, *a.time_slate, store_dir=d, volume_source=a.volume_source)
             print(f"{n} games x {sm.FULL.n_sim:,} draws (simulated, summarised, stored): {secs:.1f}s")
     t0 = time.time()
-    results, calib, dtab, skipped, _ = run(sim_data=sd)
+    results, calib, dtab, skipped, _ = run(sim_data=sd, volume_source=a.volume_source, out_suffix=a.out_suffix)
     print(f"simulation + comparison: {time.time() - t0:.0f}s")
     print_summary(results, dtab, skipped)
-    print(f"\nsaved {RESULTS_PATH.name} ({results.height} rows), {CALIBRATION_PATH.name}, {DISTRIBUTIONS_PATH.name}, {PLOT_PATH.relative_to(config.ROOT)}")
+    if a.volume_source != "shares":
+        print_comparison(results)
+    p = output_paths(a.volume_source, a.out_suffix)
+    print(f"\nsaved {p['results'].name} ({results.height} rows), {p['calibration'].name}, {p['distributions'].name}, {p['plot'].relative_to(config.ROOT)}")
