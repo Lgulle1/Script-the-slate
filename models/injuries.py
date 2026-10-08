@@ -342,6 +342,7 @@ ROLE_OF_EXPECTED = {"QB1": "QB", "RB1": "RB1", "RB2": "RB2FB", "FB": "RB2FB", "W
 SHARE_STATS = ("carry", "target", "dropback", "snap")
 NORMALISED = ("carry", "target", "dropback")
 SHIFT_K = 4
+ELIGIBLE_GROUPS = {"carry": {"RB", "QB"}, "target": {"WR", "TE", "RB"}, "dropback": {"QB"}}   # who can absorb freed share of each kind
 OL_STARTER_PCT = 0.70
 
 
@@ -493,6 +494,7 @@ def redistribute(shifts: Shifts, team: str, players: pl.DataFrame, q: dict, s: d
     three normalised stats.
     """
     s = s or {}
+    grp_arr = players["group"].to_list() if "group" in players.columns else None
     p = players.select("player_id", "role", *[pl.col(f"base_{x}").fill_null(0.0) for x in SHARE_STATS])
     ids_, roles_ = p["player_id"].to_list(), p["role"].to_list()
     qv = np.array([float(q.get(i, 0.0)) for i in ids_])
@@ -530,9 +532,14 @@ def redistribute(shifts: Shifts, team: str, players: pl.DataFrame, q: dict, s: d
         if st in NORMALISED:
             full = np.append(raw, rest)
             tot = full.sum()
-            if tot < 1.0 - 1e-12:      # freed share the measured shifts did not hand on: to the next men up, else the unlisted
-                w = np.where(is_other, np.maximum(b, 0.0), 0.0)
-                w = w if w.sum() > 0 else is_other.astype(float)
+            if tot < 1.0 - 1e-12:      # freed share the measured shifts did not hand on: to players who can take it, else the unlisted
+                if grp_arr is not None:     # position-aware: carries -> RB/QB, targets -> WR/TE/RB, dropbacks -> QB; in proportion to expected share
+                    mask = np.array([g in ELIGIBLE_GROUPS[st] for g in grp_arr]) & (qv < 0.999)
+                    w = np.where(mask, raw, 0.0)
+                    w = w if w.sum() > 0 else mask.astype(float)
+                else:
+                    w = np.where(is_other, np.maximum(b, 0.0), 0.0)
+                    w = w if w.sum() > 0 else is_other.astype(float)
                 if w.sum() > 0:
                     full[:-1] += (1.0 - tot) * w / w.sum()
                 else:
@@ -605,6 +612,8 @@ def game_expected_shares(frame: pl.DataFrame, shifts: Shifts, model: StatusModel
         snap[pid] = 0.0 if blocked else r["p_play"] * r["snap_share_given_play"]
         if exit_model is not None:
             pex[pid] = exit_model.p_exit(pid, grp)
+    players = players.with_columns(group=pl.struct("player_id", "role").map_elements(
+        lambda r: (player_groups or {}).get(r["player_id"]) or groups.get(r["role"], "WR"), return_dtype=pl.String))
     out = redistribute(shifts, team, players, q, s)
     if with_eff:
         out = out.join(trailing_efficiency(frame, cutoff), on="player_id", how="left")
