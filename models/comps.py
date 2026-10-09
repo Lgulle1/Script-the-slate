@@ -1225,7 +1225,7 @@ class Pool:
 
     def unit_sims(self, unit: str, kind: str, row: int, k: int, key: int, version: str = SEARCH_VERSION) -> tuple:
         """(sim, completeness, quality, shares (3, k)) arrays over the first k team-game rows for `unit` against the vector of team-game `row` (kind 'off': the target
-        version -- lineup-adjusted, or 'healthy' for the comparison run -- vs the pool version; 'def': defense units, one version). A pair is compared
+        version -- healthy (the searches), or 'adjusted' for the comparison run -- vs the pool version; 'def': defense units, one version). A pair is compared
         in EXTENDED only when both sides are EXTENDED-complete and the EXTENDED sigma exists; otherwise in BASE."""
         version = version if unit in LINEUP_UNITS else "adjusted"         # a unit without a lineup correction has one target version
         ck = ("u", unit, kind, row, version)
@@ -1977,7 +1977,7 @@ def comp_shifts(pool: Pool, targets: list, zl: dict, keep_matches: bool = True, 
     vector (plan 4c.1.4; the comparison since the decision of 2026-10-09): the overlap of the top RETRIEVAL_TOP_K matches, the shared weight mass and the
     change in the volume / efficiency shift (adjusted - healthy),
     and overlap_closest_10: the overlap of the 10 closest past games by final weight whatever the threshold (informative when a search has no match).
-    Where the two target vectors are identical the healthy run is not repeated (overlap 1, change 0).
+    Where the two target vectors are identical the adjusted run is not repeated (overlap 1, change 0).
     A match counts toward a shift only when its own comp-free expectation exists (walkforward_predictions); a search whose matches have none is no_match.
     n_eff counts historical team-games (cluster_neff). `counts` (efficiency_counts): an efficiency match's weight is multiplied by its count (decision of
     2026-10-09); required as soon as a match has an efficiency expectation."""

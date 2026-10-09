@@ -81,7 +81,7 @@ def _zarr(pool: C.Pool, unit: str | None, src: dict, q: str) -> np.ndarray:
 def sweep_rows(pool: C.Pool, targets: list, zl: dict, counts: dict, thresholds=THRESHOLDS, min_neff: float = cs.MIN_NEFF,
                n_draws: int = N_DRAWS, seed: int = SEED) -> tuple:
     """(rows, rates): rows -- one per threshold, target, search and side where the search matches on that side, with the real and the mean random
-    squared error; rates -- per threshold, target, market and search, whether the search matched (volume side), for the match-rate report."""
+    squared error; rates -- per threshold, target, market, search and side, whether the search matched on that side, for the match-rate report."""
     sm = side_markets()
     zcache = {}
 
@@ -110,8 +110,11 @@ def sweep_rows(pool: C.Pool, targets: list, zl: dict, counts: dict, thresholds=T
                     vals, _, sets, caps = C._market_shifts(res, tgr, m, zl, min_neff, counts)
                     for s in C.SEARCHES:
                         if res[s].summary["applicable"]:
-                            rates.append(dict(threshold=t, season=tg.season, week=tg.week, game_id=tg.game_id, team=tg.team, player_id=tg.player_id,
-                                              market=m, search=s, matched=not vals[f"nomatch_{s}"]))
+                            for side, q in zip(("vol", "eff"), C.MARKET_QUANTITIES[m]):
+                                if q is not None:
+                                    rates.append(dict(threshold=t, season=tg.season, week=tg.week, game_id=tg.game_id, team=tg.team,
+                                                      player_id=tg.player_id, market=m, search=s, side=side,
+                                                      matched=not vals[f"nomatch_{s}" if side == "vol" else f"nomatch_eff_{s}"]))
                     for (mk, side, q) in sm[fam]:
                         if mk != m:
                             continue
@@ -138,7 +141,7 @@ def sweep_rows(pool: C.Pool, targets: list, zl: dict, counts: dict, thresholds=T
               "market": pl.String, "search": pl.String}
     rows_df = pl.DataFrame(rows, schema=schema | {"side": pl.String, "quantity": pl.String, "n_matches": pl.Int64, "n_eff": pl.Float64, "z": pl.Float64,
                                                   "shift": pl.Float64, "sq_error_real": pl.Float64, "sq_error_random": pl.Float64})
-    return rows_df, pl.DataFrame(rates, schema=schema | {"matched": pl.Boolean})
+    return rows_df, pl.DataFrame(rates, schema=schema | {"side": pl.String, "matched": pl.Boolean})
 
 
 def summarize(rows: pl.DataFrame, thresholds=THRESHOLDS) -> pl.DataFrame:
@@ -164,8 +167,8 @@ def choose_threshold(summary: pl.DataFrame, default: float = DEFAULT_THRESHOLD) 
 
 
 def breakdown(rows: pl.DataFrame, rates: pl.DataFrame) -> pl.DataFrame:
-    """For reading only: per threshold, search, market and side the mean improvement and rows, and per threshold, market and search the match rate."""
+    """For reading only: per threshold, market, search and side the match rate, the mean improvement and the scored rows."""
     imp = (rows.group_by("threshold", "search", "market", "side")
            .agg(n_rows=pl.len(), improvement=(pl.col("sq_error_random") - pl.col("sq_error_real")).mean(), mean_n_eff=pl.col("n_eff").mean()))
-    rate = rates.group_by("threshold", "market", "search").agg(match_rate=pl.col("matched").mean(), n_targets=pl.len())
-    return rate.join(imp, on=["threshold", "market", "search"], how="left").sort("threshold", "market", "search", "side", nulls_last=True)
+    rate = rates.group_by("threshold", "market", "search", "side").agg(match_rate=pl.col("matched").mean(), n_targets=pl.len())
+    return rate.join(imp, on=["threshold", "market", "search", "side"], how="left").sort("threshold", "market", "search", "side")

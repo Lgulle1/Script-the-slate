@@ -9,7 +9,7 @@ writes, under --out-dir (default data/processed, not committed):
   comp_shifts_<window>.parquet          one row per target and market: shift_vol_S1..S5, shift_eff_S1..S5, n_eff_S1..S5, nomatch_S1..S5, best_sim_S1..S5
   comp_shift_matches_<window>.parquet   the per-match table (similarity, recency, continuity, quality, final weight, capped weights, z)
   comp_shift_detail_<window>.parquet    per target, market and search: matches with an expectation, n_eff, why no_match
-  comp_retrieval_change_<window>.parquet per target, market and search: the same search on the HEALTHY target vector -- overlap of the top matches,
+  comp_retrieval_change_<window>.parquet per target, market and search: the same search on the LINEUP-ADJUSTED target vector (the comparison; the searches run on the healthy one) -- overlap of the top matches,
                                          shared weight, change in the shifts (build plan 4c.1.4)
 and under --log-dir (default the repo root, committed) comp_shift_summary_<window>.parquet: per season, market and search, the no-match rate and the
 spread of the shifts, and comp_retrieval_summary_<window>.parquet (how much the lineup adjustment changes retrieval). z = (actual - expected) / sigma uses the comp-free walk-forward predictions (data/processed/walkforward_predictions.parquet).

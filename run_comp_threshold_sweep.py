@@ -39,8 +39,7 @@ if __name__ == "__main__":
     detail.write_parquet(a.log_dir / "comp_threshold_sweep_detail.parquet")
     with pl.Config(tbl_rows=200, tbl_cols=20, tbl_width_chars=220, float_precision=4):
         print(summary)
-        print(detail.filter(pl.col("side").is_null() | (pl.col("side") == "vol")).pivot(on="threshold", index=["market", "search"], values="match_rate")
-              .sort("market", "search"))
+        print(detail.pivot(on="threshold", index=["market", "search", "side"], values="match_rate").sort("market", "search", "side"))
     print(f"chosen SIM_THRESHOLD: {SW.choose_threshold(summary)} (rule: the lowest threshold whose pooled improvement is above zero with the interval's "
           f"lower bound above zero; none: {SW.DEFAULT_THRESHOLD})")
     print(f"{len(targets):,} targets, {rows.height:,} scored rows in {time.time() - t0:.0f}s; holdout {config.HOLDOUT_SEASON} untouched")
