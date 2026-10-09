@@ -299,6 +299,17 @@ and tested) and the work moves to 4d.
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-09, per-unit threshold sweep (the searches per unit / pair, healthy vectors, count weights, recency_weighted window). Two runs
+  byte-identical (rows 1c0939f3d67d32a8); the summary under the tightened rule was recomputed twice from the rows (identical):
+  comp_threshold_sweep_perunit.parquet. **No threshold passes.**
+  - The per-unit design matches far more: 287,671 scored rows at 0.40 against 71,816 for the averaged design.
+  - At every threshold the comps beat random pairing (0.40: +0.0056 [+0.0040, +0.0071]) but lose to a zero shift (0.40: -0.0154 [-0.0177,
+    -0.0132]; 0.70: -0.0119 [-0.0155, -0.0081]). Every search, both sides, has an error above the zero shift's, except S5 volume at 0.40
+    (0.937 vs 0.944, a difference random pairing nearly matches).
+  - Unit diagnostic at 0.70 (comp_unit_diagnostic_recency_weighted.parquet, Bonferroni over 115 cells): 0 WORKS, 28 EDGE, 87 NO. The
+    best-looking EDGE cells rest on 1-3 rows.
+  - **Stopping rule met** (the fingerprint diagnostic failed and no threshold passes): **the comparables are parked at weight 0 for V1.**
+    SIM_THRESHOLD stays 0.70. Nothing is deleted. The layer stays built and tested, and is re-tested after later layers. Next: 4d.0.
 - 2026-10-09, fingerprint diagnostic (as fixed above). Two runs byte-identical (comp_unit_signal.parquet 633b7cf5c7139b40).
   **By the fixed rule, every unit fails:** no unit's 20 fingerprint neighbours beat the unit's own trailing average on its single-game headline
   (Bonferroni intervals all include or lie below zero; rb_rotation, receiver_usage and coverage_mix are significantly worse). Reported
