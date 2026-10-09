@@ -114,12 +114,44 @@ Also added, from the review's soundness notes:
 - **Which run decides the gate, fixed before seeing it:** the run on the windows chosen per unit and market. The recency_weighted run is a
   reference. The selected run records the window mapping it used.
 
+## Your decisions of 2026-10-09 (written down before any code change and before any result they affect)
+- **Lineup adjustment (decision 0): the searches run on the healthy target vectors.** The lineup-adjusted vectors double-count a player who is
+  already missing from the window. Injuries reach the model separately through the 4a injury features. The adjusted-vector search is still run
+  and stored as the comparison (4c.1.4), with the roles swapped: healthy is the search, adjusted the comparison.
+- **Similarity scale for the no-match check (part of decision 1).** A search whose similarity multiplies two factors (S2, S4, S5: offense x defense;
+  S3: archetype x defense faced) is checked on the geometric mean, sqrt(factor_1 x factor_2). This puts every search on the per-factor scale of S1,
+  so one threshold means the same thing for every search. A match also needs its weaker factor at or above SIDE_FLOOR = 0.40, so a 0.95 / 0.30 pair
+  cannot pass on the average. The match WEIGHT stays the product (plan 4c.4.2): a 0.63 / 0.63 pair passes the check but weighs less than a 0.90 / 0.90
+  pair. best_sim_S* reports the checked (geometric-mean) similarity. You named S2, S4 and S5. I also apply it to S3, because S3's similarity
+  is also a product of two factors (decision 3); say if you want S3 left on the product.
+- **Efficiency sample size (decision 8): efficiency matches are weighted by their count.** An efficiency match's weight is multiplied by the
+  denominator of its ratio in that past game: attempts (completion rate), completions (yards per completion), carries (yards per carry, QB yards
+  per carry), targets (catch rate), receptions (yards per reception), plays (points per play). The Phase 3 efficiency model weights its rows the same way. The count enters before the
+  caps, so the caps and n_eff of the efficiency side use the count-weighted weights: a search dominated by thin games has a smaller efficiency
+  n_eff. The volume side is unchanged. The window selection's efficiency side uses the same count weights.
+- **Decisions 2-7, 9 and 10: accepted as written.**
+- **The threshold sweep (rule fixed before any error is computed).**
+  - **Setup.** SIM_THRESHOLD in {0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70}, with MIN_NEFF = 2 and everything above. Window recency_weighted (the
+    base window; the window selection is re-run after the threshold is chosen). 2020-2024 targets only; 2025 stays locked.
+  - **The rows.** For every threshold, every target, search and quantity (volume, and efficiency where the market has one; markets that share a
+    quantity count once), where the search matches on that side at that threshold.
+  - **Real error.** (shift - z)^2: the search's shift against the target's own comp-free standardized residual z.
+  - **Random-pairing error.** Each match is replaced by a past observation drawn at random from the same search's observation set as of the same
+    target week, among those with an expectation on that side: the past games the search could have picked, ignoring similarity. The real
+    weights are kept, so n_eff and the shrinkage are identical, and only the z's change. It is averaged over 10 draws with a fixed seed.
+  - **Improvement.** The random-pairing error minus the real error, pooled over all searches, markets and sides, with the 95% season-week
+    cluster bootstrap (the 3.3 settings: 10,000 resamples, fixed seed).
+  - **Choice.** The lowest threshold whose pooled improvement is above zero with the interval's lower bound above zero. If no threshold passes,
+    SIM_THRESHOLD stays 0.70, and that is the finding.
+  - **Reporting.** Per search, market and side: the improvement and the match rate, for reading only. Two runs byte-identical.
+  - **Then:** set SIM_THRESHOLD, re-run the window selection, rebuild the comparable table and run the ablation gate on the chosen windows.
+
 ## Things I need you to decide (I have not decided them)
-0. **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
+0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
    game worse than the unadjusted (healthy) vector does. Calibration slopes are 0.02-0.27. Defense units have no lineup adjustment at all. The memo
    lists the options. Nothing was changed; the searches still run on the vectors as built.
-1. **The no-match calibration: see `docs/nomatch_memo.md`.** At SIM_THRESHOLD = 0.70 and MIN_NEFF = 2, practically every search returns no_match
+1. **(Decided 2026-10-09: geometric-mean check + threshold sweep, see above.)** **The no-match calibration: see `docs/nomatch_memo.md`.** At SIM_THRESHOLD = 0.70 and MIN_NEFF = 2, practically every search returns no_match
    (S1 rushing 97%, everything else 99.3-100%). That follows from how similarity is scaled, not from a bug. The memo explains why and gives the
    no-match rate the same similarities would give at thresholds 0.4-0.7 and MIN_NEFF 1-3. I am not tuning anything: 4c.4-4c.6 run on the plan's
    values until you decide.
@@ -141,7 +173,7 @@ Also added, from the review's soundness notes:
 7. **Expectations exist only for scored rows.** The comp-free expectations (3.5.3) exist for the scored 2020-2024 player-games and team sides. A
    matched past game of a player who was not a scored target that day (for example a WR4) has no z and does not move the shift. This is the same
    limit as decision 2, for non-scored players.
-8. **Efficiency z ignores how many carries / targets / attempts the past game had.** sigma is per quantity and role (plan 4c.4.1), so a 1-catch
+8. **(Decided 2026-10-09: weight by count, see above.)** **Efficiency z ignores how many carries / targets / attempts the past game had.** sigma is per quantity and role (plan 4c.4.1), so a 1-catch
    game's yards-per-reception z spreads about twice as wide as a 10-catch game's (sd 1.32 vs 0.70; largest |z| 13). Every z enters the shift with
    its match weight, while the Phase 3 efficiency model weights rows by that count, so one 1-catch game can drive a thin search. Two possible fixes:
    scale sigma by sqrt(typical count / count), or weight efficiency matches by the count. Both change the plan's formula, so I left it.
@@ -151,6 +183,9 @@ Also added, from the review's soundness notes:
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-09: you decided decisions 0, 1 (scale + sweep rule) and 8, and accepted the rest; written above before any code change. The
+  selected-window build that was running on the old settings did not finish: both copies hit the 2-hour timeout (it splits the families into one
+  search per market and was about twice as slow as expected). Since it is superseded, it was not re-run and has no results; its gate ablation is not run.
 - 4c.6 preview, recency_weighted window, before the null control was added: no market clears. rec and rec_yds are EDGE (gains of 0.0007 receptions
   and 0.01 yards, intervals across 0). The other markets are slightly worse with the comparable columns: spread -0.11 points (0 of 5 seasons),
   rush_yds -0.07 yards, both intervals touching 0. Two runs gave byte-identical results. As expected with nearly every search no_match: the
