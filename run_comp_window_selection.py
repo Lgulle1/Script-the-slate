@@ -1,6 +1,8 @@
 """4c.6.1: choose the fingerprint window per unit and market from 2020-2024 walk-forward error (models/comps_windows.py has the criterion).
 
-  python run_comp_window_selection.py [--out-dir DIR] [--log-dir DIR]
+  python run_comp_window_selection.py [--out-dir DIR] [--log-dir DIR] [--from-errors comp_window_errors.parquet]
+
+--from-errors: skip the retrieval runs and choose again from a stored error table (the choice is a pure function of it).
 
 Writes comp_window_errors.parquet (per target, market, unit, side and window family; data/processed), and next to the other results
 comp_window_selection.parquet (per market, unit and window family: the error and the number of targets compared) and comp_windows.json, the chosen
@@ -21,12 +23,13 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--out-dir", type=Path, default=config.PROCESSED_DIR)
     ap.add_argument("--log-dir", type=Path, default=config.ROOT)
+    ap.add_argument("--from-errors", type=Path, default=None)
     a = ap.parse_args()
     t0 = time.time()
     targets = C.backtest_targets()
     zl = C.z_lookup(C.standardized_residuals(pl.read_parquet(config.PROCESSED_DIR / "walkforward_predictions.parquet")))
-    parts = []
-    for wf in W.WINDOW_ORDER:
+    parts = [pl.read_parquet(a.from_errors)] if a.from_errors else []
+    for wf in ([] if a.from_errors else W.WINDOW_ORDER):
         if wf != "continuity_weighted":
             parts.append(W.unit_retrieval_errors(C.load_pool(wf), targets, zl).with_columns(window_family=pl.lit(wf)))
         else:                                                # each market reads the continuity variant of its own penalty row
@@ -41,7 +44,8 @@ if __name__ == "__main__":
     summary, chosen = W.choose(errors, zl)
     a.out_dir.mkdir(parents=True, exist_ok=True)
     a.log_dir.mkdir(parents=True, exist_ok=True)
-    errors.write_parquet(a.out_dir / "comp_window_errors.parquet")
+    if not a.from_errors:
+        errors.write_parquet(a.out_dir / "comp_window_errors.parquet")
     summary.write_parquet(a.log_dir / "comp_window_selection.parquet")
     choice = {m: {r["unit"]: W.window_name(r["window_family"], m) for r in chosen.filter(pl.col("market") == m).iter_rows(named=True)}
               for m in sorted(chosen["market"].unique().to_list())}
