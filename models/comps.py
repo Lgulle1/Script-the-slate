@@ -1415,7 +1415,7 @@ class Pool:
             reason = "no_similarity"
         elif best < sim_threshold:
             reason = "best_similarity_below_threshold"
-        elif n_eff < min_neff:
+        elif not meets_min_neff(n_eff, min_neff):
             reason = "n_eff_below_minimum"
         summary = self._summary(tg, sname, combined, comps, final, reason is None, reason, sim_threshold, min_neff, n_matches=int(match.sum()), n_eff=n_eff)
         if top_any:                         # the closest past games whatever the threshold (the healthy-vs-adjusted comparison): (id, final weight)
@@ -1569,28 +1569,30 @@ def standardized_residuals(wf: pl.DataFrame) -> pl.DataFrame:
 
 def cap_shares(weights: np.ndarray, groups: np.ndarray, cap: float) -> np.ndarray:
     """Weights rescaled so no group holds more than `cap` of their total; the excess goes to the other groups pro rata (plan 4c.4.3). The total is kept.
-    When there are fewer than 1 / cap groups the cap cannot hold, and every group gets an equal share (the nearest feasible split)."""
+    Only groups with weight count (a past game without an expectation carries none and cannot absorb any). With fewer than 1 / cap such groups no split
+    can respect the cap, and the weights are left as they are: n_eff, computed after the caps, then decides whether the search matches. (An equal split
+    would claim an n_eff of 3 for weights 0.98 / 0.01 / 0.01.)"""
     w = np.asarray(weights, dtype=float)
     tot = w.sum()
     if len(w) == 0 or tot <= 0:
         return w.copy()
     _, inv = np.unique(np.asarray(groups).astype(str), return_inverse=True)
     share = np.bincount(inv, weights=w) / tot
-    n = len(share)
-    if n * cap < 1.0 - 1e-12:
-        target = np.full(n, 1.0 / n)
-    else:
-        target, fixed = share.copy(), np.zeros(n, dtype=bool)
-        for _ in range(n):
-            over = (target > cap + 1e-12) & ~fixed
-            if not over.any():
-                break
-            fixed |= over
-            free = ~fixed
-            target[fixed] = cap
-            rest = 1.0 - cap * fixed.sum()
-            target[free] = share[free] / share[free].sum() * rest if share[free].sum() > 0 else rest / max(free.sum(), 1)
-    factor = np.divide(target, share, out=np.zeros(n), where=share > 0)
+    pos = share > 0
+    if pos.sum() * cap < 1.0 - 1e-12:
+        return w.copy()
+    target, capped = share.copy(), np.zeros(len(share), dtype=bool)
+    for _ in range(len(share)):
+        over = (target > cap + 1e-12) & ~capped
+        if not over.any():
+            break
+        capped |= over
+        free = pos & ~capped
+        target[capped] = cap
+        rest = 1.0 - cap * capped.sum()
+        if free.any() and share[free].sum() > 0:
+            target[free] = share[free] / share[free].sum() * rest
+    factor = np.divide(target, share, out=np.zeros(len(share)), where=pos)
     return w * factor[inv]
 
 
@@ -1598,49 +1600,65 @@ CAP_AVG_EXEMPT = ("S1",)    # S1 is the target's own history: one team by constr
 
 
 def cap_across_searches(per_search: dict, cap_one: float = cs.TEAM_CAP_PER_SEARCH, cap_avg: float = cs.TEAM_CAP_AVG_ACROSS_SEARCHES,
-                        n_searches: int = len(SEARCHES), max_iter: int = 50, exempt=CAP_AVG_EXEMPT) -> dict:
-    """{search: (weights, team_game, team)} -> {search: capped weights}. No historical team-game above `cap_one` of a search's weight, and no historical
-    team averaging more than `cap_avg` of the weight across the five searches (a search without weight counts as 0). Excess is redistributed pro rata
-    within each search and the searches are renormalised; the two caps are applied in turn until neither moves a weight.
-    The searches in `exempt` (S1, the target's own past games: its own team holds all of S1's weight by definition, so with S1 counted the average cap
-    could never hold and would push that team out of every other search) keep the per-team-game cap but neither count toward the average nor move."""
+                        n_searches: int = len(SEARCHES), max_iter: int = 50, exempt=CAP_AVG_EXEMPT, info: dict | None = None) -> dict:
+    """{search: (weights, team_game, team)} -> {search: capped weights}. No historical team-game above `cap_one` of a search's weight (cap_shares), and
+    no historical team (the observation's offense, obs_team) averaging more than `cap_avg` of the weight across the five searches (a search without
+    weight counts as 0). Pass the searches that match only: a search that ends no_match carries no weight.
+
+    An over-cap team is scaled down by one common factor in the searches where other teams can take its weight (pro rata, totals kept), just enough to
+    bring its average to the cap. Its share in a search where nobody else can take it is irreducible; when the irreducible part alone breaks the cap,
+    the cap cannot hold, and the team is left as it is (listed in info['frozen']) instead of being pushed out of every other search. The searches in
+    `exempt` (S1, the target's own past games: one team by definition) keep the per-team-game cap but neither count toward the average nor move."""
     w = {s: cap_shares(v[0], v[1], cap_one) for s, v in per_search.items()}
+    tms = {s: np.asarray(v[2]).astype(str) for s, v in per_search.items()}
+    frozen = set()
+
+    def shares():
+        live = [s for s in per_search if s not in exempt and w[s].sum() > 0]
+        return live, {s: {t: float(w[s][tms[s] == t].sum() / w[s].sum()) for t in np.unique(tms[s]).tolist()} for s in live}
+
     for _ in range(max_iter):
-        teams = sorted({t for s, v in per_search.items() if s not in exempt for t in np.asarray(v[2]).astype(str).tolist()})
-        if not teams:
-            break
-        shares = {t: 0.0 for t in teams}
-        for s, (wt, tg, tm) in per_search.items():
-            if s in exempt:
-                continue
-            tot = w[s].sum()
-            if tot > 0:
-                for t in teams:
-                    shares[t] += w[s][np.asarray(tm).astype(str) == t].sum() / tot
-        over = {t: shares[t] / n_searches for t in teams if shares[t] / n_searches > cap_avg + 1e-12}
+        live, sh = shares()
+        teams = sorted({t for s in live for t in sh[s]})
+        avg = {t: sum(sh[s].get(t, 0.0) for s in live) / n_searches for t in teams}
+        over = [t for t in teams if avg[t] > cap_avg + 1e-12 and t not in frozen]
         if not over:
             break
         moved = False
-        for s, (wt, tg, tm) in per_search.items():
-            tot = w[s].sum()
-            if tot <= 0 or s in exempt:
+        for t in over:
+            live, sh = shares()
+            blocked = set(over) | frozen
+            red = [s for s in live if sh[s].get(t, 0.0) > 0 and any(u not in blocked and v > 0 for u, v in sh[s].items())]
+            irreducible = sum(sh[s].get(t, 0.0) for s in live if s not in red)
+            reducible = sum(sh[s][t] for s in red)
+            alpha = (n_searches * cap_avg - irreducible) / reducible if reducible > 0 else -1.0
+            if alpha <= 0:
+                frozen.add(t)
                 continue
-            tm_ = np.asarray(tm).astype(str)
-            scale = np.ones(len(tm_))
-            for t, avg in over.items():
-                scale[tm_ == t] = cap_avg / avg
-            new = w[s] * scale
-            others = ~np.isin(tm_, list(over))
-            freed = tot - new.sum()
-            if freed > 0 and new[others].sum() > 0:
-                new[others] *= (new[others].sum() + freed) / new[others].sum()
+            alpha = min(alpha, 1.0)
+            for s in red:
+                m = tms[s] == t
+                recv = ~np.isin(tms[s], list(blocked))
+                freed = w[s][m].sum() * (1.0 - alpha)
+                if freed <= 0 or w[s][recv].sum() <= 0:
+                    continue
+                w[s][recv] *= (w[s][recv].sum() + freed) / w[s][recv].sum()
+                w[s][m] *= alpha
                 moved = True
-            elif freed > 0:
-                new = w[s]                                     # nobody else to take the excess: this search keeps its weights
-            w[s] = cap_shares(new, tg, cap_one)
+        for s in per_search:
+            w[s] = cap_shares(w[s], per_search[s][1], cap_one)
         if not moved:
             break
+    if info is not None:
+        info["frozen"] = sorted(frozen)
     return w
+
+
+NEFF_TOL = 1e-9          # n_eff of two equal past games is 2 up to rounding: compare with a tolerance, never by the last bit
+
+
+def meets_min_neff(n: float, min_neff: float) -> bool:
+    return bool(n >= min_neff - NEFF_TOL)
 
 
 def neff(w: np.ndarray) -> float:
@@ -1685,9 +1703,39 @@ def _target_rows(targets: list) -> list:
 RETRIEVAL_TOP_K = 10        # healthy vs lineup-adjusted run: the overlap of the top 10 matches by final weight (build plan 4c.1.4)
 
 
+def _side_weights(sets: dict, j: int, min_neff: float) -> tuple:
+    """The capped weights of one side (j = 1 volume z, 2 efficiency z) over the searches in `sets`: (weights per search, n_eff per search, the searches
+    that match, the teams the across-search cap left frozen). A match counts only with its own expectation. A search matches when its n_eff after
+    the per-team-game cap reaches MIN_NEFF; only matching searches enter the across-search cap (plan 4c.4.3), and the check is repeated after it
+    until the set of matching searches is stable."""
+    cand = {s: v for s, v in sets.items() if np.isfinite(v[j]).any()}
+    base = {s: np.where(np.isfinite(v[j]), v[0]["final_weight"].to_numpy(), 0.0) for s, v in cand.items()}
+    weights = {s: cap_shares(base[s], cand[s][3], cs.TEAM_CAP_PER_SEARCH) for s in cand}
+    nef = {s: cluster_neff(weights[s], cand[s][3]) for s in cand}
+    alive = {s for s in cand if meets_min_neff(nef[s], min_neff)}
+    frozen = []
+    for _ in range(len(SEARCHES) + 1):
+        info = {}
+        capped = cap_across_searches({s: (base[s], cand[s][3], cand[s][0]["obs_team"].to_numpy()) for s in sorted(alive)}, info=info) if alive else {}
+        frozen = info.get("frozen", [])
+        for s_, wt in capped.items():
+            weights[s_], nef[s_] = wt, cluster_neff(wt, cand[s_][3])
+        still = {s_ for s_ in alive if meets_min_neff(nef[s_], min_neff)}
+        if still == alive:
+            break
+        alive = still
+    for s_ in cand:
+        if s_ not in alive:
+            weights[s_] = np.zeros(len(base[s_]))                 # a search that does not match carries no weight into any shift
+    return weights, nef, alive, frozen
+
+
 def _market_shifts(res: dict, tg: Target, market: str, zl: dict, min_neff: float) -> tuple:
     """The 4c.4 shifts of one target and market from its search results: (feature values, detail rows, {search: (matches, z_vol, z_eff, team_game)},
-    {'vol' / 'eff': {search: capped weights}})."""
+    {'vol' / 'eff': {search: capped weights}}).
+
+    A search is no_match when its similarity search was (4c.3), when none of its matches has a comp-free expectation, or when its n_eff over the
+    matches with one stays below MIN_NEFF. The efficiency side of a matching search can be too thin on its own: shift_eff = 0 and nomatch_eff = True."""
     qv, qe = MARKET_QUANTITIES[market]
     is_player = tg.player_id is not None
     vals, details, sets = {}, [], {}
@@ -1702,29 +1750,28 @@ def _market_shifts(res: dict, tg: Target, market: str, zl: dict, min_neff: float
             ze = np.array([zl.get(qe, {}).get(k, np.nan) for k in keys], dtype=float) if qe else np.full(len(keys), np.nan)
             tgid = np.array([f"{g}|{t}" for g, t in zip(mt["obs_game_id"].to_list(), mt["obs_team"].to_list())])
             sets[s] = (mt, zv, ze, tgid)
-    caps = {}
-    for kind, j in (("vol", 1), ("eff", 2)):
-        per = {s: (np.where(np.isfinite(v[j]), v[0]["final_weight"].to_numpy(), 0.0), v[3], v[0]["obs_team"].to_numpy()) for s, v in sets.items()}
-        caps[kind] = cap_across_searches(per) if per else {}
+    wv, nv, alive_v, frozen = _side_weights(sets, 1, min_neff)
+    we, ne, alive_e, _ = _side_weights({s: sets[s] for s in sorted(alive_v)}, 2, min_neff) if qe else ({}, {}, set(), [])
+    caps = {"vol": {s: wv.get(s, np.zeros(sets[s][0].height)) for s in sets},
+            "eff": {s: we.get(s, np.zeros(sets[s][0].height)) for s in sets}}
     for s in SEARCHES:
         summ = res[s].summary
         reason = summ["reason"] if summ["no_match"] else None
-        sv, nv = shift_value(caps["vol"][s], sets[s][1], sets[s][3]) if s in sets else (0.0, 0.0)
-        se, ne = shift_value(caps["eff"][s], sets[s][2], sets[s][3]) if s in sets and qe else (0.0, 0.0)
         if s in sets and not np.isfinite(sets[s][1]).any():
             reason = "no_expectations"                     # matches exist, but none has a comp-free expectation to standardise against
-        elif s in sets and nv < min_neff:
+        elif s in sets and s not in alive_v:
             reason = "n_eff_with_expectations_below_minimum"
         nomatch = (not summ["applicable"]) or summ["no_match"] or reason is not None
-        if nomatch:
-            sv = se = 0.0
-        elif qe and ne < min_neff:
-            se = 0.0                                        # the efficiency side alone is too thin: its shift is 0, the search still matches
-        vals.update({f"shift_vol_{s}": sv, f"shift_eff_{s}": se if qe else None, f"n_eff_{s}": nv if not nomatch else 0.0, f"nomatch_{s}": bool(nomatch)})
+        sv = shift_value(wv[s], sets[s][1], sets[s][3])[0] if not nomatch else 0.0
+        se = shift_value(we[s], sets[s][2], sets[s][3])[0] if (not nomatch and qe and s in alive_e) else 0.0
+        nomatch_eff = (nomatch or s not in alive_e) if qe else None
+        vals.update({f"shift_vol_{s}": sv, f"shift_eff_{s}": se if qe else None, f"n_eff_{s}": float(nv.get(s, 0.0)), f"nomatch_{s}": bool(nomatch),
+                     f"n_eff_eff_{s}": float(ne.get(s, 0.0)) if qe else None, f"nomatch_eff_{s}": nomatch_eff})
         details.append(dict(search=s, applicable=summ["applicable"], n_matches=summ["n_matches"], n_eff_similarity=summ["n_eff"],
                             n_with_expectation_vol=int(np.isfinite(sets[s][1]).sum()) if s in sets else 0,
                             n_with_expectation_eff=int(np.isfinite(sets[s][2]).sum()) if s in sets else 0,
-                            n_eff_vol=nv, n_eff_eff=ne, nomatch=bool(nomatch), reason=reason))
+                            n_eff_vol=float(nv.get(s, 0.0)), n_eff_eff=float(ne.get(s, 0.0)), nomatch=bool(nomatch), nomatch_eff=nomatch_eff, reason=reason,
+                            team_cap_frozen=",".join(frozen)))
     return vals, details, sets, caps
 
 
@@ -1842,7 +1889,7 @@ def nomatch_sensitivity(summary: pl.DataFrame, thresholds=SENSITIVITY_THRESHOLDS
         for th in thresholds:
             t = f"{th:g}"                                # the key run_search_log wrote; a search without similarities has none: no match at any threshold
             for mn in min_neffs:
-                nm = [not (b == b and b >= th and t in d and d[t][1] >= mn) for b, d in zip(best, sens)]
+                nm = [not (b == b and b >= th and t in d and meets_min_neff(d[t][1], mn)) for b, d in zip(best, sens)]
                 rows.append(dict(season=season, market=market, search=search, threshold=float(th), min_neff=float(mn), n_targets=g.height,
                                  no_match_rate=float(np.mean(nm)), median_n_eff=float(np.median([d.get(t, [0, 0.0])[1] for d in sens]))))
     return pl.DataFrame(rows).sort("season", "market", "search", "threshold", "min_neff")

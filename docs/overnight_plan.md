@@ -43,6 +43,24 @@ old code, then the fix. I checked each new test by putting its bug back: it fail
 6. Not run before: the plan's healthy-vs-adjusted comparison (4c.1.4). It now runs for every target and search in 4c.4 and is stored: overlap of the
    top 10 matches, shared weight, whether no_match flips, change in the volume and efficiency shifts.
 
+## What the independent review of 4c.4 found, and the fixes
+A second independent review covered 4c.4. It found no leakage: z, sigma, weights and caps of a week-K target use only earlier weeks, checked by a
+brute-force recomputation. It did find two real problems in the team caps. Both were fixed test-first, and each test fails on the old code.
+1. **A search that ended no_match still entered the across-search team cap, and the cap could zero a team out.** Example: S2 has three past games,
+   but only one has an expectation, so S2 is no_match. Its team still counted toward the 15% average, and S4's shift dropped from 0.4 to 1e-7.
+   Fix:
+   - Only searches that match on their own (n_eff over the matches with an expectation >= MIN_NEFF after the per-game cap) enter the
+     across-search cap, and the check repeats after it.
+   - An over-cap team is scaled by one common factor, and only where other teams can take its weight, just enough to reach 15%.
+   - When its share that no other team can take already breaks the cap, the team is left as it is and logged (`team_cap_frozen`), instead of being
+     pushed out of every other search.
+2. **With fewer than 4 past games carrying weight, the 25% per-game cap forced an equal split.** For weights 0.98 / 0.01 / 0.01 that claimed an
+   n_eff of 3, and at exactly two games rounding decided MIN_NEFF. Fix: when the cap cannot hold, the weights are left as they are and n_eff
+   decides. n_eff is compared with MIN_NEFF with a 1e-9 tolerance; no committed search-log row changes.
+3. A thin efficiency side is now visible: new columns `nomatch_eff_S1..S5` and `n_eff_eff_S1..S5`. `n_eff_S*` reports the actual n_eff after the
+   caps (0 without matches).
+4. The runner now asserts that no target or match comes from 2025 before it prints "holdout untouched".
+
 ## Things I need you to decide (I have not decided them)
 1. **The no-match calibration: see `docs/nomatch_memo.md`.** At SIM_THRESHOLD = 0.70 and MIN_NEFF = 2, practically every search returns no_match
    (S1 rushing 97%, everything else 99.3-100%). That follows from how similarity is scaled, not from a bug. The memo explains why and gives the
@@ -66,6 +84,14 @@ old code, then the fix. I checked each new test by putting its bug back: it fail
 7. **Expectations exist only for scored rows.** The comp-free expectations (3.5.3) exist for the scored 2020-2024 player-games and team sides. A
    matched past game of a player who was not a scored target that day (for example a WR4) has no z and does not move the shift. This is the same
    limit as decision 2, for non-scored players.
+8. **Efficiency z ignores how many carries / targets / attempts the past game had.** sigma is per quantity and role (plan 4c.4.1), so a 1-catch
+   game's yards-per-reception z spreads about twice as wide as a 10-catch game's (sd 1.32 vs 0.70; largest |z| 13). Every z enters the shift with
+   its match weight, while the Phase 3 efficiency model weights rows by that count, so one 1-catch game can drive a thin search. Two possible fixes:
+   scale sigma by sqrt(typical count / count), or weight efficiency matches by the count. Both change the plan's formula, so I left it.
+9. **"Historical team" in the across-search cap is the past game's offense** (the observation's team). Capping by the past defense would collide
+   with S2 the way S1 collides with the offense cap (S2's past games all face tonight's defense).
+10. **When a cap cannot hold** (fewer than 4 past games carry weight in a search, or a team's share that nobody else can take already breaks the
+    15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
 - 4c.3: S2/S5 two-sided, continuity in every search, S5 sigma fix, fallback to healthy. 50 tests pass. Vectors rebuilt twice with the

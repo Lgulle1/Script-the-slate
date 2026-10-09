@@ -36,6 +36,7 @@ if __name__ == "__main__":
         targets = targets[: a.limit]
     zt = C.standardized_residuals(pl.read_parquet(config.PROCESSED_DIR / "walkforward_predictions.parquet"))
     feats, matches, detail, retrieval = C.comp_shifts(pool, targets, C.z_lookup(zt))
+    assert feats["season"].is_in(config.BACKTEST_SEASONS).all() and (matches.height == 0 or (matches["obs_season"] < config.HOLDOUT_SEASON).all()), "holdout reached"
     a.out_dir.mkdir(parents=True, exist_ok=True)
     a.log_dir.mkdir(parents=True, exist_ok=True)
     w = a.window.replace(":", "_")

@@ -790,8 +790,8 @@ def test_cap_shares_holds_the_cap_and_keeps_the_total():
     share = {k: out[g == k].sum() / out.sum() for k in set(g)}
     assert max(share.values()) <= 0.25 + 1e-9 and out.sum() == pytest.approx(w.sum())
     assert out[0] / out[6] == pytest.approx(w[0] / w[6])                  # weights inside a group keep their proportions
-    few = C.cap_shares(np.array([3.0, 1.0]), np.array(["x", "y"]), 0.25)  # 2 groups cannot respect a 25% cap: equal split
-    assert few[0] == pytest.approx(few[1])
+    few = C.cap_shares(np.array([3.0, 1.0]), np.array(["x", "y"]), 0.25)  # 2 groups cannot respect a 25% cap: left as they are
+    assert np.allclose(few, [3.0, 1.0])
     same = C.cap_shares(np.ones(8), np.arange(8), 0.25)
     assert np.allclose(same, np.ones(8))                                   # nothing above the cap: unchanged
 
@@ -856,7 +856,7 @@ def test_shifts_match_a_recomputation_from_the_match_table(shifts44):
             continue
         sv, nv = C.shift_value(m["weight_capped_vol"].to_numpy(), m["z_vol"].to_numpy(), (m["obs_game_id"] + "|" + m["obs_team"]).to_numpy())
         assert r[f"shift_vol_{s}"] == pytest.approx(sv) and r[f"n_eff_{s}"] == pytest.approx(nv)
-        g = m.with_columns(tg=pl.col("obs_game_id") + "|" + pl.col("obs_team")).group_by("tg").agg(pl.col("weight_capped_vol").sum())
+        g = m.with_columns(tg=pl.col("obs_game_id") + "|" + pl.col("obs_team")).group_by("tg").agg(pl.col("weight_capped_vol").sum()).filter(pl.col("weight_capped_vol") > 0)
         if g.height * C.cs.TEAM_CAP_PER_SEARCH >= 1:
             assert (g["weight_capped_vol"] / g["weight_capped_vol"].sum()).max() <= C.cs.TEAM_CAP_PER_SEARCH + 1e-9
 
@@ -1069,3 +1069,94 @@ def test_s1_retrieval_never_depends_on_the_offense_version(shifts44):
     (_, _, _, retrieval), _, _ = shifts44
     s1 = retrieval.filter((pl.col("search") == "S1") & pl.col("adjusted_differs"))
     assert s1.height > 0 and (s1["overlap_closest_10"] == 1.0).all()                       # S1 reads only the defenses faced
+
+
+# ---------------------------------------------------------------------------------------------------------------- 4c.4 review fixes
+def _fake_result(search, rows):
+    """A SearchResult whose matches are `rows` = [(obs_game_id, obs_team, final_weight)] (team market)."""
+    m = pl.DataFrame({"obs_game_id": [r[0] for r in rows], "obs_team": [r[1] for r in rows], "obs_player_id": pl.Series([None] * len(rows), dtype=pl.String),
+                      "final_weight": [float(r[2]) for r in rows], "sim_combined": [0.9] * len(rows)})
+    summ = dict(search=search, applicable=True, no_match=False, reason=None, n_matches=len(rows), n_eff=float(len(rows)), best_similarity=0.9)
+    return C.SearchResult(search, summ, m)
+
+
+def _empty_result(search):
+    summ = dict(search=search, applicable=True, no_match=True, reason="best_similarity_below_threshold", n_matches=0, n_eff=0.0, best_similarity=0.1)
+    return C.SearchResult(search, summ, None)
+
+
+def test_a_search_that_ends_no_match_does_not_move_the_other_searches():
+    """S2 has three past games but only team X's has an expectation, so S2 ends no_match. It must not enter the across-search cap: X keeps its 20% of
+    S4 and S4's shift is the plain shrunk mean."""
+    tg = C.Target("spread", "G", "T", "O", 2022, 5)
+    s4 = [(f"g{i}", "X" if i < 2 else f"T{i}", 1.0) for i in range(10)]
+    res = {"S1": _empty_result("S1"), "S2": _fake_result("S2", [("h0", "X", 1.0), ("h1", "Y", 1.0), ("h2", "Z", 1.0)]),
+           "S3": _empty_result("S3"), "S4": _fake_result("S4", s4), "S5": _empty_result("S5")}
+    zl = {"team_plays": {("h0", "X"): 1.0} | {(g, t): (3.0 if t == "X" else 0.0) for g, t, _ in s4}}
+    vals, det, _, caps = C._market_shifts(res, tg, "spread", zl, cs.MIN_NEFF)
+    assert vals["nomatch_S2"] and not vals["nomatch_S4"]
+    n = 10.0
+    assert vals["shift_vol_S4"] == pytest.approx(0.6 * n / (n + cs.SHRINK_K))
+    assert np.allclose(caps["vol"]["S4"], 1.0)
+
+
+def test_a_team_whose_share_cannot_be_reduced_is_frozen_not_zeroed():
+    """DEN holds all of S2 (two games, nobody else) and 2 of S4's 10 games. Its average over the five searches is at least 1/5 = 20% whatever happens in
+    S4, so the 15% cap cannot hold: DEN is left as it is (and logged), not pushed out of S4."""
+    per = {"S2": (np.ones(2), np.array(["a", "b"]), np.array(["DEN", "DEN"])),
+           "S4": (np.ones(10), np.array([f"g{i}" for i in range(10)]), np.array(["DEN", "DEN"] + [f"T{i}" for i in range(8)]))}
+    info = {}
+    out = C.cap_across_searches(per, info=info)
+    assert np.allclose(out["S4"], 1.0) and np.allclose(out["S2"], 1.0)
+    assert info["frozen"] == ["DEN"]
+
+
+def test_the_across_search_cap_reduces_only_what_it_must():
+    """X averages 0.2 + 0.4 + 0.4 = 1.0 / 5 = 20% over S2-S4 (no irreducible share): one common factor brings it to exactly 15%."""
+    per = {}
+    for s, k in (("S2", 1), ("S3", 2), ("S4", 2)):
+        teams = np.array(["X"] * k + [f"{s}{i}" for i in range(5 - k)])
+        per[s] = (np.ones(5), np.array([f"{s}g{i}" for i in range(5)]), teams)
+    info = {}
+    out = C.cap_across_searches(per, info=info)
+    avg = sum(out[s][per[s][2] == "X"].sum() / out[s].sum() for s in per) / 5
+    assert avg == pytest.approx(cs.TEAM_CAP_AVG_ACROSS_SEARCHES, abs=1e-6) and info["frozen"] == []
+    for s in per:
+        assert out[s].sum() == pytest.approx(5.0)                                          # totals kept
+
+
+def test_an_infeasible_per_search_cap_leaves_the_weights_alone():
+    """Fewer than 1 / 0.25 = 4 past team-games with weight: no split can respect the 25% cap. The weights stay as they are, so n_eff (1.04 here) decides,
+    instead of an equal split that would claim n_eff = 3."""
+    w = np.array([0.98, 0.01, 0.01])
+    assert np.allclose(C.cap_shares(w, np.array(["a", "b", "c"]), 0.25), w)
+    padded = C.cap_shares(np.array([0.98, 0.02, 0.0, 0.0]), np.array(["a", "b", "c", "d"]), 0.25)      # zero-weight games cannot absorb weight
+    assert np.allclose(padded, [0.98, 0.02, 0.0, 0.0])
+
+
+def test_n_eff_of_two_equal_games_meets_min_neff_two():
+    assert C.meets_min_neff(1.9999999999999998, 2.0) and not C.meets_min_neff(1.99, 2.0)
+
+
+def test_a_thin_efficiency_side_is_flagged_in_the_features():
+    tg = C.Target("rush_yds", "G", "T", "O", 2022, 5, "P")
+    rows = [(f"g{i}", f"T{i}", 1.0) for i in range(8)]
+    m = pl.DataFrame({"obs_game_id": [r[0] for r in rows], "obs_team": [r[1] for r in rows], "obs_player_id": [f"P{i}" for i in range(8)],
+                      "final_weight": [1.0] * 8, "sim_combined": [0.9] * 8})
+    res = {s: _empty_result(s) for s in C.SEARCHES}
+    res["S3"] = C.SearchResult("S3", dict(search="S3", applicable=True, no_match=False, reason=None, n_matches=8, n_eff=8.0, best_similarity=0.9), m)
+    zl = {"rush_att": {(f"g{i}", f"P{i}"): 0.5 for i in range(8)}, "ypc": {("g0", "P0"): 2.0}}     # one game has an efficiency expectation
+    vals, det, _, _ = C._market_shifts(res, tg, "rush_yds", zl, cs.MIN_NEFF)
+    assert not vals["nomatch_S3"] and vals["nomatch_eff_S3"] and vals["shift_eff_S3"] == 0.0 and vals["n_eff_eff_S3"] == pytest.approx(1.0)
+    assert vals["n_eff_S3"] == pytest.approx(8.0)
+
+
+def test_a_dead_search_cannot_knock_a_live_one_out_through_the_cap():
+    """S2 ends no_match (n_eff 1.1). Had it entered the across-search cap, team X (95% of S2, 50% of S4) would be cut in S4 to 26%, leaving S4 with an
+    n_eff of 1.6 and no match. Only matching searches enter the cap, so S4 keeps its two equal games (n_eff 2) and matches."""
+    tg = C.Target("spread", "G", "T", "O", 2022, 5)
+    res = {"S1": _empty_result("S1"), "S2": _fake_result("S2", [("h0", "X", 0.95), ("h1", "Y", 0.05)]), "S3": _empty_result("S3"),
+           "S4": _fake_result("S4", [("g0", "X", 1.0), ("g1", "A", 1.0)]), "S5": _empty_result("S5")}
+    zl = {"team_plays": {("h0", "X"): 1.0, ("h1", "Y"): 1.0, ("g0", "X"): 1.0, ("g1", "A"): -1.0}}
+    vals, _, _, _ = C._market_shifts(res, tg, "spread", zl, cs.MIN_NEFF)
+    assert vals["nomatch_S2"] and not vals["nomatch_S4"] and vals["n_eff_S4"] == pytest.approx(2.0)
