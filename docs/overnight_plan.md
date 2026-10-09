@@ -230,6 +230,12 @@ the gate report. 2025 stays locked.
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-09, threshold sweep on the searches as first built (all units of a side averaged; the baseline of the per-unit design). Two runs
+  byte-identical (rows d29f5c3f3a1ad925); comp_threshold_sweep_allunits.parquet and _detail_allunits.parquet. Every threshold passes the
+  rule (real comps beat random pairing): the lowest is 0.40, with an improvement of 0.0049 [0.0017, 0.0081] in squared z (about 0.5%). But at
+  every threshold the real comps' error is ABOVE that of a zero shift (0.40: real 1.039, random 1.044, zero 1.030; 0.70: 1.055 / 1.059 / 1.048).
+  The shifts make the prediction of the surprise worse than adding nothing; only S5's volume side beats zero (0.938 vs 0.944). This design is
+  not built further; the per-unit sweep reports the zero-shift comparison next to the random one (the unit diagnostic requires both).
 - 2026-10-09: you decided decisions 0, 1 (scale + sweep rule) and 8, and accepted the rest; written above before any code change. The
   selected-window build that was running on the old settings did not finish: both copies hit the 2-hour timeout (it splits the families into one
   search per market and was about twice as slow as expected). Since it is superseded, it was not re-run and has no results; its gate ablation is not run.
