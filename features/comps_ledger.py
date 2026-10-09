@@ -392,3 +392,23 @@ def completeness(plays: pl.DataFrame, games: pl.DataFrame, team: pl.DataFrame, p
     tg = games.select("game_id", "team", "season").join(snaps.group_by("game_id", "team").agg(pl.len().alias("n")), on=["game_id", "team"], how="left")
     add("snap_counts", "team-games with snap counts", tg, pl.col("n").is_not_null().mean())
     return pl.DataFrame(rows, schema={"source": pl.String, "measure": pl.String, "season": pl.Int32, "pct": pl.Float64})
+
+
+# ------------------------------------------------------------------------------------------------------------------------------ S5 results-side statistics
+def interaction_ledger(plays: pl.DataFrame, games: pl.DataFrame) -> pl.DataFrame:
+    """'x.<name>|n' / '|d' per (game_id, team) for models/comps_spec.INTERACTION_EXTRA (FTN, 2022+; 0 denominators before): the defense's epa allowed on motion /
+    play-action / screen plays (grouped by defteam) and the offense's epa per dropback against a blitz (grouped by posteam)."""
+    play, db, ftn = _c("f_play"), _c("f_db"), _c("ftn")
+    d_specs = {"x.def_epa_vs_motion": (play & ftn & (_c("is_motion") == 1), _c("epa")),
+               "x.def_epa_vs_play_action": (db & ftn & (_c("is_play_action") == 1), _c("epa")),
+               "x.def_epa_vs_screen": (db & ftn & (_c("is_screen_pass") == 1), _c("epa"))}
+    o_specs = {"x.off_epa_vs_blitz": (db & ftn & (_c("n_blitzers") > 0), _c("epa"))}
+    def agg(specs, by, name):
+        cols = []
+        for k, (fl, v) in specs.items():
+            n, d = nd(fl, v)
+            cols += [n.alias(f"{k}|n"), d.alias(f"{k}|d")]
+        return plays.group_by("game_id", by).agg(cols).rename({by: "team"})
+    out = (games.select("game_id", "team").join(agg(d_specs, "defteam", "def"), on=["game_id", "team"], how="left")
+           .join(agg(o_specs, "posteam", "off"), on=["game_id", "team"], how="left"))
+    return out.with_columns(pl.col(c).fill_null(0.0) for c in out.columns if c.endswith("|n") or c.endswith("|d"))

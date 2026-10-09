@@ -228,3 +228,76 @@ QUALITY = {"observed": 1.0, "derived": 0.9, "estimated": 0.65}
 SHRINK_K = 5
 TEAM_CAP_PER_SEARCH = 0.25
 TEAM_CAP_AVG_ACROSS_SEARCHES = 0.15
+
+# ---------------------------------------------------------------------------------------------------------------------------------- 4c.2 GROUPS
+# Correlated features are collapsed into groups BEFORE the unit distance is formed (a group's d2 is the weighted mean of its features' squared z
+# differences; the unit distance is the weighted mean of the group d2 values), so four near-copies of "efficiency" count once, not four times.
+# The groups below are every strongly correlated set found on the 4c.1 vectors (z-values, recency_weighted window, 2018-2024; |r| >= 0.55 on at least
+# one pair), plus composition features that sum to a whole (left / middle / right, man / zone, target split) and the same construct split by position
+# or direction. Evidence (r between the group's members): run_efficiency 0.60-0.81; pass_efficiency 0.61-0.82; run_defense_efficiency 0.66-0.77;
+# pass_defense_efficiency 0.55-0.78; pass_rush_pressure 0.56-0.76; blitz 0.86; man_zone -1.00; rb_carry_split -0.88 / 0.70; pass_protection 0.63;
+# rb_rushing_efficiency 0.63-0.76; rb_workload 0.80; receiver_role 0.81; receiver_style -0.60; qb_efficiency 0.67; body 0.66-0.73.
+# Every feature of a unit is in exactly one group (a feature with no correlated partner is its own group). Feature weights and group weights start equal.
+FEATURE_WEIGHT_DEFAULT = 1.0
+GROUP_WEIGHT_DEFAULT = 1.0
+SIGMA_NEIGHBOR_RANK = 20            # sigma = median distance to each target's 20th nearest neighbour, walk-forward
+
+GROUPS = {
+    "run_offense": (("run_efficiency", ("rush_epa_per_play", "rush_success_rate", "yards_per_carry", "explosive_run_rate")),
+                    ("run_direction", ("run_location_share_left", "run_location_share_middle", "run_location_share_right")),
+                    ("run_gap", ("run_gap_share_end", "run_gap_share_tackle", "run_gap_share_guard")),
+                    ("run_shotgun", ("shotgun_run_share",)), ("run_rate_over_expected", ("rush_rate_over_expected",))),
+    "pass_offense": (("pass_efficiency", ("epa_per_dropback", "cpoe", "yards_per_attempt", "explosive_pass_rate")),
+                     ("pass_depth", ("average_depth_of_target",)), ("pass_sacks", ("sack_rate",)), ("play_action", ("play_action_rate",)),
+                     ("screens", ("screen_rate",)), ("motion", ("motion_rate",)), ("no_huddle", ("no_huddle_rate",))),
+    "rb_rotation": (("rb_carry_split", ("rb1_carry_share", "rb2_carry_share", "rb1_snap_share")), ("rb_targets", ("rb_target_share",)),
+                    ("rb_goal_line", ("goal_line_carry_share",))),
+    "ol_protection": (("pass_protection", ("sack_rate_allowed", "pressure_rate_allowed")),
+                      ("run_block_direction", ("rush_epa_left", "rush_epa_middle", "rush_epa_right"))),
+    "receiver_usage": (("target_split", ("top3_target_share", "target_split_wr", "target_split_te", "target_split_rb")),
+                       ("receiver_depth", ("adot_wr", "adot_te", "adot_rb"))),
+    "run_defense": (("run_defense_efficiency", ("rush_epa_allowed", "rush_success_allowed", "yards_per_carry_allowed", "explosive_runs_allowed")),
+                    ("run_defense_direction", ("rush_epa_allowed_left", "rush_epa_allowed_middle", "rush_epa_allowed_right")),
+                    ("box_count", ("box_count_faced",))),
+    "pass_rush": (("pass_rush_pressure", ("sack_rate", "pressure_rate", "qb_hit_rate")), ("blitz", ("blitz_rate_pfr", "blitz_rate_ftn"))),
+    "pass_coverage": (("pass_defense_efficiency", ("epa_per_dropback_allowed", "cpoe_allowed", "yards_per_attempt_allowed", "explosive_passes_allowed")),
+                      ("completion_by_position", ("completion_rate_allowed_wr", "completion_rate_allowed_te", "completion_rate_allowed_rb"))),
+    "coverage_mix": (("man_zone", ("man_rate", "zone_rate")), ("shell", ("middle_closed_rate",))),
+    "rb_archetype": (("rb_rushing_efficiency", ("yards_per_carry", "explosive_rate", "rush_epa", "yards_after_contact")),
+                     ("rb_workload", ("carry_share", "goal_line_share")), ("rb_receiving", ("target_share",)), ("rb_body", ("height", "weight"))),
+    "receiver_archetype": (("receiver_role", ("target_share", "air_yards_share")), ("receiver_style", ("average_depth_of_target", "yards_after_catch")),
+                           ("receiver_hands", ("catch_rate_over_expected",)), ("receiver_body", ("height", "weight"))),
+    "qb_archetype": (("qb_efficiency", ("epa_per_dropback", "cpoe")), ("qb_depth", ("average_depth_of_target",)), ("qb_sacks", ("sack_rate",)),
+                     ("qb_mobility", ("scramble_rate", "rush_attempts_per_game")), ("qb_play_action", ("play_action_rate",))),
+}
+
+# ---------------------------------------------------------------------------------------------------------------------------------- 4c.3 S5 PROFILE
+# S5 (similar_matchup_structure) compares the INTERACTION profile of tonight's matchup with past matchups. Each interaction pairs OFFENSE features of the
+# target team (lineup-adjusted vector) with DEFENSE features of the opponent; a past matchup is described by the same pairs. Four of the results-side
+# statistics S5 needs are not in any unit, so they are defined here (all FTN, EXTENDED space only, quality observed, from 2022):
+#   def_epa_vs_motion        defense: mean epa allowed on team plays with pre-snap motion      (FTN is_motion)
+#   def_epa_vs_play_action   defense: mean epa allowed on dropbacks flagged play action        (FTN is_play_action)
+#   def_epa_vs_screen        defense: mean epa allowed on dropbacks flagged screen             (FTN is_screen_pass)
+#   off_epa_vs_blitz         offense: mean epa per dropback when the defense sent a blitzer    (FTN n_blitzers > 0)
+INTERACTION_EXTRA = (
+    Feature("def_epa_vs_motion", "ftn_charting, pbp", ("is_motion", "epa", "rush", "pass"), "extended", FTN_START, "observed", "defense epa allowed on motion plays"),
+    Feature("def_epa_vs_play_action", "ftn_charting, pbp", ("is_play_action", "epa", "qb_dropback"), "extended", FTN_START, "observed", "defense epa allowed on play-action dropbacks"),
+    Feature("def_epa_vs_screen", "ftn_charting, pbp", ("is_screen_pass", "epa", "qb_dropback"), "extended", FTN_START, "observed", "defense epa allowed on screen dropbacks"),
+    Feature("off_epa_vs_blitz", "ftn_charting, pbp", ("n_blitzers", "epa", "qb_dropback"), "extended", FTN_START, "observed", "offense epa per dropback against a blitz"),
+)
+# (interaction, OFFENSE features 'unit.feature' of the target team, DEFENSE features of the opponent). 'x.' = INTERACTION_EXTRA.
+S5_PROFILE = (
+    ("box_count_faced_vs_run_rate", ("run_offense.rush_rate_over_expected",), ("run_defense.box_count_faced",)),
+    ("motion_usage_vs_defense_results_against_motion", ("pass_offense.motion_rate",), ("x.def_epa_vs_motion",)),
+    ("offense_explosive_rate_vs_defense_explosive_rate_allowed", ("run_offense.explosive_run_rate", "pass_offense.explosive_pass_rate"),
+     ("run_defense.explosive_runs_allowed", "pass_coverage.explosive_passes_allowed")),
+    ("run_direction_share_vs_defense_run_direction_results",
+     ("run_offense.run_location_share_left", "run_offense.run_location_share_middle", "run_offense.run_location_share_right"),
+     ("run_defense.rush_epa_allowed_left", "run_defense.rush_epa_allowed_middle", "run_defense.rush_epa_allowed_right")),
+    ("ol_protection_vs_pass_rush", ("ol_protection.sack_rate_allowed", "ol_protection.pressure_rate_allowed"), ("pass_rush.sack_rate", "pass_rush.pressure_rate")),
+    ("play_action_usage_vs_defense_play_action_results", ("pass_offense.play_action_rate",), ("x.def_epa_vs_play_action",)),
+    ("screen_usage_vs_defense_screen_results", ("pass_offense.screen_rate",), ("x.def_epa_vs_screen",)),
+    ("blitz_rate_faced_vs_qb_results_against_the_blitz", ("x.off_epa_vs_blitz",), ("pass_rush.blitz_rate_ftn",)),
+)
+S5_MIN_PLAYS = 30                    # a defense run-direction result needs at least this many plays in the window (spec: MIN_PLAYS_RUN_DIRECTION)
+S5_REQUIRED_SOURCE = "ftn_charting"  # S5 returns no_match whenever a profile feature that comes from FTN is missing on the target side

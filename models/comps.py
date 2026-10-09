@@ -704,3 +704,171 @@ def write_vectors(vec: Vectors, out_dir=config.PROCESSED_DIR, log_dir=config.ROO
         paths[name] = log_dir / f"comp_{name}.parquet"
         df.write_parquet(paths[name])
     return paths
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------- 4c.2 distance
+@dataclass
+class Distance:
+    d2: np.ndarray               # (na, nb) unit distance d2: NaN where the two sides share no feature group
+    completeness: np.ndarray     # (na, nb) share of the unit's weight mass (w x q) that is missing on either side: the completeness penalty (4c.5)
+    groups: np.ndarray           # (na, nb) number of feature groups that could be compared
+    quality: np.ndarray = None   # (na, nb) mean q_f of the features compared (weighted by w_f): the data-quality of the match
+
+
+def unit_features(unit: str, space: str) -> list:
+    return [f for f in cs.FEATURES[unit] if space == "extended" or f.space == "base"]
+
+
+def feature_quality(unit: str, space: str, quality: dict | None = None) -> np.ndarray:
+    """q_f per feature in the vector order: observed 1.0, derived 0.9, estimated 0.65 (cs.QUALITY). `quality` maps a feature name to an override
+    (a test sets one to 0 to show a quality-0 feature changes nothing)."""
+    return np.array([(quality or {}).get(f.name, cs.QUALITY[f.quality]) for f in unit_features(unit, space)], dtype=float)
+
+
+def group_columns(unit: str, space: str) -> list:
+    """[(group name, column indices in the vector)] for the groups that have at least one feature in this space."""
+    pos = {f.name: i for i, f in enumerate(unit_features(unit, space))}
+    return [(name, [pos[f] for f in feats if f in pos]) for name, feats in cs.GROUPS[unit] if any(f in pos for f in feats)]
+
+
+def group_distance(A: np.ndarray, B: np.ndarray, groups: list, w: np.ndarray, q: np.ndarray, group_w: np.ndarray | None = None) -> Distance:
+    """The distance of unit_distance for any feature layout: `groups` is a list of column-index lists, w and q per column (NaN = missing)."""
+    wq = w * q
+    A, B = np.asarray(A, dtype=float), np.asarray(B, dtype=float)
+    ma, mb = ~np.isnan(A), ~np.isnan(B)
+    a0, b0 = np.where(ma, A, 0.0), np.where(mb, B, 0.0)
+    shape = (A.shape[0], B.shape[0])
+    num_u, den_u, got, mass, mass_w = (np.zeros(shape) for _ in range(5))
+    for gi, cols in enumerate(groups):
+        c = np.array(cols)
+        f = wq[c]
+        den = (ma[:, c] * f) @ mb[:, c].T
+        num = (a0[:, c] ** 2 * f) @ mb[:, c].T + ma[:, c].astype(float) @ (b0[:, c] ** 2 * f).T - 2.0 * (a0[:, c] * f) @ b0[:, c].T
+        with np.errstate(invalid="ignore", divide="ignore"):
+            d2g = np.where(den > 1e-12, np.maximum(num, 0.0) / den, np.nan)
+        d2g = np.where(d2g < 1e-10, 0.0, d2g)                   # the matrix-product form leaves ~1e-16 for identical vectors: identical means exactly 0
+        gw = 1.0 if group_w is None else float(group_w[gi])
+        ok = ~np.isnan(d2g)
+        num_u += np.where(ok, gw * d2g, 0.0)
+        den_u += np.where(ok, gw, 0.0)
+        got += ok
+        mass += den
+        mass_w += (ma[:, c] * w[c]) @ mb[:, c].T
+    total = float(wq.sum())
+    with np.errstate(invalid="ignore", divide="ignore"):
+        d2 = np.where(den_u > 0, num_u / den_u, np.nan)
+        comp = (1.0 - mass / total) if total > 0 else np.full(shape, np.nan)
+        qual = np.where(mass_w > 0, mass / np.maximum(mass_w, 1e-12), np.nan)
+    return Distance(d2, comp, got.astype(int), qual)
+
+
+def unit_distance(A: np.ndarray, B: np.ndarray, unit: str, space: str, quality: dict | None = None, weights: dict | None = None,
+                  group_weights: dict | None = None) -> Distance:
+    """d2 between every row of A and every row of B (z-vectors of the same unit, window and space; NaN = missing).
+
+    d2_g = sum_f(w_f q_f (a_f - b_f)^2) / sum_f(w_f q_f) over the features of group g present on BOTH sides (a feature missing on either side has
+    weight 0). The unit d2 is the weighted mean of the d2_g over the groups that could be compared (start: equal weights). The completeness penalty is
+    the share of the unit's total w x q mass that was missing on either side. Computed with matrix products, so it scales to a large pool."""
+    feats = unit_features(unit, space)
+    w = np.array([(weights or {}).get(f.name, cs.FEATURE_WEIGHT_DEFAULT) for f in feats], dtype=float)
+    groups = group_columns(unit, space)
+    gw = np.array([(group_weights or {}).get(name, cs.GROUP_WEIGHT_DEFAULT) for name, _ in groups], dtype=float)
+    return group_distance(A, B, [cols for _, cols in groups], w, feature_quality(unit, space, quality), gw)
+
+
+def similarity(d2, sigma):
+    """exp(-d2 / (2 sigma^2)) with d2 the unit distance above (already a squared distance: it is NOT squared again). NaN where d2 or sigma is missing."""
+    return np.exp(-np.asarray(d2, dtype=float) / (2.0 * np.asarray(sigma, dtype=float) ** 2))
+
+
+def choose_space(unit: str, ext_complete_a: bool, ext_complete_b: bool) -> str | None:
+    """EXTENDED only when every EXTENDED feature of the unit exists on both sides, else BASE; None for a unit with no BASE features (coverage_mix)."""
+    spaces = stored_spaces(unit)
+    if "extended" in spaces and ext_complete_a and ext_complete_b:
+        return "extended"
+    return "base" if "base" in spaces else None
+
+
+def vector_matrix(df: pl.DataFrame, n_features: int) -> np.ndarray:
+    """(n, F) float matrix of the z lists of a vector frame (null -> NaN)."""
+    if df.height == 0:
+        return np.zeros((0, n_features))
+    return df["z"].explode().cast(pl.Float64).fill_null(np.nan).to_numpy().reshape(df.height, n_features)
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------- sigma
+SIGMA_MIN_TARGETS = 30            # a sigma needs at least this many earlier targets, else it is missing (and so is every similarity that needs it)
+SIGMA_PLAYER_TARGETS_PER_WEEK = 20
+
+
+def _week_key(df: pl.DataFrame) -> np.ndarray:
+    return (df["season"].to_numpy() * 100 + df["week"].to_numpy()).astype(np.int64)
+
+
+def _sigma_block(df: pl.DataFrame, unit: str, space: str, entity: str, per_week: int | None) -> tuple:
+    """(week key of each target, 20th-neighbour distance excluding the target's own entity, the same including it) for one (unit, window, space)."""
+    import zlib
+    nf = len(unit_features(unit, space))
+    df = df.filter(pl.col("complete") if space == "extended" and any(f.space == "base" for f in cs.FEATURES[unit]) else pl.col("n_present") > 0)
+    df = df.with_columns(_k=pl.Series(_week_key(df))).sort("_k", entity, "game_id")
+    Z = vector_matrix(df, nf)
+    keys = df["_k"].to_numpy()
+    ent = df[entity].cast(pl.String).to_numpy()
+    gid = df["game_id"].to_numpy()
+    ks, ke, ki = [], [], []
+    starts = np.flatnonzero(np.r_[True, keys[1:] != keys[:-1]])
+    ends = np.r_[starts[1:], len(keys)]
+    for a, b in zip(starts, ends):
+        if a <= cs.SIGMA_NEIGHBOR_RANK:
+            continue
+        idx = np.arange(a, b)
+        if per_week is not None and len(idx) > per_week:
+            order = sorted(idx, key=lambda i: zlib.crc32(f"{ent[i]}|{gid[i]}".encode()))
+            idx = np.array(sorted(order[:per_week]))
+        D = np.sqrt(unit_distance(Z[idx], Z[:a], unit, space).d2)
+        D = np.where(np.isnan(D), np.inf, D)
+        same = ent[idx][:, None] == ent[:a][None, :]
+        k = cs.SIGMA_NEIGHBOR_RANK - 1
+        kth_ex = np.partition(np.where(same, np.inf, D), k, axis=1)[:, k]
+        kth_in = np.partition(D, k, axis=1)[:, k]
+        ks.append(np.full(len(idx), keys[a])); ke.append(kth_ex); ki.append(kth_in)
+    if not ks:
+        return np.zeros(0, dtype=np.int64), np.zeros(0), np.zeros(0)
+    return np.concatenate(ks), np.concatenate(ke), np.concatenate(ki)
+
+
+def build_sigma(team: pl.DataFrame, player: pl.DataFrame, per_week_players: int | None = SIGMA_PLAYER_TARGETS_PER_WEEK) -> pl.DataFrame:
+    """sigma per (unit, window, space) and cutoff week: the median over EARLIER targets of the distance to the target's 20th nearest neighbour.
+
+    Every vector of the unit (a team-game, or a player-game; players: a fixed pseudo-random subset of `per_week_players` per week) is a pseudo-target; its
+    neighbours are the unit's vectors of earlier weeks, same window and space, from the pool versions (`pool_version`), excluding the target's own team /
+    player (a team's consecutive games share window data, so they are not independent matches). Distance D = sqrt(d2), so sigma is on the scale that
+    similarity = exp(-d2 / (2 sigma^2)) needs. sigma at week K uses targets of weeks before K only. `sigma_incl_own` keeps the own entity, for reference."""
+    rows = []
+    for unit in cs.UNITS:
+        is_team = unit in TEAM_UNITS
+        src = team if is_team else player
+        for space in stored_spaces(unit):
+            for window in sorted(src["window"].unique().to_list()):
+                df = src.filter((pl.col("unit") == unit) & (pl.col("space") == space) & (pl.col("window") == window))
+                if is_team:
+                    df = df.filter(pl.col("version") == pool_version(unit))
+                if df.height == 0:
+                    continue
+                keys, d_ex, d_in = _sigma_block(df, unit, space, "team" if is_team else "player_id", None if is_team else per_week_players)
+                cut = np.unique(_week_key(df))
+                for k in cut:
+                    m = keys < k
+                    n = int(m.sum())
+                    ok = n >= SIGMA_MIN_TARGETS
+                    rows.append(dict(unit=unit, window=window, space=space, season=int(k // 100), week=int(k % 100), n_targets=n,
+                                     sigma=float(np.nanmedian(d_ex[m])) if ok and np.isfinite(d_ex[m]).any() else None,
+                                     sigma_incl_own=float(np.nanmedian(d_in[m])) if ok and np.isfinite(d_in[m]).any() else None))
+    return pl.DataFrame(rows, schema={"unit": pl.String, "window": pl.String, "space": pl.String, "season": pl.Int32, "week": pl.Int32, "n_targets": pl.Int64,
+                                      "sigma": pl.Float64, "sigma_incl_own": pl.Float64})
+
+
+def sigma_at(table: pl.DataFrame, unit: str, window: str, space: str, season: int, week: int) -> float:
+    """sigma for a target in (season, week): from targets of earlier weeks only. NaN when missing."""
+    r = table.filter((pl.col("unit") == unit) & (pl.col("window") == window) & (pl.col("space") == space) & (pl.col("season") == season) & (pl.col("week") == week))
+    return float(r["sigma"][0]) if r.height and r["sigma"][0] is not None else float("nan")

@@ -356,3 +356,126 @@ def test_real_ledger_covers_every_spec_feature_and_every_franchise():
     q = inp.player.filter(pl.col("c.dropbacks") > 0)
     assert q["c.dropbacks"].sum() == inp.team["x.dropbacks"].sum()              # scrambles credited to the QB: player and team dropbacks agree
     assert max(inp.games["season"]) <= config.BACKTEST_SEASONS[-1]
+
+
+# ================================================================================================================================ 4c.2 distance / similarity
+def _rand(unit, space, n, seed):
+    rng = np.random.default_rng(seed)
+    return rng.normal(size=(n, len(C.unit_features(unit, space))))
+
+
+def test_identical_vectors_have_distance_zero_and_similarity_one():
+    for unit, space in (("run_offense", "base"), ("pass_offense", "extended"), ("rb_archetype", "extended"), ("coverage_mix", "extended")):
+        A = _rand(unit, space, 6, 1)
+        d = C.unit_distance(A, A, unit, space)
+        assert (np.diag(d.d2) == 0).all()
+        assert (np.diag(C.similarity(d.d2, 0.8)) == 1.0).all()
+        assert (np.diag(d.completeness) == 0).all()
+
+
+def test_similarity_falls_as_distance_rises():
+    A = _rand("run_offense", "base", 1, 2)
+    sims, d2s = [], []
+    for scale in (0.0, 0.2, 0.5, 1.0, 2.0):
+        B = A + scale * np.sign(_rand("run_offense", "base", 1, 3))
+        d2s.append(C.unit_distance(A, B, "run_offense", "base").d2[0, 0])
+        sims.append(C.similarity(d2s[-1], 1.0))
+    assert d2s == sorted(d2s) and sims == sorted(sims, reverse=True) and sims[0] == 1.0 and sims[-1] < sims[1]
+
+
+def test_similarity_uses_d2_once_not_squared_again():
+    assert C.similarity(2.0, 1.5) == pytest.approx(np.exp(-2.0 / (2 * 1.5 ** 2)))
+
+
+def test_group_collapse_matches_a_hand_computation():
+    unit, space = "run_offense", "base"
+    names = [f.name for f in C.unit_features(unit, space)]
+    A, B = np.zeros((1, len(names))), np.zeros((1, len(names)))
+    B[0, names.index("rush_epa_per_play")] = 2.0                         # one feature of the 4-feature efficiency group differs by 2
+    q = C.feature_quality(unit, space)
+    eff = [names.index(n) for n in ("rush_epa_per_play", "rush_success_rate", "yards_per_carry", "explosive_run_rate")]
+    d2_eff = (q[eff[0]] * 4.0) / q[eff].sum()
+    groups = C.group_columns(unit, space)
+    assert len(groups) == 5
+    assert C.unit_distance(A, B, unit, space).d2[0, 0] == pytest.approx(d2_eff / 5)          # the unit distance is the equal-weight mean over the 5 groups
+
+
+def test_a_missing_or_quality_zero_feature_changes_nothing_but_the_completeness_penalty():
+    unit, space = "rb_archetype", "extended"
+    A, B = _rand(unit, space, 1, 4), _rand(unit, space, 1, 5)
+    names = [f.name for f in C.unit_features(unit, space)]
+    j = names.index("yards_after_contact")
+    B_missing = B.copy(); B_missing[0, j] = np.nan
+    d_full = C.unit_distance(A, B_missing, unit, space)
+    A_changed = A.copy(); A_changed[0, j] += 7.0                          # the feature is missing on B: its value on A must not matter
+    d_changed = C.unit_distance(A_changed, B_missing, unit, space)
+    assert d_changed.d2[0, 0] == d_full.d2[0, 0] and d_changed.completeness[0, 0] == d_full.completeness[0, 0] > 0
+    zero = {"yards_per_carry": 0.0}
+    A2 = A.copy(); A2[0, names.index("yards_per_carry")] += 9.0
+    assert C.unit_distance(A2, B, unit, space, quality=zero).d2[0, 0] == pytest.approx(C.unit_distance(A, B, unit, space, quality=zero).d2[0, 0])
+    assert C.unit_distance(A2, B, unit, space).d2[0, 0] != pytest.approx(C.unit_distance(A, B, unit, space).d2[0, 0])
+
+
+def test_quality_weights_discount_estimated_features():
+    unit, space = "coverage_mix", "extended"
+    assert C.feature_quality(unit, space).tolist() == [cs.QUALITY["estimated"]] * 3
+    assert C.feature_quality("run_offense", "base")[0] == cs.QUALITY["observed"] and C.feature_quality("rb_rotation", "base")[0] == cs.QUALITY["derived"]
+
+
+def test_distance_is_missing_when_nothing_can_be_compared():
+    A = np.full((1, len(C.unit_features("pass_rush", "extended"))), np.nan)
+    d = C.unit_distance(A, _rand("pass_rush", "extended", 2, 6), "pass_rush", "extended")
+    assert np.isnan(d.d2).all() and (d.completeness == 1.0).all()
+
+
+def test_choose_space():
+    assert C.choose_space("pass_offense", True, True) == "extended" and C.choose_space("pass_offense", True, False) == "base"
+    assert C.choose_space("run_offense", True, True) == "base"                               # no extended features: BASE only
+    assert C.choose_space("coverage_mix", False, True) is None and C.choose_space("coverage_mix", True, True) == "extended"
+
+
+def test_groups_partition_every_unit():
+    for unit in cs.UNITS:
+        assert sorted(f for _, fs in cs.GROUPS[unit] for f in fs) == sorted(f.name for f in cs.FEATURES[unit])
+
+
+@pytest.fixture(scope="module")
+def sigma_pair():
+    W = (2020, 4)
+    a, b = C.build_vectors(synthetic_inputs(0)), C.build_vectors(synthetic_inputs(0, perturb_from=W))
+    return a, b, C.build_sigma(a.team, a.player), C.build_sigma(b.team, b.player), W
+
+
+def test_sigma_is_walk_forward(sigma_pair):
+    a, b, sa, sb, W = sigma_pair
+    key = lambda df: df["season"] * 100 + df["week"]
+    early = lambda df: df.filter(key(df) <= W[0] * 100 + W[1]).sort("unit", "window", "space", "season", "week")
+    assert early(sa).height > 0 and early(sa).equals(early(sb))           # sigma at weeks up to W uses only targets before them
+    first = sa.filter((pl.col("season") == 2019) & (pl.col("week") == 1))
+    assert first["sigma"].null_count() == first.height                      # no earlier targets: sigma is missing, not a guess
+    s = sa.filter((pl.col("unit") == "run_offense") & (pl.col("window") == "recency_weighted") & (pl.col("space") == "base")).sort("season", "week")
+    assert s["n_targets"].is_sorted() and s["sigma"].drop_nulls().len() > 0
+    assert (s["sigma"].drop_nulls() > 0).all()
+
+
+def test_similarities_before_week_w_ignore_later_data(sigma_pair):
+    a, b, sa, sb, W = sigma_pair
+    unit, space, window = "run_offense", "base", "recency_weighted"
+    nf = len(C.unit_features(unit, space))
+    pick = lambda v: v.team.filter((pl.col("unit") == unit) & (pl.col("space") == space) & (pl.col("window") == window) & (pl.col("version") == "actual")
+                                   & (pl.col("season") * 100 + pl.col("week") < W[0] * 100 + W[1])).sort("season", "week", "game_id", "team")
+    ra, rb = pick(a), pick(b)
+    Za, Zb = C.vector_matrix(ra, nf), C.vector_matrix(rb, nf)
+    sig = C.sigma_at(sa, unit, window, space, 2020, 3)
+    sim_a = C.similarity(C.unit_distance(Za, Za, unit, space).d2, sig)
+    sim_b = C.similarity(C.unit_distance(Zb, Zb, unit, space).d2, C.sigma_at(sb, unit, window, space, 2020, 3))
+    assert np.array_equal(sim_a, sim_b, equal_nan=True) and np.isfinite(sig)
+
+
+def test_sigma_excludes_a_targets_own_team():
+    from models.comps import _sigma_block
+    inp = synthetic_inputs(0)
+    v = C.build_vectors(inp)
+    df = v.team.filter((pl.col("unit") == "run_offense") & (pl.col("space") == "base") & (pl.col("window") == "recency_weighted") & (pl.col("version") == "actual"))
+    keys, d_ex, d_in = _sigma_block(df, "run_offense", "base", "team", None)
+    assert len(keys) > 0 and (d_ex >= d_in - 1e-12).all()              # removing the own team's near-duplicate games can only push the 20th neighbour out
