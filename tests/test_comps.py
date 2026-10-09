@@ -1050,9 +1050,9 @@ def test_top_any_lists_the_closest_past_games_whatever_the_threshold(pool3):
     full = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0)["S4"].matches
     assert live.summary["n_matches"] == 0 and len(live.summary["top_any"]) == 10            # nothing above the threshold, the closest games still listed
     want = full.sort("final_weight", descending=True).head(10)
-    assert [w for _, w in live.summary["top_any"]] == pytest.approx(want["final_weight"].to_list())
+    assert [t[1] for t in live.summary["top_any"]] == pytest.approx(want["final_weight"].to_list())
     ids = {f"{g}|{t}|{p or ''}" for g, t, p in zip(want["obs_game_id"], want["obs_team"], want["obs_player_id"])}
-    assert {i for i, _ in live.summary["top_any"]} == ids
+    assert {t[0] for t in live.summary["top_any"]} == ids
 
 
 def test_closest_10_overlap_is_one_when_the_vectors_agree(pool3):
@@ -1252,3 +1252,57 @@ def test_input_shares_are_separate_columns_per_search():
     sh = cf.input_shares(_feats_table())
     for s in C.SEARCHES:
         assert {f"share_obs_{s}", f"share_der_{s}", f"share_est_{s}", f"completeness_{s}"} <= set(sh.columns)
+
+
+# ---------------------------------------------------------------------------------------------------------------- 4c.5 review fixes
+def test_an_all_null_comparable_column_reaches_lightgbm_as_a_float():
+    """S2 and S4 never match at the plan's threshold, so their share columns are null in every row: they must still be numeric for LightGBM."""
+    from features import comps_features as cf
+    from features.volume_features import FeatureTables
+    from models import volume as vm
+    f = _feats_table().with_columns(*[pl.lit(None).alias(f"{c}_S2") for c in ("share_obs", "share_der", "share_est", "completeness")])
+    assert f["share_obs_S2"].dtype == pl.Null
+    rng = np.random.default_rng(0)
+    players = {"rush_att": pl.DataFrame({"player_id": ["P1"] * 40, "game_id": ["G1"] + [f"H{i}" for i in range(39)], "x": rng.normal(size=40),
+                                         "label": rng.normal(size=40)})}
+    out = cf.attach(FeatureTables(players, pl.DataFrame({"game_id": ["G1"], "team": ["A"]})), f, {"rush_att": {"market": "rush_att"}})
+    df = out.players["rush_att"]
+    assert all(df[c].dtype == pl.Float64 for c in df.columns if c.startswith("cmp_"))
+    vm._fit(df, dict(vm.PARAMS, n_estimators=5, min_child_samples=2))                     # raised "pandas dtypes must be int, float or bool" before
+
+
+def test_attach_refuses_a_search_selection_it_cannot_honour():
+    from features import comps_features as cf
+    from features.volume_features import FeatureTables
+    tables = FeatureTables({"rush_att": pl.DataFrame({"player_id": ["P1"], "game_id": ["G1"]})}, pl.DataFrame({"game_id": ["G1"], "team": ["A"]}))
+    specs = {"rush_att": {"market": "rush_att"}}
+    with pytest.raises(TypeError):
+        cf.attach(tables, _feats_table(), specs, searches="S1")                            # a string would iterate over its characters
+    for bad in ((), ("S9",)):
+        with pytest.raises(ValueError):
+            cf.attach(tables, _feats_table(), specs, searches=bad)
+    with pytest.raises(KeyError):
+        cf.attach(tables, _feats_table().drop("share_obs_S1"), specs)                       # a stale table without the 4c.5 columns
+
+
+def test_a_no_match_search_still_reports_its_input_shares_from_its_closest_games(pool3):
+    """'For every search and target' (plan 4c.5.1): without a match the shares and completeness come from the search's 10 closest past games."""
+    pool, inp, _ = pool3
+    tg = _player_target(inp, "rush_att", week=9)
+    pool.clear_cache()
+    feats, _, _, _ = C.comp_shifts(pool, [tg], {}, sim_threshold=0.9999999)
+    r = feats.filter(pl.col("market") == "rush_att").row(0, named=True)
+    full = pool.search(tg, which=("S1",), keep=True, sim_threshold=0.0, min_neff=0)["S1"].matches.sort("final_weight", descending=True).head(10)
+    w = full["final_weight"].to_numpy()
+    assert r["nomatch_S1"] and r["share_obs_S1"] == pytest.approx((w * full["share_obs"].to_numpy()).sum() / w.sum())
+    assert r["completeness_S1"] == pytest.approx((w * full["completeness_penalty"].to_numpy()).sum() / w.sum())
+
+
+def test_a_two_sided_share_mirrors_how_the_similarity_is_formed():
+    """S4 similarity = mean(offense units) x mean(defense units): each side carries half of the share, whatever its number of units."""
+    one = lambda v: (np.ones(2), np.ones(2), np.ones(2), np.array(v, dtype=float)[:, None] * np.ones((3, 2)))
+    comps_sel = {"run_offense": ("off", one([1, 0, 0])), "rb_rotation": ("off", one([1, 0, 0])), "rb_archetype": ("arch", one([0, 1, 0])),
+                 "run_defense": ("def", one([0, 0, 1]))}
+    sh = C._match_shares(comps_sel, "S4", 2)
+    assert sh[:, 0] == pytest.approx([1 / 3, 1 / 6, 1 / 2])
+    assert C._match_shares({"run_defense": ("def", one([0, 0, 1]))}, "S1", 2)[:, 0] == pytest.approx([0, 0, 1])

@@ -25,7 +25,12 @@ TEAM_MARKET = "total"
 
 
 def columns(searches=SEARCHES) -> list:
-    """The comparable columns (unprefixed) a model takes for the given searches (the 4c.6 per-search ablation passes one search)."""
+    """The comparable columns (unprefixed) a model takes for the given searches (the 4c.6 per-search ablation passes one search, as a tuple)."""
+    if isinstance(searches, str):
+        raise TypeError(f"searches must be a sequence of search names, not the string {searches!r}")
+    searches = tuple(searches)
+    if not searches or not set(searches) <= set(SEARCHES) or len(set(searches)) != len(searches):
+        raise ValueError(f"searches must be distinct names among {SEARCHES}, got {searches}")
     return [f"{c}_{s}" for s in searches for c in SHIFT_COLUMNS + SHARE_COLUMNS]
 
 
@@ -34,11 +39,14 @@ def load(window: str = "recency_weighted", path=None) -> pl.DataFrame:
 
 
 def _market_frame(feats: pl.DataFrame, market: str, keys: list, searches) -> pl.DataFrame:
-    cols = [c for c in columns(searches) if c in feats.columns]
+    cols = columns(searches)
+    missing = [c for c in cols if c not in feats.columns]
+    if missing:
+        raise KeyError(f"the comparable table lacks {len(missing)} requested columns (a table written before 4c.5?): {missing[:4]}")
     side = pl.col("player_id").is_not_null() if "player_id" in keys else pl.col("player_id").is_null()
     out = feats.filter((pl.col("market") == market) & side).select(*keys, *cols)
     assert out.select(keys).is_unique().all(), f"comparable features are not unique per {keys} for {market}"
-    return out.select(*keys, *[(pl.col(c).cast(pl.Float64) if out[c].dtype == pl.Boolean else pl.col(c)).alias(PREFIX + c) for c in cols])
+    return out.select(*keys, *[pl.col(c).cast(pl.Float64).alias(PREFIX + c) for c in cols])        # numeric for LightGBM: booleans 0 / 1, an all-null column stays null
 
 
 def attach(tables, feats: pl.DataFrame, specs: dict, searches=SEARCHES):

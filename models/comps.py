@@ -1367,6 +1367,7 @@ class Pool:
             if is_player and tvec is None:
                 out[sname] = SearchResult(sname, self._summary(tg, sname, None, None, None, False, "no_target_vector", sim_threshold, min_neff))
                 continue
+            forced = None
             # which observations the search looks at
             if sname == "S1":
                 sel = (obs_pid == tg.player_id) if is_player else (obs_team == tg.team)
@@ -1380,10 +1381,7 @@ class Pool:
                 comps_sel = {f"matchup_{'offense' if side == 'off' else 'defense'}": (side, tuple(a[..., obs_row[idx]] for a in prof[side])) for side in ("off", "def")}
                 sim_off, sim_def = side_mean(comps_sel, ("off",)), side_mean(comps_sel, ("def",))
                 combined = sim_off * sim_def
-                if miss:
-                    out[sname] = SearchResult(sname, self._summary(tg, sname, combined, comps_sel, None, False, "missing_required_ftn_features", sim_threshold, min_neff,
-                                                                   best_override=float(np.nanmax(combined)) if np.isfinite(combined).any() else float("nan")))
-                    continue
+                forced = "missing_required_ftn_features" if miss else None
             else:
                 allc = components(sname)
                 comps_sel = {u: (kd, tuple(a[..., idx] for a in c)) for u, (kd, c) in allc.items()}
@@ -1412,13 +1410,15 @@ class Pool:
                 warnings.simplefilter("ignore", RuntimeWarning)
                 quality = np.nanmean(qual_arr, axis=0) if comps_sel else np.full(len(idx), np.nan)
             final = combined * rec * cont * quality
-            # 4c.5: the observed / derived / estimated share of each match's similarity, the mean over the search's units that could be compared
-            sh_arr = np.stack([c[1][3] for c in comps_sel.values()]) if comps_sel else np.full((1, len(TAGS), len(idx)), np.nan)
-            with np.errstate(all="ignore"), warnings.catch_warnings():
-                warnings.simplefilter("ignore", RuntimeWarning)
-                share = np.nanmean(sh_arr, axis=0)
-            out[sname] = SearchResult(sname, *self._finish(tg, sname, idx, obs_row, obs_pid, obs_team, combined, comps_sel, rec, cont, quality, completeness, final,
-                                                            sim_threshold, min_neff, keep, sim_off, sim_def, sensitivity, top_any, share))
+            share = _match_shares(comps_sel, sname, len(idx))        # 4c.5: the observed / derived / estimated share behind each similarity
+            summ, matches = self._finish(tg, sname, idx, obs_row, obs_pid, obs_team, combined, comps_sel, rec, cont, quality, completeness, final,
+                                         sim_threshold, min_neff, keep, sim_off, sim_def, sensitivity, top_any, share)
+            if forced is not None:                   # S5 without its required FTN features: no_match whatever its similarities (plan 4c.3)
+                summ.update(no_match=True, widened_uncertainty=True, shift=0.0, reason=forced, n_matches=0, n_eff=0.0)
+                if "sensitivity" in summ:
+                    summ["sensitivity"] = {}
+                matches = None
+            out[sname] = SearchResult(sname, summ, matches)
         return out
 
     def _summary(self, tg, sname, combined, comps, final, matched, reason, sim_threshold, min_neff, applicable=True, best_override=None, n_matches=0, n_eff=0.0):
@@ -1454,8 +1454,10 @@ class Pool:
                 fin = fin[final[fin] >= kth]
             top = fin[np.lexsort((fin, -final[fin]))][:top_any]
             ti = idx[top]                             # positions in the observation arrays (index them once: they can hold 70,000 objects)
-            summary["top_any"] = [(f"{self._gids[r]}|{t_}|{'' if p_ is None else p_}", float(w_))
-                                  for r, t_, p_, w_ in zip(obs_row[ti].tolist(), obs_team[ti].tolist(), obs_pid[ti].tolist(), final[top].tolist())]
+            sh_ = share[:, top] if share is not None else np.full((len(TAGS), len(top)), np.nan)
+            summary["top_any"] = [(f"{self._gids[r]}|{t_}|{'' if p_ is None else p_}", float(w_), *map(float, x_), float(c_))
+                                  for r, t_, p_, w_, x_, c_ in zip(obs_row[ti].tolist(), obs_team[ti].tolist(), obs_pid[ti].tolist(), final[top].tolist(),
+                                                                   sh_.T.tolist(), completeness[top].tolist())]
         if sensitivity:                     # analysis only (the no-match memo): matches and n_eff at other thresholds, from the same similarities
             summary["sensitivity"] = {f"{t:g}": (int((ok & (combined >= t)).sum()), cluster_neff(final[ok & (combined >= t)], obs_row[idx][ok & (combined >= t)]))
                                       for t in sensitivity}
@@ -1737,6 +1739,24 @@ def _target_rows(targets: list) -> list:
 RETRIEVAL_TOP_K = 10        # healthy vs lineup-adjusted run: the overlap of the top 10 matches by final weight (build plan 4c.1.4)
 
 
+_SHARE_FACTORS = {"S1": (("def",),), "S2": (("off", "arch"), ("def",)), "S3": (("arch",), ("def",)), "S4": (("off", "arch"), ("def",)),
+                  "S5": (("off",), ("def",))}
+
+
+def _match_shares(comps_sel: dict, sname: str, n: int) -> np.ndarray:
+    """(3, n): the observed / derived / estimated share behind each observation's similarity, mirroring how the similarity is formed: the mean over
+    its factors (S1 the defense side; S2 / S4 the offense side -- team units and the archetype -- and the defense side; S3 the archetype and the
+    defense side; S5 the two profile sides), each factor the mean of its units' shares."""
+    facs = []
+    with np.errstate(all="ignore"), warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        for kinds in _SHARE_FACTORS[sname]:
+            arr = [c[3] for kd, c in comps_sel.values() if kd in kinds]
+            if arr:
+                facs.append(np.nanmean(np.stack(arr), axis=0))
+        return np.nanmean(np.stack(facs), axis=0) if facs else np.full((len(TAGS), n), np.nan)
+
+
 def _wmean(w: np.ndarray, x: np.ndarray):
     ok = np.isfinite(x) & (w > 0)
     return float((w[ok] * x[ok]).sum() / w[ok].sum()) if ok.any() else None
@@ -1809,8 +1829,12 @@ def _market_shifts(res: dict, tg: Target, market: str, zl: dict, min_neff: float
         # 4c.5: the observed / derived / estimated share of the feature weight behind the search's matches, and their completeness penalty, averaged with
         # the weights the volume shift uses (null when the search does not match)
         mt = sets[s][0] if (s in sets and not nomatch) else None
-        for col, name in [(f"share_{t[:3]}", f"share_{t[:3]}_{s}") for t in TAGS] + [("completeness_penalty", f"completeness_{s}")]:
-            vals[name] = _wmean(wv[s], mt[col].to_numpy()) if mt is not None and col in mt.columns else None
+        top = res[s].summary.get("top_any") or []
+        for j, (col, name) in enumerate([(f"share_{t[:3]}", f"share_{t[:3]}_{s}") for t in TAGS] + [("completeness_penalty", f"completeness_{s}")]):
+            if mt is not None and col in mt.columns:
+                vals[name] = _wmean(wv[s], mt[col].to_numpy())
+            else:                                     # no match: the search's closest past games, by their final weight (plan: for every search and target)
+                vals[name] = _wmean(np.array([t[1] for t in top]), np.array([t[2 + j] for t in top])) if top else None
         details.append(dict(search=s, applicable=summ["applicable"], n_matches=summ["n_matches"], n_eff_similarity=summ["n_eff"],
                             n_with_expectation_vol=int(np.isfinite(sets[s][1]).sum()) if s in sets else 0,
                             n_with_expectation_eff=int(np.isfinite(sets[s][2]).sum()) if s in sets else 0,
@@ -1850,7 +1874,7 @@ def comp_shifts(pool: Pool, targets: list, zl: dict, keep_matches: bool = True, 
         if (tg.game_id, tg.team) != last:
             pool.clear_cache()
             last = (tg.game_id, tg.team)
-        top = RETRIEVAL_TOP_K if healthy else 0
+        top = RETRIEVAL_TOP_K                         # the closest games feed the healthy-vs-adjusted comparison and the no-match input shares
         res = pool.search(tg, SEARCHES, keep=True, sim_threshold=sim_threshold, min_neff=min_neff, top_any=top)
         differs = healthy and pool.adjusted_differs(pool.idx[(tg.game_id, tg.team)], cs.MARKET_UNITS[tg.market])
         res_h = pool.search(tg, SEARCHES, keep=True, sim_threshold=sim_threshold, min_neff=min_neff, version="healthy", top_any=top) if differs else res
@@ -1868,8 +1892,8 @@ def comp_shifts(pool: Pool, targets: list, zl: dict, keep_matches: bool = True, 
                 for s in SEARCHES:
                     ha, hh = _hits(res[s]), _hits(res_h[s])
                     rc = retrieval_change(hh, ha, min(RETRIEVAL_TOP_K, max(len(ha), len(hh))))      # one side empty: overlap 0; both: undefined
-                    ta = [(i, w, 0.0) for i, w in res[s].summary.get("top_any", [])]
-                    th = [(i, w, 0.0) for i, w in res_h[s].summary.get("top_any", [])]
+                    ta = [(t[0], t[1], 0.0) for t in res[s].summary.get("top_any", [])]
+                    th = [(t[0], t[1], 0.0) for t in res_h[s].summary.get("top_any", [])]
                     rca = retrieval_change(th, ta, min(RETRIEVAL_TOP_K, max(len(ta), len(th))))
                     crows.append(dict(ident, search=s, adjusted_differs=bool(differs), n_matches_adjusted=len(ha), n_matches_healthy=len(hh),
                                       top_k=rc["k"], overlap_top_k=rc["overlap_top_k"], weight_mass_shared=rc["weight_mass_shared"] if ha or hh else float("nan"),
@@ -1880,6 +1904,11 @@ def comp_shifts(pool: Pool, targets: list, zl: dict, keep_matches: bool = True, 
                                       shift_eff_adjusted=vals[f"shift_eff_{s}"], shift_eff_healthy=hvals[f"shift_eff_{s}"],
                                       shift_eff_change=(vals[f"shift_eff_{s}"] - hvals[f"shift_eff_{s}"]) if vals[f"shift_eff_{s}"] is not None else None))
     features = pl.DataFrame(feats, infer_schema_length=None)
+    if features.height:                               # explicit types: a column can be null in every row (S2 / S4 never match at 0.70)
+        features = features.with_columns(
+            *[pl.col(f"{c}_{s}").cast(pl.Float64) for s in SEARCHES for c in ("shift_vol", "shift_eff", "n_eff", "best_sim", "n_eff_eff", "share_obs", "share_der",
+                                                                               "share_est", "completeness")],
+            *[pl.col(f"{c}_{s}").cast(pl.Boolean) for s in SEARCHES for c in ("nomatch", "nomatch_eff")])
     matches = pl.concat(mrows, how="diagonal_relaxed") if mrows else pl.DataFrame()
     retrieval = pl.DataFrame(crows, infer_schema_length=None) if crows else pl.DataFrame()
     return features, matches, pl.DataFrame(drows, infer_schema_length=None), retrieval

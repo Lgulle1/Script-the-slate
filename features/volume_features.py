@@ -323,7 +323,7 @@ def _with_comps(tables, comps, specs, searches=None):
     if comps is None:
         return tables
     from features import comps_features as cf
-    return cf.attach(tables, comps, specs, searches or cf.SEARCHES)
+    return cf.attach(tables, comps, specs, cf.SEARCHES if searches is None else searches)
 
 
 def _with_injury(tables, injury, data):
