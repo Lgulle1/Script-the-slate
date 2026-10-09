@@ -700,7 +700,8 @@ def retrieval_change(healthy_hits: list, adjusted_hits: list, k: int | None = No
     a, b = set(top(healthy_hits)), set(top(adjusted_hits))
     wa, wb = dict(zip([h[0] for h in healthy_hits], norm(healthy_hits))), dict(zip([h[0] for h in adjusted_hits], norm(adjusted_hits)))
     mean = lambda hits, w: float(sum(w[h[0]] * h[2] for h in hits)) if hits else float("nan")
-    return dict(k=k, overlap_top_k=len(a & b) / k if k else float("nan"), weight_mass_shared=float(sum(min(wa.get(i, 0.0), wb.get(i, 0.0)) for i in set(wa) | set(wb))),
+    shared = sum(min(wa.get(i, 0.0), wb.get(i, 0.0)) for i in sorted(set(wa) | set(wb)))      # sorted: a set's order changes with the hash seed
+    return dict(k=k, overlap_top_k=len(a & b) / k if k else float("nan"), weight_mass_shared=float(shared),
                 outcome_shift=mean(adjusted_hits, wb) - mean(healthy_hits, wa))
 
 

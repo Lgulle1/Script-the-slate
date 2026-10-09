@@ -1160,3 +1160,16 @@ def test_a_dead_search_cannot_knock_a_live_one_out_through_the_cap():
     zl = {"team_plays": {("h0", "X"): 1.0, ("h1", "Y"): 1.0, ("g0", "X"): 1.0, ("g1", "A"): -1.0}}
     vals, _, _, _ = C._market_shifts(res, tg, "spread", zl, cs.MIN_NEFF)
     assert vals["nomatch_S2"] and not vals["nomatch_S4"] and vals["n_eff_S4"] == pytest.approx(2.0)
+
+
+def test_retrieval_change_does_not_depend_on_the_hash_seed():
+    """A set of string ids iterates in a different order in every process (hash randomisation): a float sum over one must not follow it."""
+    import subprocess
+    import sys
+    code = ("import numpy as np; from models import comps as C; rng = np.random.default_rng(0); "
+            "ids = [f'g{i}|T{i % 7}|P{i}' for i in range(400)]; w = rng.uniform(0, 1, 400).tolist(); "
+            "h = [(i, x, 0.0) for i, x in zip(ids, w)]; a = [(i, x * 1.1, 0.0) for i, x in zip(ids[::-1], w)]; "
+            "print(repr(C.retrieval_change(h, a, 10)['weight_mass_shared']))")
+    outs = {subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, cwd=str(config.ROOT),
+                           env={**__import__("os").environ, "PYTHONHASHSEED": str(seed)}).stdout.strip() for seed in range(6)}
+    assert len(outs) == 1 and outs != {""}
