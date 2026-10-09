@@ -687,3 +687,139 @@ def test_a_player_who_played_without_a_touch_is_an_observation_and_has_a_vector(
     g = inp2.games.filter((pl.col("season") == 2020) & (pl.col("week") == 8) & (pl.col("team") == "A")).row(0, named=True)
     res = pool.search(C.Target("targets", g["game_id"], "A", g["opponent"], 2020, 8, "AGHOST"), which=("S1", "S2"), sim_threshold=0.0, min_neff=0)
     assert all(r.summary["reason"] != "no_target_vector" for r in res.values())
+
+
+# ================================================================================================================================ 4c.4 residuals and shifts
+def _wf_rows(seed=0, perturb_from=None):
+    """A small walkforward_predictions-like table: 3 roles x 6 players, 2 seasons x 10 weeks, one quantity."""
+    rng = np.random.default_rng(seed)
+    alt = np.random.default_rng(seed + 99)
+    rows = []
+    for s in (2019, 2020):
+        for wk in range(1, 11):
+            late = perturb_from is not None and s * 100 + wk >= perturb_from[0] * 100 + perturb_from[1]
+            r = alt if late else rng
+            for i in range(6):
+                exp = 10.0 + i
+                act = exp + r.normal(0, 2 + i % 3)
+                rows.append(dict(season=s, week=wk, game_id=f"{s}_{wk:02d}_G{i // 2}", player_id=f"P{i}", team=f"T{i}", role=["RB1", "WR1", "TE1"][i % 3],
+                                 quantity="targets", expected=exp, actual=act, residual=act - exp))
+    return pl.DataFrame(rows)
+
+
+def test_standardized_residuals_use_only_earlier_weeks():
+    W = (2020, 4)
+    a = C.standardized_residuals(_wf_rows())
+    b = C.standardized_residuals(_wf_rows(perturb_from=W))
+    early = lambda t: t.filter(pl.col("season") * 100 + pl.col("week") <= W[0] * 100 + W[1]).sort("season", "week", "player_id")
+    # z of week W itself uses only earlier sigmas; its own residual changed, so compare sigma there and z strictly before
+    assert early(a)["sigma"].to_list() == early(b)["sigma"].to_list()
+    strictly = lambda t: t.filter(pl.col("season") * 100 + pl.col("week") < W[0] * 100 + W[1]).sort("season", "week", "player_id")
+    assert strictly(a)["z"].to_list() == strictly(b)["z"].to_list()
+
+
+def test_standardized_residuals_blend_toward_the_players_own_spread():
+    z = C.standardized_residuals(_wf_rows())
+    r = z.filter((pl.col("player_id") == "P2") & (pl.col("season") == 2020) & (pl.col("week") == 10)).row(0, named=True)
+    w = _wf_rows().filter(pl.col("season") * 100 + pl.col("week") < 202010)
+    own = w.filter(pl.col("player_id") == "P2")["residual"].to_numpy()
+    role = w.filter(pl.col("role") == "TE1")["residual"].to_numpy()
+    lam = len(own) / (len(own) + C.Z_OWN_K)
+    expect = lam * np.sqrt((own ** 2).mean()) + (1 - lam) * np.sqrt((role ** 2).mean())
+    assert r["sigma"] == pytest.approx(expect) and r["z"] == pytest.approx(r["residual"] / expect)
+    first = z.filter((pl.col("season") == 2019) & (pl.col("week") == 1))
+    assert first["z"].null_count() == first.height                         # no earlier residuals: no sigma, no z
+
+
+def test_cap_shares_holds_the_cap_and_keeps_the_total():
+    w = np.array([5.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5])
+    g = np.array(["a", "b", "c", "d", "e", "f", "a"])
+    out = C.cap_shares(w, g, 0.25)
+    share = {k: out[g == k].sum() / out.sum() for k in set(g)}
+    assert max(share.values()) <= 0.25 + 1e-9 and out.sum() == pytest.approx(w.sum())
+    assert out[0] / out[6] == pytest.approx(w[0] / w[6])                  # weights inside a group keep their proportions
+    few = C.cap_shares(np.array([3.0, 1.0]), np.array(["x", "y"]), 0.25)  # 2 groups cannot respect a 25% cap: equal split
+    assert few[0] == pytest.approx(few[1])
+    same = C.cap_shares(np.ones(8), np.arange(8), 0.25)
+    assert np.allclose(same, np.ones(8))                                   # nothing above the cap: unchanged
+
+
+def test_cap_across_searches_limits_a_teams_average_share():
+    rng = np.random.default_rng(1)
+    per = {}
+    for s in C.SEARCHES:
+        teams = np.array(["DOM"] * 6 + [f"T{i}" for i in range(14)])
+        per[s] = (rng.uniform(0.5, 1.0, 20) * np.where(teams == "DOM", 6.0, 1.0), np.array([f"g{i}" for i in range(20)]), teams)
+    out = C.cap_across_searches(per)
+    avg = np.mean([out[s][per[s][2] == "DOM"].sum() / out[s].sum() for s in C.SEARCHES])
+    assert avg <= C.cs.TEAM_CAP_AVG_ACROSS_SEARCHES + 1e-6
+    for s in C.SEARCHES:
+        tg = per[s][1]
+        assert max(out[s][tg == g].sum() / out[s].sum() for g in set(tg)) <= C.cs.TEAM_CAP_PER_SEARCH + 1e-9
+
+
+def test_shift_is_the_shrunk_weighted_mean_z():
+    w, z = np.array([1.0, 2.0, 1.0]), np.array([1.0, -1.0, 3.0])
+    s, n = C.shift_value(w, z)
+    assert n == pytest.approx(16 / 6) and s == pytest.approx((1 - 2 + 3) / 4 * n / (n + C.cs.SHRINK_K))
+    assert C.shift_value(np.array([]), np.array([])) == (0.0, 0.0)
+    assert C.shift_value(np.array([1.0]), np.array([np.nan]))[0] == 0.0     # no expectation: no shift
+
+
+@pytest.fixture(scope="module")
+def shifts44(pool3):
+    pool, inp, vec = pool3
+    tgs = [_team_target(inp, week=9), _player_target(inp, "rush_att", week=9), _player_target(inp, "targets", week=9)]
+    # a z for every past observation of the synthetic league (stand-in for walkforward_predictions)
+    rng = np.random.default_rng(5)
+    zl = {}
+    for q in ("team_plays", "pts_per_play", "rush_att", "ypc", "targets", "catch_rate", "yds_per_rec"):
+        d = {}
+        for r in inp.games.iter_rows(named=True):
+            d[(r["game_id"], r["team"])] = float(rng.normal())
+        for r in inp.player.iter_rows(named=True):
+            d[(r["game_id"], r["player_id"])] = float(rng.normal())
+        zl[q] = d
+    return C.comp_shifts(pool, tgs, zl, sim_threshold=0.0, min_neff=0.0), tgs, zl
+
+
+def test_shift_features_have_one_row_per_target_and_market_with_the_plan_columns(shifts44):
+    (feats, matches, detail), tgs, _ = shifts44
+    markets = sorted(feats["market"].unique().to_list())
+    assert {"spread", "total", "moneyline", "rush_att", "rush_yds", "targets", "rec", "rec_yds"} <= set(markets)
+    for s in C.SEARCHES:
+        for c in (f"shift_vol_{s}", f"shift_eff_{s}", f"n_eff_{s}", f"nomatch_{s}", f"best_sim_{s}"):
+            assert c in feats.columns
+    assert feats.select("game_id", "team", "player_id", "market").is_unique().all()
+    assert set(["z_vol", "z_eff", "weight_capped_vol", "final_weight", "recency_weight", "continuity_weight", "quality_weight", "sim_combined"]) <= set(matches.columns)
+
+
+def test_shifts_match_a_recomputation_from_the_match_table(shifts44):
+    (feats, matches, detail), tgs, zl = shifts44
+    r = feats.filter((pl.col("market") == "rush_yds")).row(0, named=True)
+    for s in C.SEARCHES:
+        m = matches.filter((pl.col("market") == "rush_yds") & (pl.col("search") == s) & (pl.col("target_game_id") == r["game_id"]))
+        if r[f"nomatch_{s}"]:
+            assert r[f"shift_vol_{s}"] == 0.0 and r[f"shift_eff_{s}"] == 0.0
+            continue
+        sv, nv = C.shift_value(m["weight_capped_vol"].to_numpy(), m["z_vol"].to_numpy())
+        assert r[f"shift_vol_{s}"] == pytest.approx(sv) and r[f"n_eff_{s}"] == pytest.approx(nv)
+        g = m.with_columns(tg=pl.col("obs_game_id") + "|" + pl.col("obs_team")).group_by("tg").agg(pl.col("weight_capped_vol").sum())
+        if g.height * C.cs.TEAM_CAP_PER_SEARCH >= 1:
+            assert (g["weight_capped_vol"] / g["weight_capped_vol"].sum()).max() <= C.cs.TEAM_CAP_PER_SEARCH + 1e-9
+
+
+def test_a_no_match_search_has_shift_zero(pool3):
+    pool, inp, _ = pool3
+    tg = _player_target(inp, "rush_att", week=9)
+    feats, _, detail = C.comp_shifts(pool, [tg], {"rush_att": {}, "ypc": {}}, sim_threshold=0.99999999)
+    for s in C.SEARCHES:
+        assert feats[f"nomatch_{s}"].all() and (feats[f"shift_vol_{s}"] == 0).all()
+
+
+def test_matches_without_an_expectation_give_no_shift(pool3):
+    pool, inp, _ = pool3
+    tg = _player_target(inp, "rush_att", week=9)
+    feats, _, detail = C.comp_shifts(pool, [tg], {}, sim_threshold=0.0, min_neff=0.0)
+    assert all(feats[f"nomatch_{s}"].all() for s in C.SEARCHES)
+    assert set(detail.filter(pl.col("applicable"))["reason"].unique().to_list()) <= {"no_expectations", "best_similarity_below_threshold", "missing_required_ftn_features", "no_similarity", "no_target_vector"}

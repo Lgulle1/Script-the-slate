@@ -1380,3 +1380,236 @@ def load_pool(window: str = LOG_WINDOW, raw_db=config.RAW_DUCKDB_PATH, vec_dir=c
     matchup = matchup_vector_frames(games, lineups, L.interaction_ledger(plays, games), [v for v in VARIANTS if vname(v) == window])
     return Pool(pl.read_parquet(vec_dir / "comp_vectors_team.parquet"), pl.read_parquet(vec_dir / "comp_vectors_player.parquet"), matchup, games, lineups,
                 L.load_slots(raw_db), pl.read_parquet(log_dir / "comp_sigma.parquet"), window)
+
+
+# ================================================================================================================================ 4c.4 residuals and shifts
+# market -> (volume quantity, efficiency quantity) in walkforward_predictions (build plan 3.5.3): the comp-free expectations 4c.4 standardises against
+MARKET_QUANTITIES = {"pass_att": ("pass_att", None), "pass_cmp": ("pass_att", "comp_rate"), "pass_yds": ("pass_att", "yds_per_cmp"),
+                     "rush_att": ("rush_att", None), "rush_yds": ("rush_att", "ypc"),
+                     "targets": ("targets", None), "rec": ("targets", "catch_rate"), "rec_yds": ("targets", "yds_per_rec"),
+                     "qb_rush_att": ("qb_rush_att", None), "qb_rush_yds": ("qb_rush_att", "qb_ypc"),
+                     "total": ("team_plays", "pts_per_play"), "spread": ("team_plays", "pts_per_play"), "moneyline": ("team_plays", "pts_per_play")}
+Z_OWN_K = 10.0              # plan 4c.4: sigma blends toward the entity's own residual SD with n / (n + 10)
+Z_ROLE_MIN = 30             # a role's error SD needs this many earlier residuals; fewer -> the quantity's all-role SD
+SEARCHES = ("S1", "S2", "S3", "S4", "S5")
+
+
+def standardized_residuals(wf: pl.DataFrame) -> pl.DataFrame:
+    """z = (actual - expected) / sigma for every walk-forward row that has both (plan 4c.4.1). The expected value is the comp-free Phase 3 prediction.
+    sigma is as of the row's OWN week: the RMS of the residuals of earlier weeks for that quantity and role (the quantity's all-role RMS while the role has
+    fewer than Z_ROLE_MIN), blended toward the entity's own earlier RMS with n / (n + Z_OWN_K), n = his earlier residuals."""
+    w = (wf.filter(pl.col("residual").is_not_null() & pl.col("expected").is_not_null() & pl.col("actual").is_not_null())
+         .with_columns(key=pl.col("season") * 100 + pl.col("week"), entity=pl.coalesce("player_id", "team"), sq=pl.col("residual") ** 2)
+         .sort("quantity", "key", "game_id", "entity"))
+    def earlier(by: list) -> pl.DataFrame:
+        """per (by..., key): sum of squares and count over strictly earlier weeks."""
+        g = w.group_by(*by, "key").agg(ss=pl.col("sq").sum(), n=pl.len()).sort(*by, "key")
+        return g.with_columns(ss_prev=(pl.col("ss").cum_sum() - pl.col("ss")).over(by), n_prev=(pl.col("n").cum_sum() - pl.col("n")).over(by)).drop("ss", "n")
+    role = earlier(["quantity", "role"]).rename({"ss_prev": "ss_role", "n_prev": "n_role"})
+    allr = earlier(["quantity"]).rename({"ss_prev": "ss_all", "n_prev": "n_all"})
+    own = earlier(["quantity", "entity"]).rename({"ss_prev": "ss_own", "n_prev": "n_own"})
+    z = (w.join(role, on=["quantity", "role", "key"], how="left").join(allr, on=["quantity", "key"], how="left")
+         .join(own, on=["quantity", "entity", "key"], how="left"))
+    sig_role = pl.when(pl.col("n_role") >= Z_ROLE_MIN).then((pl.col("ss_role") / pl.col("n_role")).sqrt()).otherwise(
+        pl.when(pl.col("n_all") > 0).then((pl.col("ss_all") / pl.col("n_all")).sqrt()))
+    sig_own = pl.when(pl.col("n_own") > 0).then((pl.col("ss_own") / pl.col("n_own")).sqrt())
+    lam = pl.col("n_own") / (pl.col("n_own") + Z_OWN_K)
+    z = z.with_columns(sigma_role=sig_role, sigma_own=sig_own).with_columns(
+        sigma=pl.when(pl.col("sigma_own").is_not_null()).then(lam * pl.col("sigma_own") + (1 - lam) * pl.col("sigma_role")).otherwise(pl.col("sigma_role")))
+    z = z.with_columns(z=pl.when(pl.col("sigma") > 0).then(pl.col("residual") / pl.col("sigma")))
+    return z.select("season", "week", "game_id", "player_id", "team", "role", "quantity", "expected", "actual", "residual", "sigma", "n_own", "z").sort(
+        "quantity", "season", "week", "game_id", "team", "player_id", nulls_last=True)
+
+
+def cap_shares(weights: np.ndarray, groups: np.ndarray, cap: float) -> np.ndarray:
+    """Weights rescaled so no group holds more than `cap` of their total; the excess goes to the other groups pro rata (plan 4c.4.3). The total is kept.
+    When there are fewer than 1 / cap groups the cap cannot hold, and every group gets an equal share (the nearest feasible split)."""
+    w = np.asarray(weights, dtype=float)
+    tot = w.sum()
+    if len(w) == 0 or tot <= 0:
+        return w.copy()
+    _, inv = np.unique(np.asarray(groups).astype(str), return_inverse=True)
+    share = np.bincount(inv, weights=w) / tot
+    n = len(share)
+    if n * cap < 1.0 - 1e-12:
+        target = np.full(n, 1.0 / n)
+    else:
+        target, fixed = share.copy(), np.zeros(n, dtype=bool)
+        for _ in range(n):
+            over = (target > cap + 1e-12) & ~fixed
+            if not over.any():
+                break
+            fixed |= over
+            free = ~fixed
+            target[fixed] = cap
+            rest = 1.0 - cap * fixed.sum()
+            target[free] = share[free] / share[free].sum() * rest if share[free].sum() > 0 else rest / max(free.sum(), 1)
+    factor = np.divide(target, share, out=np.zeros(n), where=share > 0)
+    return w * factor[inv]
+
+
+def cap_across_searches(per_search: dict, cap_one: float = cs.TEAM_CAP_PER_SEARCH, cap_avg: float = cs.TEAM_CAP_AVG_ACROSS_SEARCHES,
+                        n_searches: int = len(SEARCHES), max_iter: int = 50) -> dict:
+    """{search: (weights, team_game, team)} -> {search: capped weights}. No historical team-game above `cap_one` of a search's weight, and no historical
+    team averaging more than `cap_avg` of the weight across the five searches (a search without weight counts as 0). Excess is redistributed pro rata
+    within each search and the searches are renormalised; the two caps are applied in turn until neither moves a weight."""
+    w = {s: cap_shares(v[0], v[1], cap_one) for s, v in per_search.items()}
+    for _ in range(max_iter):
+        teams = sorted({t for s, v in per_search.items() for t in np.asarray(v[2]).astype(str).tolist()})
+        if not teams:
+            break
+        shares = {t: 0.0 for t in teams}
+        for s, (wt, tg, tm) in per_search.items():
+            tot = w[s].sum()
+            if tot > 0:
+                for t in teams:
+                    shares[t] += w[s][np.asarray(tm).astype(str) == t].sum() / tot
+        over = {t: shares[t] / n_searches for t in teams if shares[t] / n_searches > cap_avg + 1e-12}
+        if not over:
+            break
+        moved = False
+        for s, (wt, tg, tm) in per_search.items():
+            tot = w[s].sum()
+            if tot <= 0:
+                continue
+            tm_ = np.asarray(tm).astype(str)
+            scale = np.ones(len(tm_))
+            for t, avg in over.items():
+                scale[tm_ == t] = cap_avg / avg
+            new = w[s] * scale
+            others = ~np.isin(tm_, list(over))
+            freed = tot - new.sum()
+            if freed > 0 and new[others].sum() > 0:
+                new[others] *= (new[others].sum() + freed) / new[others].sum()
+                moved = True
+            elif freed > 0:
+                new = w[s]                                     # nobody else to take the excess: this search keeps its weights
+            w[s] = cap_shares(new, tg, cap_one)
+        if not moved:
+            break
+    return w
+
+
+def neff(w: np.ndarray) -> float:
+    s2 = float((w ** 2).sum())
+    return float(w.sum() ** 2 / s2) if s2 > 0 else 0.0
+
+
+def shift_value(w: np.ndarray, z: np.ndarray) -> tuple:
+    """(shift, n_eff): the weighted mean z shrunk by n_eff / (n_eff + SHRINK_K) (plan 4c.4.4); (0, 0) without weight."""
+    ok = np.isfinite(z) & (w > 0)
+    w, z = w[ok], z[ok]
+    if not len(w):
+        return 0.0, 0.0
+    n = neff(w)
+    return float((w * z).sum() / w.sum() * n / (n + cs.SHRINK_K)), n
+
+
+def z_lookup(zt: pl.DataFrame) -> dict:
+    """quantity -> {(game_id, player_id or team): z} from standardized_residuals (rows without z are left out)."""
+    out = {}
+    for (q,), g in zt.filter(pl.col("z").is_not_null()).group_by("quantity", maintain_order=True):
+        ent = g.select(pl.coalesce("player_id", "team")).to_series().to_list()
+        out[q] = dict(zip(zip(g["game_id"].to_list(), ent), g["z"].to_list()))
+    return out
+
+
+def _target_rows(targets: list) -> list:
+    """Every backtest target expanded from its market family to its markets, grouped by the continuity penalty row (markets that share a row share their
+    search): [(target with a representative market, [markets])]."""
+    out = []
+    for tg in targets:
+        fam = FAMILY_OF_MARKET[tg.market]
+        by_pk = {}
+        for m in MARKET_FAMILIES[fam]:
+            by_pk.setdefault(config.BASELINE_TO_PENALTY_MARKET[m], []).append(m)
+        for pk, ms in by_pk.items():
+            out.append((Target(ms[0], tg.game_id, tg.team, tg.opponent, tg.season, tg.week, tg.player_id), ms))
+    return out
+
+
+def comp_shifts(pool: Pool, targets: list, zl: dict, keep_matches: bool = True, sim_threshold: float = cs.SIM_THRESHOLD,
+                min_neff: float = cs.MIN_NEFF) -> tuple:
+    """4c.4 for every (target, market): (features, matches, detail).
+
+    features: one row per target and market with shift_vol_S1..S5, shift_eff_S1..S5, n_eff_S1..S5, nomatch_S1..S5, best_sim_S1..S5 (plan 4c.4.5).
+    matches: the per-match table (similarity, recency, continuity, quality, final weight, the capped weights and z for volume and efficiency).
+    detail: per target, market and search: how many matches had an expectation, n_eff before and after the caps, and why a search was no_match.
+    A match counts toward a shift only when its own comp-free expectation exists (walkforward_predictions); a search whose matches have none is no_match."""
+    feats, mrows, drows = [], [], []
+    last = None
+    for tg, markets in _target_rows(targets):
+        if (tg.game_id, tg.team) != last:
+            pool.clear_cache()
+            last = (tg.game_id, tg.team)
+        res = pool.search(tg, SEARCHES, keep=True, sim_threshold=sim_threshold, min_neff=min_neff)
+        is_player = tg.player_id is not None
+        for m in markets:
+            qv, qe = MARKET_QUANTITIES[m]
+            row = dict(season=tg.season, week=tg.week, game_id=tg.game_id, team=tg.team, opponent=tg.opponent, player_id=tg.player_id, market=m)
+            sets = {}
+            for s in SEARCHES:
+                r = res[s]
+                summ = r.summary
+                row[f"best_sim_{s}"] = summ["best_similarity"]
+                mt = r.matches
+                usable = summ["applicable"] and not summ["no_match"] and mt is not None and mt.height > 0
+                if usable:
+                    ent = mt["obs_player_id"].to_list() if is_player else mt["obs_team"].to_list()
+                    keys = list(zip(mt["obs_game_id"].to_list(), ent))
+                    zv = np.array([zl.get(qv, {}).get(k, np.nan) for k in keys], dtype=float)
+                    ze = np.array([zl.get(qe, {}).get(k, np.nan) for k in keys], dtype=float) if qe else np.full(len(keys), np.nan)
+                    sets[s] = (mt, zv, ze)
+            caps = {}
+            for kind, j in (("vol", 1), ("eff", 2)):
+                per = {s: (np.where(np.isfinite(v[j]), v[0]["final_weight"].to_numpy(), 0.0),
+                           np.array([f"{g}|{t}" for g, t in zip(v[0]["obs_game_id"].to_list(), v[0]["obs_team"].to_list())]),
+                           v[0]["obs_team"].to_numpy()) for s, v in sets.items()}
+                caps[kind] = cap_across_searches(per) if per else {}
+            for s in SEARCHES:
+                summ = res[s].summary
+                reason = summ["reason"] if summ["no_match"] else None
+                sv, nv = (shift_value(caps["vol"][s], sets[s][1]) if s in sets else (0.0, 0.0))
+                se, ne = (shift_value(caps["eff"][s], sets[s][2]) if s in sets and qe else (0.0, 0.0))
+                if s in sets and not np.isfinite(sets[s][1]).any():
+                    reason = "no_expectations"                     # matches exist, but none has a comp-free expectation to standardise against
+                elif s in sets and nv < min_neff:
+                    reason = "n_eff_with_expectations_below_minimum"
+                nomatch = (not summ["applicable"]) or summ["no_match"] or reason is not None
+                if nomatch:
+                    sv = se = 0.0
+                elif qe and ne < min_neff:
+                    se = 0.0                                        # the efficiency side alone is too thin: its shift is 0, the search still matches
+                row.update({f"shift_vol_{s}": sv, f"shift_eff_{s}": se if qe else None, f"n_eff_{s}": nv if not nomatch else 0.0, f"nomatch_{s}": bool(nomatch)})
+                drows.append(dict(season=tg.season, week=tg.week, game_id=tg.game_id, team=tg.team, player_id=tg.player_id, market=m, search=s,
+                                  applicable=summ["applicable"], n_matches=summ["n_matches"], n_eff_similarity=summ["n_eff"],
+                                  n_with_expectation_vol=int(np.isfinite(sets[s][1]).sum()) if s in sets else 0,
+                                  n_with_expectation_eff=int(np.isfinite(sets[s][2]).sum()) if s in sets else 0,
+                                  n_eff_vol=nv, n_eff_eff=ne, nomatch=bool(nomatch), reason=reason))
+                if keep_matches and s in sets:
+                    mt, zv, ze = sets[s]
+                    mrows.append(mt.with_columns(market=pl.lit(m), z_vol=pl.Series(zv), z_eff=pl.Series(ze),
+                                                 weight_capped_vol=pl.Series(caps["vol"][s]), weight_capped_eff=pl.Series(caps["eff"][s]) if qe else pl.lit(None, dtype=pl.Float64)))
+            feats.append(row)
+    features = pl.DataFrame(feats, infer_schema_length=None)
+    matches = pl.concat(mrows, how="diagonal_relaxed") if mrows else pl.DataFrame()
+    return features, matches, pl.DataFrame(drows, infer_schema_length=None)
+
+
+def shift_summary(feats: pl.DataFrame, detail: pl.DataFrame) -> pl.DataFrame:
+    """Per season, market and search: targets, the no-match rate (and its reasons), the mean absolute volume / efficiency shift over matched targets and
+    the mean n_eff after the caps."""
+    rows = []
+    for s in SEARCHES:
+        g = feats.group_by("season", "market").agg(
+            n_targets=pl.len(), nomatch_rate=pl.col(f"nomatch_{s}").mean(),
+            mean_abs_shift_vol=pl.col(f"shift_vol_{s}").filter(~pl.col(f"nomatch_{s}")).abs().mean(),
+            mean_abs_shift_eff=pl.col(f"shift_eff_{s}").filter(~pl.col(f"nomatch_{s}")).abs().mean(),
+            mean_n_eff=pl.col(f"n_eff_{s}").filter(~pl.col(f"nomatch_{s}")).mean()).with_columns(search=pl.lit(s))
+        rows.append(g)
+    out = pl.concat(rows, how="diagonal_relaxed")
+    reasons = (detail.filter(pl.col("nomatch")).group_by("season", "market", "search", "reason").agg(n=pl.len())
+               .group_by("season", "market", "search").agg(reasons=pl.struct("reason", "n").sort_by("reason")))
+    out = out.join(reasons.with_columns(pl.col("reasons").map_elements(lambda x: json.dumps({r["reason"] or "": r["n"] for r in x}), return_dtype=pl.String)),
+                   on=["season", "market", "search"], how="left")
+    return out.sort("season", "market", "search")
