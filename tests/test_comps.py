@@ -1335,3 +1335,51 @@ def test_window_choice_compares_windows_on_the_same_targets_and_breaks_ties_by_o
     assert chosen.row(0, named=True)["window_family"] == "last_6"                       # tie with recency_weighted: the earlier window wins
     assert summ.filter(pl.col("window_family") == "last_6")["n_targets"][0] == 3          # G9 was scored by one window only: left out
     assert W.window_name("continuity_weighted", "rush_yds") == "continuity_weighted:rush_yds" and W.window_name("last_6", "rush_yds") == "last_6"
+
+
+@pytest.fixture(scope="module")
+def two_windows(pool3):
+    pool, inp, vec = pool3
+    sigma = C.build_sigma(vec.team, vec.player)
+    return {W3: pool, "last_6": C.Pool(vec.team, vec.player, None, inp.games, inp.lineups, inp.slots, sigma, "last_6")}, inp
+
+
+def test_a_windowed_pool_on_the_base_window_searches_exactly_like_the_base_pool(two_windows):
+    pools, inp = two_windows
+    choice = {m: {u: W3 for u in cs.MARKET_UNITS[m]} for m in cs.MARKET_UNITS}
+    wp = C.WindowedPool(pools, choice, base=W3)
+    for tg in (_team_target(inp, week=9), _player_target(inp, week=9)):
+        wp.clear_cache()
+        a = wp.search(tg, keep=True, sim_threshold=0.0, min_neff=0)
+        pools[W3].clear_cache()
+        b = pools[W3].search(tg, keep=True, sim_threshold=0.0, min_neff=0)
+        for s in a:
+            assert str(a[s].summary) == str(b[s].summary)
+            assert (a[s].matches is None and b[s].matches is None) or a[s].matches.equals(b[s].matches)
+
+
+def test_each_unit_reads_its_own_window(two_windows):
+    pools, inp = two_windows
+    tg = _player_target(inp, "rush_att", week=9)
+    choice = {m: {u: W3 for u in cs.MARKET_UNITS[m]} for m in cs.MARKET_UNITS}
+    choice["rush_att"] = dict(choice["rush_att"], run_defense="last_6", rb_archetype="last_6")
+    wp = C.WindowedPool(pools, choice, base=W3)
+    wp.clear_cache()
+    m = wp.search(tg, which=("S3",), keep=True, sim_threshold=0.0, min_neff=0)["S3"].matches
+    pools["last_6"].clear_cache()
+    ref = pools["last_6"].search(tg, which=("S3",), keep=True, sim_threshold=0.0, min_neff=0)["S3"].matches       # S3 = archetype x defense
+    key = ["obs_game_id", "obs_team", "obs_player_id"]
+    j = m.select(*key, "sim_run_defense", "sim_rb_archetype").join(ref.select(*key, "sim_run_defense", "sim_rb_archetype"), on=key, suffix="_ref")
+    assert j.height > 0 and np.allclose(j["sim_run_defense"], j["sim_run_defense_ref"]) and np.allclose(j["sim_rb_archetype"], j["sim_rb_archetype_ref"])
+    pools[W3].clear_cache()
+    base = pools[W3].search(tg, which=("S3",), keep=True, sim_threshold=0.0, min_neff=0)["S3"].matches
+    jb = m.select(*key, "sim_run_defense").join(base.select(*key, "sim_run_defense"), on=key, suffix="_base")
+    assert not np.allclose(jb["sim_run_defense"], jb["sim_run_defense_base"])                 # and not the base window's
+
+
+def test_markets_whose_units_read_different_windows_search_separately():
+    tg = C.Target("rush_att", "G", "A", "B", 2022, 5, "P")
+    choice = {"rush_att": {"run_defense": "last_6"}, "rush_yds": {"run_defense": "last_3"}}
+    rows = C._target_rows([tg], choice)
+    assert sorted(ms for _, m in rows for ms in m) == ["rush_att", "rush_yds"] and len(rows) == 2
+    assert len(C._target_rows([tg])) == 1                                                    # one window for all: one search

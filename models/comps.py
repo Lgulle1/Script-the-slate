@@ -1268,7 +1268,7 @@ class Pool:
 
     # ---- the five searches
     def search(self, tg: Target, which=("S1", "S2", "S3", "S4", "S5"), keep: bool = True, sim_threshold: float = cs.SIM_THRESHOLD,
-               min_neff: float = cs.MIN_NEFF, version: str = "adjusted", sensitivity: tuple = (), top_any: int = 0) -> dict:
+               min_neff: float = cs.MIN_NEFF, version: str = "adjusted", sensitivity: tuple = (), top_any: int = 0, unit_pools: dict | None = None) -> dict:
         """Run the searches for one target on the lineup-adjusted target vectors (version='healthy': on the healthy ones, the comparison run of build plan
         4c.1.4); returns {search: SearchResult}.
 
@@ -1279,7 +1279,10 @@ class Pool:
         similarity is the mean of its units' similarities. A match is an observation whose similarity is at least `sim_threshold`; its weight is
         similarity x recency x continuity x data-quality  (separate columns in `matches`; recency and continuity from features/weights.py for the market).
         n_eff counts historical team-games (`cluster_neff`): player-games of one team-game are one cluster. The search is no_match when its best
-        similarity is below the threshold or its n_eff below `min_neff`: shift = 0 and the widened-uncertainty flag is set."""
+        similarity is below the threshold or its n_eff below `min_neff`: shift = 0 and the widened-uncertainty flag is set.
+        `unit_pools` (unit -> Pool of another window over the same games) lets each unit read its own window (4c.6.1); everything else -- the
+        observation sets, recency, continuity and the S5 profile -- comes from this pool."""
+        up = unit_pools or {}
         units = cs.MARKET_UNITS[tg.market]
         off_units = [u for u in units if u in cs.OFFENSE_UNITS]
         def_units = [u for u in units if u in cs.DEFENSE_UNITS]
@@ -1291,7 +1294,8 @@ class Pool:
         out = {}
         # ---- the observation set (past team-games, or past player-games of the market's population)
         if is_player:
-            pop = self.pl[arch[0]]
+            pa = up.get(arch[0], self)                             # the pool of the archetype's window (the same player rows in every window)
+            pop = pa.pl[arch[0]]
             kp = int(np.searchsorted(pop["key"], key, side="left"))
             oi = np.flatnonzero(pop["in_pool"][:kp])               # a scored player-game in which he did not play is no observation
             obs_row, obs_pid, obs_team = pop["row"][oi], pop["pid"][oi], pop["team"][oi]
@@ -1310,7 +1314,7 @@ class Pool:
         obs_def_team = self.team[obs_opp] if len(obs_row) else obs_team
         # ---- component similarities (each: sim, completeness, quality arrays over the observations)
         def team_comp(unit, kind, row, idx):
-            s, c, q, sh = self.unit_sims(unit, kind, row, k, key, version)
+            s, c, q, sh = up.get(unit, self).unit_sims(unit, kind, row, k, key, version)
             return s[idx], c[idx], q[idx], sh[:, idx]
         def arch_comp():
             """The player's archetype similarity to each observation (one version: a player's own history has no lineup correction). EXTENDED only when
@@ -1320,7 +1324,7 @@ class Pool:
             unit = arch[0]
             res = {}
             for space in stored_spaces(unit):
-                sig = self._sigma(unit, space, key)
+                sig = pa._sigma(unit, space, key)
                 if not np.isfinite(sig):
                     continue
                 d = unit_distance(tvec[space], pop["blocks"][space][0][oi], unit, space, tags=True)
@@ -1332,7 +1336,7 @@ class Pool:
             return pick(0), pick(1), pick(2), shr
         ac = None
         if arch and is_player and tvec is not None:
-            ck = ("a", arch[0], g, tg.player_id)                    # one player's archetype similarities serve every search, market and version
+            ck = ("a", arch[0], g, tg.player_id, pa.window)         # one player's archetype similarities serve every search, market and version
             if ck not in self._cache:
                 self._cache[ck] = arch_comp()
             ac = self._cache[ck]
@@ -1482,6 +1486,30 @@ class Pool:
         return summary, matches
 
 
+class WindowedPool:
+    """Comparable searches whose units each read the window chosen for them (4c.6.1; `choice`: market -> unit -> window, comp_windows.json). Every
+    pool holds the same games, so the observation sets, recency and continuity are the base pool's; so is the S5 matchup profile (not one of the
+    plan's units; it stays on the base window, LOG_WINDOW)."""
+
+    def __init__(self, pools: dict, choice: dict, base: str = None):
+        self.pools, self.choice = pools, choice
+        self.base = pools[base or LOG_WINDOW]
+        self.window = "selected"
+
+    def __getattr__(self, name):                       # idx, key, games ... are the base pool's
+        return getattr(self.base, name)
+
+    def clear_cache(self):
+        for p in self.pools.values():
+            p.clear_cache()
+
+    def search(self, tg: Target, *args, **kwargs) -> dict:
+        return self.base.search(tg, *args, unit_pools={u: self.pools[w] for u, w in self.choice[tg.market].items()}, **kwargs)
+
+    def adjusted_differs(self, g: int, units) -> bool:
+        return any(p.adjusted_differs(g, units) for p in self.pools.values())
+
+
 # ---------------------------------------------------------------------------------------------------------------------------------- targets and the no-match log
 MARKET_UNITS_TEAM = set(cs.MARKET_UNITS["spread"])
 MARKET_FAMILIES = {"pass": ("pass_att", "pass_cmp", "pass_yds"), "qb_rush": ("qb_rush_att", "qb_rush_yds"), "rush": ("rush_att", "rush_yds"),
@@ -1550,6 +1578,13 @@ def aggregate_search_log(summary: pl.DataFrame, sim_threshold: float = cs.SIM_TH
             for m in MARKET_FAMILIES[fam]:
                 rows.append(dict(base, market=m, unit=unit, unit_missing_rate=float(miss), unit_below_threshold_rate=float(below)))
     return pl.DataFrame(rows).sort("season", "market", "search", "unit")
+
+
+def load_windowed_pool(choice_path=None, raw_db=config.RAW_DUCKDB_PATH, vec_dir=config.PROCESSED_DIR, log_dir=config.ROOT) -> WindowedPool:
+    """The pools of every window comp_windows.json chooses (plus the base window), wrapped so each unit reads its own."""
+    choice = json.loads(open(choice_path or log_dir / "comp_windows.json").read())
+    windows = sorted({w for m in choice.values() for w in m.values()} | {LOG_WINDOW})
+    return WindowedPool({w: load_pool(w, raw_db, vec_dir, log_dir) for w in windows}, choice)
 
 
 def load_pool(window: str = LOG_WINDOW, raw_db=config.RAW_DUCKDB_PATH, vec_dir=config.PROCESSED_DIR, log_dir=config.ROOT) -> Pool:
@@ -1722,7 +1757,7 @@ def z_lookup(zt: pl.DataFrame) -> dict:
     return out
 
 
-def _target_rows(targets: list) -> list:
+def _target_rows(targets: list, choice: dict | None = None) -> list:
     """Every backtest target expanded from its market family to its markets, grouped by the VALUES of their continuity penalty row (markets whose rows
     are equal search identically, whatever the row's name): [(target with a representative market, [markets])]."""
     out = []
@@ -1730,7 +1765,8 @@ def _target_rows(targets: list) -> list:
         fam = FAMILY_OF_MARKET[tg.market]
         by_pk = {}
         for m in MARKET_FAMILIES[fam]:
-            by_pk.setdefault(tuple(sorted(config.CONTINUITY_PENALTIES[config.BASELINE_TO_PENALTY_MARKET[m]].items())), []).append(m)
+            wkey = tuple(sorted(choice[m].items())) if choice else ()         # markets whose units read different windows search separately
+            by_pk.setdefault((tuple(sorted(config.CONTINUITY_PENALTIES[config.BASELINE_TO_PENALTY_MARKET[m]].items())), wkey), []).append(m)
         for pk, ms in by_pk.items():
             out.append((Target(ms[0], tg.game_id, tg.team, tg.opponent, tg.season, tg.week, tg.player_id), ms))
     return out
@@ -1870,7 +1906,7 @@ def comp_shifts(pool: Pool, targets: list, zl: dict, keep_matches: bool = True, 
     n_eff counts historical team-games (cluster_neff)."""
     feats, mrows, drows, crows = [], [], [], []
     last = None
-    for tg, markets in _target_rows(targets):
+    for tg, markets in _target_rows(targets, getattr(pool, "choice", None)):
         if (tg.game_id, tg.team) != last:
             pool.clear_cache()
             last = (tg.game_id, tg.team)

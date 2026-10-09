@@ -1,6 +1,8 @@
 """4c.4: standardized residuals and shifts for every 2020-2024 backtest target (build plan 4c.4).
 
-  python build_comp_shifts.py [--window recency_weighted] [--out-dir DIR] [--log-dir DIR]
+  python build_comp_shifts.py [--window recency_weighted | --windows comp_windows.json] [--out-dir DIR] [--log-dir DIR]
+
+--windows: every unit reads the window chosen for it per market (4c.6.1); the outputs are then named "selected" instead of the window.
 
 For each target (player-game or team side) and market, runs the five searches (4c.3) on one window, turns their matches into standardized shifts and
 writes, under --out-dir (default data/processed, not committed):
@@ -28,9 +30,10 @@ if __name__ == "__main__":
     ap.add_argument("--out-dir", type=Path, default=config.PROCESSED_DIR)
     ap.add_argument("--log-dir", type=Path, default=config.ROOT)
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--windows", type=Path, default=None, help="comp_windows.json: a window per market and unit (4c.6.1)")
     a = ap.parse_args()
     t0 = time.time()
-    pool = C.load_pool(a.window)
+    pool = C.load_windowed_pool(a.windows) if a.windows else C.load_pool(a.window)
     targets = C.backtest_targets()
     if a.limit:
         targets = targets[: a.limit]
@@ -39,7 +42,7 @@ if __name__ == "__main__":
     assert feats["season"].is_in(config.BACKTEST_SEASONS).all() and (matches.height == 0 or (matches["obs_season"] < config.HOLDOUT_SEASON).all()), "holdout reached"
     a.out_dir.mkdir(parents=True, exist_ok=True)
     a.log_dir.mkdir(parents=True, exist_ok=True)
-    w = a.window.replace(":", "_")
+    w = "selected" if a.windows else a.window.replace(":", "_")
     feats.write_parquet(a.out_dir / f"comp_shifts_{w}.parquet")
     matches.write_parquet(a.out_dir / f"comp_shift_matches_{w}.parquet")
     detail.write_parquet(a.out_dir / f"comp_shift_detail_{w}.parquet")
