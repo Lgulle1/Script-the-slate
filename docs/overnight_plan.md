@@ -232,6 +232,35 @@ predict a team's output, measured against the offense's own normal output, witho
 **Order.** Per-unit sweep, then this test, then (if the signal is real) extending the comp-free predictions to 2016 (your approval). If nothing
 shows after that, the comps ship at weight 0 for V1, and the work moves to 4d.
 
+## Fingerprint diagnostic (your decision of 2026-10-09; fixed before it runs; time-boxed)
+**Question.** Does each unit's fingerprint carry signal about its own unit's next game? If units that look alike do not behave alike, similarity
+on them cannot work. This is not a way to rescue the layer; it finds out whether its inputs carry signal at all.
+
+**The test.**
+- **Units.** The nine team units: run_offense, pass_offense, rb_rotation, ol_protection and receiver_usage (offense), and run_defense, pass_rush,
+  pass_coverage and coverage_mix (defense). The three player archetypes are not part of this round.
+- **Outcome per unit.** Its headline feature, the first one comps_spec lists for the unit, computed on that single game from the comps ledger:
+  - run_offense rush EPA per play; pass_offense EPA per dropback; rb_rotation RB1 share of RB carries; ol_protection sack rate allowed;
+    receiver_usage top-3 target share;
+  - run_defense rush EPA allowed; pass_rush sack rate; pass_coverage EPA per dropback allowed; coverage_mix man rate.
+- **Targets and data.** Every 2020-2024 team-game with the unit's vector and outcome: the offense's row for offense units, the defense's row
+  for defense units. Walk-forward: only earlier weeks are used. 2025 is locked.
+- **(a) The unit's own trailing average.** The recency-weighted mean of the same outcome in the team's earlier games (the comps' half-life,
+  across seasons).
+- **(k) The fingerprint neighbours.** The 20 earlier team-games most similar to the target on that unit alone: recency_weighted window, the
+  unit's sigma, BASE space (EXTENDED for coverage_mix), the healthy target vector against the pool vectors, as in the searches. The prediction
+  is the similarity-weighted mean of the neighbours' own single-game outcomes.
+- **(r) Random neighbours.** 20 earlier team-games drawn at random from the same pool with (k)'s weights; 10 draws, fixed seed. Reported only.
+- **Loss.** Absolute error, in the outcome's own units.
+- **Pass, per unit.** (k) beats (a): mean gain above zero with the season-week bootstrap lower bound above zero, at the Bonferroni level 1 - 0.05 / 9.
+
+**What each outcome means.**
+- **A unit passes:** its fingerprint carries signal, and the matching has something to work with on that unit.
+- **Every unit fails:** the unit features are the problem. Rebuilding them is a large project, and it does not start without your decision.
+
+**Stopping rule.** If the diagnostic fails AND the per-unit sweep has no passing threshold, the comps are parked at weight 0 for V1 (kept built
+and tested) and the work moves to 4d.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
