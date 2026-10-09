@@ -269,6 +269,16 @@ shows after that, the comps ship at weight 0 for V1, and the work moves to 4d.
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-09, team-level sanity test (as fixed above). Two runs byte-identical (comp_team_test.parquet 6832298f70d52720, rows d7f281baea6cd198).
+  FAILS in both markets: (b) is worse than the offense's own average, with intervals fully below zero.
+  - Team rushing yards: matched team-games 78%, MAE (a) 39.11 vs (b) 39.75, -0.65 yards [-1.07, -0.23]; vs random +0.41 [-0.02, +0.83].
+  - Team pass attempts: matched 67%, MAE 6.43 vs 6.53, -0.10 [-0.19, -0.02]; vs random +0.05 [-0.04, +0.13].
+  - **Fixed reading:** the matching is broken and is fixed first.
+  - **Exploratory, not a gate.** The comps adjustment has practically no correlation with the actual surprise (rushing 0.004, pass attempts
+    0.03; the slope's sign flips across seasons), so it is not the right signal at the wrong size. A plain adjustment by what tonight's
+    defense allowed recently (vs the league, full weight, no similarity) ALSO loses to (a): -0.76 [-1.43, -0.06] rushing yards and -0.19
+    [-0.30, -0.08] pass attempts. A single team-game's surprise is large (rushing yards sd 50) next to any matchup effect, so a full-weight
+    additive adjustment from a few noisy games hurts.
 - 2026-10-09, threshold sweep on the searches as first built (all units of a side averaged; the baseline of the per-unit design). Two runs
   byte-identical (rows d29f5c3f3a1ad925); comp_threshold_sweep_allunits.parquet and _detail_allunits.parquet. Every threshold passes the
   rule (real comps beat random pairing): the lowest is 0.40, with an improvement of 0.0049 [0.0017, 0.0081] in squared z (about 0.5%). But at
