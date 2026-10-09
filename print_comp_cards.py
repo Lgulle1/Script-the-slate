@@ -48,7 +48,7 @@ def auto_targets(pool: C.Pool, targets: list, live: pl.DataFrame | None) -> list
     qb = [t for t in late if t.market == "pass_att"]
     pick.append(qb[len(qb) // 2])
     if live is not None:
-        nm = live.filter((pl.col("search") == "S1") & (pl.col("reason") == "best_similarity_below_threshold") & (pl.col("season") >= 2022)
+        nm = live.filter((pl.col("search").str.starts_with("S1")) & (pl.col("reason") == "best_similarity_below_threshold") & (pl.col("season") >= 2022)
                          & pl.col("player_id").is_not_null()).sort("best_similarity").row(0, named=True)
         pick.append(next(t for t in late if (t.game_id, t.team, t.player_id) == (nm["game_id"], nm["team"], nm["player_id"])))
     return pick

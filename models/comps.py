@@ -1284,16 +1284,16 @@ class Pool:
     def _kmax(self, key: int) -> int:
         return int(np.searchsorted(self.key, key, side="left"))
 
-    def adjusted_differs(self, g: int, units) -> bool:
-        """Whether the lineup-adjusted target vector of team-game row g differs from the healthy one in any of `units` or in the S5 offense profile
-        (when it does not, the healthy run retrieves exactly what the adjusted run does)."""
+    def adjusted_differs(self, g: int, units, profile: bool = True) -> bool:
+        """Whether the lineup-adjusted target vector of team-game row g differs from the healthy one in any of `units` or (profile=True) in the S5 offense
+        profile (when it does not, the healthy run retrieves exactly what the adjusted run does)."""
         same = lambda a, b: bool(np.array_equal(a, b, equal_nan=True))
         for u in units:
             if u in LINEUP_UNITS:
                 for space in self.T[u]:
                     if not (same(self.T[u][space][0][g], self.TH[u][space][0][g]) and self.T[u][space][1][g] == self.TH[u][space][1][g]):
                         return True
-        return not same(self.prof_off_t[g], self.prof_off_th[g])
+        return profile and not same(self.prof_off_t[g], self.prof_off_th[g])
 
     def clear_cache(self):
         self._cache = {}
@@ -1317,14 +1317,15 @@ class Pool:
                min_neff: float = cs.MIN_NEFF, version: str = SEARCH_VERSION, sensitivity: tuple = (), top_any: int = 0, unit_pools: dict | None = None,
                obs_positions: bool = False) -> dict:
         """Run the searches for one target on the healthy target vectors (SEARCH_VERSION, decision of 2026-10-09; version='adjusted': on the
-        lineup-adjusted ones, the stored comparison of build plan 4c.1.4); returns {search: SearchResult}.
+        lineup-adjusted ones, the stored comparison of build plan 4c.1.4); returns {unit-search id: SearchResult} (unit_searches; decision of
+        2026-10-09: every search runs per unit or per matched pair of units, never on an average of units).
 
         Observations are past (key < the target week) team-games, or, for a player market, past player-games in which the player PLAYED at one of the
         archetype's positions (in_pool). S1: the target's own past games (same team / same player); S2: past games against tonight's defense; S3, S4, S5:
-        any team, any defense (build plan 4c.0.6). The similarity of an observation is one-sided for S1 (the defenses faced) and two-sided for S2, S4, S5
-        (offense similarity x defense similarity; build plan 4c.4); S3 multiplies the player's archetype similarity by the defense faced. A side's
-        similarity is the mean of its units' similarities. A match is an observation whose checked similarity (`check_similarity`: a two-factor
-        search's geometric mean, with the weaker factor at least SIDE_FLOOR) is at least `sim_threshold`; its weight is similarity (the product) x recency x
+        any team, any defense (build plan 4c.0.6). A one-unit search (S1: a defense unit, tonight's opponent vs the defense faced; S2: an offense unit
+        or the archetype, tonight's offense or player vs back then) has that unit's similarity; a pair (S3: archetype x a defense unit; S4: a UNIT_PAIRS
+        pair; S5: the two profile sides) the product of its two. A match is an observation whose checked similarity (`check_similarity`: a pair's
+        geometric mean, with the weaker factor at least SIDE_FLOOR) is at least `sim_threshold`; its weight is similarity (the product) x recency x
         continuity x data-quality  (separate columns in `matches`; recency and continuity from features/weights.py for the market).
         n_eff counts historical team-games (`cluster_neff`): player-games of one team-game are one cluster. The search is no_match when its best
         checked similarity is below the threshold or its n_eff below `min_neff`: shift = 0 and the widened-uncertainty flag is set.
@@ -1553,8 +1554,8 @@ class WindowedPool:
     def search(self, tg: Target, *args, **kwargs) -> dict:
         return self.base.search(tg, *args, unit_pools={u: self.pools[w] for u, w in self.choice[tg.market].items()}, **kwargs)
 
-    def adjusted_differs(self, g: int, units) -> bool:
-        return any(p.adjusted_differs(g, units) for p in self.pools.values())
+    def adjusted_differs(self, g: int, units, profile: bool = True) -> bool:
+        return any(p.adjusted_differs(g, units, profile) for p in self.pools.values())
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------- targets and the no-match log
@@ -2041,13 +2042,17 @@ def comp_shifts(pool: Pool, targets: list, zl: dict, keep_matches: bool = True, 
             if compare:
                 hvals = {d["search"]: d for d in det}          # the search itself runs on the healthy vectors; per unit search
                 avals = {d["search"]: d for d in _market_shifts(res_a, tg, m, zl, min_neff, counts)[1]} if differs else hvals
+                factor_units = {u: [x for _, x in f] for u, _, f in unit_searches(tg.market, tg.player_id is not None)}
                 for s in res:
+                    # whether THIS unit search reads a vector the lineup adjustment changes (defense units and archetypes have one version)
+                    s_differs = differs and (s == "S5" and pool.adjusted_differs(pool.idx[(tg.game_id, tg.team)], [], True)
+                                             or s != "S5" and pool.adjusted_differs(pool.idx[(tg.game_id, tg.team)], factor_units.get(s, []), False))
                     hh, ha = _hits(res[s]), _hits(res_a[s])
                     rc = retrieval_change(hh, ha, min(RETRIEVAL_TOP_K, max(len(ha), len(hh))))      # one side empty: overlap 0; both: undefined
                     th = [(t[0], t[1], 0.0) for t in res[s].summary.get("top_any", [])]
                     ta = [(t[0], t[1], 0.0) for t in res_a[s].summary.get("top_any", [])]
                     rca = retrieval_change(th, ta, min(RETRIEVAL_TOP_K, max(len(ta), len(th))))
-                    crows.append(dict(ident, search=s, parent=parent(s), adjusted_differs=bool(differs), n_matches_adjusted=len(ha), n_matches_healthy=len(hh),
+                    crows.append(dict(ident, search=s, parent=parent(s), adjusted_differs=bool(s_differs), n_matches_adjusted=len(ha), n_matches_healthy=len(hh),
                                       top_k=rc["k"], overlap_top_k=rc["overlap_top_k"], weight_mass_shared=rc["weight_mass_shared"] if ha or hh else float("nan"),
                                       overlap_closest_10=rca["overlap_top_k"],
                                       nomatch_adjusted=avals[s]["nomatch"], nomatch_healthy=hvals[s]["nomatch"],

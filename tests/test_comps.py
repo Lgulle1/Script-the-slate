@@ -1088,8 +1088,8 @@ def test_closest_10_overlap_is_one_when_the_vectors_agree(pool3):
 
 def test_s1_retrieval_never_depends_on_the_offense_version(shifts44):
     (_, _, _, retrieval), _, _ = shifts44
-    s1 = retrieval.filter((pl.col("parent") == "S1") & pl.col("adjusted_differs"))
-    assert s1.height > 0 and (s1["overlap_closest_10"] == 1.0).all()                       # S1 reads only the defenses faced
+    s1 = retrieval.filter(pl.col("parent") == "S1")
+    assert s1.height > 0 and (s1["overlap_closest_10"] == 1.0).all() and not s1["adjusted_differs"].any()     # S1 reads only the defenses faced
 
 
 # ---------------------------------------------------------------------------------------------------------------- 4c.4 review fixes
@@ -1645,3 +1645,11 @@ def test_the_across_search_cap_divides_by_the_number_of_unit_searches():
     vals, det, _, caps = C._market_shifts(res, tg, "spread", zl, cs.MIN_NEFF)
     for u in ("S2:run_offense", "S2:pass_offense", "S4:run_offense*run_defense", "S4:pass_offense*pass_coverage"):
         assert np.allclose(caps["vol"][u], 1.0), u
+
+
+def test_only_unit_searches_that_read_a_lineup_corrected_vector_count_as_changed(shifts44):
+    """Defense units and archetypes have one version: S1, S3 and S2:<archetype> retrieve the same games on either vector and are not 'changed'."""
+    (_, _, _, retrieval), _, _ = shifts44
+    one_version = retrieval.filter(pl.col("search").str.starts_with("S1") | pl.col("search").str.starts_with("S3") | pl.col("search").str.contains("archetype"))
+    assert one_version.height > 0 and not one_version["adjusted_differs"].any()
+    assert retrieval.filter(pl.col("search").str.starts_with("S4"))["adjusted_differs"].any()
