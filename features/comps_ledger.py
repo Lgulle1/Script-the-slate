@@ -153,6 +153,22 @@ def load_slots(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
     return d.group_by("gsis_id", "season", "week").agg(pl.col("slot").min().fill_null(3), pl.col("position").first().alias("family")).sort("gsis_id", "season", "week")
 
 
+def load_depth_chart_players(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
+    """(team, season, week, gsis_id, family, slot) for every offensive QB / RB / WR / TE on a team's weekly (pregame) depth chart: the PREGAME population
+    the archetype z-scores are standardised against (who played is only known after the game)."""
+    con = duckdb.connect(str(raw_db), read_only=True)
+    try:
+        d = con.execute("SELECT season, week, club_code AS team, gsis_id, position, depth_team FROM "
+                        "(SELECT DISTINCT ON (season, week, club_code, gsis_id, depth_team, position) * FROM depth_charts WHERE game_type = 'REG' AND formation = 'Offense' "
+                        f" AND gsis_id IS NOT NULL AND {_window(max_season)} ORDER BY season, week, club_code, gsis_id, depth_team, position, pulled_at DESC)").pl()
+    finally:
+        con.close()
+    d = d.filter(pl.col("position").is_in(["QB", "RB", "WR", "TE"])).with_columns(team=canon("team"), slot=pl.col("depth_team").cast(pl.Int32, strict=False).clip(1, 3))
+    return (d.sort("team", "season", "week", "gsis_id", "slot", "position")
+            .group_by("team", "season", "week", "gsis_id", maintain_order=True).agg(pl.col("position").first().alias("family"), pl.col("slot").min().fill_null(3))
+            .sort("team", "season", "week", "gsis_id"))
+
+
 # ------------------------------------------------------------------------------------------------------------------------------ expressions
 def _c(name):
     return pl.col(name)
@@ -355,11 +371,14 @@ def structure_ledger(player: pl.DataFrame, team: pl.DataFrame) -> pl.DataFrame:
     rb = (player.filter((pl.col("group") == "rb") & (pl.col("c.carries") > 0))
           .sort("game_id", "team", "c.carries", "player_id", descending=[False, False, True, False])
           .with_columns(rank=pl.int_range(pl.len()).over("game_id", "team"), rb_total=pl.col("c.carries").sum().over("game_id", "team")))
-    for r, name in ((0, "rb1"), (1, "rb2")):
-        a = rb.filter(pl.col("rank") == r).select("game_id", "team", pl.col("c.carries").alias(f"rb_rotation.{name}_carry_share|n"), pl.col("rb_total").alias(f"rb_rotation.{name}_carry_share|d"),
-                                                  *( [pl.col("c.gl_carries").alias("rb_rotation.goal_line_carry_share|n"), pl.col("offense_pct").fill_null(0.0).alias("rb_rotation.rb1_snap_share|n"),
-                                                      pl.when(pl.col("offense_pct").is_not_null()).then(1.0).otherwise(0.0).alias("rb_rotation.rb1_snap_share|d")] if r == 0 else []))
-        out = out.join(a, on=["game_id", "team"], how="left")
+    rb1 = rb.filter(pl.col("rank") == 0).select(
+        "game_id", "team", "rb_total", pl.col("c.carries").alias("rb_rotation.rb1_carry_share|n"), pl.col("rb_total").alias("rb_rotation.rb1_carry_share|d"),
+        pl.col("c.gl_carries").alias("rb_rotation.goal_line_carry_share|n"), pl.col("offense_pct").fill_null(0.0).alias("rb_rotation.rb1_snap_share|n"),
+        pl.when(pl.col("offense_pct").is_not_null()).then(1.0).otherwise(0.0).alias("rb_rotation.rb1_snap_share|d"))
+    # RB2: every game with RB carries counts; a game in which one back took every RB carry is an RB2 share of 0, not a missing game
+    rb2 = (rb1.select("game_id", "team", "rb_total").join(rb.filter(pl.col("rank") == 1).select("game_id", "team", n2="c.carries"), on=["game_id", "team"], how="left")
+           .select("game_id", "team", pl.col("n2").fill_null(0.0).alias("rb_rotation.rb2_carry_share|n"), pl.col("rb_total").alias("rb_rotation.rb2_carry_share|d")))
+    out = out.join(rb1.drop("rb_total"), on=["game_id", "team"], how="left").join(rb2, on=["game_id", "team"], how="left")
     out = out.with_columns(pl.col("x.gl_carries").alias("rb_rotation.goal_line_carry_share|d"))
     return out.with_columns(pl.col(c).fill_null(0.0) for c in out.columns if c.endswith("|n") or c.endswith("|d")).drop("x.targets", "x.gl_carries")
 

@@ -33,9 +33,10 @@ def _games() -> pl.DataFrame:
     return g.sort("season", "week", "game_id", "team")
 
 
-def synthetic_inputs(seed: int = 0, perturb_from: tuple | None = None, kill_units=(), perturb_lineups: bool = True) -> C.Inputs:
+def synthetic_inputs(seed: int = 0, perturb_from: tuple | None = None, kill_units=(), perturb_lineups: bool = True, with_pregame: bool = True) -> C.Inputs:
     """A small league (8 teams, 2 seasons x 10 weeks) with random ledgers. `perturb_from=(season, week)` redraws every stat, lineup, slot and 4a
-    expectation of the games at or after that week with a different seed, leaving everything earlier untouched. `kill_units` zero the ledger of a unit."""
+    expectation of the games at or after that week with a different seed, leaving everything earlier untouched. `kill_units` zero the ledger of a unit.
+    `with_pregame` adds the pregame depth chart and the scored targets (as in production)."""
     games = _games()
     key = games["season"] * 100 + games["week"]
     late = (key >= perturb_from[0] * 100 + perturb_from[1]).to_numpy() if perturb_from else np.zeros(games.height, dtype=bool)
@@ -103,7 +104,16 @@ def synthetic_inputs(seed: int = 0, perturb_from: tuple | None = None, kill_unit
                               b_dropback=b if p == "QB" else 0.0, exp_carry=0.0 if (out and p == "RB") else (b * 0.9 if p == "RB" else 0.0),
                               exp_target=0.0 if out else (b * 0.8 if p != "QB" else 0.0), exp_dropback=0.0 if (out and p == "QB") else (b if p == "QB" else 0.0)))
     detail = pl.DataFrame(drows)
-    return C.Inputs(games=games, lineups=lineups, team=team, player=player, slots=slots_df, positions=positions, detail=detail)
+    # the pregame depth chart lists the whole roster every week (whether or not a player then plays); the scored targets are the QB1 / RB1 / WR1 / TE1
+    # of every 2020 game, also when he did not play
+    ros = pl.DataFrame([dict(family=p, slot=s) for p, s in roster])
+    depth = (games.select("team", "season", "week").unique().join(ros, how="cross")
+             .with_columns(gsis_id=pl.col("team") + pl.col("family") + pl.col("slot").cast(pl.String)).select("team", "season", "week", "gsis_id", "family", "slot")
+             .sort("team", "season", "week", "gsis_id"))
+    targets = (games.filter(pl.col("season") == 2020).select("game_id", "team").join(ros.filter(pl.col("slot") == 1), how="cross")
+               .select("game_id", "team", player_id=pl.col("team") + pl.col("family") + "1", family="family").sort("game_id", "team", "player_id"))
+    return C.Inputs(games=games, lineups=lineups, team=team, player=player, slots=slots_df, positions=positions, detail=detail,
+                    depth_chart=depth if with_pregame else None, targets=targets if with_pregame else None)
 
 
 @pytest.fixture(scope="module")
@@ -594,12 +604,49 @@ def test_matches_have_separate_weight_columns_and_the_final_weight_is_their_prod
     assert found >= 4
 
 
-def test_n_eff_is_the_kish_effective_sample_size_of_the_final_weights(pool3):
+def test_n_eff_is_the_kish_effective_sample_size_of_the_final_weights_per_historical_team_game(pool3):
     pool, inp, _ = pool3
-    r = pool.search(_player_target(inp, week=9), keep=True, sim_threshold=0.0, min_neff=0)["S4"]
-    w = r.matches["final_weight"].to_numpy()
-    assert r.summary["n_eff"] == pytest.approx(w.sum() ** 2 / (w ** 2).sum())
-    assert r.summary["n_matches"] == len(w) and r.summary["best_similarity"] == pytest.approx(r.matches["sim_combined"].max())
+    for tg in (_player_target(inp, week=9), _team_target(inp, week=9)):
+        r = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0)["S4"]
+        w = r.matches.group_by("obs_game_id", "obs_team").agg(pl.col("final_weight").sum())["final_weight"].to_numpy()
+        assert r.summary["n_eff"] == pytest.approx(w.sum() ** 2 / (w ** 2).sum())
+        assert r.summary["n_matches"] == r.matches.height and r.summary["best_similarity"] == pytest.approx(r.matches["sim_combined"].max())
+
+
+def test_cluster_neff_counts_one_team_game_once():
+    w = np.ones(5)
+    assert C.cluster_neff(w, ["g1"] * 5) == pytest.approx(1.0)                        # five receivers of one past game: one game's evidence
+    assert C.cluster_neff(w, [f"g{i}" for i in range(5)]) == pytest.approx(5.0)          # one observation per game: the plain Kish n_eff
+    assert C.cluster_neff(np.array([1.0, 1.0, 2.0]), ["a", "a", "b"]) == pytest.approx(2.0)
+    assert C.cluster_neff(np.array([]), []) == 0.0
+
+
+def test_s5_player_matches_of_one_team_game_do_not_inflate_n_eff(pool3):
+    """S5 compares team-game matchups, so every player of a past team-game has the same S5 similarity: n_eff must count the team-game once."""
+    pool, inp, _ = pool3
+    tg = _player_target(inp, "targets", week=9)
+    k = pool._kmax(tg.season * 100 + tg.week)
+    saved = (pool.prof_off_t.copy(), pool.prof_off_p.copy(), pool.prof_def.copy(), pool.admit5.copy(), dict(pool.sig5))
+    try:
+        rng = np.random.default_rng(3)
+        pool.prof_off_t[:] = rng.normal(size=pool.prof_off_t.shape)
+        pool.prof_off_p[:] = rng.normal(size=pool.prof_off_p.shape)
+        pool.prof_def[:] = rng.normal(size=pool.prof_def.shape)
+        pool.admit5[:] = True
+        pool.sig5 = {kk: 5.0 for kk in pool.sig5}
+        pool.clear_cache()
+        r = pool.search(tg, which=("S5",), keep=True, sim_threshold=0.0, min_neff=0)["S5"]
+        m = r.matches
+        assert m.height > m.select("obs_game_id", "obs_team").unique().height                # several receivers per past team-game
+        per_game = m.group_by("obs_game_id", "obs_team").agg(pl.col("sim_combined").n_unique())
+        assert (per_game["sim_combined"] == 1).all()                                          # one matchup, one similarity
+        w = m.group_by("obs_game_id", "obs_team").agg(pl.col("final_weight").sum())["final_weight"].to_numpy()
+        assert r.summary["n_eff"] == pytest.approx(w.sum() ** 2 / (w ** 2).sum())
+        assert r.summary["n_eff"] <= m.select("obs_game_id", "obs_team").unique().height + 1e-9
+    finally:
+        pool.prof_off_t[:], pool.prof_off_p[:], pool.prof_def[:], pool.admit5[:] = saved[:4]
+        pool.sig5 = saved[4]
+        pool.clear_cache()
 
 
 def test_no_match_is_declared_for_a_low_n_eff_even_with_a_good_best_similarity(pool3):
@@ -617,16 +664,21 @@ def test_the_pool_never_contains_the_target_game_or_anything_after(pool3):
                 assert ((r.matches["obs_season"] * 100 + r.matches["obs_week"]) < key).all()
 
 
-def test_search_roles_are_disjoint_as_defined(pool3):
+def test_search_observation_sets_follow_the_plan(pool3):
+    """S1: the target's own past games; S2: past games against tonight's defense; S3 ("on any team") and S4: every past observation, the player's own
+    games and tonight's opponent's included (build plan 4c.0.6)."""
     pool, inp, _ = pool3
     tg = _player_target(inp, week=10)
     res = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0)
     s1, s2, s3, s4 = (res[k].matches for k in ("S1", "S2", "S3", "S4"))
-    assert (s1["obs_player_id"] == tg.player_id).all()                                  # S1: the player's own history
+    assert (s1["obs_player_id"] == tg.player_id).all() and s1.height > 0                # S1: the player's own history
     opp_of = lambda m: [inp.games.filter((pl.col("game_id") == g) & (pl.col("team") == t))["opponent"][0] for g, t in zip(m["obs_game_id"], m["obs_team"])]
     assert all(o == tg.opponent for o in opp_of(s2))                                   # S2: tonight's defense
-    for m in (s3, s4):                                                                  # S3 / S4: other players against other defenses
-        assert (m["obs_player_id"] != tg.player_id).all() and all(o != tg.opponent for o in opp_of(m))
+    ids = lambda m: set(zip(m["obs_game_id"].to_list(), m["obs_player_id"].to_list()))
+    assert ids(s1) <= ids(s3) and ids(s2) <= ids(s3) and ids(s3) == ids(s4)             # S3 / S4 exclude nobody
+    ttg = _team_target(inp, week=10)
+    tt = pool.search(ttg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0)["S4"].matches
+    assert (tt["obs_team"] == ttg.team).any() and any(o == ttg.opponent for o in opp_of(tt))      # the team's own games and its opponent's defense too
 
 
 def test_search_is_walk_forward():
@@ -751,7 +803,7 @@ def test_cap_across_searches_limits_a_teams_average_share():
         teams = np.array(["DOM"] * 6 + [f"T{i}" for i in range(14)])
         per[s] = (rng.uniform(0.5, 1.0, 20) * np.where(teams == "DOM", 6.0, 1.0), np.array([f"g{i}" for i in range(20)]), teams)
     out = C.cap_across_searches(per)
-    avg = np.mean([out[s][per[s][2] == "DOM"].sum() / out[s].sum() for s in C.SEARCHES])
+    avg = sum(out[s][per[s][2] == "DOM"].sum() / out[s].sum() for s in C.SEARCHES if s not in C.CAP_AVG_EXEMPT) / len(C.SEARCHES)
     assert avg <= C.cs.TEAM_CAP_AVG_ACROSS_SEARCHES + 1e-6
     for s in C.SEARCHES:
         tg = per[s][1]
@@ -784,7 +836,7 @@ def shifts44(pool3):
 
 
 def test_shift_features_have_one_row_per_target_and_market_with_the_plan_columns(shifts44):
-    (feats, matches, detail), tgs, _ = shifts44
+    (feats, matches, detail, _), tgs, _ = shifts44
     markets = sorted(feats["market"].unique().to_list())
     assert {"spread", "total", "moneyline", "rush_att", "rush_yds", "targets", "rec", "rec_yds"} <= set(markets)
     for s in C.SEARCHES:
@@ -795,14 +847,14 @@ def test_shift_features_have_one_row_per_target_and_market_with_the_plan_columns
 
 
 def test_shifts_match_a_recomputation_from_the_match_table(shifts44):
-    (feats, matches, detail), tgs, zl = shifts44
+    (feats, matches, detail, _), tgs, zl = shifts44
     r = feats.filter((pl.col("market") == "rush_yds")).row(0, named=True)
     for s in C.SEARCHES:
         m = matches.filter((pl.col("market") == "rush_yds") & (pl.col("search") == s) & (pl.col("target_game_id") == r["game_id"]))
         if r[f"nomatch_{s}"]:
             assert r[f"shift_vol_{s}"] == 0.0 and r[f"shift_eff_{s}"] == 0.0
             continue
-        sv, nv = C.shift_value(m["weight_capped_vol"].to_numpy(), m["z_vol"].to_numpy())
+        sv, nv = C.shift_value(m["weight_capped_vol"].to_numpy(), m["z_vol"].to_numpy(), (m["obs_game_id"] + "|" + m["obs_team"]).to_numpy())
         assert r[f"shift_vol_{s}"] == pytest.approx(sv) and r[f"n_eff_{s}"] == pytest.approx(nv)
         g = m.with_columns(tg=pl.col("obs_game_id") + "|" + pl.col("obs_team")).group_by("tg").agg(pl.col("weight_capped_vol").sum())
         if g.height * C.cs.TEAM_CAP_PER_SEARCH >= 1:
@@ -812,7 +864,7 @@ def test_shifts_match_a_recomputation_from_the_match_table(shifts44):
 def test_a_no_match_search_has_shift_zero(pool3):
     pool, inp, _ = pool3
     tg = _player_target(inp, "rush_att", week=9)
-    feats, _, detail = C.comp_shifts(pool, [tg], {"rush_att": {}, "ypc": {}}, sim_threshold=0.99999999)
+    feats, _, detail, _ = C.comp_shifts(pool, [tg], {"rush_att": {}, "ypc": {}}, sim_threshold=0.99999999)
     for s in C.SEARCHES:
         assert feats[f"nomatch_{s}"].all() and (feats[f"shift_vol_{s}"] == 0).all()
 
@@ -820,6 +872,156 @@ def test_a_no_match_search_has_shift_zero(pool3):
 def test_matches_without_an_expectation_give_no_shift(pool3):
     pool, inp, _ = pool3
     tg = _player_target(inp, "rush_att", week=9)
-    feats, _, detail = C.comp_shifts(pool, [tg], {}, sim_threshold=0.0, min_neff=0.0)
+    feats, _, detail, _ = C.comp_shifts(pool, [tg], {}, sim_threshold=0.0, min_neff=0.0)
     assert all(feats[f"nomatch_{s}"].all() for s in C.SEARCHES)
     assert set(detail.filter(pl.col("applicable"))["reason"].unique().to_list()) <= {"no_expectations", "best_similarity_below_threshold", "missing_required_ftn_features", "no_similarity", "no_target_vector"}
+
+
+# ================================================================================================================================ review fixes
+def test_rb2_share_of_a_bell_cow_game_is_zero_not_missing():
+    from features import comps_ledger as L
+    player = pl.DataFrame({"game_id": ["g1", "g2", "g2"], "team": ["A", "A", "A"], "player_id": ["r1", "r1", "r2"], "group": ["rb", "rb", "rb"],
+                           "c.carries": [20.0, 14.0, 6.0], "c.targets": [0.0, 0.0, 0.0], "c.air_yards": [0.0] * 3, "c.targets_air": [0.0] * 3,
+                           "c.gl_carries": [0.0] * 3, "offense_pct": [0.9, 0.7, 0.3]})
+    team = pl.DataFrame({"game_id": ["g1", "g2"], "team": ["A", "A"], "x.targets": [30.0, 30.0], "x.gl_carries": [0.0, 0.0]})
+    st = L.structure_ledger(player, team).sort("game_id")
+    assert st["rb_rotation.rb2_carry_share|n"].to_list() == [0.0, 6.0] and st["rb_rotation.rb2_carry_share|d"].to_list() == [20.0, 20.0]
+    pooled = sum(st["rb_rotation.rb2_carry_share|n"]) / sum(st["rb_rotation.rb2_carry_share|d"])
+    assert pooled == pytest.approx(0.15)                                       # not 0.30: the bell-cow game counts as a 0 share
+
+
+# ================================================================================================================================ review fixes (4c.1-4c.4)
+def test_a_target_who_did_not_play_has_a_vector_but_is_no_observation():
+    """Whether a scored player plays is known only after the game: his target vector must exist either way, and a game he missed must never be an
+    observation of a later search."""
+    inp = synthetic_inputs(0)
+    wk = min(inp.player.filter((pl.col("player_id") == "AQB1") & (pl.col("season") == 2020) & pl.col("week").is_between(3, 7))["week"].to_list())
+    gone = (pl.col("player_id") == "AQB1") & (pl.col("season") == 2020) & (pl.col("week") == wk)
+    inp2 = C.Inputs(**{**inp.__dict__, "player": inp.player.filter(~gone)})
+    vec = C.build_vectors(inp2)
+    row = vec.player.filter((pl.col("player_id") == "AQB1") & (pl.col("season") == 2020) & (pl.col("week") == wk) & (pl.col("unit") == "qb_archetype")
+                            & (pl.col("window") == W3))
+    assert row.height == len(C.stored_spaces("qb_archetype")) and row["is_target"].all() and not row["in_pool"].any()
+    assert row["n_present"].max() > 0                                                    # built from his earlier games, like any target
+    pool, _, _ = _pool(inp2, vec)
+    g = inp2.games.filter((pl.col("season") == 2020) & (pl.col("week") == 8) & (pl.col("team") == "A")).row(0, named=True)
+    tg = C.Target("pass_att", g["game_id"], "A", g["opponent"], 2020, 8, "AQB1")
+    missed = inp2.games.filter((pl.col("season") == 2020) & (pl.col("week") == wk) & (pl.col("team") == "A"))["game_id"][0]
+    res = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0)
+    assert res["S1"].matches.height > 0
+    for s, r in res.items():
+        if r.matches is not None and r.matches.height:
+            assert not ((r.matches["obs_game_id"] == missed) & (r.matches["obs_player_id"] == "AQB1")).any(), s
+
+
+def test_archetype_z_of_week_w_does_not_depend_on_who_played_in_week_w():
+    """The league mean / SD and the shrinkage mean of a week come from that week's pregame depth chart, not from who turned out to play."""
+    inp = synthetic_inputs(0)
+    gone = (pl.col("player_id") == "BWR2") & (pl.col("season") == 2020) & (pl.col("week") == 6)
+    assert inp.player.filter(gone).height == 1
+    a = C.build_vectors(inp).player
+    b = C.build_vectors(C.Inputs(**{**inp.__dict__, "player": inp.player.filter(~gone)})).player
+    wk = lambda v: _frame_key(v.filter((pl.col("season") == 2020) & (pl.col("week") == 6) & (pl.col("player_id") != "BWR2")))
+    assert wk(a).height == wk(b).height and wk(a).select("z", "raw").equals(wk(b).select("z", "raw"))
+
+
+def test_extended_falls_back_to_base_when_the_extended_sigma_is_missing(pool3):
+    pool, inp, _ = pool3
+    unit = next(u for u in cs.DEFENSE_UNITS if len(C.stored_spaces(u)) == 2)
+    tg = _team_target(inp, week=9)
+    key = tg.season * 100 + tg.week
+    k = pool._kmax(key)
+    o = pool.idx[(tg.game_id, tg.opponent)]
+    saved = dict(pool.sig)
+    try:
+        for kk in list(pool.sig):
+            if kk[0] == unit and kk[1] == "extended":
+                pool.sig[kk] = float("nan")
+        pool.clear_cache()
+        sim = pool.unit_sims(unit, "def", o, k, key)[0]
+        d = C.unit_distance(pool.T[unit]["base"][0][o][None, :], pool.P[unit]["base"][0][:k], unit, "base")
+        expect = C.similarity(d.d2[0], pool._sigma(unit, "base", key))
+        assert np.isfinite(sim).sum() > 0 and np.allclose(sim, expect, equal_nan=True)
+        # the archetype similarity of a player search falls back the same way
+        arch = "rb_archetype"
+        for kk in list(pool.sig):
+            if kk[0] == arch and kk[1] == "extended":
+                pool.sig[kk] = float("nan")
+        pool.clear_cache()
+        m = pool.search(_player_target(inp, week=9), which=("S3",), keep=True, sim_threshold=0.0, min_neff=0)["S3"].matches
+        assert m.height > 0 and m[f"sim_{arch}"].is_finite().all()
+    finally:
+        pool.sig = saved
+        pool.clear_cache()
+
+
+def test_the_healthy_run_reads_the_healthy_target_vectors(pool3):
+    pool, inp, _ = pool3
+    seen = {True: 0, False: 0}
+    for gm in inp.games.filter((pl.col("season") == 2020) & (pl.col("week") == 9)).iter_rows(named=True):
+        tg = C.Target("spread", gm["game_id"], gm["team"], gm["opponent"], 2020, 9)
+        g = pool.idx[(tg.game_id, tg.team)]
+        differs = pool.adjusted_differs(g, cs.MARKET_UNITS["spread"])
+        pool.clear_cache()
+        a = pool.search(tg, which=("S1", "S4"), keep=True, sim_threshold=0.0, min_neff=0)
+        h = pool.search(tg, which=("S1", "S4"), keep=True, sim_threshold=0.0, min_neff=0, version="healthy")
+        assert a["S1"].matches.equals(h["S1"].matches)                                     # S1 reads only the defenses faced: one version
+        same = a["S4"].matches.equals(h["S4"].matches)
+        assert same != differs
+        seen[differs] += 1
+    assert seen[True] > 0 and seen[False] > 0
+
+
+def test_retrieval_change_is_stored_for_every_target_market_and_search(shifts44):
+    (feats, _, _, retrieval), tgs, _ = shifts44
+    assert retrieval.height == feats.height * len(C.SEARCHES)
+    assert {"overlap_top_k", "weight_mass_shared", "shift_vol_change", "shift_eff_change", "adjusted_differs", "nomatch_healthy"} <= set(retrieval.columns)
+    same = retrieval.filter(~pl.col("adjusted_differs") & (pl.col("n_matches_adjusted") > 0))
+    assert (same["overlap_top_k"] == 1.0).all() and (same["shift_vol_change"] == 0.0).all()
+    summ = C.retrieval_summary(retrieval)
+    assert {"share_adjusted_differs", "mean_overlap_top_k", "mean_abs_shift_vol_change"} <= set(summ.columns)
+
+
+def test_aggregate_median_ignores_targets_without_similarity():
+    rows = [dict(search="S1", market="spread", game_id=f"g{i}", team="A", player_id=None, season=2020, week=1, applicable=True, n_matches=0, n_eff=0.0,
+                 best_similarity=b, no_match=True, widened_uncertainty=True, shift=0.0, reason="r", unit_best="{}") for i, b in enumerate([float("nan")] * 3 + [0.0, 0.2])]
+    log = C.aggregate_search_log(pl.DataFrame(rows))
+    assert log.filter(pl.col("unit") == "combined")["median_best_similarity"].to_list() == [pytest.approx(0.1)] * 3
+
+
+def test_the_sensitivity_columns_recount_matches_at_other_thresholds(pool3):
+    pool, inp, _ = pool3
+    tg = _player_target(inp, week=9)
+    log = C.run_search_log(pool, [tg], sensitivity=(0.0, 0.5))
+    import json
+    for r in log.iter_rows(named=True):
+        sens = json.loads(r["sensitivity"])
+        if not r["applicable"] or r["reason"] in ("no_target_vector", "missing_required_ftn_features"):
+            assert sens == {}
+            continue
+        res = pool.search(tg, which=(r["search"],), keep=True, sim_threshold=0.5, min_neff=0)[r["search"]]
+        assert sens["0.5"][0] == res.summary["n_matches"] and sens["0.5"][1] == pytest.approx(res.summary["n_eff"])
+        assert sens["0"][0] >= sens["0.5"][0]
+
+
+def test_nomatch_sensitivity_reproduces_the_live_rule_at_the_live_threshold(pool3):
+    pool, inp, _ = pool3
+    tgs = [_team_target(inp, week=9), _player_target(inp, week=9), _player_target(inp, "pass_att", week=9)]
+    log = C.run_search_log(pool, tgs, sensitivity=(0.3, cs.SIM_THRESHOLD))
+    sens = C.nomatch_sensitivity(log, thresholds=(0.3, cs.SIM_THRESHOLD), min_neffs=(cs.MIN_NEFF,))
+    live = log.filter(pl.col("applicable")).group_by("season", "market", "search").agg(pl.col("no_match").mean())
+    j = sens.filter(pl.col("threshold") == cs.SIM_THRESHOLD).join(live, on=["season", "market", "search"])
+    assert j.height == live.height and np.allclose(j["no_match_rate"].to_numpy(), j["no_match"].to_numpy())
+
+
+def test_s1_own_history_is_exempt_from_the_across_search_average():
+    """S1 holds only the target's own games, so its team has 100% of S1 by definition. Counting S1 in the across-search average would make the cap
+    impossible and push that team out of every other search."""
+    per = {"S1": (np.ones(12), np.array([f"own{i}" for i in range(12)]), np.array(["OWN"] * 12))}
+    for s in ("S2", "S3", "S4", "S5"):
+        teams = np.array(["OWN"] + [f"T{i}" for i in range(9)])
+        per[s] = (np.ones(10), np.array([f"{s}g{i}" for i in range(10)]), teams)
+    out = C.cap_across_searches(per)
+    assert np.allclose(out["S1"], per["S1"][0])                                          # S1 untouched (no team-game above 25%)
+    for s in ("S2", "S3", "S4", "S5"):
+        assert np.allclose(out[s], per[s][0])                                             # OWN averages 0.4/5 = 8% outside S1: below the 15% cap

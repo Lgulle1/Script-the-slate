@@ -3,6 +3,8 @@
   python build_comp_searches.py [--window recency_weighted] [--limit N]
 
 Writes data/processed/comp_search_summary.parquet (one row per target and search) and comp_search_log.parquet (per season, market, search, unit).
+comp_nomatch_sensitivity.parquet is analysis only (for the no-match decision): the no-match rate the same similarities would give at other thresholds
+and MIN_NEFF values. The threshold in use stays cs.SIM_THRESHOLD; nothing is tuned here.
 The window is the one the log is run on; 4c.6 selects a window per unit and market. Walk-forward: a target at week K sees only games before K."""
 import argparse
 import time
@@ -26,12 +28,14 @@ if __name__ == "__main__":
     if a.limit:
         targets = targets[: a.limit]
     print(f"{len(targets):,} targets; pool ready in {time.time() - t0:.0f}s", flush=True)
-    summary = C.run_search_log(pool, targets)
+    summary = C.run_search_log(pool, targets, sensitivity=C.SENSITIVITY_THRESHOLDS)
     log = C.aggregate_search_log(summary)
+    sens = C.nomatch_sensitivity(summary)
     a.out_dir.mkdir(parents=True, exist_ok=True)
     a.log_dir.mkdir(parents=True, exist_ok=True)
     summary.write_parquet(a.out_dir / "comp_search_summary.parquet")
     log.write_parquet(a.log_dir / "comp_search_log.parquet")
+    sens.write_parquet(a.log_dir / "comp_nomatch_sensitivity.parquet")
     print(f"done in {time.time() - t0:.0f}s")
     pl.Config.set_tbl_rows(80)
     print(log.filter(pl.col("unit") == "combined").group_by("market", "search").agg(pl.col("no_match_rate").mean().round(3)).sort("market", "search"))
