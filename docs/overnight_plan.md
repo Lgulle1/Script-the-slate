@@ -14,7 +14,7 @@ no market dropped; no threshold tuned to flip a verdict; no PRs.
      similarities and came from observed / derived / estimated features. A feature's weight is its effective weight in the unit distance:
      the group weight times w_f x q_f over the group's features present on both sides. A match takes the mean over its search's units. The
      search averages its matches by their final (capped) weight. completeness_S is the matches' completeness penalty, averaged the same way.
-     All are null when the search has no match.
+     A search without a match reports them from its 10 closest past games (see the 4c.5 review fixes).
    - **Features.** The volume model of a quantity takes the comparable columns of its own market (pass_att, rush_att, targets, qb_rush_att; team
      plays take the game markets'). Each efficiency model takes those of its market (pass_cmp, pass_yds, rush_yds, rec, rec_yds, qb_rush_yds; points
      per play takes the game markets'). Same hyperparameters, same walk-forward harness, 2025 never touched. A row without comparable features
@@ -25,8 +25,9 @@ no market dropped; no threshold tuned to flip a verdict; no PRs.
    How I read it:
    - **Window per unit and market** (`run_comp_window_selection.py`, `models/comps_windows.py`). For each 2020-2024 target and unit, the 20
      past observations most similar on that unit alone predict the target's comp-free residual z by their similarity-weighted mean z. The window
-     with the lowest error (volume z, plus efficiency z where the market has one) wins, compared on the targets every window can score. A
-     market's continuity window is the variant of its own penalty row. No threshold is involved, so the choice does not depend on the no-match
+     with the lowest error (volume z, plus efficiency z where the market has one) wins. Every target that any window scores counts for every
+     window; a window that cannot score it is charged z^2, as a no-match shift of 0 would be. A market's continuity window is the variant of its
+     own penalty row. No threshold is involved, so the choice does not depend on the no-match
      decision. The choice is written to `comp_windows.json`, and the searches then read each unit in its own window.
    - **Ablation**: the Phase 3 model with vs. without the comparable columns, and with one search's columns at a time. Per market it reports
      the 3.3 bootstrap interval, per-season gains, and the no-match rate and n_eff per search. Layer weight 1 only on CLEARS, otherwise 0 and
@@ -97,6 +98,22 @@ No leakage. A brute-force check of the share math over 1,119 random pairs (missi
 4. A match's shares now mirror how its similarity is formed: the mean over the similarity's factors (offense side and defense side for S2 / S4),
    each the mean of its units.
 
+## What the independent review of 4c.6 found, and the fixes
+No leakage in the window selection: neighbours come strictly from earlier weeks, and the target's own z is used only as the truth. Fixed test-first:
+1. **The window choice dropped spread, moneyline and total.** Team targets have player_id null, and the join that compared windows did not match
+   nulls. The selected-window run would then have failed, since `comp_windows.json` had no game markets.
+2. **Windows were compared only on targets every window could score.** That hid season_to_date's missing week-1 vectors. A window is now charged
+   z^2 for every target it cannot score, and the summary reports how many those are.
+3. Searches no longer fall back silently to the base window. An incomplete or unknown window choice is an error, and the wrapper survives copy.
+4. The ablation report crashed while printing when a search never matched (its mean n_eff was null for every market). The results had already been
+   saved byte-identical.
+Also added, from the review's soundness notes:
+- **A null control.** LightGBM samples 80% of the columns per tree, so adding any columns moves the predictions a little. The ablation now also
+  runs the model with the comparable columns shuffled within market and week, and reports that "gain" next to the real one. It is reported only;
+  the gate stays as fixed.
+- **Which run decides the gate, fixed before seeing it:** the run on the windows chosen per unit and market. The recency_weighted run is a
+  reference. The selected run records the window mapping it used.
+
 ## Things I need you to decide (I have not decided them)
 0. **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
@@ -134,6 +151,10 @@ No leakage. A brute-force check of the share math over 1,119 random pairs (missi
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 4c.6 preview, recency_weighted window, before the null control was added: no market clears. rec and rec_yds are EDGE (gains of 0.0007 receptions
+  and 0.01 yards, intervals across 0). The other markets are slightly worse with the comparable columns: spread -0.11 points (0 of 5 seasons),
+  rush_yds -0.07 yards, both intervals touching 0. Two runs gave byte-identical results. As expected with nearly every search no_match: the
+  columns carry almost no information yet. Final runs with the null control and on the selected windows are in progress.
 - 4c.4 closed. The full backtest was run byte-identical twice (shifts c652d63e56619d1b), after its independent review, the cap fixes, a hash-seed
   determinism fix and a 37% speed-up with identical output. At the plan's constants, of 93,632 target-markets S1 matches 302, S3 8, S5 256, and
   S2 and S4 none. The lineup-adjusted vectors change about 6% of S2 / S4's 10 closest games.
