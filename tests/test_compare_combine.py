@@ -63,3 +63,12 @@ def test_verdicts():
     assert cp.verdict(0.62, -0.02, 1.27, 4) == "EDGE"      # the Oct 6 RB rushing-yards result
     assert cp.verdict(0.5, 0.1, 0.9, 1) == "EDGE"          # positive pooled gain but only one season
     assert cp.verdict(-0.2, -0.6, 0.1, 1) == "NO" and cp.verdict(-0.5, -0.9, -0.1, 0) == "NO"
+
+
+def test_one_layer_weight_rule_keeps_a_layer_only_on_clears():
+    """Decision of 2026-10-09: every Phase 4 layer keeps weight 1 in a market only on CLEARS (interval excluding zero, >= 2 seasons); EDGE -> 0."""
+    from eval import compare
+    assert compare.layer_weight(compare.verdict(0.02, 0.001, 0.04, 2)) == 1.0
+    assert compare.layer_weight(compare.verdict(0.02, -0.001, 0.04, 4)) == 0.0          # EDGE: wins seasons but the interval touches zero
+    assert compare.layer_weight(compare.verdict(0.02, 0.001, 0.04, 1)) == 0.0           # one season only
+    assert compare.layer_weight("NO") == 0.0

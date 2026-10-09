@@ -119,7 +119,7 @@ def ablation_rows(without: pl.DataFrame, with_by: dict, feats: pl.DataFrame, nul
     for market in MARKET_ORDER:
         st = gain_stats(market, _paired(market, without, with_by["all"]))
         row = dict(market=market, metric="brier" if market == "moneyline" else "mae", **st)
-        row["layer_weight"] = 1.0 if st["verdict"] == "CLEARS" else 0.0
+        row["layer_weight"] = compare.layer_weight(st["verdict"])          # the one rule for every layer (config.LAYER_WEIGHT_RULE)
         row.update(search_stats(feats, market))
         for s in cf.SEARCHES:                                # which searches carry the lift: the model with that search's columns only
             g = gain_stats(market, _paired(market, without, with_by[s]))

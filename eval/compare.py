@@ -53,6 +53,12 @@ def verdict(gain: float, ci_lo: float, ci_hi: float, seasons_won: int, min_seaso
     return "NO"
 
 
+def layer_weight(verdict_: str) -> float:
+    """One weight rule for every Phase 4 layer (decision of 2026-10-09, config.LAYER_WEIGHT_RULE): 1.0 on CLEARS, otherwise 0.0 (flagged; the market
+    stays in the build and is re-tested after later layers)."""
+    return 1.0 if verdict_ == "CLEARS" else 0.0
+
+
 # ---------------------------------------------------------------- whole-backtest comparison
 import polars as pl  # noqa: E402
 

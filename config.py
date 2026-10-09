@@ -300,3 +300,6 @@ BOOTSTRAP_RESAMPLES = 10_000
 BOOTSTRAP_SEED = 20241
 BOOTSTRAP_CI = 0.95
 MIN_SEASONS_WON = 2  # the phase-3 gate: the model must beat the best baseline in more than one season separately
+# One weight rule for every Phase 4 layer (decision of 2026-10-09; before, 4a / 4b kept a layer on "gain > 0 and >= 2 seasons won" while 4c used
+# CLEARS): a layer keeps weight 1 in a market only on CLEARS, otherwise 0 and flagged (the market is never dropped). eval.compare.layer_weight.
+LAYER_WEIGHT_RULE = "1.0 on CLEARS (gain > 0, 95% season-week interval excluding 0, wins >= MIN_SEASONS_WON seasons) else 0.0"

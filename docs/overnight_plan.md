@@ -262,6 +262,23 @@ on them cannot work. This is not a way to rescue the layer; it finds out whether
 **Stopping rule.** If the diagnostic fails AND the per-unit sweep has no passing threshold, the comps are parked at weight 0 for V1 (kept built
 and tested) and the work moves to 4d.
 
+## One weight rule for every layer (your decision of 2026-10-09)
+- **Rule.** A Phase 4 layer keeps weight 1 in a market only on CLEARS: gain > 0, the 95% season-week interval excluding zero, and a win in at
+  least MIN_SEASONS_WON = 2 seasons. Otherwise its weight is 0 and the market is flagged, never dropped. It is config.LAYER_WEIGHT_RULE /
+  eval.compare.layer_weight, used by every ablation runner.
+- **Why.** The layers used different rules. 4a and 4b kept a layer on "gain > 0 and wins in more than one season", the plan's running rule,
+  so EDGE markets kept weight 1. 4c used CLEARS, then stricter tests. Phase 6 will inherit whatever weights go in, so they follow one standard.
+- **Multiple comparisons.** The comparables' threshold and unit diagnostics added a Bonferroni correction across their 115 unit-search cells.
+  The per-market layer gates use one interval per market and no correction.
+- **The registry.** layer_weights.csv (build_layer_weights.py) holds every layer's weight per market, the table Phase 6 starts from.
+  - **4a, provisional.** pass_att, spread and moneyline (EDGE) go to weight 0, flagged "pending 4a rerun". The 4a ablation (335752f) predates
+    the role-share fixes in models/injuries.py: a role holder new to the role takes the role's average share (657f1b8), role-aware
+    baselines (609d30a, 4445d25), fixed row order (c0fdf6e). So it is rerun on the current code, twice and byte-identical, and the final 4a
+    weights come from the rerun under this rule.
+  - **4b.** Unchanged: spread CLEARS (1), everything else 0.
+  - **4c.** Parked (0).
+- **Order.** Phase 6 does not start until the rule, the provisional 4a weights and the 4a rerun are done.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming

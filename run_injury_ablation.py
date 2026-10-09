@@ -12,11 +12,13 @@ One row per market, judged on identical rows (both predictions present). Gain = 
 features help); loss is absolute error, Brier for moneyline. 95% interval: the 3.3 season-week cluster bootstrap (10,000 resamples,
 fixed seed). Per-season gains and mean bias (prediction - actual) for both runs are in the same row. No average across markets.
 
-layer_weight is fixed in advance (not tuned): 1.0 if gain > 0 and the layer wins at least 2 seasons, otherwise 0.0 -- the layer then
-stays at zero weight for that market and the market is flagged, never dropped.
+layer_weight follows the one rule for every layer (config.LAYER_WEIGHT_RULE, decision of 2026-10-09): 1.0 on CLEARS, otherwise 0.0 -- the
+layer then stays at zero weight for that market and the market is flagged, never dropped. (The first run, 335752f, used "gain > 0 and >= 2 seasons".)
+--tag writes injury_ablation_results_<pool version>_<tag>.parquet, so a rerun never overwrites an earlier result.
 """
 import argparse
 import json
+from pathlib import Path
 
 import lightgbm
 import polars as pl
@@ -35,7 +37,6 @@ RESULTS_PATH = config.result_path("injury_ablation_results")
 PREDICTIONS_PATH = config.PROCESSED_DIR / f"volume_efficiency_predictions_{config.ELIGIBLE_PLAYER_RULE['version']}.parquet"
 MARKET_ORDER = list(bl.PLAYER_MARKETS) + list(bl.GAME_MARKETS)
 WITHOUT, WITH = "vol_x_eff", "vol_x_eff_injury"
-MIN_SEASONS_FOR_WEIGHT = 2
 
 
 def run_with_injury(data, feats):
@@ -68,12 +69,12 @@ def ablation_rows(without: pl.DataFrame, with_: pl.DataFrame) -> pl.DataFrame:
         row["verdict"] = compare.verdict(row["gain"], lo, hi, wins)
         row["bias_without"] = None if market == "moneyline" else float((p0 - y).mean())
         row["bias_with"] = None if market == "moneyline" else float((p1 - y).mean())
-        row["layer_weight"] = 1.0 if (row["gain"] > 0 and wins >= MIN_SEASONS_FOR_WEIGHT) else 0.0
+        row["layer_weight"] = compare.layer_weight(row["verdict"])
         rows.append(row)
     return pl.DataFrame(rows, infer_schema_length=None)
 
 
-def run(recompute=False, save=True):
+def run(recompute=False, save=True, tag=None, results_dir=None, pred_dir=None):
     data = bt.load_backtest_data()
     feats = inf.build_injury_features(data)
     if recompute or not PREDICTIONS_PATH.exists():
@@ -90,10 +91,11 @@ def run(recompute=False, save=True):
             b"data_fingerprint": fp.encode(), b"seasons": json.dumps(config.BACKTEST_SEASONS).encode(), b"lightgbm": lightgbm.__version__.encode(),
             b"bootstrap": json.dumps(dict(resamples=config.BOOTSTRAP_RESAMPLES, seed=config.BOOTSTRAP_SEED, unit="season-week cluster")).encode(),
             b"injury_columns": json.dumps(dict(players=inf.PLAYER_COLUMNS, teams=inf.TEAM_COLUMNS)).encode(),
-            b"layer_weight_rule": f"1.0 if gain > 0 and seasons_won >= {MIN_SEASONS_FOR_WEIGHT} else 0.0".encode()})
-        pq.write_table(arrow, RESULTS_PATH)
+            b"layer_weight_rule": config.LAYER_WEIGHT_RULE.encode()})
+        name = f"injury_ablation_results_{config.ELIGIBLE_PLAYER_RULE['version']}" + (f"_{tag}" if tag else "")
+        pq.write_table(arrow, (results_dir or config.ROOT) / f"{name}.parquet")
         with_.sort("market", "season", "week", "entity").write_parquet(
-            config.PROCESSED_DIR / f"injury_ablation_predictions_{config.ELIGIBLE_PLAYER_RULE['version']}.parquet")
+            (pred_dir or config.PROCESSED_DIR) / (f"injury_ablation_predictions_{config.ELIGIBLE_PLAYER_RULE['version']}" + (f"_{tag}" if tag else "") + ".parquet"))
     return table, fp
 
 
@@ -119,7 +121,10 @@ def print_summary(t: pl.DataFrame, fp: str):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--recompute", action="store_true")
+    ap.add_argument("--tag", default=None, help="suffix of the result file name (a rerun never overwrites an earlier result)")
+    ap.add_argument("--results-dir", type=Path, default=None)
+    ap.add_argument("--pred-dir", type=Path, default=None)
     a = ap.parse_args()
-    table, fp = run(a.recompute)
+    table, fp = run(a.recompute, tag=a.tag, results_dir=a.results_dir, pred_dir=a.pred_dir)
     print_summary(table, fp)
-    print(f"\nsaved {RESULTS_PATH.name} ({table.height} rows)")
+    print(f"\nsaved injury_ablation_results ({table.height} rows, tag {a.tag})")
