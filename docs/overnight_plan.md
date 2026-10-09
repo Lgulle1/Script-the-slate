@@ -73,6 +73,20 @@ brute-force recomputation. It did find two real problems in the team caps. Both 
    caps (0 without matches).
 4. The runner now asserts that no target or match comes from 2025 before it prints "holdout untouched".
 
+## What the independent review of 4c.5 found, and the fixes
+No leakage. A brute-force check of the share math over 1,119 random pairs (missing, quality-0 and weight-0 features, group weights) matched to
+2e-16. Phase 3 results are untouched when no comparable features are passed. Fixed test-first:
+1. S2 and S4 never match at 0.70, so their share columns were null in every row. They would have reached LightGBM as `object` columns and crashed
+   the first with-comps fit. Every comparable column is now a float.
+2. Requested comparable columns could silently be missing. A file written before 4c.5, or a single search passed as a string, would have run the
+   "with" model without them. Both are now errors.
+3. The plan asks for the shares "for every search and target". They were empty without a match, which at 0.70 means about 99% of rows. A search
+   without a match now reports them from its 10 closest past games, weighted by final weight; `nomatch_S*` says which applies.
+   S5 without its FTN features is now computed, then forced to no_match, so its completeness penalty is reported. The committed search-log rows are
+   unchanged (checked on 7,500 rows).
+4. A match's shares now mirror how its similarity is formed: the mean over the similarity's factors (offense side and defense side for S2 / S4),
+   each the mean of its units.
+
 ## Things I need you to decide (I have not decided them)
 0. **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
