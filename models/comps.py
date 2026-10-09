@@ -34,6 +34,7 @@ scheme features (play action, screen, motion, no-huddle, rush rate over expected
 """
 from __future__ import annotations
 
+import json
 import warnings
 from dataclasses import dataclass, field
 
@@ -805,16 +806,11 @@ def _week_key(df: pl.DataFrame) -> np.ndarray:
     return (df["season"].to_numpy() * 100 + df["week"].to_numpy()).astype(np.int64)
 
 
-def _sigma_block(df: pl.DataFrame, unit: str, space: str, entity: str, per_week: int | None) -> tuple:
-    """(week key of each target, 20th-neighbour distance excluding the target's own entity, the same including it) for one (unit, window, space)."""
+def sigma_targets(Z: np.ndarray, keys: np.ndarray, ent: np.ndarray, gid: np.ndarray, dist_fn, per_week: int | None = None) -> tuple:
+    """(week key of each pseudo-target, 20th-neighbour distance excluding its own entity, the same including it). Rows of Z are sorted by key; the
+    neighbours of a target in week k are the rows of earlier weeks (key < k). dist_fn(A, B) -> d2 matrix. A fixed pseudo-random subset of `per_week`
+    targets per week when given."""
     import zlib
-    nf = len(unit_features(unit, space))
-    df = df.filter(pl.col("complete") if space == "extended" and any(f.space == "base" for f in cs.FEATURES[unit]) else pl.col("n_present") > 0)
-    df = df.with_columns(_k=pl.Series(_week_key(df))).sort("_k", entity, "game_id")
-    Z = vector_matrix(df, nf)
-    keys = df["_k"].to_numpy()
-    ent = df[entity].cast(pl.String).to_numpy()
-    gid = df["game_id"].to_numpy()
     ks, ke, ki = [], [], []
     starts = np.flatnonzero(np.r_[True, keys[1:] != keys[:-1]])
     ends = np.r_[starts[1:], len(keys)]
@@ -825,7 +821,7 @@ def _sigma_block(df: pl.DataFrame, unit: str, space: str, entity: str, per_week:
         if per_week is not None and len(idx) > per_week:
             order = sorted(idx, key=lambda i: zlib.crc32(f"{ent[i]}|{gid[i]}".encode()))
             idx = np.array(sorted(order[:per_week]))
-        D = np.sqrt(unit_distance(Z[idx], Z[:a], unit, space).d2)
+        D = np.sqrt(dist_fn(Z[idx], Z[:a]))
         D = np.where(np.isnan(D), np.inf, D)
         same = ent[idx][:, None] == ent[:a][None, :]
         k = cs.SIGMA_NEIGHBOR_RANK - 1
@@ -835,6 +831,15 @@ def _sigma_block(df: pl.DataFrame, unit: str, space: str, entity: str, per_week:
     if not ks:
         return np.zeros(0, dtype=np.int64), np.zeros(0), np.zeros(0)
     return np.concatenate(ks), np.concatenate(ke), np.concatenate(ki)
+
+
+def _sigma_block(df: pl.DataFrame, unit: str, space: str, entity: str, per_week: int | None) -> tuple:
+    """sigma_targets for one (unit, window, space) vector frame."""
+    nf = len(unit_features(unit, space))
+    df = df.filter(pl.col("complete") if space == "extended" and any(f.space == "base" for f in cs.FEATURES[unit]) else pl.col("n_present") > 0)
+    df = df.with_columns(_k=pl.Series(_week_key(df))).sort("_k", entity, "game_id")
+    return sigma_targets(vector_matrix(df, nf), df["_k"].to_numpy(), df[entity].cast(pl.String).to_numpy(), df["game_id"].to_numpy(),
+                         lambda A, B: unit_distance(A, B, unit, space).d2, per_week)
 
 
 def build_sigma(team: pl.DataFrame, player: pl.DataFrame, per_week_players: int | None = SIGMA_PLAYER_TARGETS_PER_WEEK) -> pl.DataFrame:
@@ -872,3 +877,482 @@ def sigma_at(table: pl.DataFrame, unit: str, window: str, space: str, season: in
     """sigma for a target in (season, week): from targets of earlier weeks only. NaN when missing."""
     r = table.filter((pl.col("unit") == unit) & (pl.col("window") == window) & (pl.col("space") == space) & (pl.col("season") == season) & (pl.col("week") == week))
     return float(r["sigma"][0]) if r.height and r["sigma"][0] is not None else float("nan")
+
+
+# ================================================================================================================================ 4c.3 searches
+def _team_meta(games: pl.DataFrame) -> pl.DataFrame:
+    cut = games.join(week_cutoffs(games), on=["season", "week"], how="left")["cutoff"]
+    return pl.DataFrame({"game_id": games["game_id"], "team": games["team"], "player_id": pl.Series([None] * games.height, dtype=pl.String),
+                         "season": games["season"], "week": games["week"], "as_of": cut})
+
+
+def matchup_vector_frames(games: pl.DataFrame, lineups: pl.DataFrame, extra: pl.DataFrame, variants=VARIANTS) -> pl.DataFrame:
+    """Vectors of the S5 results-side statistics (cs.INTERACTION_EXTRA) for every team-game and window: the same windows and league z-scores as the
+    units, unit name 'matchup_extra', space 'extended', version 'healthy'."""
+    keys = [f"x.{f.name}" for f in cs.INTERACTION_EXTRA]
+    tw = team_windows(games, lineups, extra, keys, variants)
+    wk = (games["season"].to_numpy() * 100 + games["week"].to_numpy()).astype(np.int64)
+    meta = _team_meta(games)
+    out = []
+    for v in variants:
+        rate, den = tw[v]
+        z = league_z(rate, den, wk)[0]
+        out.append(_pack(meta, z, rate, den, version="healthy", window=vname(v), unit="matchup_extra", space="extended"))
+    return pl.concat(out).sort(["window", "season", "week", "game_id", "team"])
+
+
+@dataclass(frozen=True)
+class Target:
+    """A thing to predict: a team-side of a game (player_id None) or a player in a game, for a market."""
+    market: str
+    game_id: str
+    team: str
+    opponent: str
+    season: int
+    week: int
+    player_id: str | None = None
+
+
+class _Block:
+    """Aligned base / extended matrices of one unit's vectors."""
+    def __init__(self, base, ext, ext_complete):
+        self.base, self.ext, self.ext_complete = base, ext, ext_complete
+
+
+@dataclass
+class SearchResult:
+    search: str
+    summary: dict
+    matches: pl.DataFrame | None = None
+
+
+def _list_matrix(df: pl.DataFrame, col: str, n_features: int) -> np.ndarray:
+    if df.height == 0:
+        return np.zeros((0, n_features))
+    return df[col].explode().cast(pl.Float64).fill_null(np.nan).to_numpy().reshape(df.height, n_features)
+
+
+class Pool:
+    """The comparable pool for one window: every vector, aligned to the games table, with the sigma of each unit and space at each week.
+
+    Walk-forward by construction: a search at week K reads only rows with key < K, and sigma at K is built from targets before K."""
+
+    def __init__(self, team: pl.DataFrame, player: pl.DataFrame, matchup: pl.DataFrame | None, games: pl.DataFrame, lineups: pl.DataFrame,
+                 slots: pl.DataFrame, sigma: pl.DataFrame, window: str):
+        self.window = window
+        self.games = games
+        n = self.n = games.height
+        self.idx = {(g, t): i for i, (g, t) in enumerate(zip(games["game_id"].to_list(), games["team"].to_list()))}
+        self.key = (games["season"].to_numpy() * 100 + games["week"].to_numpy()).astype(np.int64)
+        assert (np.diff(self.key) >= 0).all(), "games must be sorted by week"
+        self.team = games["team"].to_numpy()
+        self._gids = games["game_id"].to_list()
+        self.clock = game_clock(games["season"].to_numpy(), games["team_game_num"].to_numpy())
+        self.opp_row = np.array([self.idx[(g, o)] for g, o in zip(games["game_id"].to_list(), games["opponent"].to_list())], dtype=np.int64)
+        self.lin = _lineup_array(games, lineups)
+        self.slots = slots
+        self.sig = {(r["unit"], r["space"], r["season"] * 100 + r["week"]): r["sigma"] for r in sigma.filter(pl.col("window") == window).iter_rows(named=True)}
+        self.T, self.P, self.N = {}, {}, {}
+        gi = games.select("game_id", "team").with_row_index("_r")
+        for unit in TEAM_UNITS:
+            for version, store in ((target_version(unit), self.T), (pool_version(unit), self.P)):
+                blocks = {}
+                for space in stored_spaces(unit):
+                    nf = len(unit_features(unit, space))
+                    df = team.filter((pl.col("unit") == unit) & (pl.col("space") == space) & (pl.col("window") == window) & (pl.col("version") == version))
+                    j = gi.join(df, on=["game_id", "team"], how="inner")
+                    M, Nn = np.full((n, nf), np.nan), np.zeros((n, nf))
+                    comp = np.zeros(n, dtype=bool)
+                    if j.height:
+                        M[j["_r"].to_numpy()] = _list_matrix(j, "z", nf)
+                        Nn[j["_r"].to_numpy()] = np.nan_to_num(_list_matrix(j, "n", nf))
+                        comp[j["_r"].to_numpy()] = j["complete"].to_numpy()
+                    blocks[space] = (M, comp, Nn)
+                store[unit] = blocks
+        self.pl = {}
+        for unit in cs.ARCHETYPE_UNITS:
+            blocks = {}
+            order = None
+            for space in stored_spaces(unit):
+                nf = len(unit_features(unit, space))
+                df = player.filter((pl.col("unit") == unit) & (pl.col("space") == space) & (pl.col("window") == window)).sort(
+                    "season", "week", "game_id", "team", "player_id")
+                if order is None:
+                    order = df.select("season", "week", "game_id", "team", "player_id")
+                    meta = order
+                blocks[space] = (_list_matrix(df, "z", nf), df["complete"].to_numpy())
+            pkey = (meta["season"].to_numpy() * 100 + meta["week"].to_numpy()).astype(np.int64)
+            prow = np.array([self.idx[(g, t)] for g, t in zip(meta["game_id"].to_list(), meta["team"].to_list())], dtype=np.int64)
+            sl = meta.join(slots.rename({"gsis_id": "player_id"}), on=["player_id", "season", "week"], how="left")
+            self.pl[unit] = dict(blocks=blocks, key=pkey, row=prow, pid=meta["player_id"].to_numpy(), team=meta["team"].to_numpy(),
+                                 slot=sl["slot"].fill_null(0).to_numpy().astype(np.int64),
+                                 fam=sl["family"].replace_strict(FAMILY_CODE, default=0).to_numpy().astype(np.int64) if sl["family"].null_count() < sl.height else np.zeros(meta.height, dtype=np.int64))
+        self.extra = np.full((n, len(cs.INTERACTION_EXTRA)), np.nan)
+        if matchup is not None and matchup.height:
+            m = gi.join(matchup.filter(pl.col("window") == window), on=["game_id", "team"], how="inner")
+            self.extra[m["_r"].to_numpy()] = _list_matrix(m, "z", len(cs.INTERACTION_EXTRA))
+        self._build_profile()
+        self._cache = {}
+
+    # ---- S5 profile
+    def _feature_col(self, store: dict, key: str) -> tuple:
+        if key.startswith("x."):
+            return self.extra[:, [f.name for f in cs.INTERACTION_EXTRA].index(key[2:])], None
+        unit, feat = key.split(".", 1)
+        blocks = store[unit]
+        space = "extended" if "extended" in blocks else "base"
+        names = [f.name for f in unit_features(unit, space)]
+        j = names.index(feat)
+        return blocks[space][0][:, j], blocks[space][2][:, j]
+
+    def _build_profile(self):
+        off_keys, def_keys, self.groups5 = [], [], []
+        for _, o, d in cs.S5_PROFILE:
+            for k in o:
+                if k not in off_keys:
+                    off_keys.append(k)
+            for k in d:
+                if k not in def_keys:
+                    def_keys.append(k)
+        self.off_keys, self.def_keys = off_keys, def_keys
+        cols_t = np.column_stack([self._feature_col(self.T, k)[0] for k in off_keys])
+        cols_p = np.column_stack([self._feature_col(self.P, k)[0] for k in off_keys])
+        dcols = []
+        for k in def_keys:
+            v, nn = self._feature_col(self.P, k)
+            if nn is not None and k.startswith("run_defense.rush_epa_allowed_"):
+                v = np.where(nn >= cs.S5_MIN_PLAYS, v, np.nan)                 # a run-direction result needs 30 plays
+            dcols.append(v)
+        self.prof_off_t, self.prof_off_p, self.prof_def = cols_t, cols_p, np.column_stack(dcols)
+        ko = len(off_keys)
+        for _, o, d in cs.S5_PROFILE:
+            self.groups5.append([off_keys.index(k) for k in o] + [ko + def_keys.index(k) for k in d])
+        qmap = {f"{u}.{f.name}": f.quality for u in cs.UNITS for f in cs.FEATURES[u]} | {f"x.{f.name}": f.quality for f in cs.INTERACTION_EXTRA}
+        self.q5 = np.array([cs.QUALITY[qmap[k]] for k in off_keys + def_keys], dtype=float)
+        ftn = {f"{u}.{f.name}" for u in cs.UNITS for f in cs.FEATURES[u] if cs.S5_REQUIRED_SOURCE in f.source} | {f"x.{f.name}" for f in cs.INTERACTION_EXTRA}
+        self.req5 = np.array([k in ftn for k in off_keys + def_keys])
+        # sigma of the profile (walk-forward, same definition as the units)
+        Zp = np.hstack([self.prof_off_p, self.prof_def[self.opp_row]])
+        ok = (~np.isnan(Zp)).any(axis=1)
+        w = np.ones(Zp.shape[1])
+        dist = lambda A, B: group_distance(A, B, self.groups5, w, self.q5).d2
+        keys_t, d_ex, d_in = sigma_targets(Zp[ok], self.key[ok], self.team[ok], np.zeros(int(ok.sum()), dtype=int), dist)
+        self.sig5 = {}
+        for kk in np.unique(self.key):
+            m = keys_t < kk
+            self.sig5[int(kk)] = float(np.nanmedian(d_ex[m])) if m.sum() >= SIGMA_MIN_TARGETS and np.isfinite(d_ex[m]).any() else float("nan")
+
+    # ---- unit similarities over the team-game prefix
+    def _sigma(self, unit, space, key):
+        v = self.sig.get((unit, space, int(key)))
+        return float("nan") if v is None else v
+
+    def unit_sims(self, unit: str, kind: str, row: int, k: int, key: int) -> tuple:
+        """(sim, completeness, quality) arrays over the first k team-game rows for `unit` against the vector of team-game `row` (kind 'off': target version
+        vs pool version; 'def': defense units, one version)."""
+        ck = ("u", unit, kind, row)
+        if ck in self._cache:
+            sim, comp, qual = self._cache[ck]
+            return sim[:k], comp[:k], qual[:k]
+        spaces = stored_spaces(unit)
+        T, P = self.T[unit], self.P[unit]
+        sim = np.full(self.n, np.nan); comp = np.full(self.n, np.nan); qual = np.full(self.n, np.nan)
+        res = {}
+        for space in spaces:
+            tv = T[space][0][row][None, :]
+            if np.isnan(tv).all():
+                continue
+            d = unit_distance(tv, P[space][0][:self._kmax(key)], unit, space)
+            s = similarity(d.d2[0], self._sigma(unit, space, key))
+            res[space] = (s, d.completeness[0], d.quality[0])
+        kk = self._kmax(key)
+        if not res:
+            self._cache[ck] = (sim, comp, qual)
+            return sim[:k], comp[:k], qual[:k]
+        use_ext = np.zeros(kk, dtype=bool)
+        if "extended" in res and "base" in spaces:
+            use_ext = T["extended"][1][row] & P["extended"][1][:kk]
+        elif "extended" in res:
+            use_ext = T["extended"][1][row] & P["extended"][1][:kk]
+        for j, name in enumerate(("sim", "comp", "qual")):
+            arr = (sim, comp, qual)[j]
+            base = res["base"][j] if "base" in res else np.full(kk, np.nan)
+            ext = res["extended"][j] if "extended" in res else np.full(kk, np.nan)
+            arr[:kk] = np.where(use_ext, ext, base)
+        self._cache[ck] = (sim, comp, qual)
+        return sim[:k], comp[:k], qual[:k]
+
+    def _kmax(self, key: int) -> int:
+        return int(np.searchsorted(self.key, key, side="left"))
+
+    def clear_cache(self):
+        self._cache = {}
+
+    def profile_sims(self, g: int, o: int, k: int, key: int) -> tuple:
+        """S5: (sim, completeness, quality over the first k team-game matchups, target-side missing-required flag, target-side count of present features)."""
+        tv = np.concatenate([self.prof_off_t[g], self.prof_def[o]])
+        missing_required = bool(np.isnan(tv[self.req5]).any())
+        if np.isnan(tv).all():
+            return np.full(k, np.nan), np.full(k, np.nan), np.full(k, np.nan), True
+        Pm = np.hstack([self.prof_off_p[:k], self.prof_def[self.opp_row[:k]]])
+        d = group_distance(tv[None, :], Pm, self.groups5, np.ones(len(tv)), self.q5)
+        sig = self.sig5.get(int(key), float("nan"))
+        sim = similarity(d.d2[0], sig)
+        sim = np.where(np.isnan(Pm[:, self.req5]).any(axis=1), np.nan, sim)       # S5 is an EXTENDED-only search: a past matchup without the FTN features is not in its pool
+        return sim, d.completeness[0], d.quality[0], missing_required
+
+    # ---- the five searches
+    def search(self, tg: Target, which=("S1", "S2", "S3", "S4", "S5"), keep: bool = True, sim_threshold: float = cs.SIM_THRESHOLD,
+               min_neff: float = cs.MIN_NEFF) -> dict:
+        """Run the searches for one target on the lineup-adjusted target vectors; returns {search: SearchResult}.
+
+        Observations are past (key < the target week) team-games, or player-games for a player market. A match is an observation whose combined similarity
+        is at least `sim_threshold`; its weight is  similarity x recency x continuity x data-quality  (separate columns in `matches`). The search is
+        no_match when its best similarity is below the threshold or its n_eff below `min_neff`: shift = 0 and the widened-uncertainty flag is set."""
+        units = cs.MARKET_UNITS[tg.market]
+        off_units = [u for u in units if u in cs.OFFENSE_UNITS]
+        def_units = [u for u in units if u in cs.DEFENSE_UNITS]
+        arch = [u for u in units if u in cs.ARCHETYPE_UNITS]
+        is_player = tg.player_id is not None
+        g, o = self.idx[(tg.game_id, tg.team)], self.idx[(tg.game_id, tg.opponent)]
+        key = int(self.key[g])
+        k = self._kmax(key)
+        out = {}
+        # ---- the observation set (past team-games, or past player-games of the market's population)
+        if is_player:
+            pop = self.pl[arch[0]]
+            kp = int(np.searchsorted(pop["key"], key, side="left"))
+            obs_row, obs_pid, obs_team = pop["row"][:kp], pop["pid"][:kp], pop["team"][:kp]
+            obs_slot, obs_fam = pop["slot"][:kp], pop["fam"][:kp]
+            tpos = np.flatnonzero((pop["pid"] == tg.player_id) & (pop["row"] == g))
+            tvec = {s: pop["blocks"][s][0][tpos[0]][None, :] for s in pop["blocks"]} if len(tpos) else None
+            t_ext = bool(pop["blocks"]["extended"][1][tpos[0]]) if len(tpos) and "extended" in pop["blocks"] else False
+            t_slot, t_fam = (int(pop["slot"][tpos[0]]), int(pop["fam"][tpos[0]])) if len(tpos) else (0, 0)
+        else:
+            obs_row = np.arange(k)
+            obs_pid = np.full(k, None, dtype=object)
+            obs_team = self.team[:k]
+            obs_slot = obs_fam = np.zeros(k, dtype=np.int64)
+            tvec, t_ext, t_slot, t_fam = None, False, 0, 0
+        obs_opp = self.opp_row[obs_row] if len(obs_row) else obs_row
+        obs_def_team = self.team[obs_opp] if len(obs_row) else obs_team
+        # ---- component similarities (each: sim, completeness, quality arrays over the observations)
+        def team_comp(unit, kind, row, idx):
+            s, c, q = self.unit_sims(unit, kind, row, k, key)
+            return s[idx], c[idx], q[idx]
+        def arch_comp():
+            if not is_player or tvec is None:
+                return None
+            unit = arch[0]
+            spaces = stored_spaces(unit)
+            res = {}
+            for space in spaces:
+                d = unit_distance(tvec[space], pop["blocks"][space][0][:kp], unit, space)
+                res[space] = (similarity(d.d2[0], self._sigma(unit, space, key)), d.completeness[0], d.quality[0])
+            use_ext = (pop["blocks"]["extended"][1][:kp] & t_ext) if "extended" in pop["blocks"] else np.zeros(kp, dtype=bool)
+            nan = np.full(kp, np.nan)
+            pick = lambda j: np.where(use_ext, res["extended"][j] if "extended" in res else nan, res["base"][j] if "base" in res else nan)
+            return pick(0), pick(1), pick(2)
+        ac = arch_comp() if arch else None
+
+        def components(search):
+            comps = {}
+            if search in ("S1", "S4"):
+                for u in def_units:
+                    comps[u] = ("def", team_comp(u, "def", o, obs_opp))
+            if search in ("S3",):
+                for u in def_units:
+                    comps[u] = ("def", team_comp(u, "def", o, obs_opp))
+            if search in ("S2", "S4"):
+                for u in off_units:
+                    comps[u] = ("off", team_comp(u, "off", g, obs_row))
+            if search in ("S2", "S3", "S4") and ac is not None:
+                comps[arch[0]] = ("arch", ac)
+            return comps
+
+        def side_mean(comps, kinds):
+            sims = [c[0] for kd, c in comps.values() if kd in kinds]
+            if not sims:
+                return np.full(len(obs_row), np.nan)
+            arr = np.vstack(sims)
+            cnt = (~np.isnan(arr)).sum(axis=0)
+            return np.where(cnt > 0, np.nansum(arr, axis=0) / np.maximum(cnt, 1), np.nan)
+
+        for sname in which:
+            if sname == "S3" and not is_player:
+                out[sname] = SearchResult(sname, self._summary(tg, sname, None, None, None, False, "not_applicable", sim_threshold, min_neff, applicable=False))
+                continue
+            if is_player and tvec is None:
+                out[sname] = SearchResult(sname, self._summary(tg, sname, None, None, None, False, "no_target_vector", sim_threshold, min_neff))
+                continue
+            # which observations the search looks at
+            if sname == "S1":
+                sel = (obs_pid == tg.player_id) if is_player else (obs_team == tg.team)
+            elif sname == "S2":
+                sel = obs_def_team == tg.opponent
+            elif sname in ("S3", "S4"):
+                sel = (obs_pid != tg.player_id) & (obs_def_team != tg.opponent) if is_player else ((obs_team != tg.team) & (obs_def_team != tg.opponent))
+            else:
+                sel = np.ones(len(obs_row), dtype=bool)
+            idx = np.flatnonzero(sel)
+            if sname == "S5":
+                ps, pc, pq, miss = self.profile_sims(g, o, k, key)
+                sim = ps[obs_row[idx]]
+                comps_sel = {"matchup_profile": ("prof", (sim, pc[obs_row[idx]], pq[obs_row[idx]]))}
+                if miss:
+                    out[sname] = SearchResult(sname, self._summary(tg, sname, sim, comps_sel, None, False, "missing_required_ftn_features", sim_threshold, min_neff,
+                                                                   best_override=float(np.nanmax(sim)) if np.isfinite(sim).any() else float("nan")))
+                    continue
+                combined = sim
+            else:
+                allc = components(sname)
+                comps_sel = {u: (kd, (c[0][idx], c[1][idx], c[2][idx])) for u, (kd, c) in allc.items()}
+                off_side = side_mean(comps_sel, ("off", "arch")) if sname in ("S2", "S4") else None
+                if sname == "S1":
+                    combined = side_mean(comps_sel, ("def",))
+                elif sname == "S2":
+                    combined = off_side
+                elif sname == "S3":
+                    combined = side_mean(comps_sel, ("arch",)) * side_mean(comps_sel, ("def",))
+                else:
+                    combined = off_side * side_mean(comps_sel, ("def",))
+                comps_sel = {u: (kd, c) for u, (kd, c) in comps_sel.items()}
+            # weights
+            rec = 0.5 ** (np.maximum(self.clock[g] - self.clock[obs_row[idx]], 0.0) / config.RECENCY_HALF_LIFE_GAMES)
+            if sname == "S1":
+                lin_past = {c: self.lin[i][obs_row[idx]] for i, c in enumerate(LINEUP_COMPONENTS)}
+                lin_t = {c: int(self.lin[i][g]) for i, c in enumerate(LINEUP_COMPONENTS)}
+                flags = wts.continuity_flags(lin_past, lin_t, obs_slot[idx], t_slot, obs_fam[idx], t_fam, obs_team[idx] != tg.team)
+                cont = np.asarray(wts.continuity_weight(flags, config.BASELINE_TO_PENALTY_MARKET[tg.market]), dtype=float) * np.ones(len(idx))
+            else:
+                cont = np.ones(len(idx))
+            comp_arr = np.vstack([c[1][1] for c in comps_sel.values()]) if comps_sel else np.zeros((0, len(idx)))
+            qual_arr = np.vstack([c[1][2] for c in comps_sel.values()]) if comps_sel else np.zeros((0, len(idx)))
+            n_exp = max(len(comps_sel), 1)
+            completeness = np.where(np.isnan(comp_arr), 1.0, comp_arr).sum(axis=0) / n_exp if comps_sel else np.full(len(idx), np.nan)
+            with np.errstate(all="ignore"), warnings.catch_warnings():
+                warnings.simplefilter("ignore", RuntimeWarning)
+                quality = np.nanmean(qual_arr, axis=0) if comps_sel else np.full(len(idx), np.nan)
+            final = combined * rec * cont * quality
+            out[sname] = SearchResult(sname, *self._finish(tg, sname, idx, obs_row, obs_pid, obs_team, combined, comps_sel, rec, cont, quality, completeness, final,
+                                                            sim_threshold, min_neff, keep))
+        return out
+
+    def _summary(self, tg, sname, combined, comps, final, matched, reason, sim_threshold, min_neff, applicable=True, best_override=None, n_matches=0, n_eff=0.0):
+        best = best_override if best_override is not None else (float(np.nanmax(combined)) if combined is not None and np.isfinite(combined).any() else float("nan"))
+        no_match = applicable and (matched is False or reason is not None)
+        unit_best = {}
+        if comps:
+            for u, (kd, c) in comps.items():
+                s = c[0]
+                unit_best[u] = float(np.nanmax(s)) if np.isfinite(s).any() else float("nan")
+        return dict(search=sname, market=tg.market, game_id=tg.game_id, team=tg.team, player_id=tg.player_id, season=tg.season, week=tg.week,
+                    applicable=applicable, n_matches=n_matches, n_eff=n_eff, best_similarity=best, no_match=bool(no_match) if applicable else False,
+                    widened_uncertainty=bool(no_match) if applicable else False, shift=0.0 if no_match else float("nan"), reason=reason, unit_best=unit_best)
+
+    def _finish(self, tg, sname, idx, obs_row, obs_pid, obs_team, combined, comps, rec, cont, quality, completeness, final, sim_threshold, min_neff, keep):
+        ok = np.isfinite(combined) & np.isfinite(final)
+        best = float(np.nanmax(combined)) if np.isfinite(combined).any() else float("nan")
+        match = ok & (combined >= sim_threshold)
+        w = final[match]
+        n_eff = float(w.sum() ** 2 / (w ** 2).sum()) if match.any() and (w ** 2).sum() > 0 else 0.0
+        reason = None
+        if not np.isfinite(best):
+            reason = "no_similarity"
+        elif best < sim_threshold:
+            reason = "best_similarity_below_threshold"
+        elif n_eff < min_neff:
+            reason = "n_eff_below_minimum"
+        summary = self._summary(tg, sname, combined, comps, final, reason is None, reason, sim_threshold, min_neff, n_matches=int(match.sum()), n_eff=n_eff)
+        matches = None
+        if keep:
+            sel = np.flatnonzero(match)
+            cols = {"search": [sname] * len(sel), "market": [tg.market] * len(sel), "target_game_id": [tg.game_id] * len(sel), "target_team": [tg.team] * len(sel),
+                    "target_player_id": [tg.player_id] * len(sel),
+                    "obs_game_id": [self._gids[i] for i in obs_row[idx][sel]], "obs_team": [str(t) for t in obs_team[idx][sel]],
+                    "obs_player_id": [None if p is None else str(p) for p in obs_pid[idx][sel]],
+                    "obs_season": self.games["season"].to_numpy()[obs_row[idx][sel]], "obs_week": self.games["week"].to_numpy()[obs_row[idx][sel]]}
+            for u, (kd, c) in comps.items():
+                cols[f"sim_{u}"] = c[0][sel]
+            cols.update(sim_combined=combined[sel], completeness_penalty=completeness[sel], recency_weight=rec[sel], continuity_weight=cont[sel],
+                        quality_weight=quality[sel], final_weight=final[sel])
+            matches = pl.DataFrame(cols, schema_overrides={"target_player_id": pl.String, "obs_player_id": pl.String}, strict=False).sort(["sim_combined", "obs_game_id", "obs_team"], descending=[True, False, False])
+        return summary, matches
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------- targets and the no-match log
+MARKET_UNITS_TEAM = set(cs.MARKET_UNITS["spread"])
+MARKET_FAMILIES = {"pass": ("pass_att", "pass_cmp", "pass_yds"), "qb_rush": ("qb_rush_att", "qb_rush_yds"), "rush": ("rush_att", "rush_yds"),
+                   "receiving": ("targets", "rec", "rec_yds"), "game": ("spread", "moneyline", "total")}
+FAMILY_OF_MARKET = {m: f for f, ms in MARKET_FAMILIES.items() for m in ms}
+assert all(MARKET_FAMILIES[f] and len({cs.MARKET_UNITS[m] for m in ms}) == 1 for f, ms in MARKET_FAMILIES.items()), "markets in a family must share their units"
+LOG_WINDOW = "recency_weighted"        # the window the no-match log is run on (4c.6 chooses a window per unit and market)
+
+
+def backtest_targets(raw_db=config.RAW_DUCKDB_PATH) -> list:
+    """Every scored target of the 2020-2024 backtest, once per market family (markets of a family search identically): each eligible player-game for
+    the families it is eligible for, and both team sides of every game for the game markets."""
+    from eval import backtest as bt
+    data = bt.load_backtest_data(raw_db)
+    out = []
+    for r in data.player_log.filter(pl.col("elig") != "").iter_rows(named=True):
+        fams = []
+        for m in bt.eligible_markets(r):
+            if FAMILY_OF_MARKET[m] not in fams:
+                fams.append(FAMILY_OF_MARKET[m])
+        for f in fams:
+            out.append(Target(MARKET_FAMILIES[f][0], r["game_id"], r["team"], r["opponent"], r["season"], r["week"], r["player_id"]))
+    for r in data.team_log.iter_rows(named=True):
+        out.append(Target(MARKET_FAMILIES["game"][0], r["game_id"], r["team"], r["opponent"], r["season"], r["week"], None))
+    return sorted(out, key=lambda t: (t.season, t.week, t.game_id, t.team, t.player_id or "", t.market))
+
+
+def run_search_log(pool: Pool, targets: list, which=("S1", "S2", "S3", "S4", "S5"), sim_threshold: float = cs.SIM_THRESHOLD, min_neff: float = cs.MIN_NEFF) -> pl.DataFrame:
+    """One row per (target, search): n_matches, n_eff, best similarity, no_match, reason and the best similarity of every unit. No match rows are not
+    stored here; call Pool.search(..., keep=True) for them."""
+    rows = []
+    last = None
+    for tg in targets:
+        if (tg.game_id, tg.team) != last:
+            pool.clear_cache()
+            last = (tg.game_id, tg.team)
+        for sname, res in pool.search(tg, which, keep=False, sim_threshold=sim_threshold, min_neff=min_neff).items():
+            r = dict(res.summary)
+            ub = r.pop("unit_best")
+            r["unit_best"] = json.dumps({k: (None if v != v else round(v, 6)) for k, v in sorted(ub.items())})
+            rows.append(r)
+    return pl.DataFrame(rows)
+
+
+def aggregate_search_log(summary: pl.DataFrame, sim_threshold: float = cs.SIM_THRESHOLD) -> pl.DataFrame:
+    """Per season, market, search: how often the search returns no_match (and why), and per unit how often the unit alone has no similarity at all or
+    nothing above the threshold. Markets of a family are searched once and reported under each market."""
+    s = summary.filter(pl.col("applicable"))
+    rows = []
+    for (season, market, search), g in s.group_by("season", "market", "search", maintain_order=True):
+        fam = FAMILY_OF_MARKET[market]
+        n = g.height
+        base = dict(season=season, search=search, n_targets=n, no_match_rate=float(g["no_match"].mean()), median_best_similarity=float(g["best_similarity"].median() or float("nan")),
+                    median_n_eff=float(g["n_eff"].median()), reasons=json.dumps(dict(sorted(g["reason"].drop_nulls().value_counts().iter_rows()))))
+        for m in MARKET_FAMILIES[fam]:
+            rows.append(dict(base, market=m, unit="combined", unit_missing_rate=None, unit_below_threshold_rate=None))
+        ub = [json.loads(x) for x in g["unit_best"]]
+        for unit in sorted({u for d in ub for u in d}):
+            vals = [d.get(unit) for d in ub]
+            miss = np.mean([v is None for v in vals])
+            below = np.mean([(v is None) or (v < sim_threshold) for v in vals])
+            for m in MARKET_FAMILIES[fam]:
+                rows.append(dict(base, market=m, unit=unit, unit_missing_rate=float(miss), unit_below_threshold_rate=float(below)))
+    return pl.DataFrame(rows).sort("season", "market", "search", "unit")
+
+
+def load_pool(window: str = LOG_WINDOW, raw_db=config.RAW_DUCKDB_PATH, vec_dir=config.PROCESSED_DIR, log_dir=config.ROOT) -> Pool:
+    """The comparable pool for a window from the stored vectors, sigma table and the S5 results-side statistics (rebuilt from the plays in seconds)."""
+    from features import comps_ledger as L
+    from features import lineups as LU
+    games = L.load_games(raw_db)
+    plays = L.load_plays(raw_db)
+    lineups = LU.build_lineups(raw_db, None, start=cs.BASE_START).with_columns(team=L.canon("team"))
+    matchup = matchup_vector_frames(games, lineups, L.interaction_ledger(plays, games), [v for v in VARIANTS if vname(v) == window])
+    return Pool(pl.read_parquet(vec_dir / "comp_vectors_team.parquet"), pl.read_parquet(vec_dir / "comp_vectors_player.parquet"), matchup, games, lineups,
+                L.load_slots(raw_db), pl.read_parquet(log_dir / "comp_sigma.parquet"), window)

@@ -479,3 +479,184 @@ def test_sigma_excludes_a_targets_own_team():
     df = v.team.filter((pl.col("unit") == "run_offense") & (pl.col("space") == "base") & (pl.col("window") == "recency_weighted") & (pl.col("version") == "actual"))
     keys, d_ex, d_in = _sigma_block(df, "run_offense", "base", "team", None)
     assert len(keys) > 0 and (d_ex >= d_in - 1e-12).all()              # removing the own team's near-duplicate games can only push the 20th neighbour out
+
+
+# ================================================================================================================================ 4c.3 searches
+W3 = "recency_weighted"
+
+
+def _pool(inp=None, vec=None, seed=0, perturb_from=None):
+    inp = inp or synthetic_inputs(seed, perturb_from=perturb_from)
+    vec = vec or C.build_vectors(inp)
+    sigma = C.build_sigma(vec.team, vec.player)
+    return C.Pool(vec.team, vec.player, None, inp.games, inp.lineups, inp.slots, sigma, W3), inp, vec
+
+
+@pytest.fixture(scope="module")
+def pool3():
+    return _pool()
+
+
+def _team_target(inp, season=2020, week=8, market="spread"):
+    g = inp.games.filter((pl.col("season") == season) & (pl.col("week") == week)).row(0, named=True)
+    return C.Target(market, g["game_id"], g["team"], g["opponent"], season, week)
+
+
+def _player_target(inp, market="rush_att", season=2020, week=8):
+    r = inp.player.filter((pl.col("season") == season) & (pl.col("week") == week) & (pl.col("position") == "RB")).row(0, named=True)
+    return C.Target(market, r["game_id"], r["team"], r["opponent"], season, week, r["player_id"])
+
+
+def test_a_planted_near_duplicate_is_retrieved_first():
+    inp = synthetic_inputs(0)
+    vec = C.build_vectors(inp)
+    tg = _team_target(inp)
+    g = inp.games.filter((pl.col("game_id") == tg.game_id)).select("game_id", "team", "opponent")
+    # plant: a 2019 team-game whose offense units equal the target's lineup-adjusted ones and whose opposing defense equals tonight's opponent
+    H = inp.games.filter((pl.col("season") == 2019) & (pl.col("week") == 6) & ~pl.col("team").is_in([tg.team, tg.opponent])
+                         & ~pl.col("opponent").is_in([tg.team, tg.opponent])).row(0, named=True)      # a game of two other teams: S4 looks at other entities
+    team_df = vec.team
+    plants = []
+    for unit in C.TEAM_UNITS:
+        if unit in cs.OFFENSE_UNITS and unit in C.MARKET_UNITS_TEAM:
+            src = team_df.filter((pl.col("game_id") == tg.game_id) & (pl.col("team") == tg.team) & (pl.col("unit") == unit) & (pl.col("version") == C.target_version(unit)))
+            dst_version, dst_key = C.pool_version(unit), (H["game_id"], H["team"])
+        elif unit in cs.DEFENSE_UNITS and unit in C.MARKET_UNITS_TEAM:
+            src = team_df.filter((pl.col("game_id") == tg.game_id) & (pl.col("team") == tg.opponent) & (pl.col("unit") == unit) & (pl.col("version") == "healthy"))
+            dst_version, dst_key = "healthy", (H["game_id"], H["opponent"])
+        else:
+            continue
+        plants.append((unit, dst_version, dst_key, src.select("space", "window", "z", "raw", "n", "n_present", "complete")))
+    t2 = team_df
+    for unit, version, (gid, tm), src in plants:
+        keep = t2.filter(~((pl.col("game_id") == gid) & (pl.col("team") == tm) & (pl.col("unit") == unit) & (pl.col("version") == version)))
+        old = t2.filter((pl.col("game_id") == gid) & (pl.col("team") == tm) & (pl.col("unit") == unit) & (pl.col("version") == version)).drop("z", "raw", "n", "n_present", "complete")
+        new = old.join(src, on=["space", "window"], how="inner")
+        t2 = pl.concat([keep, new.select(keep.columns)])
+    vec2 = C.Vectors(t2, vec.player, vec.features, vec.completeness, vec.lineup_change)
+    pool, _, _ = _pool(inp, vec2)
+    res = pool.search(tg, which=("S4",))["S4"]
+    assert res.matches is not None and res.matches.height > 0
+    top = res.matches.row(0, named=True)
+    assert (top["obs_game_id"], top["obs_team"]) == (H["game_id"], H["team"])
+    assert top["sim_combined"] == pytest.approx(1.0, abs=1e-9)
+    assert res.matches["final_weight"][0] > 0
+
+
+def test_nothing_above_threshold_returns_no_match(pool3):
+    pool, inp, _ = pool3
+    for tg in (_team_target(inp), _player_target(inp)):
+        res = pool.search(tg, keep=True, sim_threshold=0.9999999)
+        for s, r in res.items():
+            if not r.summary["applicable"]:
+                continue
+            assert r.summary["no_match"] and r.summary["shift"] == 0.0 and r.summary["widened_uncertainty"] and r.summary["n_matches"] == 0
+            assert r.matches is None or r.matches.height == 0
+
+
+def test_s5_is_no_match_when_its_ftn_features_are_missing(pool3):
+    pool, inp, _ = pool3                                   # the synthetic pool has no S5 results-side statistics: required FTN features are missing
+    r = pool.search(_team_target(inp), which=("S5",))["S5"]
+    assert r.summary["no_match"] and r.summary["reason"] in ("missing_required_ftn_features", "no_similarity") and r.summary["shift"] == 0.0
+    r = pool.search(_player_target(inp), which=("S5",))["S5"]
+    assert r.summary["no_match"]
+
+
+def test_s3_is_not_applicable_to_team_markets(pool3):
+    pool, inp, _ = pool3
+    r = pool.search(_team_target(inp), which=("S3",))["S3"]
+    assert not r.summary["applicable"] and not r.summary["no_match"] and r.summary["reason"] == "not_applicable"
+    assert pool.search(_player_target(inp), which=("S3",))["S3"].summary["applicable"]
+
+
+def test_matches_have_separate_weight_columns_and_the_final_weight_is_their_product(pool3):
+    pool, inp, _ = pool3
+    found = 0
+    for tg in (_team_target(inp, week=9), _player_target(inp, week=9), _player_target(inp, "pass_att", week=9)):
+        for s, r in pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0).items():
+            m = r.matches
+            if m is None or m.height == 0:
+                continue
+            found += 1
+            for c in ("sim_combined", "recency_weight", "continuity_weight", "quality_weight", "final_weight", "completeness_penalty"):
+                assert c in m.columns
+            assert (m["final_weight"] - m["sim_combined"] * m["recency_weight"] * m["continuity_weight"] * m["quality_weight"]).abs().max() < 1e-12
+            assert any(c.startswith("sim_") and c != "sim_combined" for c in m.columns)
+            if s != "S1":
+                assert (m["continuity_weight"] == 1.0).all()                         # continuity compares an entity's own earlier games with its present lineup
+            else:
+                assert (m["continuity_weight"] <= 1.0).all()
+    assert found >= 4
+
+
+def test_n_eff_is_the_kish_effective_sample_size_of_the_final_weights(pool3):
+    pool, inp, _ = pool3
+    r = pool.search(_player_target(inp, week=9), keep=True, sim_threshold=0.0, min_neff=0)["S4"]
+    w = r.matches["final_weight"].to_numpy()
+    assert r.summary["n_eff"] == pytest.approx(w.sum() ** 2 / (w ** 2).sum())
+    assert r.summary["n_matches"] == len(w) and r.summary["best_similarity"] == pytest.approx(r.matches["sim_combined"].max())
+
+
+def test_no_match_is_declared_for_a_low_n_eff_even_with_a_good_best_similarity(pool3):
+    pool, inp, _ = pool3
+    r = pool.search(_player_target(inp, week=9), keep=True, sim_threshold=0.0, min_neff=1e9)["S4"]
+    assert r.summary["no_match"] and r.summary["reason"] == "n_eff_below_minimum" and r.summary["shift"] == 0.0 and r.summary["best_similarity"] > 0
+
+
+def test_the_pool_never_contains_the_target_game_or_anything_after(pool3):
+    pool, inp, _ = pool3
+    for tg in (_team_target(inp, week=9), _player_target(inp, week=9)):
+        key = tg.season * 100 + tg.week
+        for s, r in pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0).items():
+            if r.matches is not None and r.matches.height:
+                assert ((r.matches["obs_season"] * 100 + r.matches["obs_week"]) < key).all()
+
+
+def test_search_roles_are_disjoint_as_defined(pool3):
+    pool, inp, _ = pool3
+    tg = _player_target(inp, week=10)
+    res = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0)
+    s1, s2, s3, s4 = (res[k].matches for k in ("S1", "S2", "S3", "S4"))
+    assert (s1["obs_player_id"] == tg.player_id).all()                                  # S1: the player's own history
+    opp_of = lambda m: [inp.games.filter((pl.col("game_id") == g) & (pl.col("team") == t))["opponent"][0] for g, t in zip(m["obs_game_id"], m["obs_team"])]
+    assert all(o == tg.opponent for o in opp_of(s2))                                   # S2: tonight's defense
+    for m in (s3, s4):                                                                  # S3 / S4: other players against other defenses
+        assert (m["obs_player_id"] != tg.player_id).all() and all(o != tg.opponent for o in opp_of(m))
+
+
+def test_search_is_walk_forward():
+    W = (2020, 5)
+    pa, inp_a, _ = _pool()
+    pb, inp_b, _ = _pool(perturb_from=W)
+    cols = ["n_matches", "n_eff", "best_similarity", "no_match"]
+    for tg_fn in (lambda i: _team_target(i, week=4), lambda i: _player_target(i, week=4), lambda i: _player_target(i, "pass_att", week=3)):
+        ra = pa.search(tg_fn(inp_a), keep=True, sim_threshold=0.0, min_neff=0)
+        rb = pb.search(tg_fn(inp_b), keep=True, sim_threshold=0.0, min_neff=0)
+        for s in ra:
+            for c in cols:
+                x, y = ra[s].summary[c], rb[s].summary[c]
+                assert x == y or (x != x and y != y)
+            if ra[s].matches is not None and ra[s].matches.height:
+                assert ra[s].matches.equals(rb[s].matches)
+
+
+def test_search_is_deterministic(pool3):
+    pool, inp, _ = pool3
+    tg = _player_target(inp, week=10)
+    a = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0)
+    pool.clear_cache()
+    b = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0)
+    for s in a:
+        assert str(a[s].summary) == str(b[s].summary)          # str: NaN != NaN
+        assert (a[s].matches is None and b[s].matches is None) or a[s].matches.equals(b[s].matches)
+
+
+def test_the_search_log_counts_no_match_by_season_market_search_and_unit(pool3):
+    pool, inp, _ = pool3
+    targets = [_team_target(inp, week=9), _player_target(inp, week=9), _player_target(inp, "pass_att", week=9)]
+    summary = C.run_search_log(pool, targets)
+    log = C.aggregate_search_log(summary)
+    assert {"season", "market", "search", "unit", "no_match_rate", "n_targets", "unit_below_threshold_rate"} <= set(log.columns)
+    assert set(log["market"].unique()) >= {"rush_att", "rush_yds", "pass_att", "pass_cmp", "pass_yds", "spread", "moneyline", "total"}
+    assert (log.filter(pl.col("search") == "S3")["market"].is_in(["spread", "total", "moneyline"]).sum()) == 0         # S3 does not apply to team markets
+    assert set(log.filter(pl.col("market") == "rush_att")["unit"].unique()) >= {"combined", "run_defense", "rb_archetype"}
