@@ -44,9 +44,10 @@ old code, then the fix. I checked each new test by putting its bug back: it fail
    top 10 matches, shared weight, whether no_match flips, change in the volume and efficiency shifts.
 
 ## Things I need you to decide (I have not decided them)
-1. **The no-match calibration.** At SIM_THRESHOLD = 0.70 almost every search returns no_match (numbers in the 4c.3 log). The plan lets the
-   constants be tuned only on 2020-2024 walk-forward results, never per target. I am not tuning anything; 4c.4-4c.6 run on the starting values,
-   and I'll add a sensitivity table so you can see what each option would do.
+1. **The no-match calibration: see `docs/nomatch_memo.md`.** At SIM_THRESHOLD = 0.70 and MIN_NEFF = 2, practically every search returns no_match
+   (S1 rushing 97%, everything else 99.3-100%). That follows from how similarity is scaled, not from a bug. The memo explains why and gives the
+   no-match rate the same similarities would give at thresholds 0.4-0.7 and MIN_NEFF 1-3. I am not tuning anything: 4c.4-4c.6 run on the plan's
+   values until you decide.
 2. **Pool expectations for 2016-2019.** 4c.4's z needs a comp-free expected value for every matched observation. `walkforward_predictions`
    (3.5.3) covers only 2020-2024 scored rows. Extending it means moving FEATURE_HISTORY_START to 2016, which 3.5.2b reserves for a later decision.
    Until then, matches without an expectation are retrieved but carry no z, so the shift uses only matches that have one.
