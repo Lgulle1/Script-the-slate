@@ -220,9 +220,10 @@ def team_windows(games: pl.DataFrame, lineups: pl.DataFrame, wide: pl.DataFrame,
 # ---------------------------------------------------------------------------------------------------------------------------------- players
 FAMILY_CODE = {"QB": 1, "RB": 2, "WR": 3, "TE": 4}
 NO_SHRINK = ("height", "weight", "rush_attempts_per_game", "rb1_snap_share")      # body measures and per-game features: their denominator is games, not opportunities
-ARCHETYPE_POPULATION = {"rb_archetype": lambda d: (d["position"] == "RB") & ((d["c.carries"] > 0) | (d["c.targets"] > 0)),
-                        "receiver_archetype": lambda d: d["position"].is_in(["WR", "TE", "RB"]) & (d["c.targets"] > 0),
-                        "qb_archetype": lambda d: (d["position"] == "QB") & (d["c.dropbacks"] > 0)}
+# A player-game is an observation of an archetype when the player PLAYED at the position (an offensive snap in snap_counts, or a carry / target /
+# dropback), not when he had a touch: a game with zero targets is an observation (of 0 targets) for the receiver archetype, and a target whose player got
+# none must still have a vector.
+ARCHETYPE_POSITIONS = {"rb_archetype": ("RB",), "receiver_archetype": ("WR", "TE", "RB"), "qb_archetype": ("QB",)}
 SHARE_KEYS = {"carry": "u.carry_share", "target": "u.target_share", "dropback": "u.dropback_share"}      # usage shares over the TEAM's games (absences count as 0)
 RUN_KEYS = [k for k in (f"run_offense.{f.name}" for f in cs.FEATURES["run_offense"]) if k != "run_offense.rush_rate_over_expected"]
 PASS_KEYS = [f"pass_offense.{n}" for n in ("epa_per_dropback", "cpoe", "yards_per_attempt", "explosive_pass_rate", "average_depth_of_target", "sack_rate")]
@@ -248,6 +249,18 @@ class PlayerWindows:
     variants: tuple
 
 
+def population_table(inp: Inputs) -> pl.DataFrame:
+    """(game_id, team, player_id, position) of every player who played: a ledger row (a touch) or an offensive snap, at QB / RB / WR / TE."""
+    from features import comps_ledger as L
+    led = inp.player.select("game_id", "team", "player_id", "position")
+    parts = [led]
+    if inp.snaps is not None:
+        sn = (inp.snaps.select("game_id", "team", player_id="gsis_id").join(inp.games.select("game_id", "team", "season", "week"), on=["game_id", "team"], how="inner"))
+        parts.append(L.attach_position(sn, "player_id", inp.positions, extra=()).select("game_id", "team", "player_id", "position"))
+    pop = pl.concat(parts).unique(["game_id", "team", "player_id"], keep="first", maintain_order=True)
+    return pop.filter(pl.col("position").is_in(["QB", "RB", "WR", "TE"])).sort("game_id", "team", "player_id")
+
+
 def build_queries(inp: Inputs) -> pl.DataFrame:
     """The (game, team, player) pairs whose window values are needed: every player-game in the ledger; the players of a team's previous six games
     who did not play (absent regulars: their absence is what the lineup correction measures); and the players the 4a layer lists for the game."""
@@ -257,7 +270,7 @@ def build_queries(inp: Inputs) -> pl.DataFrame:
     lseq = led.join(seq, on=["game_id", "team"], how="inner")
     regs = pl.concat([lseq.select("team", "player_id", seq=pl.col("seq") + o) for o in range(1, 7)]).unique()
     absent = regs.join(seq, on=["team", "seq"], how="inner").select("game_id", "team", "player_id")
-    parts = [led, absent]
+    parts = [led, absent, population_table(inp).select("game_id", "team", "player_id")]
     if inp.detail is not None:
         parts.append(inp.detail.filter(pl.col("player_id") != "rest").select("game_id", "team", "player_id"))
     q = pl.concat(parts).unique().join(inp.games.select("game_id", "team", "season", "week"), on=["game_id", "team"], how="inner")
@@ -549,17 +562,15 @@ def team_vector_frames(inp: Inputs, tw: dict, deltas: dict | None, team_keys: li
 
 
 def player_vector_frames(inp: Inputs, pw: PlayerWindows, variants=VARIANTS) -> list:
-    """Archetype vectors for every player-game in the archetype's population (rb: an RB with a carry or target; receiver: a WR / TE / RB with a
-    target; qb: a QB with a dropback)."""
+    """Archetype vectors for every player-game in the archetype's population: the player played at one of its positions (ARCHETYPE_POSITIONS)."""
     K = cs.SHRINK_K
-    led = inp.player.select("game_id", "team", "player_id", "position", "c.carries", "c.targets", "c.dropbacks")
     q = pw.queries.with_row_index("qi").select("qi", "game_id", "team", "player_id", "season", "week")
     cut = week_cutoffs(inp.games)
-    m = led.join(q, on=["game_id", "team", "player_id"], how="inner").join(cut, on=["season", "week"], how="left")
+    m = population_table(inp).join(q, on=["game_id", "team", "player_id"], how="inner").join(cut, on=["season", "week"], how="left")
     kidx = {k: i for i, k in enumerate(pw.keys)}
     out = []
-    for unit, pop in ARCHETYPE_POPULATION.items():
-        rows = m.filter(pop(m))
+    for unit, positions in ARCHETYPE_POSITIONS.items():
+        rows = m.filter(pl.col("position").is_in(list(positions)))
         qi = rows["qi"].to_numpy()
         meta = rows.select("game_id", "team", "player_id", "season", "week", as_of="cutoff")
         wk = (rows["season"].to_numpy() * 100 + rows["week"].to_numpy()).astype(np.int64)

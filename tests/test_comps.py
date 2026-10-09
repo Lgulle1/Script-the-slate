@@ -660,3 +660,25 @@ def test_the_search_log_counts_no_match_by_season_market_search_and_unit(pool3):
     assert set(log["market"].unique()) >= {"rush_att", "rush_yds", "pass_att", "pass_cmp", "pass_yds", "spread", "moneyline", "total"}
     assert (log.filter(pl.col("search") == "S3")["market"].is_in(["spread", "total", "moneyline"]).sum()) == 0         # S3 does not apply to team markets
     assert set(log.filter(pl.col("market") == "rush_att")["unit"].unique()) >= {"combined", "run_defense", "rb_archetype"}
+
+
+def test_a_player_who_played_without_a_touch_is_an_observation_and_has_a_vector():
+    """A zero-target game of a receiver who played (snap counts) is an observation of 0 targets, and his target vector exists: restricting the archetype
+    pool to players with a touch in the game would drop the zeros and bias every outcome upward."""
+    inp = synthetic_inputs(0)
+    base = inp.player.filter(pl.col("player_id") == "AWR1")
+    ghost = base.filter(pl.col("season") * 100 + pl.col("week") <= 202007).with_columns(pl.lit("AGHOST").alias("player_id"))       # touches through week 7 only
+    pos = inp.positions.filter(pl.col("gsis_id") == "AWR1").with_columns(pl.lit("AGHOST").alias("gsis_id"))
+    slots = inp.slots.filter(pl.col("gsis_id") == "AWR1").with_columns(pl.lit("AGHOST").alias("gsis_id"))
+    snaps = inp.games.filter(pl.col("team") == "A").select("game_id", "team").with_columns(gsis_id=pl.lit("AGHOST"))
+    inp2 = C.Inputs(**{**inp.__dict__, "player": pl.concat([inp.player, ghost]), "positions": pl.concat([inp.positions, pos]), "slots": pl.concat([inp.slots, slots]), "snaps": snaps})
+    vec = C.build_vectors(inp2)
+    rows = vec.player.filter((pl.col("player_id") == "AGHOST") & (pl.col("unit") == "receiver_archetype") & (pl.col("window") == W3))
+    weeks = set(zip(rows["season"].to_list(), rows["week"].to_list()))
+    assert (2020, 8) in weeks and (2020, 10) in weeks                                  # games with a snap but no touch
+    late = rows.filter((pl.col("season") == 2020) & (pl.col("week") == 8))
+    assert late["n_present"].max() > 0                                                  # his vector comes from the touches of his earlier games
+    pool = C.Pool(vec.team, vec.player, None, inp2.games, inp2.lineups, inp2.slots, C.build_sigma(vec.team, vec.player), W3)
+    g = inp2.games.filter((pl.col("season") == 2020) & (pl.col("week") == 8) & (pl.col("team") == "A")).row(0, named=True)
+    res = pool.search(C.Target("targets", g["game_id"], "A", g["opponent"], 2020, 8, "AGHOST"), which=("S1", "S2"), sim_threshold=0.0, min_neff=0)
+    assert all(r.summary["reason"] != "no_target_vector" for r in res.values())
