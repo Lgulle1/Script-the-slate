@@ -1025,3 +1025,20 @@ def test_s1_own_history_is_exempt_from_the_across_search_average():
     assert np.allclose(out["S1"], per["S1"][0])                                          # S1 untouched (no team-game above 25%)
     for s in ("S2", "S3", "S4", "S5"):
         assert np.allclose(out[s], per[s][0])                                             # OWN averages 0.4/5 = 8% outside S1: below the 15% cap
+
+
+def test_team_vectors_do_not_depend_on_the_rows_kept_for_archetypes():
+    """The lineup correction normalises the normal usage shares over the game's lineup players only. A player kept for the archetype vectors (on the
+    pregame depth chart, or a scored target) who has not played for the team in its last six games must not rescale them."""
+    inp = synthetic_inputs(0)
+    early = inp.player.filter((pl.col("player_id") == "AWR1") & (pl.col("season") == 2019) & (pl.col("week") <= 3)).with_columns(player_id=pl.lit("AWR9"))
+    pos = inp.positions.filter(pl.col("gsis_id") == "AWR1").with_columns(gsis_id=pl.lit("AWR9"))
+    slots = inp.slots.filter(pl.col("gsis_id") == "AWR1").with_columns(gsis_id=pl.lit("AWR9"), slot=pl.lit(3, dtype=inp.slots["slot"].dtype))
+    dc = inp.depth_chart.filter(pl.col("gsis_id") == "AWR1").with_columns(gsis_id=pl.lit("AWR9"), slot=pl.lit(3, dtype=inp.depth_chart["slot"].dtype))
+    base = dict(inp.__dict__, player=pl.concat([inp.player, early]), positions=pl.concat([inp.positions, pos]), slots=pl.concat([inp.slots, slots]))
+    inp_dc = C.Inputs(**dict(base, depth_chart=pl.concat([inp.depth_chart, dc])))
+    with_dc = C.build_vectors(inp_dc)
+    without = C.build_vectors(C.Inputs(**dict(base, depth_chart=None, targets=None)))
+    assert _frame_key(with_dc.team).equals(_frame_key(without.team))
+    late = C.archetype_rows(inp_dc).filter((pl.col("player_id") == "AWR9") & pl.col("is_reference") & ~pl.col("in_pool"))
+    assert late.height == len(SEASONS) * WEEKS - 3                                      # a pregame reference row in every week he did not play

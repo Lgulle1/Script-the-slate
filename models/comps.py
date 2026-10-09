@@ -198,7 +198,7 @@ def _epoch_days(col: pl.Series) -> np.ndarray:
 
 
 def _lineup_array(games: pl.DataFrame, lineups: pl.DataFrame) -> np.ndarray:
-    j = games.select("team", "season", "week").join(lineups, on=["team", "season", "week"], how="left")
+    j = games.select("team", "season", "week").join(lineups, on=["team", "season", "week"], how="left", maintain_order="left")
     return np.vstack([j[c].fill_null(-1).to_numpy().astype(np.int64) for c in LINEUP_COMPONENTS])
 
 
@@ -209,9 +209,9 @@ def week_cutoffs(games: pl.DataFrame) -> pl.DataFrame:
 
 def team_windows(games: pl.DataFrame, lineups: pl.DataFrame, wide: pl.DataFrame, keys: list, variants=VARIANTS) -> dict:
     """{variant: (rate, den)} (n_games x n_keys) of the team's own pooled window values as of each of its games (rows follow `games`)."""
-    tw = games.select("game_id", "team", "season", "week", "gameday", "team_game_num").join(wide, on=["game_id", "team"], how="left")
+    tw = games.select("game_id", "team", "season", "week", "gameday", "team_game_num").join(wide, on=["game_id", "team"], how="left", maintain_order="left")
     assert tw.height == games.height
-    cut = games.join(week_cutoffs(games), on=["season", "week"], how="left")["cutoff"]
+    cut = games.join(week_cutoffs(games), on=["season", "week"], how="left", maintain_order="left")["cutoff"]
     num = tw.select([f"{k}|n" for k in keys]).fill_null(0.0).to_numpy()
     den = tw.select([f"{k}|d" for k in keys]).fill_null(0.0).to_numpy()
     day, cut_day = _epoch_days(tw["gameday"]), _epoch_days(cut)
@@ -317,21 +317,32 @@ def archetype_rows(inp: Inputs) -> pl.DataFrame:
             .sort("unit", "game_id", "team", "player_id"))
 
 
-def build_queries(inp: Inputs) -> pl.DataFrame:
-    """The (game, team, player) pairs whose window values are needed: every player-game in the ledger; the players of a team's previous six games
-    who did not play (absent regulars: their absence is what the lineup correction measures); and the players the 4a layer lists for the game."""
+def lineup_queries(inp: Inputs) -> pl.DataFrame:
+    """The (game, team, player) pairs of a game's lineup correction: every player-game in the ledger and every player who played (snap counts); the
+    players of a team's previous six games who did not play (absent regulars: their absence is what the lineup correction measures); and the
+    players the 4a layer lists for the game. The normal usage shares are normalised over exactly these players."""
     led = inp.player.select("game_id", "team", "player_id")
-    g = inp.games.select("game_id", "team", "season", "week").with_row_index("_r")
     seq = inp.games.sort("team", "gameday").with_columns(seq=pl.int_range(pl.len()).over("team")).select("game_id", "team", "seq")
     lseq = led.join(seq, on=["game_id", "team"], how="inner")
     regs = pl.concat([lseq.select("team", "player_id", seq=pl.col("seq") + o) for o in range(1, 7)]).unique()
     absent = regs.join(seq, on=["team", "seq"], how="inner").select("game_id", "team", "player_id")
-    parts = [led, absent, archetype_rows(inp).select("game_id", "team", "player_id")]
+    parts = [led, absent, population_table(inp).select("game_id", "team", "player_id")]
     if inp.detail is not None:
         parts.append(inp.detail.filter(pl.col("player_id") != "rest").select("game_id", "team", "player_id"))
+    return pl.concat(parts).unique()
+
+
+def build_queries(inp: Inputs) -> pl.DataFrame:
+    """The (game, team, player) pairs whose window values are needed: the lineup-correction players (lineup_queries) and every row an archetype vector
+    is stored or standardised for (archetype_rows: pool, scored targets, pregame depth chart)."""
+    parts = [lineup_queries(inp), archetype_rows(inp).select("game_id", "team", "player_id")]
     q = pl.concat(parts).unique().join(inp.games.select("game_id", "team", "season", "week"), on=["game_id", "team"], how="inner")
     q = L_attach(q, inp)
     return q.sort("player_id", "season", "week", "game_id", "team")      # adjacent per player: build_player_windows walks them in runs
+
+
+def subset_windows(pw: PlayerWindows, mask: np.ndarray) -> PlayerWindows:
+    return PlayerWindows(pw.queries.filter(pl.Series(mask)), pw.keys, pw.rate[:, mask], pw.den[:, mask], pw.variants)
 
 
 def L_attach(q: pl.DataFrame, inp: Inputs) -> pl.DataFrame:
@@ -366,8 +377,8 @@ def build_player_windows(inp: Inputs, queries: pl.DataFrame, keys: list, variant
     lin_tbl = inp.lineups
 
     def context(df: pl.DataFrame, id_col: str, with_day: str):
-        j = (df.join(lin_tbl, on=["team", "season", "week"], how="left")
-             .join(inp.slots.rename({"gsis_id": id_col, "family": "fam_s"}), on=[id_col, "season", "week"], how="left"))
+        j = (df.join(lin_tbl, on=["team", "season", "week"], how="left", maintain_order="left")
+             .join(inp.slots.rename({"gsis_id": id_col, "family": "fam_s"}), on=[id_col, "season", "week"], how="left", maintain_order="left"))
         lin = np.vstack([j[c].fill_null(-1).to_numpy().astype(np.int64) for c in LINEUP_COMPONENTS])
         slot = j["slot"].fill_null(0).to_numpy().astype(np.int64)
         fam = j["fam_s"].replace_strict(FAMILY_CODE, default=0).to_numpy().astype(np.int64) if j["fam_s"].null_count() < j.height else np.zeros(j.height, dtype=np.int64)
@@ -381,8 +392,8 @@ def build_player_windows(inp: Inputs, queries: pl.DataFrame, keys: list, variant
     num = led.select([f"{k}|n" for k in keys]).to_numpy().astype(np.float64)
     den = led.select([f"{k}|d" for k in keys]).to_numpy().astype(np.float64)
 
-    qdf = queries.join(cut, on=["season", "week"], how="left").join(
-        inp.games.select("game_id", "team", "team_game_num"), on=["game_id", "team"], how="left")
+    qdf = queries.join(cut, on=["season", "week"], how="left", maintain_order="left").join(
+        inp.games.select("game_id", "team", "team_game_num"), on=["game_id", "team"], how="left", maintain_order="left")       # rows stay aligned with `queries`
     ql, qs, qf = context(qdf.select("player_id", "team", "season", "week"), "player_id", "cutoff")
     q_day = _epoch_days(qdf["cutoff"])
     q_clk = game_clock(qdf["season"].to_numpy(), qdf["team_game_num"].to_numpy())
@@ -471,12 +482,12 @@ def share_tables(inp: Inputs, queries: pl.DataFrame) -> pl.DataFrame:
     played = inp.player.select("game_id", "team", "player_id").with_columns(active=pl.lit(True))
     if inp.snaps is not None:
         played = pl.concat([played, inp.snaps.select("game_id", "team", pl.col("gsis_id").alias("player_id")).with_columns(active=pl.lit(True))]).unique()
-    q = queries.join(played, on=["game_id", "team", "player_id"], how="left").with_columns(pl.col("active").fill_null(False))
+    q = queries.join(played, on=["game_id", "team", "player_id"], how="left", maintain_order="left").with_columns(pl.col("active").fill_null(False))
     zero = ("exp_carry", "exp_target", "exp_dropback", "b_carry", "b_target", "b_dropback")
     if inp.detail is not None:
         d = inp.detail.filter(pl.col("player_id") != "rest").select("game_id", "team", "player_id", *zero)
         has = inp.detail.select("game_id", "team").unique().with_columns(has_detail=pl.lit(True))
-        q = (q.join(d, on=["game_id", "team", "player_id"], how="left").join(has, on=["game_id", "team"], how="left")
+        q = (q.join(d, on=["game_id", "team", "player_id"], how="left", maintain_order="left").join(has, on=["game_id", "team"], how="left", maintain_order="left")
              .with_columns(pl.col("has_detail").fill_null(False)))
         return q.with_columns(*[pl.col(c).fill_null(0.0) for c in zero])
     return q.with_columns(has_detail=pl.lit(False), **{c: pl.lit(0.0) for c in zero})
@@ -586,7 +597,7 @@ def feature_meta() -> pl.DataFrame:
 def team_vector_frames(inp: Inputs, tw: dict, deltas: dict | None, team_keys: list, variants=VARIANTS, units=TEAM_UNITS) -> list:
     """Vector rows for every team-game, unit, window, space and lineup version ('healthy' always; 'adjusted' / 'actual' for the LINEUP_UNITS)."""
     g = inp.games
-    cut = g.join(week_cutoffs(g), on=["season", "week"], how="left")["cutoff"]
+    cut = g.join(week_cutoffs(g), on=["season", "week"], how="left", maintain_order="left")["cutoff"]
     meta = pl.DataFrame({"game_id": g["game_id"], "team": g["team"], "player_id": pl.Series([None] * g.height, dtype=pl.String), "season": g["season"],
                          "week": g["week"], "as_of": cut})
     wk = (g["season"].to_numpy() * 100 + g["week"].to_numpy()).astype(np.int64)
@@ -630,7 +641,7 @@ def player_vector_frames(inp: Inputs, pw: PlayerWindows, variants=VARIANTS) -> l
     for unit in ARCHETYPE_POSITIONS:
         u = rows.filter(pl.col("unit") == unit)
         sto = u.filter(pl.col("in_pool") | pl.col("is_target")).sort("season", "week", "game_id", "team", "player_id")
-        ref = u.filter(pl.col("is_reference"))
+        ref = u.filter(pl.col("is_reference")).sort("season", "week", "game_id", "team", "player_id")      # a fixed summation order
         if ref.height == 0:
             ref = sto
         qs, qr = sto["qi"].to_numpy(), ref["qi"].to_numpy()
@@ -774,7 +785,12 @@ def build_vectors(inp: Inputs, variants=VARIANTS) -> Vectors:
     pkeys = player_keys(inp.player)
     pw = build_player_windows(inp, queries, pkeys, variants)
     pw_share = build_player_windows(inp, queries, list(SHARE_KEYS.values()), variants, ledger=share_ledger(inp))
-    deltas = lineup_deltas(pw, pw_share, share_tables(inp, pw.queries), tw, team_keys, games_index, inp.games.height)
+    # the lineup correction normalises the normal shares over its own players only (the depth-chart / target-only rows exist for the archetype vectors)
+    lm = pw.queries.select("game_id", "team", "player_id").join(lineup_queries(inp).with_columns(_l=pl.lit(True)), on=["game_id", "team", "player_id"],
+                                                                 how="left", maintain_order="left")["_l"].fill_null(False).to_numpy()
+    assert pw_share.queries.select("game_id", "team", "player_id").equals(pw.queries.select("game_id", "team", "player_id"))
+    pl_, ps_ = subset_windows(pw, lm), subset_windows(pw_share, lm)
+    deltas = lineup_deltas(pl_, ps_, share_tables(inp, pl_.queries), tw, team_keys, games_index, inp.games.height)
     sort_keys = ["version", "window", "unit", "space", "season", "week", "game_id", "team", "player_id"]
     team = pl.concat(team_vector_frames(inp, tw, deltas, team_keys, variants)).sort(sort_keys, nulls_last=True)
     player = pl.concat(player_vector_frames(inp, pw, variants)).sort(sort_keys, nulls_last=True)
@@ -972,7 +988,7 @@ def sigma_at(table: pl.DataFrame, unit: str, window: str, space: str, season: in
 
 # ================================================================================================================================ 4c.3 searches
 def _team_meta(games: pl.DataFrame) -> pl.DataFrame:
-    cut = games.join(week_cutoffs(games), on=["season", "week"], how="left")["cutoff"]
+    cut = games.join(week_cutoffs(games), on=["season", "week"], how="left", maintain_order="left")["cutoff"]
     return pl.DataFrame({"game_id": games["game_id"], "team": games["team"], "player_id": pl.Series([None] * games.height, dtype=pl.String),
                          "season": games["season"], "week": games["week"], "as_of": cut})
 
@@ -1101,7 +1117,7 @@ class Pool:
                 blocks[space] = (_list_matrix(df, "z", nf), df["complete"].to_numpy())
             pkey = (meta["season"].to_numpy() * 100 + meta["week"].to_numpy()).astype(np.int64)
             prow = np.array([self.idx[(g, t)] for g, t in zip(meta["game_id"].to_list(), meta["team"].to_list())], dtype=np.int64)
-            sl = meta.join(slots.rename({"gsis_id": "player_id"}), on=["player_id", "season", "week"], how="left")
+            sl = meta.join(slots.rename({"gsis_id": "player_id"}), on=["player_id", "season", "week"], how="left", maintain_order="left")
             in_pool = meta["in_pool"].to_numpy() if "in_pool" in meta.columns else np.ones(meta.height, dtype=bool)
             self.pl[unit] = dict(blocks=blocks, key=pkey, row=prow, pid=meta["player_id"].to_numpy(), team=meta["team"].to_numpy(), in_pool=in_pool,
                                  slot=sl["slot"].fill_null(0).to_numpy().astype(np.int64),
