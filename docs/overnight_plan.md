@@ -6,10 +6,22 @@ never loaded; raw pulls append-only; results byte-identical on a second run befo
 no market dropped; no threshold tuned to flip a verdict; no PRs.
 
 ## Order of work
-1. **4c.3 finished and bug-proofed** (in progress): conformance with the plan, two from-scratch builds byte-identical, the search log run twice,
+1. **4c.3 finished and bug-proofed** (done): conformance with the plan, two from-scratch builds byte-identical, the search log run twice,
    an independent code review, every confirmed bug fixed test-first, the full suite.
-2. **4c.4 standardized residuals and shifts**, then its own verification.
-3. **4c.5 input-share tracking** (feature wiring into the volume and efficiency models, like 4a.4), then its own verification.
+2. **4c.4 standardized residuals and shifts** (verifying): its own independent review (two cap bugs fixed test-first), the full backtest run twice
+   plus once more on the faster code, all three to be byte-identical.
+3. **4c.5 input-share tracking** (feature wiring into the volume and efficiency models, like 4a.4), then its own verification. How I read it:
+   - **Shares.** For each search and target: share_obs / share_der / share_est. This is the share of the feature weight that went into the matches'
+     similarities and came from observed / derived / estimated features. A feature's weight is its effective weight in the unit distance:
+     the group weight times w_f x q_f over the group's features present on both sides. A match takes the mean over its search's units. The
+     search averages its matches by their final (capped) weight. completeness_S is the matches' completeness penalty, averaged the same way.
+     All are null when the search has no match.
+   - **Features.** The volume model of a quantity takes the comparable columns of its own market (pass_att, rush_att, targets, qb_rush_att; team
+     plays take the game markets'). Each efficiency model takes those of its market (pass_cmp, pass_yds, rush_yds, rec, rec_yds, qb_rush_yds; points
+     per play takes the game markets'). Same hyperparameters, same walk-forward harness, 2025 never touched. A row without comparable features
+     (not a scored target) has them missing, never zero.
+   - **Confidence score.** It does not exist yet (Phase 5). The shares are stored per target and search under fixed column names, ready for its
+     input-completeness component.
 4. **4c.6 window selection and the comparables ablation** (`run_comps_ablation.py`), run twice, byte-identical, CLEARS gate applied per market.
 5. **4d.0 stops for you**: the plan says to list the coaching-history sources and their terms and STOP for your review before collecting anything.
    If there is time I will prepare that list (no collection).
