@@ -193,6 +193,45 @@ improvement over random pairing (now per unit search, from the same unit search'
 excluding 0, at least 2 seasons won), layer weight 1 on CLEARS else 0 and flagged. The null control is reported. The per-unit diagnostic is added to
 the gate report. 2025 stays locked.
 
+## Threshold rule tightened (your decision of 2026-10-09)
+Tightened after the all-units baseline result, and BEFORE anyone read the per-unit sweep: one copy had finished and had not been opened; the second
+was still running. The baseline showed comps beating random pairing at every threshold while losing to a zero shift at every threshold, which
+the rule as first written would have passed.
+- **New rule.** The threshold is the lowest of 0.40-0.70 whose pooled comps beat BOTH random pairing (random error - real error) AND a zero shift
+  (z^2 - real error), each pooled improvement above zero with its 95% season-week cluster bootstrap interval's lower bound above zero.
+  Everything else in the sweep is unchanged.
+- **If no threshold passes.** SIM_THRESHOLD stays 0.70 and the comparable layer gets weight 0 for V1. There is no re-tuning afterward. The
+  team-level test below and the 2016 extension are the only further steps, in the order below.
+
+## Team-level sanity test (your decision of 2026-10-09; fixed before it runs)
+**Why.** The comps score each past game against its full comp-free expectation, which already removed the "this defense is tough" signal on
+both sides. So the comps can only show lift on the finer style interaction. This test asks the plain question instead: do similar matchups
+predict a team's output, measured against the offense's own normal output, without the base model?
+
+**The test.**
+- **Markets and data.** Team rushing yards and team pass attempts per team-game. Targets are every 2020-2024 team-game, walk-forward (only
+  games before the target week); past games go back to 2016. 2025 stays locked.
+- **(a) The offense's own recent average.** The recency-weighted mean (features/weights.py recency weights, the comps' half-life) of the
+  team's own earlier games, across seasons.
+- **(b) That average plus a matchup adjustment.** The adjustment is the similarity-weighted mean, over the matched past team-games, of (that
+  game's outcome - that offense's own recent average before that game), shrunk by n_eff / (n_eff + 5). Matched past games come from the
+  per-unit S4 pair of the market: run_offense x run_defense for rushing yards, pass_offense x pass_coverage for pass attempts. The pair is
+  checked on the geometric mean with the 0.40 floor at SIM_THRESHOLD 0.50, fixed now, with MIN_NEFF 2, recency x continuity x quality
+  weights, the 25% per-team-game cap and the healthy vectors on the recency_weighted window. Without a match, (b) = (a).
+- **(b-random).** The same adjustment with the matched past games replaced by past team-games drawn at random from the same pool before the
+  target week, keeping the real weights (so n_eff and the shrinkage are identical); 10 draws, fixed seed.
+- **Loss and rows.** Absolute error. The primary rows are the team-games where (b) has a match; all team-games are also reported.
+- **Pass, per market.** (b) beats (a), with the season-week bootstrap lower bound above zero, AND (b) beats (b-random) the same way. Each
+  market is judged on its own.
+
+**What each outcome means.**
+- **(b) passes in a market:** similarity carries real signal, and the base model's opponent-allowed features already cover it. The next
+  question is whether comps should feed or replace those features (a separate decision, written first).
+- **(b) loses even here:** the matching itself is broken (unit features or the similarity scale) and is fixed before anything else.
+
+**Order.** Per-unit sweep, then this test, then (if the signal is real) extending the comp-free predictions to 2016 (your approval). If nothing
+shows after that, the comps ship at weight 0 for V1, and the work moves to 4d.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
