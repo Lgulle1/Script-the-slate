@@ -1492,11 +1492,17 @@ class WindowedPool:
     plan's units; it stays on the base window, LOG_WINDOW)."""
 
     def __init__(self, pools: dict, choice: dict, base: str = None):
+        missing = [(m, u) for m, units in cs.MARKET_UNITS.items() for u in units if u not in choice.get(m, {})]
+        unknown = sorted({w for c in choice.values() for w in c.values()} - set(pools))
+        if missing or unknown:                         # never fall back to the base window silently
+            raise ValueError(f"window choice incomplete: {len(missing)} (market, unit) without a window {missing[:3]}; windows without a pool {unknown}")
         self.pools, self.choice = pools, choice
         self.base = pools[base or LOG_WINDOW]
         self.window = "selected"
 
     def __getattr__(self, name):                       # idx, key, games ... are the base pool's
+        if name.startswith("__") or name in ("base", "pools", "choice"):
+            raise AttributeError(name)                 # copy / pickle probe the instance before __init__ ran: no recursion through self.base
         return getattr(self.base, name)
 
     def clear_cache(self):
@@ -1584,6 +1590,9 @@ def load_windowed_pool(choice_path=None, raw_db=config.RAW_DUCKDB_PATH, vec_dir=
     """The pools of every window comp_windows.json chooses (plus the base window), wrapped so each unit reads its own."""
     choice = json.loads(open(choice_path or log_dir / "comp_windows.json").read())
     windows = sorted({w for m in choice.values() for w in m.values()} | {LOG_WINDOW})
+    bad = sorted(set(windows) - {vname(v) for v in VARIANTS})
+    if bad:
+        raise ValueError(f"comp_windows.json names windows that are not built: {bad}")
     return WindowedPool({w: load_pool(w, raw_db, vec_dir, log_dir) for w in windows}, choice)
 
 

@@ -1324,16 +1324,18 @@ def test_unit_retrieval_scores_each_unit_against_the_targets_own_z(pool3):
     assert (e["sq_error"] >= 0).all()
 
 
-def test_window_choice_compares_windows_on_the_same_targets_and_breaks_ties_by_order():
+def test_window_choice_compares_windows_on_every_target_and_breaks_ties_by_order():
     from models import comps_windows as W
     rows = []
     for wf, err in (("last_3", 1.0), ("last_6", 0.5), ("recency_weighted", 0.5)):
         for i in range(3):
             rows.append(dict(window_family=wf, market="rush_att", unit="run_defense", side="vol", game_id=f"G{i}", team="A", player_id="P", sq_error=err))
-    rows.append(dict(window_family="last_6", market="rush_att", unit="run_defense", side="vol", game_id="G9", team="A", player_id="P", sq_error=0.0))
-    summ, chosen = W.choose(pl.DataFrame(rows))
+    for wf in ("last_6", "recency_weighted"):
+        rows.append(dict(window_family=wf, market="rush_att", unit="run_defense", side="vol", game_id="G9", team="A", player_id="P", sq_error=0.0))
+    zl = {"rush_att": {(f"G{i}", "P"): 1.0 for i in (0, 1, 2, 9)}}
+    summ, chosen = W.choose(pl.DataFrame(rows), zl)
     assert chosen.row(0, named=True)["window_family"] == "last_6"                       # tie with recency_weighted: the earlier window wins
-    assert summ.filter(pl.col("window_family") == "last_6")["n_targets"][0] == 3          # G9 was scored by one window only: left out
+    assert summ.filter(pl.col("window_family") == "last_3")["error"][0] == pytest.approx((3 * 1.0 + 1.0) / 4)      # G9 charged z^2 = 1
     assert W.window_name("continuity_weighted", "rush_yds") == "continuity_weighted:rush_yds" and W.window_name("last_6", "rush_yds") == "last_6"
 
 
@@ -1383,3 +1385,40 @@ def test_markets_whose_units_read_different_windows_search_separately():
     rows = C._target_rows([tg], choice)
     assert sorted(ms for _, m in rows for ms in m) == ["rush_att", "rush_yds"] and len(rows) == 2
     assert len(C._target_rows([tg])) == 1                                                    # one window for all: one search
+
+
+def test_window_choice_keeps_team_markets_and_charges_a_window_for_targets_it_cannot_score():
+    """Team targets have player_id null: the choice must keep them. A window that cannot score a target (no vector, e.g. season_to_date in week 1)
+    is charged the error of a zero prediction, z^2, as a no-match shift of 0 would be."""
+    from models import comps_windows as W
+    zl = {"team_plays": {("G1", "A"): 2.0, ("G2", "A"): 1.0}, "rush_att": {("G1", "P"): 1.0}}
+    rows = [dict(window_family="last_3", market="spread", unit="run_defense", side="vol", game_id="G1", team="A", player_id=None, sq_error=1.0),
+            dict(window_family="last_3", market="spread", unit="run_defense", side="vol", game_id="G2", team="A", player_id=None, sq_error=0.25),
+            dict(window_family="season_to_date", market="spread", unit="run_defense", side="vol", game_id="G2", team="A", player_id=None, sq_error=0.0),
+            dict(window_family="last_3", market="rush_att", unit="run_defense", side="vol", game_id="G1", team="A", player_id="P", sq_error=0.5),
+            dict(window_family="season_to_date", market="rush_att", unit="run_defense", side="vol", game_id="G1", team="A", player_id="P", sq_error=0.1)]
+    summ, chosen = W.choose(pl.DataFrame(rows), zl)
+    assert set(chosen["market"]) == {"spread", "rush_att"}
+    sp = summ.filter(pl.col("market") == "spread").sort("window_family")
+    assert sp["error"].to_list() == pytest.approx([(1.0 + 0.25) / 2, (4.0 + 0.0) / 2])     # season_to_date charged z^2 = 4 for G1
+    assert chosen.filter(pl.col("market") == "spread")["window_family"][0] == "last_3"
+    assert chosen.filter(pl.col("market") == "rush_att")["window_family"][0] == "season_to_date"
+
+
+def test_a_windowed_pool_needs_a_window_for_every_unit_of_every_market(two_windows):
+    pools, _ = two_windows
+    with pytest.raises(ValueError):
+        C.WindowedPool(pools, {"rush_att": {"run_defense": "last_6"}}, base=W3)              # markets and units missing: no silent fallback
+    full = {m: {u: W3 for u in cs.MARKET_UNITS[m]} for m in cs.MARKET_UNITS}
+    with pytest.raises(ValueError):
+        C.WindowedPool(pools, dict(full, rush_att=dict(full["rush_att"], run_defense="last_9")), base=W3)     # a window no pool holds
+    import copy
+    copy.copy(C.WindowedPool(pools, full, base=W3))                                        # no RecursionError through __getattr__
+
+
+def test_window_summary_reports_the_targets_a_window_could_not_score():
+    from models import comps_windows as W
+    rows = [dict(window_family=w, market="rush_att", unit="run_defense", side="vol", game_id=g, team="A", player_id="P", sq_error=0.5)
+            for w, g in (("last_3", "G1"), ("last_3", "G2"), ("season_to_date", "G2"))]
+    summ, _ = W.choose(pl.DataFrame(rows), {"rush_att": {("G1", "P"): 1.0, ("G2", "P"): 1.0}})
+    assert dict(zip(summ["window_family"], summ["n_unscored"])) == {"last_3": 0, "season_to_date": 1}

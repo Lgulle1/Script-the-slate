@@ -120,16 +120,30 @@ def unit_retrieval_errors(pool: C.Pool, targets: list, zl: dict, k_neighbours: i
                                       "market": pl.String, "unit": pl.String, "side": pl.String, "sq_error": pl.Float64, "n_neighbours": pl.Int64})
 
 
-def choose(errors: pl.DataFrame) -> tuple:
-    """(summary, chosen): per (market, unit, window family) the mean error (volume + efficiency mean squared errors) over the targets every window
-    could score, and the chosen window per (market, unit)."""
-    per = errors.group_by("window_family", "market", "unit", "side", "game_id", "team", "player_id").agg(pl.col("sq_error").first())
-    # compare windows on the same targets: keep (market, unit, side, target) scored by every window family
-    nw = per["window_family"].n_unique()
-    common = per.group_by("market", "unit", "side", "game_id", "team", "player_id").agg(pl.len().alias("n")).filter(pl.col("n") == nw).drop("n")
-    per = per.join(common, on=["market", "unit", "side", "game_id", "team", "player_id"], how="inner")
-    summ = (per.group_by("window_family", "market", "unit", "side").agg(mse=pl.col("sq_error").mean(), n_targets=pl.len())
-            .group_by("window_family", "market", "unit").agg(error=pl.col("mse").sum(), n_targets=pl.col("n_targets").min()))
+def choose(errors: pl.DataFrame, zl: dict) -> tuple:
+    """(summary, chosen): per (market, unit, window family) the error -- the mean squared error of the volume z plus that of the efficiency z -- and the
+    chosen window per (market, unit). Every (market, unit, side, target) that at least one window scores enters every window's mean: a window that
+    cannot score it (no vector or no neighbour, e.g. season_to_date in week 1) is charged the error of a zero prediction, z^2, as a no-match shift of
+    0 would be. Team targets have player_id null and are kept (nulls match in the joins)."""
+    keys = ["market", "unit", "side", "game_id", "team", "player_id"]
+    per = errors.group_by("window_family", *keys).agg(pl.col("sq_error").first())
+    fams = [w for w in WINDOW_ORDER if w in set(per["window_family"].to_list())]
+    full = per.select(keys).unique().join(pl.DataFrame({"window_family": fams}), how="cross")
+    per = full.join(per, on=["window_family", *keys], how="left", nulls_equal=True)
+    tz = per.select("market", "side", "game_id", "team", "player_id").unique()
+    zval = []
+    for r in tz.iter_rows(named=True):
+        q = C.MARKET_QUANTITIES[r["market"]][0 if r["side"] == "vol" else 1]
+        zval.append(zl.get(q, {}).get((r["game_id"], r["player_id"] if r["player_id"] is not None else r["team"]), np.nan) if q else np.nan)
+    tz = tz.with_columns(z=pl.Series(zval, dtype=pl.Float64))
+    per = per.join(tz, on=["market", "side", "game_id", "team", "player_id"], how="left", nulls_equal=True)
+    if per.filter(pl.col("sq_error").is_null() & pl.col("z").is_nan()).height:
+        raise ValueError("a target scored by some window has no z to charge the others with")
+    per = per.with_columns(unscored=pl.col("sq_error").is_null()).with_columns(sq_error=pl.coalesce("sq_error", pl.col("z") ** 2))
+    summ = (per.group_by("window_family", "market", "unit", "side").agg(mse=pl.col("sq_error").mean(), n_targets=pl.len(),
+                                                                        n_unscored=pl.col("unscored").sum())
+            .group_by("window_family", "market", "unit").agg(error=pl.col("mse").sum(), n_targets=pl.col("n_targets").min(),
+                                                             n_unscored=pl.col("n_unscored").max()))
     order = {w: i for i, w in enumerate(WINDOW_ORDER)}
     summ = summ.with_columns(order=pl.col("window_family").replace_strict(order)).sort("market", "unit", "error", "order")
     chosen = summ.group_by("market", "unit", maintain_order=True).first().select("market", "unit", window_family="window_family", error="error",

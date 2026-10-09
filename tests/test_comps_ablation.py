@@ -49,3 +49,18 @@ def test_search_stats_read_the_markets_feature_rows():
     st = R.search_stats(pl.DataFrame(rows), "rush_att")
     assert st["nomatch_rate_S1"] == pytest.approx(0.75) and st["mean_n_eff_S1"] == pytest.approx(3.0)
     assert st["nomatch_rate_S2"] == 1.0 and st["mean_n_eff_S2"] is None
+
+
+def test_null_features_shuffle_within_market_and_week_and_keep_the_values():
+    rows = []
+    for m in ("rush_att", "targets"):
+        for w in (1, 2):
+            for i in range(6):
+                rows.append(dict(market=m, season=2022, week=w, game_id=f"G{w}", team="A", opponent="B", player_id=f"P{i}", shift_vol_S1=float(100 * w + i)))
+    f = pl.DataFrame(rows)
+    n = R.null_features(f)
+    assert n.height == f.height and n.columns == f.select(["market", "season", "week", "game_id", "team", "player_id", "opponent", "shift_vol_S1"]).columns
+    for (m, w), g in n.group_by("market", "week"):
+        assert sorted(g["shift_vol_S1"].to_list()) == [float(100 * w + i) for i in range(6)]     # the same values, within the same market-week
+    assert not n.sort("market", "week", "player_id")["shift_vol_S1"].equals(f.sort("market", "week", "player_id")["shift_vol_S1"])
+    assert R.null_features(f).equals(n)                                                          # a fixed permutation

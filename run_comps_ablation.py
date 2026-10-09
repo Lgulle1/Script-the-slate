@@ -18,13 +18,19 @@ markets. 2016-2019 games fill the comparable pool but are never scored.
 
 Gate (build plan 4c, fixed in advance): the comparable features stay in a market's model only on CLEARS -- gain > 0, an interval that excludes
 zero, and a win in at least config.MIN_SEASONS_WON seasons separately. layer_weight = 1.0 on CLEARS, otherwise 0.0: the features are left out of
-that market's model for now and the market is flagged, never dropped.
+that market's model for now and the market is flagged, never dropped. The run that decides the gate is the one on the windows chosen per unit and
+market (--window selected, 4c.6.1); the recency_weighted run is a reference.
+
+Null control (reported, not part of the gate): the same model with the comparable columns shuffled among the targets of the same market and week.
+LightGBM samples 80% of the columns per tree, so adding any columns moves the predictions a little; the null gain shows how large a "gain" columns
+without information produce.
 """
 import argparse
 import json
 from pathlib import Path
 
 import lightgbm
+import numpy as np
 import polars as pl
 import pyarrow.parquet as pq
 
@@ -46,6 +52,21 @@ PREDICTIONS_PATH = config.PROCESSED_DIR / f"volume_efficiency_predictions_{confi
 MARKET_ORDER = list(bl.PLAYER_MARKETS) + list(bl.GAME_MARKETS)
 WITHOUT, WITH = "vol_x_eff", "vol_x_eff_comps"
 VARIANTS = {"all": cf.SEARCHES, **{s: (s,) for s in cf.SEARCHES}}
+NULL_SEED = 20240901
+
+
+def null_features(feats: pl.DataFrame, seed: int = NULL_SEED) -> pl.DataFrame:
+    """The comparable columns shuffled among the rows of the same market, season and week (a fixed permutation): same values, no information."""
+    keys = ["market", "season", "week", "game_id", "team", "player_id"]
+    f = feats.sort(keys, nulls_last=True)
+    cols = [c for c in f.columns if c not in keys and c != "opponent"]
+    grp = f.select(pl.struct("market", "season", "week").rank("dense")).to_series().to_numpy()
+    rng = np.random.default_rng(seed)
+    perm = np.arange(f.height)
+    for gid in np.unique(grp):
+        idx = np.flatnonzero(grp == gid)
+        perm[idx] = idx[rng.permutation(len(idx))]
+    return f.select(keys + ["opponent"]).hstack(f.select(cols)[perm])
 
 
 def run_with(data, feats: pl.DataFrame, searches: tuple, name: str) -> pl.DataFrame:
@@ -93,7 +114,7 @@ def search_stats(feats: pl.DataFrame, market: str) -> dict:
     return out
 
 
-def ablation_rows(without: pl.DataFrame, with_by: dict, feats: pl.DataFrame) -> pl.DataFrame:
+def ablation_rows(without: pl.DataFrame, with_by: dict, feats: pl.DataFrame, null: pl.DataFrame | None = None) -> pl.DataFrame:
     rows = []
     for market in MARKET_ORDER:
         st = gain_stats(market, _paired(market, without, with_by["all"]))
@@ -103,6 +124,9 @@ def ablation_rows(without: pl.DataFrame, with_by: dict, feats: pl.DataFrame) -> 
         for s in cf.SEARCHES:                                # which searches carry the lift: the model with that search's columns only
             g = gain_stats(market, _paired(market, without, with_by[s]))
             row.update({f"gain_only_{s}": g["gain"], f"ci_lo_only_{s}": g["ci_lo"], f"ci_hi_only_{s}": g["ci_hi"], f"verdict_only_{s}": g["verdict"]})
+        if null is not None:                                  # shuffled comparable columns: the size of a "gain" without information
+            g = gain_stats(market, _paired(market, without, null))
+            row.update(gain_null=g["gain"], ci_lo_null=g["ci_lo"], ci_hi_null=g["ci_hi"], verdict_null=g["verdict"])
         rows.append(row)
     return pl.DataFrame(rows, infer_schema_length=None)
 
@@ -117,17 +141,20 @@ def run(window: str = "recency_weighted", recompute: bool = False, save: bool = 
     else:
         without = pl.read_parquet(PREDICTIONS_PATH).filter(pl.col("method") == WITHOUT)
     with_by = {v: run_with(data, feats, s, f"{WITH}_{v}") for v, s in VARIANTS.items()}
-    table = ablation_rows(without, with_by, feats)
+    null = run_with(data, null_features(feats), cf.SEARCHES, f"{WITH}_null")
+    table = ablation_rows(without, with_by, feats, null)
     fp = fingerprint(data)
     if save:
         config.ensure_data_dirs()
         arrow = table.to_arrow().replace_schema_metadata({
             b"data_fingerprint": fp.encode(), b"seasons": json.dumps(config.BACKTEST_SEASONS).encode(), b"lightgbm": lightgbm.__version__.encode(),
             b"comparable_window": window.encode(), b"comparable_columns": json.dumps(cf.columns()).encode(),
+            b"window_choice": ((config.ROOT / "comp_windows.json").read_bytes() if window == "selected" else b"{}"),
+            b"null_seed": str(NULL_SEED).encode(),
             b"bootstrap": json.dumps(dict(resamples=config.BOOTSTRAP_RESAMPLES, seed=config.BOOTSTRAP_SEED, unit="season-week cluster")).encode(),
             b"layer_weight_rule": b"1.0 on CLEARS (gain > 0, CI excludes 0, wins >= MIN_SEASONS_WON seasons) else 0.0"})
         pq.write_table(arrow, results_path(window, results_dir))
-        pl.concat(list(with_by.values())).sort("method", "market", "season", "week", "entity").write_parquet(
+        pl.concat(list(with_by.values()) + [null]).sort("method", "market", "season", "week", "entity").write_parquet(
             (pred_dir or config.PROCESSED_DIR) / f"comps_ablation_predictions_{window.replace(':', '_')}_{config.ELIGIBLE_PLAYER_RULE['version']}.parquet")
     return table, fp
 
@@ -146,6 +173,9 @@ def print_summary(t: pl.DataFrame, fp: str, window: str):
         print(t.select("market", *[r(c) for c in seasons]))
         print("\nGain with one search's columns only:")
         print(t.select("market", *[r(f"gain_only_{s}") for s in cf.SEARCHES], *[f"verdict_only_{s}" for s in cf.SEARCHES]))
+        if "gain_null" in t.columns:
+            print("\nNull control (comparable columns shuffled within market and week):")
+            print(t.select("market", r("gain"), r("gain_null"), ci_null=pl.format("[{}, {}]", r("ci_lo_null"), r("ci_hi_null")), verdict_null="verdict_null"))
         print("\nNo-match rate and mean n_eff (matched targets) per search:")
         print(t.select("market", *[r(f"nomatch_rate_{s}", 3) for s in cf.SEARCHES], *[r(f"mean_n_eff_{s}", 2) for s in cf.SEARCHES]))
     off = t.filter(pl.col("layer_weight") == 0.0)["market"].to_list()

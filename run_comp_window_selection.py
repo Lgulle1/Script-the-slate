@@ -38,7 +38,7 @@ if __name__ == "__main__":
                 parts.append(e.with_columns(window_family=pl.lit(wf)))
         print(f"{wf}: done at {time.time() - t0:.0f}s", flush=True)
     errors = pl.concat(parts).sort("window_family", "market", "unit", "side", "season", "week", "game_id", "team", "player_id", nulls_last=True)
-    summary, chosen = W.choose(errors)
+    summary, chosen = W.choose(errors, zl)
     a.out_dir.mkdir(parents=True, exist_ok=True)
     a.log_dir.mkdir(parents=True, exist_ok=True)
     errors.write_parquet(a.out_dir / "comp_window_errors.parquet")
