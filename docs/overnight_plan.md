@@ -8,9 +8,8 @@ no market dropped; no threshold tuned to flip a verdict; no PRs.
 ## Order of work
 1. **4c.3 finished and bug-proofed** (done): conformance with the plan, two from-scratch builds byte-identical, the search log run twice,
    an independent code review, every confirmed bug fixed test-first, the full suite.
-2. **4c.4 standardized residuals and shifts** (verifying): its own independent review (two cap bugs fixed test-first), the full backtest run twice
-   plus once more on the faster code, all three to be byte-identical.
-3. **4c.5 input-share tracking** (feature wiring into the volume and efficiency models, like 4a.4), then its own verification. How I read it:
+2. **4c.4 standardized residuals and shifts** (done, see the log).
+3. **4c.5 input-share tracking** (done, see the log). How I read it:
    - **Shares.** For each search and target: share_obs / share_der / share_est. This is the share of the feature weight that went into the matches'
      similarities and came from observed / derived / estimated features. A feature's weight is its effective weight in the unit distance:
      the group weight times w_f x q_f over the group's features present on both sides. A match takes the mean over its search's units. The
@@ -124,5 +123,12 @@ No leakage. A brute-force check of the share math over 1,119 random pairs (missi
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 4c.4 closed. The full backtest was run byte-identical twice (shifts c652d63e56619d1b), after its independent review, the cap fixes, a hash-seed
+  determinism fix and a 37% speed-up with identical output. At the plan's constants, of 93,632 target-markets S1 matches 302, S3 8, S5 256, and
+  S2 and S4 none. The lineup-adjusted vectors change about 6% of S2 / S4's 10 closest games.
+- 4c.5 closed. The comparable table now carries the input shares and completeness for every search and target, and was regenerated
+  byte-identical twice (afe25688fc05fb91). Its 4c.4 columns are identical to before. On real data every volume and efficiency table (10 quantities
+  and the two team tables) gets exactly one comparables row per scored row: no fan-out, all floats, deterministic. A LightGBM fit with the 55
+  comparable columns runs. 4c.5 also had its independent review, with four fixes test-first.
 - 4c.3: S2/S5 two-sided, continuity in every search, S5 sigma fix, fallback to healthy. 50 tests pass. Vectors rebuilt twice with the
   played-population fix: all six outputs byte-identical.
