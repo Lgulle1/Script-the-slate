@@ -171,7 +171,8 @@ DROPPED = (
 )
 
 # Decisions (all approved): coverage_mix reads the participation table (an approved exception to the BASE / EXTENDED source list, scoped to
-# coverage_mix only) and is tagged `estimated`, with its per-season completeness logged; BASE includes snap_counts and rosters_weekly (same 2016+
+# coverage_mix only) and is tagged `estimated` (the kind of data: tracking-inferred labels, not charted facts; this holds whatever the completeness, and
+# stays after the measured completeness turned out higher than first quoted) with its per-season completeness logged (comp_completeness.parquet); BASE includes snap_counts and rosters_weekly (same 2016+
 # coverage as pbp); EXPLOSIVE_PASS_YARDS = 20 and GOAL_LINE_YARDLINE = 5 stand as defined above.
 QUALITY_RULE = ("observed = a direct aggregate of a provided column of one table; derived = needs another table, a rank, a share of the team "
                 "total or a computed construct; estimated = the source is only partly populated (participation man/zone and coverage type)")
