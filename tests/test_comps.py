@@ -1306,3 +1306,32 @@ def test_a_two_sided_share_mirrors_how_the_similarity_is_formed():
     sh = C._match_shares(comps_sel, "S4", 2)
     assert sh[:, 0] == pytest.approx([1 / 3, 1 / 6, 1 / 2])
     assert C._match_shares({"run_defense": ("def", one([0, 0, 1]))}, "S1", 2)[:, 0] == pytest.approx([0, 0, 1])
+
+
+# ================================================================================================================================ 4c.6 window selection
+def test_unit_retrieval_scores_each_unit_against_the_targets_own_z(pool3):
+    from models import comps_windows as W
+    pool, inp, _ = pool3
+    tgs = [_team_target(inp, week=9), _player_target(inp, "rush_att", week=9)]
+    rng = np.random.default_rng(2)
+    zl = {q: {**{(r["game_id"], r["team"]): float(rng.normal()) for r in inp.games.iter_rows(named=True)},
+              **{(r["game_id"], r["player_id"]): float(rng.normal()) for r in inp.player.iter_rows(named=True)}}
+          for q in ("team_plays", "pts_per_play", "rush_att", "ypc")}
+    e = W.unit_retrieval_errors(pool, tgs, zl)
+    assert set(e["market"].unique()) == {"spread", "total", "moneyline", "rush_att", "rush_yds"}
+    assert set(e.filter(pl.col("market") == "rush_att")["unit"].unique()) <= set(cs.MARKET_UNITS["rush_att"])
+    assert set(e.filter(pl.col("market") == "rush_yds")["side"].unique()) == {"vol", "eff"} and (e["n_neighbours"] <= W.K_NEIGHBOURS).all()
+    assert (e["sq_error"] >= 0).all()
+
+
+def test_window_choice_compares_windows_on_the_same_targets_and_breaks_ties_by_order():
+    from models import comps_windows as W
+    rows = []
+    for wf, err in (("last_3", 1.0), ("last_6", 0.5), ("recency_weighted", 0.5)):
+        for i in range(3):
+            rows.append(dict(window_family=wf, market="rush_att", unit="run_defense", side="vol", game_id=f"G{i}", team="A", player_id="P", sq_error=err))
+    rows.append(dict(window_family="last_6", market="rush_att", unit="run_defense", side="vol", game_id="G9", team="A", player_id="P", sq_error=0.0))
+    summ, chosen = W.choose(pl.DataFrame(rows))
+    assert chosen.row(0, named=True)["window_family"] == "last_6"                       # tie with recency_weighted: the earlier window wins
+    assert summ.filter(pl.col("window_family") == "last_6")["n_targets"][0] == 3          # G9 was scored by one window only: left out
+    assert W.window_name("continuity_weighted", "rush_yds") == "continuity_weighted:rush_yds" and W.window_name("last_6", "rush_yds") == "last_6"
