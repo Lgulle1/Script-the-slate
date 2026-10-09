@@ -820,6 +820,11 @@ class Distance:
     completeness: np.ndarray     # (na, nb) share of the unit's weight mass (w x q) that is missing on either side: the completeness penalty (4c.5)
     groups: np.ndarray           # (na, nb) number of feature groups that could be compared
     quality: np.ndarray = None   # (na, nb) mean q_f of the features compared (weighted by w_f): the data-quality of the match
+    shares: np.ndarray = None    # (3, na, nb) share of the distance's effective feature weight that is observed / derived / estimated (4c.5)
+
+
+TAGS = ("observed", "derived", "estimated")
+TAG_CODE = {t: i for i, t in enumerate(TAGS)}
 
 
 def unit_features(unit: str, space: str) -> list:
@@ -838,14 +843,20 @@ def group_columns(unit: str, space: str) -> list:
     return [(name, [pos[f] for f in feats if f in pos]) for name, feats in cs.GROUPS[unit] if any(f in pos for f in feats)]
 
 
-def group_distance(A: np.ndarray, B: np.ndarray, groups: list, w: np.ndarray, q: np.ndarray, group_w: np.ndarray | None = None) -> Distance:
-    """The distance of unit_distance for any feature layout: `groups` is a list of column-index lists, w and q per column (NaN = missing)."""
+def group_distance(A: np.ndarray, B: np.ndarray, groups: list, w: np.ndarray, q: np.ndarray, group_w: np.ndarray | None = None,
+                   tags: np.ndarray | None = None) -> Distance:
+    """The distance of unit_distance for any feature layout: `groups` is a list of column-index lists, w and q per column (NaN = missing).
+
+    With `tags` (TAG_CODE per column) it also returns `shares`: each feature's effective weight in this d2 -- its group's share of the group
+    weights times its w x q over the group's features present on both sides -- summed by tag, so the three shares add up to 1 wherever d2 exists."""
     wq = w * q
     A, B = np.asarray(A, dtype=float), np.asarray(B, dtype=float)
     ma, mb = ~np.isnan(A), ~np.isnan(B)
     a0, b0 = np.where(ma, A, 0.0), np.where(mb, B, 0.0)
     shape = (A.shape[0], B.shape[0])
     num_u, den_u, got, mass, mass_w = (np.zeros(shape) for _ in range(5))
+    tags = None if tags is None else np.asarray(tags)
+    tag_num = np.zeros((len(TAGS),) + shape) if tags is not None else None
     for gi, cols in enumerate(groups):
         c = np.array(cols)
         f = wq[c]
@@ -861,16 +872,23 @@ def group_distance(A: np.ndarray, B: np.ndarray, groups: list, w: np.ndarray, q:
         got += ok
         mass += den
         mass_w += (ma[:, c] * w[c]) @ mb[:, c].T
+        if tags is not None:
+            safe = np.where(den > 1e-12, den, 1.0)
+            for t in range(len(TAGS)):
+                ct = c[tags[c] == t]
+                if len(ct):
+                    tag_num[t] += np.where(ok, gw * ((ma[:, ct] * wq[ct]) @ mb[:, ct].T) / safe, 0.0)
     total = float(wq.sum())
     with np.errstate(invalid="ignore", divide="ignore"):
         d2 = np.where(den_u > 0, num_u / den_u, np.nan)
         comp = (1.0 - mass / total) if total > 0 else np.full(shape, np.nan)
         qual = np.where(mass_w > 0, mass / np.maximum(mass_w, 1e-12), np.nan)
-    return Distance(d2, comp, got.astype(int), qual)
+        shares = np.where(den_u > 0, tag_num / np.where(den_u > 0, den_u, 1.0), np.nan) if tags is not None else None
+    return Distance(d2, comp, got.astype(int), qual, shares)
 
 
 def unit_distance(A: np.ndarray, B: np.ndarray, unit: str, space: str, quality: dict | None = None, weights: dict | None = None,
-                  group_weights: dict | None = None) -> Distance:
+                  group_weights: dict | None = None, tags: bool = False) -> Distance:
     """d2 between every row of A and every row of B (z-vectors of the same unit, window and space; NaN = missing).
 
     d2_g = sum_f(w_f q_f (a_f - b_f)^2) / sum_f(w_f q_f) over the features of group g present on BOTH sides (a feature missing on either side has
@@ -880,7 +898,8 @@ def unit_distance(A: np.ndarray, B: np.ndarray, unit: str, space: str, quality: 
     w = np.array([(weights or {}).get(f.name, cs.FEATURE_WEIGHT_DEFAULT) for f in feats], dtype=float)
     groups = group_columns(unit, space)
     gw = np.array([(group_weights or {}).get(name, cs.GROUP_WEIGHT_DEFAULT) for name, _ in groups], dtype=float)
-    return group_distance(A, B, [cols for _, cols in groups], w, feature_quality(unit, space, quality), gw)
+    return group_distance(A, B, [cols for _, cols in groups], w, feature_quality(unit, space, quality), gw,
+                          np.array([TAG_CODE[f.quality] for f in feats]) if tags else None)
 
 
 def similarity(d2, sigma):
@@ -1164,6 +1183,7 @@ class Pool:
         qmap = {f"{u}.{f.name}": f.quality for u in cs.UNITS for f in cs.FEATURES[u]} | {f"x.{f.name}": f.quality for f in cs.INTERACTION_EXTRA}
         ftn = {f"{u}.{f.name}" for u in cs.UNITS for f in cs.FEATURES[u] if cs.S5_REQUIRED_SOURCE in f.source} | {f"x.{f.name}" for f in cs.INTERACTION_EXTRA}
         self.q5 = {"off": np.array([cs.QUALITY[qmap[k]] for k in off_keys]), "def": np.array([cs.QUALITY[qmap[k]] for k in def_keys])}
+        self.tag5 = {"off": np.array([TAG_CODE[qmap[k]] for k in off_keys]), "def": np.array([TAG_CODE[qmap[k]] for k in def_keys])}
         self.req5 = {"off": np.array([k in ftn for k in off_keys]), "def": np.array([k in ftn for k in def_keys])}
         # the matchups the S5 pool admits: every FTN-sourced profile feature present on both sides
         self.admit5 = ~np.isnan(self.prof_off_p[:, self.req5["off"]]).any(axis=1) & ~np.isnan(self.prof_def[self.opp_row][:, self.req5["def"]]).any(axis=1)
@@ -1183,35 +1203,37 @@ class Pool:
         return float("nan") if v is None else v
 
     def unit_sims(self, unit: str, kind: str, row: int, k: int, key: int, version: str = "adjusted") -> tuple:
-        """(sim, completeness, quality) arrays over the first k team-game rows for `unit` against the vector of team-game `row` (kind 'off': the target
+        """(sim, completeness, quality, shares (3, k)) arrays over the first k team-game rows for `unit` against the vector of team-game `row` (kind 'off': the target
         version -- lineup-adjusted, or 'healthy' for the comparison run -- vs the pool version; 'def': defense units, one version). A pair is compared
         in EXTENDED only when both sides are EXTENDED-complete and the EXTENDED sigma exists; otherwise in BASE."""
         version = version if unit in LINEUP_UNITS else "adjusted"         # a unit without a lineup correction has one target version
         ck = ("u", unit, kind, row, version)
         if ck in self._cache:
-            sim, comp, qual = self._cache[ck]
-            return sim[:k], comp[:k], qual[:k]
+            sim, comp, qual, shr = self._cache[ck]
+            return sim[:k], comp[:k], qual[:k], shr[:, :k]
         spaces = stored_spaces(unit)
         T = (self.TH if version == "healthy" else self.T)[unit]
         P = self.P[unit]
         kk = self._kmax(key)
-        sim = np.full(self.n, np.nan); comp = np.full(self.n, np.nan); qual = np.full(self.n, np.nan)
+        sim = np.full(self.n, np.nan); comp = np.full(self.n, np.nan); qual = np.full(self.n, np.nan); shr = np.full((len(TAGS), self.n), np.nan)
         res = {}
         for space in spaces:
             tv = T[space][0][row][None, :]
             sig = self._sigma(unit, space, key)
             if np.isnan(tv).all() or not np.isfinite(sig):
                 continue
-            d = unit_distance(tv, P[space][0][:kk], unit, space)
-            res[space] = (similarity(d.d2[0], sig), d.completeness[0], d.quality[0])
+            d = unit_distance(tv, P[space][0][:kk], unit, space, tags=True)
+            res[space] = (similarity(d.d2[0], sig), d.completeness[0], d.quality[0], d.shares[:, 0, :])
         if res:
             use_ext = (T["extended"][1][row] & P["extended"][1][:kk]) if "extended" in res else np.zeros(kk, dtype=bool)
             for j, arr in enumerate((sim, comp, qual)):
                 base = res["base"][j] if "base" in res else np.full(kk, np.nan)
                 ext = res["extended"][j] if "extended" in res else np.full(kk, np.nan)
                 arr[:kk] = np.where(use_ext, ext, base)
-        self._cache[ck] = (sim, comp, qual)
-        return sim[:k], comp[:k], qual[:k]
+            nan3 = np.full((len(TAGS), kk), np.nan)
+            shr[:, :kk] = np.where(use_ext[None, :], res["extended"][3] if "extended" in res else nan3, res["base"][3] if "base" in res else nan3)
+        self._cache[ck] = (sim, comp, qual, shr)
+        return sim[:k], comp[:k], qual[:k], shr[:, :k]
 
     def _kmax(self, key: int) -> int:
         return int(np.searchsorted(self.key, key, side="left"))
@@ -1237,11 +1259,11 @@ class Pool:
         for side, tv, Pm in (("off", off_t[g], self.prof_off_p[:k]), ("def", self.prof_def[o], self.prof_def[self.opp_row[:k]])):
             missing |= bool(np.isnan(tv[self.req5[side]]).any())
             if np.isnan(tv).all():
-                out[side] = (np.full(k, np.nan), np.full(k, np.nan), np.full(k, np.nan))
+                out[side] = (np.full(k, np.nan), np.full(k, np.nan), np.full(k, np.nan), np.full((len(TAGS), k), np.nan))
                 continue
-            d = group_distance(tv[None, :], Pm, self.groups5[side], np.ones(len(tv)), self.q5[side])
+            d = group_distance(tv[None, :], Pm, self.groups5[side], np.ones(len(tv)), self.q5[side], tags=self.tag5[side])
             sim = np.where(self.admit5[:k], similarity(d.d2[0], self.sig5.get((side, int(key)), float("nan"))), np.nan)   # EXTENDED-only pool
-            out[side] = (sim, d.completeness[0], d.quality[0])
+            out[side] = (sim, d.completeness[0], d.quality[0], d.shares[:, 0, :])
         return out, missing
 
     # ---- the five searches
@@ -1288,8 +1310,8 @@ class Pool:
         obs_def_team = self.team[obs_opp] if len(obs_row) else obs_team
         # ---- component similarities (each: sim, completeness, quality arrays over the observations)
         def team_comp(unit, kind, row, idx):
-            s, c, q = self.unit_sims(unit, kind, row, k, key, version)
-            return s[idx], c[idx], q[idx]
+            s, c, q, sh = self.unit_sims(unit, kind, row, k, key, version)
+            return s[idx], c[idx], q[idx], sh[:, idx]
         def arch_comp():
             """The player's archetype similarity to each observation (one version: a player's own history has no lineup correction). EXTENDED only when
             both sides are EXTENDED-complete and the EXTENDED sigma exists; otherwise BASE."""
@@ -1301,12 +1323,13 @@ class Pool:
                 sig = self._sigma(unit, space, key)
                 if not np.isfinite(sig):
                     continue
-                d = unit_distance(tvec[space], pop["blocks"][space][0][oi], unit, space)
-                res[space] = (similarity(d.d2[0], sig), d.completeness[0], d.quality[0])
-            nan = np.full(len(oi), np.nan)
+                d = unit_distance(tvec[space], pop["blocks"][space][0][oi], unit, space, tags=True)
+                res[space] = (similarity(d.d2[0], sig), d.completeness[0], d.quality[0], d.shares[:, 0, :])
+            nan, nan3 = np.full(len(oi), np.nan), np.full((len(TAGS), len(oi)), np.nan)
             use_ext = (pop["blocks"]["extended"][1][oi] & t_ext) if "extended" in res else np.zeros(len(oi), dtype=bool)
             pick = lambda j: np.where(use_ext, res["extended"][j] if "extended" in res else nan, res["base"][j] if "base" in res else nan)
-            return pick(0), pick(1), pick(2)
+            shr = np.where(use_ext[None, :], res["extended"][3] if "extended" in res else nan3, res["base"][3] if "base" in res else nan3)
+            return pick(0), pick(1), pick(2), shr
         ac = None
         if arch and is_player and tvec is not None:
             ck = ("a", arch[0], g, tg.player_id)                    # one player's archetype similarities serve every search, market and version
@@ -1354,7 +1377,7 @@ class Pool:
             idx = np.flatnonzero(sel)
             if sname == "S5":
                 prof, miss = self.profile_sims(g, o, k, key, version)
-                comps_sel = {f"matchup_{'offense' if side == 'off' else 'defense'}": (side, tuple(a[obs_row[idx]] for a in prof[side])) for side in ("off", "def")}
+                comps_sel = {f"matchup_{'offense' if side == 'off' else 'defense'}": (side, tuple(a[..., obs_row[idx]] for a in prof[side])) for side in ("off", "def")}
                 sim_off, sim_def = side_mean(comps_sel, ("off",)), side_mean(comps_sel, ("def",))
                 combined = sim_off * sim_def
                 if miss:
@@ -1363,7 +1386,7 @@ class Pool:
                     continue
             else:
                 allc = components(sname)
-                comps_sel = {u: (kd, (c[0][idx], c[1][idx], c[2][idx])) for u, (kd, c) in allc.items()}
+                comps_sel = {u: (kd, tuple(a[..., idx] for a in c)) for u, (kd, c) in allc.items()}
                 sim_def = side_mean(comps_sel, ("def",))
                 if sname == "S1":
                     sim_off = np.full(len(idx), np.nan)
@@ -1389,8 +1412,13 @@ class Pool:
                 warnings.simplefilter("ignore", RuntimeWarning)
                 quality = np.nanmean(qual_arr, axis=0) if comps_sel else np.full(len(idx), np.nan)
             final = combined * rec * cont * quality
+            # 4c.5: the observed / derived / estimated share of each match's similarity, the mean over the search's units that could be compared
+            sh_arr = np.stack([c[1][3] for c in comps_sel.values()]) if comps_sel else np.full((1, len(TAGS), len(idx)), np.nan)
+            with np.errstate(all="ignore"), warnings.catch_warnings():
+                warnings.simplefilter("ignore", RuntimeWarning)
+                share = np.nanmean(sh_arr, axis=0)
             out[sname] = SearchResult(sname, *self._finish(tg, sname, idx, obs_row, obs_pid, obs_team, combined, comps_sel, rec, cont, quality, completeness, final,
-                                                            sim_threshold, min_neff, keep, sim_off, sim_def, sensitivity, top_any))
+                                                            sim_threshold, min_neff, keep, sim_off, sim_def, sensitivity, top_any, share))
         return out
 
     def _summary(self, tg, sname, combined, comps, final, matched, reason, sim_threshold, min_neff, applicable=True, best_override=None, n_matches=0, n_eff=0.0):
@@ -1406,7 +1434,7 @@ class Pool:
                     widened_uncertainty=bool(no_match) if applicable else False, shift=0.0 if no_match else float("nan"), reason=reason, unit_best=unit_best)
 
     def _finish(self, tg, sname, idx, obs_row, obs_pid, obs_team, combined, comps, rec, cont, quality, completeness, final, sim_threshold, min_neff, keep,
-                sim_off=None, sim_def=None, sensitivity=(), top_any=0):
+                sim_off=None, sim_def=None, sensitivity=(), top_any=0, share=None):
         ok = np.isfinite(combined) & np.isfinite(final)
         best = float(np.nanmax(combined)) if np.isfinite(combined).any() else float("nan")
         match = ok & (combined >= sim_threshold)
@@ -1445,6 +1473,8 @@ class Pool:
             cols.update(sim_offense=(nan if sim_off is None else sim_off)[sel], sim_defense=(nan if sim_def is None else sim_def)[sel])
             cols.update(sim_combined=combined[sel], completeness_penalty=completeness[sel], recency_weight=rec[sel], continuity_weight=cont[sel],
                         quality_weight=quality[sel], final_weight=final[sel])
+            if share is not None:
+                cols.update({f"share_{t[:3]}": share[i][sel] for i, t in enumerate(TAGS)})        # share_obs / share_der / share_est
             matches = pl.DataFrame(cols, schema_overrides={"target_player_id": pl.String, "obs_player_id": pl.String}, strict=False).sort(
                 ["sim_combined", "obs_game_id", "obs_team", "obs_player_id"], descending=[True, False, False, False], nulls_last=True)
         return summary, matches
@@ -1707,6 +1737,11 @@ def _target_rows(targets: list) -> list:
 RETRIEVAL_TOP_K = 10        # healthy vs lineup-adjusted run: the overlap of the top 10 matches by final weight (build plan 4c.1.4)
 
 
+def _wmean(w: np.ndarray, x: np.ndarray):
+    ok = np.isfinite(x) & (w > 0)
+    return float((w[ok] * x[ok]).sum() / w[ok].sum()) if ok.any() else None
+
+
 def _side_weights(sets: dict, j: int, min_neff: float) -> tuple:
     """The capped weights of one side (j = 1 volume z, 2 efficiency z) over the searches in `sets`: (weights per search, n_eff per search, the searches
     that match, the teams the across-search cap left frozen). A match counts only with its own expectation. A search matches when its n_eff after
@@ -1771,6 +1806,11 @@ def _market_shifts(res: dict, tg: Target, market: str, zl: dict, min_neff: float
         nomatch_eff = (nomatch or s not in alive_e) if qe else None
         vals.update({f"shift_vol_{s}": sv, f"shift_eff_{s}": se if qe else None, f"n_eff_{s}": float(nv.get(s, 0.0)), f"nomatch_{s}": bool(nomatch),
                      f"n_eff_eff_{s}": float(ne.get(s, 0.0)) if qe else None, f"nomatch_eff_{s}": nomatch_eff})
+        # 4c.5: the observed / derived / estimated share of the feature weight behind the search's matches, and their completeness penalty, averaged with
+        # the weights the volume shift uses (null when the search does not match)
+        mt = sets[s][0] if (s in sets and not nomatch) else None
+        for col, name in [(f"share_{t[:3]}", f"share_{t[:3]}_{s}") for t in TAGS] + [("completeness_penalty", f"completeness_{s}")]:
+            vals[name] = _wmean(wv[s], mt[col].to_numpy()) if mt is not None and col in mt.columns else None
         details.append(dict(search=s, applicable=summ["applicable"], n_matches=summ["n_matches"], n_eff_similarity=summ["n_eff"],
                             n_with_expectation_vol=int(np.isfinite(sets[s][1]).sum()) if s in sets else 0,
                             n_with_expectation_eff=int(np.isfinite(sets[s][2]).sum()) if s in sets else 0,
@@ -1793,7 +1833,9 @@ def comp_shifts(pool: Pool, targets: list, zl: dict, keep_matches: bool = True, 
     """4c.4 for every (target, market): (features, matches, detail, retrieval).
 
     features: one row per target and market with shift_vol_S1..S5, shift_eff_S1..S5, n_eff_S1..S5, nomatch_S1..S5, best_sim_S1..S5 (plan 4c.4.5),
-    from the searches on the lineup-adjusted target vectors.
+    from the searches on the lineup-adjusted target vectors, plus n_eff_eff / nomatch_eff (the efficiency side) and, from 4c.5, share_obs / share_der /
+    share_est and completeness per search: the observed / derived / estimated share of the feature weight behind the matches and their completeness
+    penalty, averaged with the weights of the volume shift (null without a match).
     matches: the per-match table (similarity, recency, continuity, quality, final weight, the capped weights and z for volume and efficiency).
     detail: per target, market and search: how many matches had an expectation, n_eff before and after the caps, and why a search was no_match.
     retrieval (healthy=True): per target, market and search, how the comparables change when the same search runs on the HEALTHY target vector (plan

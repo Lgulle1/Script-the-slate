@@ -1173,3 +1173,82 @@ def test_retrieval_change_does_not_depend_on_the_hash_seed():
     outs = {subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, cwd=str(config.ROOT),
                            env={**__import__("os").environ, "PYTHONHASHSEED": str(seed)}).stdout.strip() for seed in range(6)}
     assert len(outs) == 1 and outs != {""}
+
+
+# ================================================================================================================================ 4c.5 input shares
+def test_tag_shares_follow_the_effective_feature_weights():
+    """Group 1 = an observed (q 1) and an estimated (q 0.65) feature, group 2 = a derived one. Each group carries half of the unit distance."""
+    A = np.array([[0.0, 1.0, 2.0]])
+    B = np.array([[1.0, 1.0, np.nan], [0.0, 0.0, 0.0]])
+    d = C.group_distance(A, B, [[0, 1], [2]], np.ones(3), np.array([1.0, 0.65, 0.9]), tags=np.array([0, 2, 1]))
+    sh = d.shares[:, 0, :]
+    assert sh[:, 0] == pytest.approx([1 / 1.65, 0.0, 0.65 / 1.65])                            # the derived feature is missing: only group 1 counts
+    assert sh[:, 1] == pytest.approx([0.5 / 1.65, 0.5, 0.5 * 0.65 / 1.65])
+    assert np.allclose(sh.sum(axis=0), 1.0)
+    assert C.group_distance(A, B, [[0, 1], [2]], np.ones(3), np.ones(3)).shares is None       # only on request
+
+
+def test_every_match_carries_its_input_shares(pool3):
+    pool, inp, _ = pool3
+    for tg in (_team_target(inp, week=9), _player_target(inp, week=9)):
+        for s, r in pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0).items():
+            m = r.matches
+            if m is None or m.height == 0:
+                continue
+            tot = (m["share_obs"] + m["share_der"] + m["share_est"]).to_numpy()
+            assert np.allclose(tot, 1.0), s
+
+
+def test_search_shares_are_the_shift_weighted_mean_of_the_matches(shifts44):
+    (feats, matches, _, _), _, _ = shifts44
+    seen = 0
+    for r in feats.iter_rows(named=True):
+        for s in C.SEARCHES:
+            if r[f"nomatch_{s}"]:
+                assert r[f"share_obs_{s}"] is None and r[f"completeness_{s}"] is None
+                continue
+            m = matches.filter((pl.col("market") == r["market"]) & (pl.col("search") == s) & (pl.col("target_game_id") == r["game_id"])
+                               & (pl.col("target_team") == r["team"]) & ((pl.col("target_player_id") == r["player_id"]) if r["player_id"] else pl.col("target_player_id").is_null()))
+            w = m["weight_capped_vol"].to_numpy()
+            assert r[f"share_obs_{s}"] == pytest.approx((w * m["share_obs"].to_numpy()).sum() / w.sum())
+            assert r[f"completeness_{s}"] == pytest.approx((w * m["completeness_penalty"].to_numpy()).sum() / w.sum())
+            assert r[f"share_obs_{s}"] + r[f"share_der_{s}"] + r[f"share_est_{s}"] == pytest.approx(1.0)
+            seen += 1
+    assert seen > 0
+
+
+def _feats_table():
+    rows = []
+    for market, pid in (("rush_att", "P1"), ("rush_yds", "P1"), ("targets", "P2"), ("total", None), ("spread", None)):
+        r = dict(season=2022, week=3, game_id="G1", team="A", opponent="B", player_id=pid, market=market)
+        for s in C.SEARCHES:
+            r.update({f"shift_vol_{s}": 0.1 if market == "rush_att" else 0.2, f"shift_eff_{s}": 0.3, f"n_eff_{s}": 2.5, f"nomatch_{s}": s != "S1",
+                      f"best_sim_{s}": 0.8, f"n_eff_eff_{s}": 2.0, f"nomatch_eff_{s}": s != "S1", f"share_obs_{s}": 0.7, f"share_der_{s}": 0.2,
+                      f"share_est_{s}": 0.1, f"completeness_{s}": 0.05})
+        rows.append(r)
+    return pl.DataFrame(rows, infer_schema_length=None)
+
+
+def test_comparable_features_join_the_tables_of_their_market():
+    from features import comps_features as cf
+    from features.volume_features import FeatureTables
+    players = {"rush_att": pl.DataFrame({"player_id": ["P1", "P9"], "game_id": ["G1", "G1"], "x": [1.0, 2.0]}),
+               "targets": pl.DataFrame({"player_id": ["P2"], "game_id": ["G1"], "x": [3.0]})}
+    teams = pl.DataFrame({"game_id": ["G1", "G1"], "team": ["A", "B"], "x": [1.0, 2.0]})
+    specs = {"rush_att": {"market": "rush_att"}, "targets": {"market": "targets"}}
+    out = cf.attach(FeatureTables(players, teams), _feats_table(), specs)
+    ra = out.players["rush_att"]
+    assert ra.height == 2 and ra["cmp_shift_vol_S1"].to_list() == [0.1, None]           # P9 is no scored target: missing, never 0
+    assert ra["cmp_nomatch_S2"].dtype == pl.Float64 and ra["cmp_nomatch_S2"][0] == 1.0 and ra["cmp_nomatch_S1"][0] == 0.0
+    assert {"cmp_share_obs_S3", "cmp_share_der_S3", "cmp_share_est_S3", "cmp_completeness_S3"} <= set(ra.columns)
+    assert out.players["targets"]["cmp_shift_vol_S1"].to_list() == [0.2]
+    assert out.teams["cmp_shift_vol_S5"].to_list() == [0.2, None]                         # the team tables read the game market `total`
+    only1 = cf.attach(FeatureTables(players, teams), _feats_table(), specs, searches=("S1",))
+    assert {c for c in only1.players["rush_att"].columns if c.startswith("cmp_")} == {"cmp_" + c for c in cf.columns(("S1",))}
+
+
+def test_input_shares_are_separate_columns_per_search():
+    from features import comps_features as cf
+    sh = cf.input_shares(_feats_table())
+    for s in C.SEARCHES:
+        assert {f"share_obs_{s}", f"share_der_{s}", f"share_est_{s}", f"completeness_{s}"} <= set(sh.columns)

@@ -64,14 +64,16 @@ def build_efficiency_tables(player_log, team_log, team_volume, lineups) -> vf.Fe
     return vf.FeatureTables(players, vf.build_team_game_features(team_log, team_volume, side, PTS_PER_PLAY))
 
 
-def load_efficiency_tables(data, raw_db=None, max_season=None, injury=None) -> vf.FeatureTables:
+def load_efficiency_tables(data, raw_db=None, max_season=None, injury=None, comps=None, comp_searches=None) -> vf.FeatureTables:
+    """Efficiency feature tables; `injury` adds the 4a columns, `comps` the comparable columns of each ratio's market (4c.5). None = Phase 3."""
     import config
     raw_db = raw_db or config.RAW_DUCKDB_PATH
     cap = config.cap_season(max_season)  # raises config.HoldoutError for 2025+
     tv = vf.build_team_volume(raw_db, cap)
     ln = vf.lu.build_lineups(raw_db, cap)
     bt.assert_no_holdout(tv.join(data.team_log.select("game_id", "season").unique(), on="game_id", how="inner"))
-    return vf._with_injury(build_efficiency_tables(data.player_log, data.team_log, tv, ln), injury, data)   # injury=None -> Phase 3
+    tables = vf._with_injury(build_efficiency_tables(data.player_log, data.team_log, tv, ln), injury, data)   # injury=None -> Phase 3
+    return vf._with_comps(tables, comps, EFFICIENCY_SPECS, comp_searches)
 
 
 def efficiency_predictors(tables: vf.FeatureTables, params=vm.PARAMS, min_train=vm.MIN_TRAIN_ROWS):
