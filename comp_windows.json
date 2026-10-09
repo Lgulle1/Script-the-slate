@@ -1,0 +1,97 @@
+{
+ "moneyline": {
+  "pass_coverage": "season_to_date",
+  "pass_offense": "last_3",
+  "pass_rush": "recency_weighted",
+  "run_defense": "season_to_date",
+  "run_offense": "season_to_date"
+ },
+ "pass_att": {
+  "coverage_mix": "season_to_date",
+  "ol_protection": "continuity_weighted:pass_yds",
+  "pass_coverage": "season_to_date",
+  "pass_offense": "season_to_date",
+  "pass_rush": "continuity_weighted:pass_yds",
+  "qb_archetype": "season_to_date"
+ },
+ "pass_cmp": {
+  "coverage_mix": "season_to_date",
+  "ol_protection": "last_6",
+  "pass_coverage": "continuity_weighted:pass_yds",
+  "pass_offense": "season_to_date",
+  "pass_rush": "season_to_date",
+  "qb_archetype": "season_to_date"
+ },
+ "pass_yds": {
+  "coverage_mix": "season_to_date",
+  "ol_protection": "continuity_weighted:pass_yds",
+  "pass_coverage": "season_to_date",
+  "pass_offense": "recency_weighted",
+  "pass_rush": "continuity_weighted:pass_yds",
+  "qb_archetype": "season_to_date"
+ },
+ "qb_rush_att": {
+  "ol_protection": "season_to_date",
+  "qb_archetype": "continuity_weighted:rush_att",
+  "run_defense": "season_to_date",
+  "run_offense": "last_3"
+ },
+ "qb_rush_yds": {
+  "ol_protection": "last_3",
+  "qb_archetype": "last_3",
+  "run_defense": "season_to_date",
+  "run_offense": "season_to_date"
+ },
+ "rec": {
+  "coverage_mix": "last_6",
+  "pass_coverage": "season_to_date",
+  "pass_offense": "season_to_date",
+  "pass_rush": "last_6",
+  "receiver_archetype": "season_to_date",
+  "receiver_usage": "season_to_date"
+ },
+ "rec_yds": {
+  "coverage_mix": "season_to_date",
+  "pass_coverage": "season_to_date",
+  "pass_offense": "season_to_date",
+  "pass_rush": "last_6",
+  "receiver_archetype": "recency_weighted",
+  "receiver_usage": "season_to_date"
+ },
+ "rush_att": {
+  "ol_protection": "last_3",
+  "rb_archetype": "continuity_weighted:rush_att",
+  "rb_rotation": "last_3",
+  "run_defense": "season_to_date",
+  "run_offense": "continuity_weighted:rush_att"
+ },
+ "rush_yds": {
+  "ol_protection": "last_3",
+  "rb_archetype": "last_6",
+  "rb_rotation": "season_to_date",
+  "run_defense": "season_to_date",
+  "run_offense": "continuity_weighted:rush_yds"
+ },
+ "spread": {
+  "pass_coverage": "season_to_date",
+  "pass_offense": "last_3",
+  "pass_rush": "recency_weighted",
+  "run_defense": "season_to_date",
+  "run_offense": "season_to_date"
+ },
+ "targets": {
+  "coverage_mix": "season_to_date",
+  "pass_coverage": "season_to_date",
+  "pass_offense": "season_to_date",
+  "pass_rush": "last_6",
+  "receiver_archetype": "season_to_date",
+  "receiver_usage": "last_3"
+ },
+ "total": {
+  "pass_coverage": "season_to_date",
+  "pass_offense": "last_3",
+  "pass_rush": "recency_weighted",
+  "run_defense": "season_to_date",
+  "run_offense": "season_to_date"
+ }
+}

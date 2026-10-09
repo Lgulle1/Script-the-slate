@@ -140,10 +140,19 @@ def choose(errors: pl.DataFrame, zl: dict) -> tuple:
     if per.filter(pl.col("sq_error").is_null() & pl.col("z").is_nan()).height:
         raise ValueError("a target scored by some window has no z to charge the others with")
     per = per.with_columns(unscored=pl.col("sq_error").is_null()).with_columns(sq_error=pl.coalesce("sq_error", pl.col("z") ** 2))
-    summ = (per.group_by("window_family", "market", "unit", "side").agg(mse=pl.col("sq_error").mean(), n_targets=pl.len(),
-                                                                        n_unscored=pl.col("unscored").sum())
-            .group_by("window_family", "market", "unit").agg(error=pl.col("mse").sum(), n_targets=pl.col("n_targets").min(),
-                                                             n_unscored=pl.col("n_unscored").max()))
+    # the means are summed with numpy over a fully sorted table: a polars group_by on millions of rows adds a group's values in no fixed order,
+    # which moved the error by an ulp from one run to the next
+    per = per.sort("window_family", "market", "unit", "side", "game_id", "team", "player_id", nulls_last=True)
+    g1 = ["window_family", "market", "unit", "side"]
+    first = per.select(g1).with_row_index("_i").unique(g1, keep="first", maintain_order=True)["_i"].to_numpy()
+    n = np.diff(np.r_[first, per.height])
+    side = per[first].select(g1).with_columns(mse=pl.Series(np.add.reduceat(per["sq_error"].to_numpy(), first) / n), n_targets=pl.Series(n),
+                                              n_unscored=pl.Series(np.add.reduceat(per["unscored"].cast(pl.Int64).to_numpy(), first)))
+    g2 = ["window_family", "market", "unit"]
+    first2 = side.select(g2).with_row_index("_i").unique(g2, keep="first", maintain_order=True)["_i"].to_numpy()
+    summ = side[first2].select(g2).with_columns(error=pl.Series(np.add.reduceat(side["mse"].to_numpy(), first2)),
+                                                n_targets=pl.Series(np.minimum.reduceat(side["n_targets"].to_numpy(), first2)).cast(pl.UInt32),
+                                                n_unscored=pl.Series(np.maximum.reduceat(side["n_unscored"].to_numpy(), first2)))
     order = {w: i for i, w in enumerate(WINDOW_ORDER)}
     summ = summ.with_columns(order=pl.col("window_family").replace_strict(order)).sort("market", "unit", "error", "order")
     chosen = summ.group_by("market", "unit", maintain_order=True).first().select("market", "unit", window_family="window_family", error="error",
