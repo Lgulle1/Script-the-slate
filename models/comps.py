@@ -274,18 +274,20 @@ def share_ledger(inp: Inputs) -> pl.DataFrame:
     g = inp.games.select("game_id", "team", "season", "week", "gameday", "team_game_num")
     tot = inp.team.select("game_id", "team", tc="x.carries", tt="x.targets", td="x.dropbacks")
     rows = span.join(g, on="team", how="inner").filter((pl.col("gameday") >= pl.col("first")) & (pl.col("gameday") <= pl.col("last"))).drop("first", "last")
+    elsewhere = inp.player.select("player_id", "season", "week", other="team").unique()
+    rows = (rows.join(elsewhere, on=["player_id", "season", "week"], how="left").filter(pl.col("other").is_null() | (pl.col("other") == pl.col("team"))).drop("other"))
     rows = (rows.join(inp.player.select("game_id", "team", "player_id", "c.carries", "c.targets", "c.dropbacks"), on=["game_id", "team", "player_id"], how="left")
             .join(tot, on=["game_id", "team"], how="left").with_columns(pl.col(c).fill_null(0.0) for c in ("c.carries", "c.targets", "c.dropbacks", "tc", "tt", "td")))
     return rows.select("player_id", "team", "game_id", "season", "week", "gameday", "team_game_num",
                        pl.col("c.carries").alias("u.carry_share|n"), pl.col("tc").alias("u.carry_share|d"),
                        pl.col("c.targets").alias("u.target_share|n"), pl.col("tt").alias("u.target_share|d"),
-                       pl.col("c.dropbacks").alias("u.dropback_share|n"), pl.col("td").alias("u.dropback_share|d")).sort("player_id", "gameday")
+                       pl.col("c.dropbacks").alias("u.dropback_share|n"), pl.col("td").alias("u.dropback_share|d")).sort("player_id", "gameday", "team", "game_id")
 
 
 def build_player_windows(inp: Inputs, queries: pl.DataFrame, keys: list, variants=VARIANTS, ledger: pl.DataFrame | None = None) -> PlayerWindows:
     """Window values of every player in `queries` as of that query's game, for every variant, from the player's own earlier games (rows of `ledger`,
     default the player ledger)."""
-    led = (inp.player if ledger is None else ledger).sort("player_id", "gameday")
+    led = (inp.player if ledger is None else ledger).sort("player_id", "gameday", "team", "game_id")      # a total order: ties would make "last k games" depend on row order
     cut = week_cutoffs(inp.games)
     teams = _team_codes(led["team"], queries["team"])
     lin_tbl = inp.lineups
