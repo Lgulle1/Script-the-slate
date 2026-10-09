@@ -976,8 +976,7 @@ def test_retrieval_change_is_stored_for_every_target_market_and_search(shifts44)
     (feats, _, _, retrieval), tgs, _ = shifts44
     assert retrieval.height == feats.height * len(C.SEARCHES)
     assert {"overlap_top_k", "weight_mass_shared", "shift_vol_change", "shift_eff_change", "adjusted_differs", "nomatch_healthy"} <= set(retrieval.columns)
-    same = retrieval.filter(~pl.col("adjusted_differs") & (pl.col("n_matches_adjusted") > 0))
-    assert (same["overlap_top_k"] == 1.0).all() and (same["shift_vol_change"] == 0.0).all()
+    assert retrieval["adjusted_differs"].any()                                            # the comparison run happened
     summ = C.retrieval_summary(retrieval)
     assert {"share_adjusted_differs", "mean_overlap_top_k", "mean_abs_shift_vol_change"} <= set(summ.columns)
 
@@ -1042,3 +1041,31 @@ def test_team_vectors_do_not_depend_on_the_rows_kept_for_archetypes():
     assert _frame_key(with_dc.team).equals(_frame_key(without.team))
     late = C.archetype_rows(inp_dc).filter((pl.col("player_id") == "AWR9") & pl.col("is_reference") & ~pl.col("in_pool"))
     assert late.height == len(SEASONS) * WEEKS - 3                                      # a pregame reference row in every week he did not play
+
+
+def test_top_any_lists_the_closest_past_games_whatever_the_threshold(pool3):
+    pool, inp, _ = pool3
+    tg = _player_target(inp, week=9)
+    live = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.9999999, min_neff=0, top_any=10)["S4"]
+    full = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0)["S4"].matches
+    assert live.summary["n_matches"] == 0 and len(live.summary["top_any"]) == 10            # nothing above the threshold, the closest games still listed
+    want = full.sort("final_weight", descending=True).head(10)
+    assert [w for _, w in live.summary["top_any"]] == pytest.approx(want["final_weight"].to_list())
+    ids = {f"{g}|{t}|{p or ''}" for g, t, p in zip(want["obs_game_id"], want["obs_team"], want["obs_player_id"])}
+    assert {i for i, _ in live.summary["top_any"]} == ids
+
+
+def test_closest_10_overlap_is_one_when_the_vectors_agree(pool3):
+    pool, inp, _ = pool3
+    gm = next(r for r in inp.games.filter((pl.col("season") == 2020) & (pl.col("week") == 9)).iter_rows(named=True)
+              if not pool.adjusted_differs(pool.idx[(r["game_id"], r["team"])], cs.MARKET_UNITS["spread"]))
+    tg = C.Target("spread", gm["game_id"], gm["team"], gm["opponent"], 2020, 9)
+    _, _, _, retrieval = C.comp_shifts(pool, [tg], {}, sim_threshold=0.0, min_neff=0.0)
+    r = retrieval.filter(pl.col("search").is_in(["S1", "S2", "S4"]))                       # S3: team market; S5: no FTN data in the synthetic league
+    assert (~r["adjusted_differs"]).all() and (r["overlap_closest_10"] == 1.0).all() and (r["shift_vol_change"] == 0.0).all()
+
+
+def test_s1_retrieval_never_depends_on_the_offense_version(shifts44):
+    (_, _, _, retrieval), _, _ = shifts44
+    s1 = retrieval.filter((pl.col("search") == "S1") & pl.col("adjusted_differs"))
+    assert s1.height > 0 and (s1["overlap_closest_10"] == 1.0).all()                       # S1 reads only the defenses faced

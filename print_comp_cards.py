@@ -70,7 +70,8 @@ def card(pool: C.Pool, tg: C.Target, zl: dict, who: dict, top: int):
         verdict = "not applicable" if not d["applicable"] else ("NO MATCH (" + str(d["reason"]) + ")" if d["nomatch"] else "match")
         print(f"\n  {s}: {verdict} | best similarity {f[f'best_sim_{s}']:.3f} | matches {d['n_matches']} | n_eff {d['n_eff_similarity']:.2f} "
               f"| shift vol {f[f'shift_vol_{s}']:+.3f}" + (f" eff {f[f'shift_eff_{s}']:+.3f}" if qe else "")
-              + f" | healthy vs adjusted: differs={rc['adjusted_differs']} overlap top-10 {rc['overlap_top_k']}, shift change {rc['shift_vol_change']:+.3f}")
+              + f" | healthy vs adjusted: differs={rc['adjusted_differs']} overlap of the 10 closest {rc['overlap_closest_10']:.1f}, of the matches "
+              f"{rc['overlap_top_k']:.1f}, shift change {rc['shift_vol_change']:+.3f}")
         m = disp[s].matches
         if not d["applicable"] or m is None or m.height == 0:
             continue

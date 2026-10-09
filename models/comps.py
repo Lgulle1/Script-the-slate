@@ -1245,7 +1245,7 @@ class Pool:
 
     # ---- the five searches
     def search(self, tg: Target, which=("S1", "S2", "S3", "S4", "S5"), keep: bool = True, sim_threshold: float = cs.SIM_THRESHOLD,
-               min_neff: float = cs.MIN_NEFF, version: str = "adjusted", sensitivity: tuple = ()) -> dict:
+               min_neff: float = cs.MIN_NEFF, version: str = "adjusted", sensitivity: tuple = (), top_any: int = 0) -> dict:
         """Run the searches for one target on the lineup-adjusted target vectors (version='healthy': on the healthy ones, the comparison run of build plan
         4c.1.4); returns {search: SearchResult}.
 
@@ -1389,7 +1389,7 @@ class Pool:
                 quality = np.nanmean(qual_arr, axis=0) if comps_sel else np.full(len(idx), np.nan)
             final = combined * rec * cont * quality
             out[sname] = SearchResult(sname, *self._finish(tg, sname, idx, obs_row, obs_pid, obs_team, combined, comps_sel, rec, cont, quality, completeness, final,
-                                                            sim_threshold, min_neff, keep, sim_off, sim_def, sensitivity))
+                                                            sim_threshold, min_neff, keep, sim_off, sim_def, sensitivity, top_any))
         return out
 
     def _summary(self, tg, sname, combined, comps, final, matched, reason, sim_threshold, min_neff, applicable=True, best_override=None, n_matches=0, n_eff=0.0):
@@ -1405,7 +1405,7 @@ class Pool:
                     widened_uncertainty=bool(no_match) if applicable else False, shift=0.0 if no_match else float("nan"), reason=reason, unit_best=unit_best)
 
     def _finish(self, tg, sname, idx, obs_row, obs_pid, obs_team, combined, comps, rec, cont, quality, completeness, final, sim_threshold, min_neff, keep,
-                sim_off=None, sim_def=None, sensitivity=()):
+                sim_off=None, sim_def=None, sensitivity=(), top_any=0):
         ok = np.isfinite(combined) & np.isfinite(final)
         best = float(np.nanmax(combined)) if np.isfinite(combined).any() else float("nan")
         match = ok & (combined >= sim_threshold)
@@ -1418,6 +1418,12 @@ class Pool:
         elif n_eff < min_neff:
             reason = "n_eff_below_minimum"
         summary = self._summary(tg, sname, combined, comps, final, reason is None, reason, sim_threshold, min_neff, n_matches=int(match.sum()), n_eff=n_eff)
+        if top_any:                         # the closest past games whatever the threshold (the healthy-vs-adjusted comparison): (id, final weight)
+            fin = np.flatnonzero(ok)
+            top = fin[np.lexsort((fin, -final[fin]))][:top_any]
+            rows_ = obs_row[idx][top]
+            summary["top_any"] = [(f"{self._gids[r]}|{obs_team[idx][t]}|{'' if obs_pid[idx][t] is None else obs_pid[idx][t]}", float(final[t]))
+                                  for r, t in zip(rows_, top)]
         if sensitivity:                     # analysis only (the no-match memo): matches and n_eff at other thresholds, from the same similarities
             summary["sensitivity"] = {f"{t:g}": (int((ok & (combined >= t)).sum()), cluster_neff(final[ok & (combined >= t)], obs_row[idx][ok & (combined >= t)]))
                                       for t in sensitivity}
@@ -1740,7 +1746,8 @@ def comp_shifts(pool: Pool, targets: list, zl: dict, keep_matches: bool = True, 
     matches: the per-match table (similarity, recency, continuity, quality, final weight, the capped weights and z for volume and efficiency).
     detail: per target, market and search: how many matches had an expectation, n_eff before and after the caps, and why a search was no_match.
     retrieval (healthy=True): per target, market and search, how the comparables change when the same search runs on the HEALTHY target vector (plan
-    4c.1.4): the overlap of the top RETRIEVAL_TOP_K matches, the shared weight mass and the change in the volume / efficiency shift (adjusted - healthy).
+    4c.1.4): the overlap of the top RETRIEVAL_TOP_K matches, the shared weight mass and the change in the volume / efficiency shift (adjusted - healthy),
+    and overlap_closest_10: the overlap of the 10 closest past games by final weight whatever the threshold (informative when a search has no match).
     Where the two target vectors are identical the healthy run is not repeated (overlap 1, change 0).
     A match counts toward a shift only when its own comp-free expectation exists (walkforward_predictions); a search whose matches have none is no_match.
     n_eff counts historical team-games (cluster_neff)."""
@@ -1750,9 +1757,10 @@ def comp_shifts(pool: Pool, targets: list, zl: dict, keep_matches: bool = True, 
         if (tg.game_id, tg.team) != last:
             pool.clear_cache()
             last = (tg.game_id, tg.team)
-        res = pool.search(tg, SEARCHES, keep=True, sim_threshold=sim_threshold, min_neff=min_neff)
+        top = RETRIEVAL_TOP_K if healthy else 0
+        res = pool.search(tg, SEARCHES, keep=True, sim_threshold=sim_threshold, min_neff=min_neff, top_any=top)
         differs = healthy and pool.adjusted_differs(pool.idx[(tg.game_id, tg.team)], cs.MARKET_UNITS[tg.market])
-        res_h = pool.search(tg, SEARCHES, keep=True, sim_threshold=sim_threshold, min_neff=min_neff, version="healthy") if differs else res
+        res_h = pool.search(tg, SEARCHES, keep=True, sim_threshold=sim_threshold, min_neff=min_neff, version="healthy", top_any=top) if differs else res
         for m in markets:
             ident = dict(season=tg.season, week=tg.week, game_id=tg.game_id, team=tg.team, player_id=tg.player_id, market=m)
             vals, det, sets, caps = _market_shifts(res, tg, m, zl, min_neff)
@@ -1767,8 +1775,12 @@ def comp_shifts(pool: Pool, targets: list, zl: dict, keep_matches: bool = True, 
                 for s in SEARCHES:
                     ha, hh = _hits(res[s]), _hits(res_h[s])
                     rc = retrieval_change(hh, ha, min(RETRIEVAL_TOP_K, max(len(ha), len(hh))))      # one side empty: overlap 0; both: undefined
+                    ta = [(i, w, 0.0) for i, w in res[s].summary.get("top_any", [])]
+                    th = [(i, w, 0.0) for i, w in res_h[s].summary.get("top_any", [])]
+                    rca = retrieval_change(th, ta, min(RETRIEVAL_TOP_K, max(len(ta), len(th))))
                     crows.append(dict(ident, search=s, adjusted_differs=bool(differs), n_matches_adjusted=len(ha), n_matches_healthy=len(hh),
                                       top_k=rc["k"], overlap_top_k=rc["overlap_top_k"], weight_mass_shared=rc["weight_mass_shared"] if ha or hh else float("nan"),
+                                      overlap_closest_10=rca["overlap_top_k"],
                                       nomatch_adjusted=vals[f"nomatch_{s}"], nomatch_healthy=hvals[f"nomatch_{s}"],
                                       shift_vol_adjusted=vals[f"shift_vol_{s}"], shift_vol_healthy=hvals[f"shift_vol_{s}"],
                                       shift_vol_change=vals[f"shift_vol_{s}"] - hvals[f"shift_vol_{s}"],
@@ -1808,6 +1820,7 @@ def retrieval_summary(retrieval: pl.DataFrame) -> pl.DataFrame:
     return (retrieval.group_by("season", "market", "search")
             .agg(n_targets=pl.len(), share_adjusted_differs=d.mean(),
                  mean_overlap_top_k=pl.col("overlap_top_k").filter(d).fill_nan(None).mean(),
+                 mean_overlap_closest_10=pl.col("overlap_closest_10").filter(d).fill_nan(None).mean(),
                  mean_weight_mass_shared=pl.col("weight_mass_shared").filter(d).fill_nan(None).mean(),
                  share_nomatch_flips=(pl.col("nomatch_adjusted") != pl.col("nomatch_healthy")).filter(d).mean(),
                  mean_abs_shift_vol_change=pl.col("shift_vol_change").filter(d).abs().mean(),
