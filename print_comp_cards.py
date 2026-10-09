@@ -64,14 +64,20 @@ def card(pool: C.Pool, tg: C.Target, zl: dict, who: dict, top: int, counts: dict
     disp = pool.search(tg, C.SEARCHES, keep=True, sim_threshold=0.0, min_neff=0.0)
     qv, qe = C.MARKET_QUANTITIES[tg.market]
     f = feats.filter(pl.col("market") == tg.market).row(0, named=True)
-    for s in C.SEARCHES:
-        d = detail.filter((pl.col("market") == tg.market) & (pl.col("search") == s)).row(0, named=True)
+    print("  per search (roll-up of its unit searches, n_eff-weighted): " + " | ".join(
+        f"{s} {'no match' if f[f'nomatch_{s}'] else 'match'} vol {f[f'shift_vol_{s}']:+.3f}" + (f" eff {f[f'shift_eff_{s}']:+.3f}" if qe else "")
+        for s in C.SEARCHES))
+    for d in detail.filter(pl.col("market") == tg.market).iter_rows(named=True):
+        s = d["search"]
         rc = retr.filter((pl.col("market") == tg.market) & (pl.col("search") == s)).row(0, named=True)
         verdict = "not applicable" if not d["applicable"] else ("NO MATCH (" + str(d["reason"]) + ")" if d["nomatch"] else "match")
-        print(f"\n  {s}: {verdict} | best similarity {f[f'best_sim_{s}']:.3f} | matches {d['n_matches']} | n_eff {d['n_eff_similarity']:.2f} "
-              f"| shift vol {f[f'shift_vol_{s}']:+.3f}" + (f" eff {f[f'shift_eff_{s}']:+.3f}" if qe else "")
+        best = d["best_similarity"]
+        print(f"\n  {s}: {verdict} | best similarity {best:.3f} | matches {d['n_matches']} | n_eff {d['n_eff_vol']:.2f} "
+              f"| shift vol {d['shift_vol']:+.3f}" + (f" eff {d['shift_eff']:+.3f}" if qe else "")
               + f" | searched on healthy; vs lineup-adjusted: differs={rc['adjusted_differs']} overlap of the 10 closest {rc['overlap_closest_10']:.1f}, of the matches "
               f"{rc['overlap_top_k']:.1f}, shift change {rc['shift_vol_change']:+.3f}")
+        if s not in disp:
+            continue
         m = disp[s].matches
         if not d["applicable"] or m is None or m.height == 0:
             continue

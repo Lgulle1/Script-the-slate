@@ -22,7 +22,8 @@ def test_restrict_reproduces_a_search_run_at_the_higher_threshold(pool3):
         for t in (0.3, 0.5, 0.7):
             got = SW.restrict(low, t)
             want = pool.search(tg, C.SEARCHES, keep=True, sim_threshold=t, min_neff=cs.MIN_NEFF)
-            for s in C.SEARCHES:
+            assert set(got) == set(want)
+            for s in want:
                 g, w = got[s].summary, want[s].summary
                 assert (g["no_match"], g["reason"], g["n_matches"]) == (w["no_match"], w["reason"], w["n_matches"]), (tg, t, s)
                 assert g["n_eff"] == pytest.approx(w["n_eff"]) and np.array_equal(g["best_similarity"], w["best_similarity"], equal_nan=True)
@@ -75,3 +76,28 @@ def test_sweep_rows_are_deterministic_and_score_only_matched_searches(pool3):
     assert a.select("threshold", "game_id", "team", "player_id", "search", "quantity").is_unique().all()
     summ = SW.summarize(a, th)
     assert summ["n_rows"].to_list() == n and SW.choose_threshold(summ) in (*th, SW.DEFAULT_THRESHOLD)
+
+
+def test_the_unit_diagnostic_needs_both_improvements_with_bonferroni_intervals():
+    cells = SW.diagnostic_cells()
+    assert len(cells) == len(set(cells)) and ("S4:run_offense*run_defense", "vol", "rush_att") in cells
+    assert not any(u.startswith("S3") and q in ("team_plays", "pts_per_play") for u, _, q in cells)      # S3: player markets only
+    rng = np.random.default_rng(1)
+    rows = []
+    for s in (2021, 2022, 2023, 2024):
+        for w in range(1, 18):
+            for i in range(6):
+                z = float(rng.normal())
+                # a unit whose shift tracks z (beats zero and random), and one that is pure noise
+                rows.append(dict(season=s, week=w, game_id=f"{s}{w}{i}", team="A", player_id=f"P{i}", market="rush_att", search="S4:run_offense*run_defense",
+                                 side="vol", quantity="rush_att", sq_error_real=(0.6 * z - z) ** 2, sq_error_zero=z ** 2, sq_error_random=z ** 2 + 0.05))
+                rows.append(dict(season=s, week=w, game_id=f"{s}{w}{i}", team="A", player_id=f"P{i}", market="rush_att", search="S1:run_defense",
+                                 side="vol", quantity="rush_att", sq_error_real=z ** 2 + 0.3 * float(rng.normal()), sq_error_zero=z ** 2,
+                                 sq_error_random=z ** 2 + 0.3 * float(rng.normal())))
+    rates = pl.DataFrame([dict(search=r["search"], side="vol", quantity="rush_att", market="rush_att", matched=True) for r in rows])
+    d = SW.unit_diagnostic(pl.DataFrame(rows), rates)
+    cell = d.filter((pl.col("side") == "vol") & (pl.col("quantity") == "rush_att"))
+    lab = dict(zip(cell["search"].to_list(), cell["label"].to_list()))
+    assert lab["S4:run_offense*run_defense"] == "WORKS" and lab["S1:run_defense"] in ("NO", "EDGE")
+    assert d["interval_level"][0] == pytest.approx(1 - 0.05 / len(cells)) and d.height == len(cells)
+    assert d.filter(pl.col("n_rows") == 0)["label"].unique().to_list() == ["NO"]

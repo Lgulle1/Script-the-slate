@@ -1,6 +1,6 @@
 """The SIM_THRESHOLD sweep (decision of 2026-10-09, rule fixed in docs/overnight_plan.md before any error was computed).
 
-For every threshold in THRESHOLDS, every 2020-2024 target, search and quantity (volume, and efficiency where the market has one; markets that share a
+For every threshold in THRESHOLDS, every 2020-2024 target, unit search (comps.unit_searches) and quantity (volume, and efficiency where the market has one; markets that share a
 quantity count once: the first market of the family, MARKET_FAMILIES order, that has it) where the search matches on that side at that threshold:
   real error    (shift - z)^2, the search's shift against the target's own comp-free standardized residual z;
   random error  the same with every match replaced by a past observation drawn at random from the same search's observation set as of the same
@@ -80,15 +80,18 @@ def _zarr(pool: C.Pool, unit: str | None, src: dict, q: str) -> np.ndarray:
 
 def sweep_rows(pool: C.Pool, targets: list, zl: dict, counts: dict, thresholds=THRESHOLDS, min_neff: float = cs.MIN_NEFF,
                n_draws: int = N_DRAWS, seed: int = SEED) -> tuple:
-    """(rows, rates): rows -- one per threshold, target, search and side where the search matches on that side, with the real and the mean random
+    """(rows, rates): rows -- one per threshold, target, unit search and side where the unit search matches on that side, with the real and the mean random
     squared error; rates -- per threshold, target, market, search and side, whether the search matched on that side, for the match-rate report."""
     sm = side_markets()
     zcache = {}
 
-    def zall(unit, q):
-        if (unit, q) not in zcache:
-            zcache[(unit, q)] = _zarr(pool, unit, zl, q)
-        return zcache[(unit, q)]
+    def zall(market, unit, q):
+        """The z of every observation of the search's index space: pool rows (team markets) or the archetype population of the pool the search read
+        the archetype from (a WindowedPool reads it from the archetype's chosen window)."""
+        zp = pool.pools[pool.choice[market][unit]] if (unit is not None and isinstance(pool, C.WindowedPool)) else (pool.base if isinstance(pool, C.WindowedPool) else pool)
+        if (id(zp), unit, q) not in zcache:
+            zcache[(id(zp), unit, q)] = _zarr(zp, unit, zl, q)
+        return zcache[(id(zp), unit, q)]
 
     rows, rates = [], []
     last = None
@@ -101,20 +104,20 @@ def sweep_rows(pool: C.Pool, targets: list, zl: dict, counts: dict, thresholds=T
         arch = [u for u in cs.MARKET_UNITS[tg.market] if u in cs.ARCHETYPE_UNITS]
         unit = arch[0] if is_player else None
         rng = np.random.default_rng((seed, i))
-        base = None
         for tgr, markets in C._target_rows([tg]):
             res0 = pool.search(tgr, C.SEARCHES, keep=True, sim_threshold=min(thresholds), min_neff=min_neff, obs_positions=True)
             for t in thresholds:
                 res = restrict(res0, t, min_neff)
                 for m in markets:
-                    vals, _, sets, caps = C._market_shifts(res, tgr, m, zl, min_neff, counts)
-                    for s in C.SEARCHES:
-                        if res[s].summary["applicable"]:
+                    _, det, sets, caps = C._market_shifts(res, tgr, m, zl, min_neff, counts)
+                    ud = {d["search"]: d for d in det}                  # per unit search
+                    for s, d in ud.items():
+                        if d["applicable"]:
                             for side, q in zip(("vol", "eff"), C.MARKET_QUANTITIES[m]):
                                 if q is not None:
                                     rates.append(dict(threshold=t, season=tg.season, week=tg.week, game_id=tg.game_id, team=tg.team,
-                                                      player_id=tg.player_id, market=m, search=s, side=side,
-                                                      matched=not vals[f"nomatch_{s}" if side == "vol" else f"nomatch_eff_{s}"]))
+                                                      player_id=tg.player_id, market=m, search=s, side=side, quantity=q,
+                                                      matched=not (d["nomatch"] if side == "vol" else d["nomatch_eff"])))
                     for (mk, side, q) in sm[fam]:
                         if mk != m:
                             continue
@@ -122,26 +125,27 @@ def sweep_rows(pool: C.Pool, targets: list, zl: dict, counts: dict, thresholds=T
                         if tz is None or not np.isfinite(tz):
                             continue
                         j = 1 if side == "vol" else 2
-                        for s in C.SEARCHES:
-                            nm = vals[f"nomatch_{s}"] if side == "vol" else vals[f"nomatch_eff_{s}"]
+                        for s, d in ud.items():
+                            nm = d["nomatch"] if side == "vol" else d["nomatch_eff"]
                             if nm or s not in sets:
                                 continue
                             w = caps[side][s]
                             ok = (w > 0) & np.isfinite(sets[s][j])
-                            n_eff = vals[f"n_eff_{s}"] if side == "vol" else vals[f"n_eff_eff_{s}"]
-                            real = vals[f"shift_vol_{s}"] if side == "vol" else vals[f"shift_eff_{s}"]
-                            cz = zall(unit, q)[res0[s].summary["obs_pos"]]
+                            n_eff = d["n_eff_vol"] if side == "vol" else d["n_eff_eff"]
+                            real = d["shift_vol"] if side == "vol" else d["shift_eff"]
+                            cz = zall(tgr.market, unit, q)[res0[s].summary["obs_pos"]]
                             cz = cz[np.isfinite(cz)]
                             rand = [random_shift(w[ok], n_eff, cz, rng) for _ in range(n_draws)]
                             rows.append(dict(threshold=t, season=tg.season, week=tg.week, game_id=tg.game_id, team=tg.team, player_id=tg.player_id,
-                                             market=m, search=s, side=side, quantity=q, n_matches=int(ok.sum()), n_eff=float(n_eff), z=float(tz),
-                                             shift=float(real), sq_error_real=float((real - tz) ** 2),
+                                             market=m, search=s, parent=C.parent(s), side=side, quantity=q, n_matches=int(ok.sum()), n_eff=float(n_eff), z=float(tz),
+                                             shift=float(real), sq_error_real=float((real - tz) ** 2), sq_error_zero=float(tz ** 2),
                                              sq_error_random=float(np.mean([(r - tz) ** 2 for r in rand]))))
     schema = {"threshold": pl.Float64, "season": pl.Int64, "week": pl.Int64, "game_id": pl.String, "team": pl.String, "player_id": pl.String,
               "market": pl.String, "search": pl.String}
-    rows_df = pl.DataFrame(rows, schema=schema | {"side": pl.String, "quantity": pl.String, "n_matches": pl.Int64, "n_eff": pl.Float64, "z": pl.Float64,
-                                                  "shift": pl.Float64, "sq_error_real": pl.Float64, "sq_error_random": pl.Float64})
-    return rows_df, pl.DataFrame(rates, schema=schema | {"side": pl.String, "matched": pl.Boolean})
+    rows_df = pl.DataFrame(rows, schema=schema | {"parent": pl.String, "side": pl.String, "quantity": pl.String, "n_matches": pl.Int64, "n_eff": pl.Float64, "z": pl.Float64,
+                                                  "shift": pl.Float64, "sq_error_real": pl.Float64, "sq_error_zero": pl.Float64,
+                                                  "sq_error_random": pl.Float64})
+    return rows_df, pl.DataFrame(rates, schema=schema | {"side": pl.String, "quantity": pl.String, "matched": pl.Boolean})
 
 
 def summarize(rows: pl.DataFrame, thresholds=THRESHOLDS) -> pl.DataFrame:
@@ -172,3 +176,53 @@ def breakdown(rows: pl.DataFrame, rates: pl.DataFrame) -> pl.DataFrame:
            .agg(n_rows=pl.len(), improvement=(pl.col("sq_error_random") - pl.col("sq_error_real")).mean(), mean_n_eff=pl.col("n_eff").mean()))
     rate = rates.group_by("threshold", "market", "search", "side").agg(match_rate=pl.col("matched").mean(), n_targets=pl.len())
     return rate.join(imp, on=["threshold", "market", "search", "side"], how="left").sort("threshold", "market", "search", "side")
+
+
+# ---------------------------------------------------------------------------------------------------------------- the unit diagnostic (reported only)
+def diagnostic_cells() -> list:
+    """Every (unit search, side, quantity) the diagnostic tests, from the spec alone (fixed before any result): per family, each quantity once (side_markets)
+    with the unit searches of its market. Its length is the Bonferroni m."""
+    out = []
+    for fam, rows in side_markets().items():
+        for m, side, q in rows:
+            for uid, _, _ in C.unit_searches(m, fam != "game"):
+                out.append((uid, side, q))
+    return sorted(set(out))
+
+
+def unit_diagnostic(rows: pl.DataFrame, rates: pl.DataFrame, m_cells: int | None = None) -> pl.DataFrame:
+    """Per (unit search, side, quantity) cell, over the rows of one threshold: the match rate, the improvement over a zero shift (z^2 - (shift - z)^2)
+    and over random pairing, each with a season-week interval at level 1 - 0.05 / m (Bonferroni, m = the number of cells, counted from the spec) and
+    the seasons it is positive in. WORKS: both improvements positive, both intervals above zero, both positive in >= MIN_SEASONS_WON seasons; EDGE:
+    both positive but a condition fails; NO: otherwise. Reported, not used to drop units (docs/overnight_plan.md)."""
+    cells = diagnostic_cells()
+    m_cells = m_cells or len(cells)
+    level = 1 - 0.05 / m_cells
+    # each quantity once, from the same market as the scored rows (side_markets)
+    first = {(q, fam): m for fam, rs in side_markets().items() for m, _, q in rs}
+    keep = pl.DataFrame([dict(market=m, quantity=q) for (q, _), m in first.items()])
+    rate = rates.join(keep, on=["market", "quantity"], how="semi").group_by("search", "side", "quantity").agg(match_rate=pl.col("matched").mean(), n_targets=pl.len())
+    out = []
+    for uid, side, q in cells:
+        r = rows.filter((pl.col("search") == uid) & (pl.col("side") == side) & (pl.col("quantity") == q)).sort(
+            "season", "week", "game_id", "team", "player_id", "market", nulls_last=True)
+        row = dict(search=uid, parent=C.parent(uid), side=side, quantity=q, n_rows=r.height)
+        ok_all, pos_all = r.height > 0, r.height > 0
+        for name, col in (("zero", "sq_error_zero"), ("random", "sq_error_random")):
+            if r.height == 0:
+                row.update({f"improvement_{name}": None, f"ci_lo_{name}": None, f"ci_hi_{name}": None, f"seasons_won_{name}": 0})
+                continue
+            d = (r[col] - r["sq_error_real"]).to_numpy()
+            lo, hi = compare.cluster_bootstrap(d, (r["season"] * 100 + r["week"]).to_numpy(), level=level)
+            seasons = r["season"].to_numpy()
+            won = sum(float(d[seasons == s].mean()) > 0 for s in sorted(set(seasons.tolist())))
+            row.update({f"improvement_{name}": float(d.mean()), f"ci_lo_{name}": float(lo), f"ci_hi_{name}": float(hi), f"seasons_won_{name}": int(won)})
+            pos_all &= d.mean() > 0
+            ok_all &= d.mean() > 0 and lo > 0 and won >= config.MIN_SEASONS_WON
+        row["label"] = "WORKS" if ok_all else ("EDGE" if pos_all else "NO")
+        out.append(row)
+    diag = pl.DataFrame(out, schema={"search": pl.String, "parent": pl.String, "side": pl.String, "quantity": pl.String, "n_rows": pl.Int64,
+                                     "improvement_zero": pl.Float64, "ci_lo_zero": pl.Float64, "ci_hi_zero": pl.Float64, "seasons_won_zero": pl.Int64,
+                                     "improvement_random": pl.Float64, "ci_lo_random": pl.Float64, "ci_hi_random": pl.Float64,
+                                     "seasons_won_random": pl.Int64, "label": pl.String})
+    return diag.join(rate, on=["search", "side", "quantity"], how="left").with_columns(bonferroni_m=pl.lit(m_cells), interval_level=pl.lit(level))

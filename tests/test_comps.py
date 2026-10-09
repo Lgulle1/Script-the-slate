@@ -493,6 +493,8 @@ def test_sigma_excludes_a_targets_own_team():
 
 # ================================================================================================================================ 4c.3 searches
 W3 = "recency_weighted"
+RUN4 = "S4:run_offense*run_defense"          # the run pair of S4 (rush, QB rush and game markets)
+RB3 = "S3:rb_archetype*run_defense"           # S3 of a back against the run defense
 
 
 def _pool(inp=None, vec=None, seed=0, perturb_from=None):
@@ -545,7 +547,7 @@ def test_a_planted_near_duplicate_is_retrieved_first():
         t2 = pl.concat([keep, new.select(keep.columns)])
     vec2 = C.Vectors(t2, vec.player, vec.features, vec.completeness, vec.lineup_change)
     pool, _, _ = _pool(inp, vec2)
-    res = pool.search(tg, which=("S4",))["S4"]
+    res = pool.search(tg, which=("S4",))[RUN4]
     assert res.matches is not None and res.matches.height > 0
     top = res.matches.row(0, named=True)
     assert (top["obs_game_id"], top["obs_team"]) == (H["game_id"], H["team"])
@@ -576,7 +578,7 @@ def test_s3_is_not_applicable_to_team_markets(pool3):
     pool, inp, _ = pool3
     r = pool.search(_team_target(inp), which=("S3",))["S3"]
     assert not r.summary["applicable"] and not r.summary["no_match"] and r.summary["reason"] == "not_applicable"
-    assert pool.search(_player_target(inp), which=("S3",))["S3"].summary["applicable"]
+    assert all(r.summary["applicable"] for r in pool.search(_player_target(inp), which=("S3",)).values())
 
 
 def test_matches_have_separate_weight_columns_and_the_final_weight_is_their_product(pool3):
@@ -607,7 +609,7 @@ def test_matches_have_separate_weight_columns_and_the_final_weight_is_their_prod
 def test_n_eff_is_the_kish_effective_sample_size_of_the_final_weights_per_historical_team_game(pool3):
     pool, inp, _ = pool3
     for tg in (_player_target(inp, week=9), _team_target(inp, week=9)):
-        r = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0)["S4"]
+        r = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0)[RUN4]
         w = r.matches.group_by("obs_game_id", "obs_team").agg(pl.col("final_weight").sum())["final_weight"].to_numpy()
         assert r.summary["n_eff"] == pytest.approx(w.sum() ** 2 / (w ** 2).sum())
         assert r.summary["n_matches"] == r.matches.height and r.summary["best_similarity"] == pytest.approx(r.matches["sim_check"].max())
@@ -652,7 +654,7 @@ def test_s5_player_matches_of_one_team_game_do_not_inflate_n_eff(pool3):
 
 def test_no_match_is_declared_for_a_low_n_eff_even_with_a_good_best_similarity(pool3):
     pool, inp, _ = pool3
-    r = pool.search(_player_target(inp, week=9), keep=True, sim_threshold=0.0, min_neff=1e9)["S4"]
+    r = pool.search(_player_target(inp, week=9), keep=True, sim_threshold=0.0, min_neff=1e9)[RUN4]
     assert r.summary["no_match"] and r.summary["reason"] == "n_eff_below_minimum" and r.summary["shift"] == 0.0 and r.summary["best_similarity"] > 0
 
 
@@ -670,17 +672,17 @@ def test_search_observation_sets_follow_the_plan(pool3):
     games and tonight's opponent's included (build plan 4c.0.6)."""
     pool, inp, _ = pool3
     tg = _player_target(inp, week=10)
-    res = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0, top_any=10 ** 6)
-    s1, s2, s3, s4 = (res[k].matches for k in ("S1", "S2", "S3", "S4"))
+    res = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0, obs_positions=True)
+    s1, s2 = res["S1:run_defense"].matches, res["S2:run_offense"].matches
     assert (s1["obs_player_id"] == tg.player_id).all() and s1.height > 0                # S1: the player's own history
     opp_of = lambda m: [inp.games.filter((pl.col("game_id") == g) & (pl.col("team") == t))["opponent"][0] for g, t in zip(m["obs_game_id"], m["obs_team"])]
     assert all(o == tg.opponent for o in opp_of(s2))                                   # S2: tonight's defense
-    ids = lambda m: set(zip(m["obs_game_id"].to_list(), m["obs_player_id"].to_list()))
-    # every observation with a similarity, matched or not (the 0.40 floor keeps some pairs out of the matches of S3 / S4)
-    obs = lambda s: {(i.split("|")[0], i.split("|")[2]) for i, *_ in res[s].summary["top_any"]}
-    assert ids(s1) <= obs("S3") and ids(s2) <= obs("S3") and obs("S3") == obs("S4")     # S3 / S4 exclude nobody
+    # the observation sets themselves (positions in the archetype population): every unit search of a search shares its search's set
+    pos = lambda u: set(res[u].summary["obs_pos"].tolist())
+    assert pos(RB3) == pos(RUN4) and pos("S1:run_defense") < pos(RUN4) and pos("S2:run_offense") < pos(RUN4)      # S3 / S4 exclude nobody
+    assert pos("S2:run_offense") == pos("S2:rb_archetype") and pos(RB3) == pos("S5")
     ttg = _team_target(inp, week=10)
-    tt = pool.search(ttg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0)["S4"].matches
+    tt = pool.search(ttg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0)[RUN4].matches
     assert (tt["obs_team"] == ttg.team).any() and any(o == ttg.opponent for o in opp_of(tt))      # the team's own games and its opponent's defense too
 
 
@@ -851,18 +853,33 @@ def test_shift_features_have_one_row_per_target_and_market_with_the_plan_columns
 
 
 def test_shifts_match_a_recomputation_from_the_match_table(shifts44):
+    """Each unit search's shift and n_eff recompute from its matches; each search's feature is the n_eff-weighted mean of its matching units."""
     (feats, matches, detail, _), tgs, zl = shifts44
     r = feats.filter((pl.col("market") == "rush_yds")).row(0, named=True)
-    for s in C.SEARCHES:
-        m = matches.filter((pl.col("market") == "rush_yds") & (pl.col("search") == s) & (pl.col("target_game_id") == r["game_id"]))
-        if r[f"nomatch_{s}"]:
-            assert r[f"shift_vol_{s}"] == 0.0 and r[f"shift_eff_{s}"] == 0.0
+    det = detail.filter((pl.col("market") == "rush_yds") & (pl.col("game_id") == r["game_id"]) & (pl.col("player_id") == r["player_id"]))
+    checked = 0
+    for d in det.iter_rows(named=True):
+        m = matches.filter((pl.col("market") == "rush_yds") & (pl.col("search") == d["search"]) & (pl.col("target_game_id") == r["game_id"])
+                           & (pl.col("target_player_id") == r["player_id"]))
+        if d["nomatch"]:
+            assert d["shift_vol"] == 0.0 and d["shift_eff"] == 0.0
             continue
         sv, nv = C.shift_value(m["weight_capped_vol"].to_numpy(), m["z_vol"].to_numpy(), (m["obs_game_id"] + "|" + m["obs_team"]).to_numpy())
-        assert r[f"shift_vol_{s}"] == pytest.approx(sv) and r[f"n_eff_{s}"] == pytest.approx(nv)
+        assert d["shift_vol"] == pytest.approx(sv) and d["n_eff_vol"] == pytest.approx(nv)
         g = m.with_columns(tg=pl.col("obs_game_id") + "|" + pl.col("obs_team")).group_by("tg").agg(pl.col("weight_capped_vol").sum()).filter(pl.col("weight_capped_vol") > 0)
         if g.height * C.cs.TEAM_CAP_PER_SEARCH >= 1:
             assert (g["weight_capped_vol"] / g["weight_capped_vol"].sum()).max() <= C.cs.TEAM_CAP_PER_SEARCH + 1e-9
+        checked += 1
+    assert checked >= 3
+    for s in C.SEARCHES:
+        u = det.filter((pl.col("parent") == s) & pl.col("applicable") & ~pl.col("nomatch"))
+        if u.height == 0:
+            assert r[f"nomatch_{s}"] and r[f"shift_vol_{s}"] == 0.0
+            continue
+        w = u["n_eff_vol"].to_numpy()
+        assert not r[f"nomatch_{s}"] and r[f"shift_vol_{s}"] == pytest.approx((w * u["shift_vol"].to_numpy()).sum() / w.sum())
+        all_u = det.filter((pl.col("parent") == s) & pl.col("applicable"))
+        assert r[f"n_eff_{s}"] == pytest.approx(all_u["n_eff_vol"].max()) and r[f"best_sim_{s}"] == pytest.approx(all_u["best_similarity"].max())
 
 
 def test_a_no_match_search_has_shift_zero(pool3):
@@ -912,7 +929,7 @@ def test_a_target_who_did_not_play_has_a_vector_but_is_no_observation():
     tg = C.Target("pass_att", g["game_id"], "A", g["opponent"], 2020, 8, "AQB1")
     missed = inp2.games.filter((pl.col("season") == 2020) & (pl.col("week") == wk) & (pl.col("team") == "A"))["game_id"][0]
     res = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0)
-    assert res["S1"].matches.height > 0
+    assert res["S1:pass_coverage"].matches.height > 0
     for s, r in res.items():
         if r.matches is not None and r.matches.height:
             assert not ((r.matches["obs_game_id"] == missed) & (r.matches["obs_player_id"] == "AQB1")).any(), s
@@ -952,7 +969,7 @@ def test_extended_falls_back_to_base_when_the_extended_sigma_is_missing(pool3):
             if kk[0] == arch and kk[1] == "extended":
                 pool.sig[kk] = float("nan")
         pool.clear_cache()
-        m = pool.search(_player_target(inp, week=9), which=("S3",), keep=True, sim_threshold=0.0, min_neff=0)["S3"].matches
+        m = pool.search(_player_target(inp, week=9), which=("S3",), keep=True, sim_threshold=0.0, min_neff=0)[RB3].matches
         assert m.height > 0 and m[f"sim_{arch}"].is_finite().all()
     finally:
         pool.sig = saved
@@ -969,16 +986,16 @@ def test_the_healthy_run_reads_the_healthy_target_vectors(pool3):
         pool.clear_cache()
         a = pool.search(tg, which=("S1", "S4"), keep=True, sim_threshold=0.0, min_neff=0, version="adjusted")
         h = pool.search(tg, which=("S1", "S4"), keep=True, sim_threshold=0.0, min_neff=0, version="healthy")
-        assert a["S1"].matches.equals(h["S1"].matches)                                     # S1 reads only the defenses faced: one version
-        same = a["S4"].matches.equals(h["S4"].matches)
+        assert all(a[u].matches.equals(h[u].matches) for u in a if u.startswith("S1"))     # S1 reads only the defenses faced: one version
+        same = all(a[u].matches.equals(h[u].matches) for u in a if u.startswith("S4"))
         assert same != differs
         seen[differs] += 1
     assert seen[True] > 0 and seen[False] > 0
 
 
 def test_retrieval_change_is_stored_for_every_target_market_and_search(shifts44):
-    (feats, _, _, retrieval), tgs, _ = shifts44
-    assert retrieval.height == feats.height * len(C.SEARCHES)
+    (feats, _, detail, retrieval), tgs, _ = shifts44
+    assert retrieval.height == detail.height                                              # one row per target, market and unit search
     assert {"overlap_top_k", "weight_mass_shared", "shift_vol_change", "shift_eff_change", "adjusted_differs", "nomatch_healthy"} <= set(retrieval.columns)
     assert retrieval["adjusted_differs"].any()                                            # the comparison run happened
     summ = C.retrieval_summary(retrieval)
@@ -1002,7 +1019,7 @@ def test_the_sensitivity_columns_recount_matches_at_other_thresholds(pool3):
         if not r["applicable"] or r["reason"] in ("no_target_vector", "missing_required_ftn_features"):
             assert sens == {}
             continue
-        res = pool.search(tg, which=(r["search"],), keep=True, sim_threshold=0.5, min_neff=0)[r["search"]]
+        res = pool.search(tg, which=(r["parent"],), keep=True, sim_threshold=0.5, min_neff=0)[r["search"]]
         assert sens["0.5"][0] == res.summary["n_matches"] and sens["0.5"][1] == pytest.approx(res.summary["n_eff"])
         assert sens["0"][0] >= sens["0.5"][0]
 
@@ -1050,8 +1067,8 @@ def test_team_vectors_do_not_depend_on_the_rows_kept_for_archetypes():
 def test_top_any_lists_the_closest_past_games_whatever_the_threshold(pool3):
     pool, inp, _ = pool3
     tg = _player_target(inp, week=9)
-    live = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.9999999, min_neff=0, top_any=10)["S4"]
-    full = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0)["S4"].matches
+    live = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.9999999, min_neff=0, top_any=10)[RUN4]
+    full = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0)[RUN4].matches
     assert live.summary["n_matches"] == 0 and len(live.summary["top_any"]) == 10            # nothing above the threshold, the closest games still listed
     want = full.sort("final_weight", descending=True).head(10)
     assert [t[1] for t in live.summary["top_any"]] == pytest.approx(want["final_weight"].to_list())
@@ -1071,7 +1088,7 @@ def test_closest_10_overlap_is_one_when_the_vectors_agree(pool3):
 
 def test_s1_retrieval_never_depends_on_the_offense_version(shifts44):
     (_, _, _, retrieval), _, _ = shifts44
-    s1 = retrieval.filter((pl.col("search") == "S1") & pl.col("adjusted_differs"))
+    s1 = retrieval.filter((pl.col("parent") == "S1") & pl.col("adjusted_differs"))
     assert s1.height > 0 and (s1["overlap_closest_10"] == 1.0).all()                       # S1 reads only the defenses faced
 
 
@@ -1204,18 +1221,26 @@ def test_every_match_carries_its_input_shares(pool3):
 
 
 def test_search_shares_are_the_shift_weighted_mean_of_the_matches(shifts44):
-    (feats, matches, _, _), _, _ = shifts44
+    """A unit search's shares are its matches' shares weighted by the volume shift's weights; a search's, the n_eff-weighted mean over its matching
+    unit searches."""
+    (feats, matches, detail, _), _, _ = shifts44
     seen = 0
     for r in feats.iter_rows(named=True):
+        tgt = (pl.col("game_id") == r["game_id"]) & (pl.col("team") == r["team"]) & ((pl.col("player_id") == r["player_id"]) if r["player_id"] else pl.col("player_id").is_null())
         for s in C.SEARCHES:
+            u = detail.filter(tgt & (pl.col("market") == r["market"]) & (pl.col("parent") == s) & pl.col("applicable") & ~pl.col("nomatch"))
             if r[f"nomatch_{s}"]:
-                assert r[f"share_obs_{s}"] is None and r[f"completeness_{s}"] is None
+                assert u.height == 0
                 continue
-            m = matches.filter((pl.col("market") == r["market"]) & (pl.col("search") == s) & (pl.col("target_game_id") == r["game_id"])
-                               & (pl.col("target_team") == r["team"]) & ((pl.col("target_player_id") == r["player_id"]) if r["player_id"] else pl.col("target_player_id").is_null()))
-            w = m["weight_capped_vol"].to_numpy()
-            assert r[f"share_obs_{s}"] == pytest.approx((w * m["share_obs"].to_numpy()).sum() / w.sum())
-            assert r[f"completeness_{s}"] == pytest.approx((w * m["completeness_penalty"].to_numpy()).sum() / w.sum())
+            per_unit = []
+            for d in u.iter_rows(named=True):
+                m = matches.filter((pl.col("market") == r["market"]) & (pl.col("search") == d["search"]) & (pl.col("target_game_id") == r["game_id"])
+                                   & (pl.col("target_team") == r["team"]) & ((pl.col("target_player_id") == r["player_id"]) if r["player_id"] else pl.col("target_player_id").is_null()))
+                w = m["weight_capped_vol"].to_numpy()
+                per_unit.append(((w * m["share_obs"].to_numpy()).sum() / w.sum(), (w * m["completeness_penalty"].to_numpy()).sum() / w.sum()))
+            nw = u["n_eff_vol"].to_numpy()
+            assert r[f"share_obs_{s}"] == pytest.approx((nw * np.array([x[0] for x in per_unit])).sum() / nw.sum())
+            assert r[f"completeness_{s}"] == pytest.approx((nw * np.array([x[1] for x in per_unit])).sum() / nw.sum())
             assert r[f"share_obs_{s}"] + r[f"share_der_{s}"] + r[f"share_est_{s}"] == pytest.approx(1.0)
             seen += 1
     assert seen > 0
@@ -1296,20 +1321,19 @@ def test_a_no_match_search_still_reports_its_input_shares_from_its_closest_games
     pool.clear_cache()
     feats, _, _, _ = C.comp_shifts(pool, [tg], {}, sim_threshold=0.9999999)
     r = feats.filter(pl.col("market") == "rush_att").row(0, named=True)
-    full = pool.search(tg, which=("S1",), keep=True, sim_threshold=0.0, min_neff=0)["S1"].matches.sort("final_weight", descending=True).head(10)
+    full = pool.search(tg, which=("S1",), keep=True, sim_threshold=0.0, min_neff=0)["S1:run_defense"].matches.sort("final_weight", descending=True).head(10)
     w = full["final_weight"].to_numpy()
+    # rush_att has one defense unit, so S1 is one unit search and its closest games are S1's
     assert r["nomatch_S1"] and r["share_obs_S1"] == pytest.approx((w * full["share_obs"].to_numpy()).sum() / w.sum())
     assert r["completeness_S1"] == pytest.approx((w * full["completeness_penalty"].to_numpy()).sum() / w.sum())
 
 
-def test_a_two_sided_share_mirrors_how_the_similarity_is_formed():
-    """S4 similarity = mean(offense units) x mean(defense units): each side carries half of the share, whatever its number of units."""
+def test_a_pairs_shares_are_the_mean_of_its_two_units():
+    """A pair's similarity is the product of its two units: each unit carries half of the share. A one-unit search carries its unit's."""
     one = lambda v: (np.ones(2), np.ones(2), np.ones(2), np.array(v, dtype=float)[:, None] * np.ones((3, 2)))
-    comps_sel = {"run_offense": ("off", one([1, 0, 0])), "rb_rotation": ("off", one([1, 0, 0])), "rb_archetype": ("arch", one([0, 1, 0])),
-                 "run_defense": ("def", one([0, 0, 1]))}
-    sh = C._match_shares(comps_sel, "S4", 2)
-    assert sh[:, 0] == pytest.approx([1 / 3, 1 / 6, 1 / 2])
-    assert C._match_shares({"run_defense": ("def", one([0, 0, 1]))}, "S1", 2)[:, 0] == pytest.approx([0, 0, 1])
+    sh = C._match_shares({"run_offense": ("off", one([1, 0, 0])), "run_defense": ("def", one([0, 0, 1]))}, 2)
+    assert sh[:, 0] == pytest.approx([1 / 2, 0, 1 / 2])
+    assert C._match_shares({"run_defense": ("def", one([0, 0, 1]))}, 2)[:, 0] == pytest.approx([0, 0, 1])
 
 
 # ================================================================================================================================ 4c.6 window selection
@@ -1371,14 +1395,14 @@ def test_each_unit_reads_its_own_window(two_windows):
     choice["rush_att"] = dict(choice["rush_att"], run_defense="last_6", rb_archetype="last_6")
     wp = C.WindowedPool(pools, choice, base=W3)
     wp.clear_cache()
-    m = wp.search(tg, which=("S3",), keep=True, sim_threshold=0.0, min_neff=0)["S3"].matches
+    m = wp.search(tg, which=("S3",), keep=True, sim_threshold=0.0, min_neff=0)[RB3].matches
     pools["last_6"].clear_cache()
-    ref = pools["last_6"].search(tg, which=("S3",), keep=True, sim_threshold=0.0, min_neff=0)["S3"].matches       # S3 = archetype x defense
+    ref = pools["last_6"].search(tg, which=("S3",), keep=True, sim_threshold=0.0, min_neff=0)[RB3].matches       # S3 = archetype x defense
     key = ["obs_game_id", "obs_team", "obs_player_id"]
     j = m.select(*key, "sim_run_defense", "sim_rb_archetype").join(ref.select(*key, "sim_run_defense", "sim_rb_archetype"), on=key, suffix="_ref")
     assert j.height > 0 and np.allclose(j["sim_run_defense"], j["sim_run_defense_ref"]) and np.allclose(j["sim_rb_archetype"], j["sim_rb_archetype_ref"])
     pools[W3].clear_cache()
-    base = pools[W3].search(tg, which=("S3",), keep=True, sim_threshold=0.0, min_neff=0)["S3"].matches
+    base = pools[W3].search(tg, which=("S3",), keep=True, sim_threshold=0.0, min_neff=0)[RB3].matches
     jb = m.select(*key, "sim_run_defense").join(base.select(*key, "sim_run_defense"), on=key, suffix="_base")
     assert not np.allclose(jb["sim_run_defense"], jb["sim_run_defense_base"])                 # and not the base window's
 
@@ -1430,23 +1454,24 @@ def test_window_summary_reports_the_targets_a_window_could_not_score():
 
 # ================================================================================================================================ decisions of 2026-10-09
 def test_check_similarity_is_the_geometric_mean_of_the_factors_with_a_floor_on_the_weaker():
-    """A two-factor search is checked on sqrt(a x b), so 0.63 / 0.63 reads 0.63 (the product would read 0.40); a pair whose weaker factor is below
-    SIDE_FLOOR never passes on the average (0.95 / 0.30). S1 has one factor: its check is its similarity."""
+    """A pair is checked on sqrt(a x b), so 0.63 / 0.63 reads 0.63 (the product would read 0.40); a pair whose weaker factor is below SIDE_FLOOR never
+    passes on the average (0.95 / 0.30). A one-unit search is checked on its similarity."""
     a, b = np.array([0.63, 0.95, 0.9, np.nan]), np.array([0.63, 0.30, 0.9, 0.8])
-    for s in ("S2", "S3", "S4", "S5"):
-        chk = C.check_similarity(s, a * b, a, b)
-        assert chk[0] == pytest.approx(0.63) and np.isnan(chk[1]) and chk[2] == pytest.approx(0.9) and np.isnan(chk[3])
+    chk = C.check_similarity(a * b, a, b)
+    assert chk[0] == pytest.approx(0.63) and np.isnan(chk[1]) and chk[2] == pytest.approx(0.9) and np.isnan(chk[3])
     one = np.array([0.5, 0.2, np.nan])
-    assert np.allclose(C.check_similarity("S1", one, np.full(3, np.nan), one), one, equal_nan=True)     # S1: no floor, no square root
+    assert np.allclose(C.check_similarity(one), one, equal_nan=True)                    # one unit: no floor, no square root
     assert C.SIDE_FLOOR == 0.40
 
 
-def test_a_two_factor_search_matches_on_the_checked_similarity_and_weighs_the_product(pool3):
+def test_a_pair_matches_on_the_checked_similarity_and_weighs_the_product(pool3):
     pool, inp, _ = pool3
     tg = _player_target(inp, week=9)
     floor_cut = 0
-    for s in ("S2", "S3", "S4"):
-        full = pool.search(tg, which=(s,), keep=True, sim_threshold=0.0, min_neff=0, top_any=10 ** 6)[s]
+    res0 = pool.search(tg, which=("S3", "S4"), keep=True, sim_threshold=0.0, min_neff=0, top_any=10 ** 6)
+    res5 = pool.search(tg, which=("S3", "S4"), keep=True, sim_threshold=0.5, min_neff=0)
+    assert set(res0) == {RB3, RUN4}
+    for u, full in res0.items():
         m = full.matches
         assert m.height > 0
         assert np.allclose(m["sim_check"].to_numpy(), np.sqrt((m["sim_offense"] * m["sim_defense"]).to_numpy()))
@@ -1455,11 +1480,16 @@ def test_a_two_factor_search_matches_on_the_checked_similarity_and_weighs_the_pr
         assert (m["final_weight"] - m["sim_combined"] * m["recency_weight"] * m["continuity_weight"] * m["quality_weight"]).abs().max() < 1e-12
         assert full.summary["best_similarity"] == pytest.approx(m["sim_check"].max())
         floor_cut += len(full.summary["top_any"]) - m.height          # observations with a similarity that the floor kept out
-        half = pool.search(tg, which=(s,), keep=True, sim_threshold=0.5, min_neff=0)[s].matches
-        want = m.filter(pl.col("sim_check") >= 0.5)
+        half, want = res5[u].matches, m.filter(pl.col("sim_check") >= 0.5)
         assert half.height == want.height and half["final_weight"].to_list() == want["final_weight"].to_list()
-        assert (half["sim_combined"] < 0.5).any() or s == "S3"          # pairs the product would have failed now pass on the per-factor scale
     assert floor_cut > 0
+    # one-unit searches: the check is the unit's similarity, no floor
+    one = pool.search(tg, which=("S1", "S2"), keep=True, sim_threshold=0.0, min_neff=0)
+    assert set(one) == {"S1:run_defense", "S2:run_offense", "S2:rb_rotation", "S2:ol_protection", "S2:rb_archetype"}
+    for u, r in one.items():
+        m = r.matches
+        sim = m["sim_defense"] if u.startswith("S1") else m["sim_offense"]
+        assert np.allclose(m["sim_check"].to_numpy(), sim.to_numpy()) and np.allclose(m["sim_combined"].to_numpy(), sim.to_numpy())
 
 
 def test_searches_run_on_the_healthy_target_vectors(pool3):
@@ -1470,14 +1500,15 @@ def test_searches_run_on_the_healthy_target_vectors(pool3):
               if pool.adjusted_differs(pool.idx[(r["game_id"], r["team"])], cs.MARKET_UNITS["spread"]))
     tg = C.Target("spread", gm["game_id"], gm["team"], gm["opponent"], 2020, 9)
     pool.clear_cache()
-    d = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0)["S4"].matches
-    h = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0, version="healthy")["S4"].matches
-    a = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0, version="adjusted")["S4"].matches
-    assert d.equals(h) and not d.equals(a)
-    feats, _, _, retrieval = C.comp_shifts(pool, [tg], {}, sim_threshold=0.0, min_neff=0.0)
-    r = retrieval.filter((pl.col("search") == "S4") & (pl.col("market") == "spread")).row(0, named=True)
-    f = feats.filter(pl.col("market") == "spread").row(0, named=True)
-    assert r["adjusted_differs"] and r["nomatch_healthy"] == f["nomatch_S4"] and r["shift_vol_healthy"] == f["shift_vol_S4"]
+    d = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0)
+    h = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0, version="healthy")
+    a = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0, version="adjusted")
+    assert all(d[u].matches.equals(h[u].matches) for u in d) and not all(d[u].matches.equals(a[u].matches) for u in d)
+    feats, _, detail, retrieval = C.comp_shifts(pool, [tg], {}, sim_threshold=0.0, min_neff=0.0)
+    for u in d:
+        r = retrieval.filter((pl.col("search") == u) & (pl.col("market") == "spread")).row(0, named=True)
+        x = detail.filter((pl.col("search") == u) & (pl.col("market") == "spread")).row(0, named=True)
+        assert r["adjusted_differs"] and r["nomatch_healthy"] == x["nomatch"] and r["shift_vol_healthy"] == x["shift_vol"]
 
 
 def _eff_result(counts, z_eff=None, one_team=False):
@@ -1560,3 +1591,57 @@ def test_window_selection_weighs_efficiency_neighbours_by_their_count(pool3):
     assert np.array_equal(vol(ones), vol(varied)) and not np.allclose(eff(ones), eff(varied))
     with pytest.raises(ValueError, match="count"):
         W.unit_retrieval_errors(pool, tgs, zl)
+
+
+# ================================================================================================================================ per-unit searches (2026-10-09)
+def test_unit_searches_follow_the_plan():
+    ids = lambda m, p: [u for u, _, _ in C.unit_searches(m, p)]
+    assert ids("rush_att", True) == ["S1:run_defense", "S2:run_offense", "S2:rb_rotation", "S2:ol_protection", "S2:rb_archetype",
+                                     "S3:rb_archetype*run_defense", RUN4, "S5"]
+    assert [u for u in ids("pass_att", True) if u.startswith("S4")] == ["S4:pass_offense*pass_coverage", "S4:ol_protection*pass_rush"]
+    assert [u for u in ids("targets", True) if u.startswith("S4")] == ["S4:pass_offense*pass_coverage"]
+    assert [u for u in ids("spread", False) if u.startswith(("S3", "S4"))] == [RUN4, "S4:pass_offense*pass_coverage"]
+    assert [u for u in ids("pass_att", True) if u.startswith("S1")] == [f"S1:{d}" for d in cs.MARKET_UNITS["pass_att"] if d in cs.DEFENSE_UNITS]
+    for m in cs.MARKET_UNITS:
+        for uid, s, factors in C.unit_searches(m, m not in ("spread", "total", "moneyline")):
+            assert C.parent(uid) == s and all(u in cs.MARKET_UNITS[m] for _, u in factors)     # only the market's own units
+            assert len(factors) == (2 if s in ("S3", "S4") else 1 if s in ("S1", "S2") else 0)
+
+
+def test_a_game_that_resembles_tonights_run_matchup_counts_for_the_run_pair_whatever_its_passing():
+    """The point of the per-unit searches: a past game equal to tonight on the run offense and the run defense it faced, and unlike tonight on every
+    passing unit, is the run pair's best match at similarity 1 (the units averaged together would have diluted it)."""
+    inp = synthetic_inputs(0)
+    vec = C.build_vectors(inp)
+    tg = _team_target(inp)
+    H = inp.games.filter((pl.col("season") == 2019) & (pl.col("week") == 6) & ~pl.col("team").is_in([tg.team, tg.opponent])
+                         & ~pl.col("opponent").is_in([tg.team, tg.opponent])).row(0, named=True)
+    t2 = vec.team
+    for unit, src_team, dst_team in (("run_offense", tg.team, H["team"]), ("run_defense", tg.opponent, H["opponent"])):
+        ver_src = C.target_version(unit) if unit in cs.OFFENSE_UNITS else "healthy"
+        ver_dst = C.pool_version(unit) if unit in cs.OFFENSE_UNITS else "healthy"
+        src = t2.filter((pl.col("game_id") == tg.game_id) & (pl.col("team") == src_team) & (pl.col("unit") == unit) & (pl.col("version") == ver_src))
+        sel = (pl.col("game_id") == H["game_id"]) & (pl.col("team") == dst_team) & (pl.col("unit") == unit) & (pl.col("version") == ver_dst)
+        new = t2.filter(sel).drop("z", "raw", "n", "n_present", "complete").join(src.select("space", "window", "z", "raw", "n", "n_present", "complete"),
+                                                                                 on=["space", "window"], how="inner")
+        t2 = pl.concat([t2.filter(~sel), new.select(t2.columns)])
+    pool, _, _ = _pool(inp, C.Vectors(t2, vec.player, vec.features, vec.completeness, vec.lineup_change))
+    res = pool.search(tg, which=("S4",), version="healthy")
+    top = res[RUN4].matches.row(0, named=True)
+    assert (top["obs_game_id"], top["obs_team"]) == (H["game_id"], H["team"]) and top["sim_combined"] == pytest.approx(1.0, abs=1e-9)
+    pas = res["S4:pass_offense*pass_coverage"].matches
+    planted = pas.filter((pl.col("obs_game_id") == H["game_id"]) & (pl.col("obs_team") == H["team"]))
+    assert planted.height == 0 or planted["sim_combined"][0] < 0.999                     # its passing does not resemble tonight's
+
+
+def test_the_across_search_cap_divides_by_the_number_of_unit_searches():
+    """X holds 30% of four of the target's eight unit searches: 1.2 / 8 = 15%, at the cap, so nothing moves (dividing by five searches would read 24%
+    and cut X)."""
+    tg = C.Target("spread", "G", "T", "O", 2022, 5)
+    rows = lambda u: [(f"{u}g{i}", "X" if i < 3 else f"{u}T{i}", 1.0) for i in range(10)]
+    res = {u: _fake_result(u, rows(u)) for u in ("S2:run_offense", "S2:pass_offense", "S4:run_offense*run_defense", "S4:pass_offense*pass_coverage")}
+    res |= {u: _empty_result(u) for u in ("S1:run_defense", "S1:pass_rush", "S1:pass_coverage", "S5")}
+    zl = {"team_plays": {(g, t): 1.0 for r in res.values() if r.matches is not None for g, t in zip(r.matches["obs_game_id"], r.matches["obs_team"])}}
+    vals, det, _, caps = C._market_shifts(res, tg, "spread", zl, cs.MIN_NEFF)
+    for u in ("S2:run_offense", "S2:pass_offense", "S4:run_offense*run_defense", "S4:pass_offense*pass_coverage"):
+        assert np.allclose(caps["vol"][u], 1.0), u

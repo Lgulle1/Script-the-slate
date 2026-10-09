@@ -12,7 +12,8 @@ writes, under --out-dir (default data/processed, not committed):
   comp_retrieval_change_<window>.parquet per target, market and search: the same search on the LINEUP-ADJUSTED target vector (the comparison; the searches run on the healthy one) -- overlap of the top matches,
                                          shared weight, change in the shifts (build plan 4c.1.4)
 and under --log-dir (default the repo root, committed) comp_shift_summary_<window>.parquet: per season, market and search, the no-match rate and the
-spread of the shifts, and comp_retrieval_summary_<window>.parquet (how much the lineup adjustment changes retrieval). z = (actual - expected) / sigma uses the comp-free walk-forward predictions (data/processed/walkforward_predictions.parquet).
+spread of the shifts, comp_retrieval_summary_<window>.parquet (how much the lineup adjustment changes retrieval) and comp_unit_summary_<window>.parquet (per unit search: match
+rate, shifts, n_eff; decision of 2026-10-09). z = (actual - expected) / sigma uses the comp-free walk-forward predictions (data/processed/walkforward_predictions.parquet).
 Walk-forward throughout; 2025 never loaded.
 """
 import argparse
@@ -52,9 +53,12 @@ if __name__ == "__main__":
     summary.write_parquet(a.log_dir / f"comp_shift_summary_{w}.parquet")
     rsum = C.retrieval_summary(retrieval)
     rsum.write_parquet(a.log_dir / f"comp_retrieval_summary_{w}.parquet")
+    usum = C.unit_summary(detail)
+    usum.write_parquet(a.log_dir / f"comp_unit_summary_{w}.parquet")
     print(f"{feats.height:,} target-market rows, {matches.height:,} matches in {time.time() - t0:.0f}s")
     pl.Config.set_tbl_rows(80)
     print(summary.group_by("market", "search").agg(pl.col("nomatch_rate").mean().round(3), pl.col("mean_abs_shift_vol").mean().round(4)).sort("market", "search"))
+    print(usum.group_by("search").agg(pl.col("match_rate").mean().round(3), pl.col("mean_n_eff").mean().round(2)).sort("search"))
     print(rsum.group_by("search").agg(pl.col("share_adjusted_differs").mean().round(3), pl.col("mean_overlap_top_k").mean().round(3),
                                       pl.col("mean_abs_shift_vol_change").mean().round(4)).sort("search"))
     print(f"\nholdout {config.HOLDOUT_SEASON} untouched")
