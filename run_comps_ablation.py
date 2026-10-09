@@ -128,7 +128,8 @@ def ablation_rows(without: pl.DataFrame, with_by: dict, feats: pl.DataFrame, nul
             g = gain_stats(market, _paired(market, without, null))
             row.update(gain_null=g["gain"], ci_lo_null=g["ci_lo"], ci_hi_null=g["ci_hi"], verdict_null=g["verdict"])
         rows.append(row)
-    return pl.DataFrame(rows, infer_schema_length=None)
+    t = pl.DataFrame(rows, infer_schema_length=None)
+    return t.with_columns(pl.col(pl.Null).cast(pl.Float64))         # a statistic missing for every market (a search that never matches) stays numeric
 
 
 def run(window: str = "recency_weighted", recompute: bool = False, save: bool = True, results_dir=None, pred_dir=None):

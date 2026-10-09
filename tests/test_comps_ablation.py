@@ -64,3 +64,20 @@ def test_null_features_shuffle_within_market_and_week_and_keep_the_values():
         assert sorted(g["shift_vol_S1"].to_list()) == [float(100 * w + i) for i in range(6)]     # the same values, within the same market-week
     assert not n.sort("market", "week", "player_id")["shift_vol_S1"].equals(f.sort("market", "week", "player_id")["shift_vol_S1"])
     assert R.null_features(f).equals(n)                                                          # a fixed permutation
+
+
+def test_the_report_prints_when_a_search_never_matches(capsys):
+    """S2 / S4 never match at the plan's threshold: their mean n_eff is null for every market and must not break the report."""
+    rows = []
+    for i in range(4):
+        r = dict(market="rush_yds", season=2022)
+        for s in cf.SEARCHES:
+            r.update({f"nomatch_{s}": True, f"n_eff_{s}": 0.0})
+        rows.append(r)
+    feats = pl.DataFrame(rows)
+    w0 = pl.concat([_preds("vol_x_eff", m, 0.0) for m in R.MARKET_ORDER])
+    by = {v: pl.concat([_preds(v, m, 0.5) for m in R.MARKET_ORDER]) for v in R.VARIANTS}
+    t = R.ablation_rows(w0, by, feats, null=pl.concat([_preds("null", m, 0.0) for m in R.MARKET_ORDER]))
+    assert t["mean_n_eff_S2"].dtype == pl.Float64
+    R.print_summary(t, "fp", "recency_weighted")
+    assert "Null control" in capsys.readouterr().out
