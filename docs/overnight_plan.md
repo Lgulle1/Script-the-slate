@@ -22,6 +22,17 @@ no market dropped; no threshold tuned to flip a verdict; no PRs.
    - **Confidence score.** It does not exist yet (Phase 5). The shares are stored per target and search under fixed column names, ready for its
      input-completeness component.
 4. **4c.6 window selection and the comparables ablation** (`run_comps_ablation.py`), run twice, byte-identical, CLEARS gate applied per market.
+   How I read it:
+   - **Window per unit and market** (`run_comp_window_selection.py`, `models/comps_windows.py`). For each 2020-2024 target and unit, the 20
+     past observations most similar on that unit alone predict the target's comp-free residual z by their similarity-weighted mean z. The window
+     with the lowest error (volume z, plus efficiency z where the market has one) wins, compared on the targets every window can score. A
+     market's continuity window is the variant of its own penalty row. No threshold is involved, so the choice does not depend on the no-match
+     decision. The choice is written to `comp_windows.json`, and the searches then read each unit in its own window.
+   - **Ablation**: the Phase 3 model with vs. without the comparable columns, and with one search's columns at a time. Per market it reports
+     the 3.3 bootstrap interval, per-season gains, and the no-match rate and n_eff per search. Layer weight 1 only on CLEARS, otherwise 0 and
+     flagged. The window (or "selected") is in the result file name, so no result overwrites another.
+   - Order: the ablation on the recency_weighted window (running), the window selection (running), then the comparable table and the ablation
+     on the selected windows.
 5. **4d.0 stops for you**: the plan says to list the coaching-history sources and their terms and STOP for your review before collecting anything.
    If there is time I will prepare that list (no collection).
 6. **4e.1 weather**: independent of 4d. I will only start it if 4c is finished and verified, and I'll say so here.
