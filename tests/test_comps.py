@@ -582,10 +582,15 @@ def test_matches_have_separate_weight_columns_and_the_final_weight_is_their_prod
                 assert c in m.columns
             assert (m["final_weight"] - m["sim_combined"] * m["recency_weight"] * m["continuity_weight"] * m["quality_weight"]).abs().max() < 1e-12
             assert any(c.startswith("sim_") and c != "sim_combined" for c in m.columns)
-            if s != "S1":
-                assert (m["continuity_weight"] == 1.0).all()                         # continuity compares an entity's own earlier games with its present lineup
-            else:
-                assert (m["continuity_weight"] <= 1.0).all()
+            assert ((m["continuity_weight"] > 0) & (m["continuity_weight"] <= 1.0)).all()          # continuity from weights.py, every search (plan 4c.4)
+            other = m.filter(pl.col("obs_team") != tg.team)                         # another team's game flags every factor: the product of the whole penalty row
+            if other.height:
+                full = np.prod(list(config.CONTINUITY_PENALTIES[config.BASELINE_TO_PENALTY_MARKET[tg.market]].values()))
+                assert np.allclose(other["continuity_weight"].to_numpy(), full)
+            if s in ("S2", "S4"):                                                   # two-sided: the similarity is offense x defense
+                assert np.allclose(m["sim_combined"].to_numpy(), (m["sim_offense"] * m["sim_defense"]).to_numpy())
+            if s == "S1":
+                assert m["sim_offense"].is_nan().all() and np.allclose(m["sim_combined"].to_numpy(), m["sim_defense"].to_numpy())
     assert found >= 4
 
 

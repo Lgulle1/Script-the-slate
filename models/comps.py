@@ -965,19 +965,30 @@ class Pool:
         self.sig = {(r["unit"], r["space"], r["season"] * 100 + r["week"]): r["sigma"] for r in sigma.filter(pl.col("window") == window).iter_rows(named=True)}
         self.T, self.P, self.N = {}, {}, {}
         gi = games.select("game_id", "team").with_row_index("_r")
+        self.target_fallback = {}
         for unit in TEAM_UNITS:
-            for version, store in ((target_version(unit), self.T), (pool_version(unit), self.P)):
+            # a target-version row that does not exist (a game the 4a layer has no expectations for) falls back to the healthy vector
+            versions = [target_version(unit)] + (["healthy"] if target_version(unit) != "healthy" else [])
+            for versions_, store in ((versions, self.T), ([pool_version(unit)], self.P)):
                 blocks = {}
                 for space in stored_spaces(unit):
                     nf = len(unit_features(unit, space))
-                    df = team.filter((pl.col("unit") == unit) & (pl.col("space") == space) & (pl.col("window") == window) & (pl.col("version") == version))
-                    j = gi.join(df, on=["game_id", "team"], how="inner")
                     M, Nn = np.full((n, nf), np.nan), np.zeros((n, nf))
                     comp = np.zeros(n, dtype=bool)
-                    if j.height:
-                        M[j["_r"].to_numpy()] = _list_matrix(j, "z", nf)
-                        Nn[j["_r"].to_numpy()] = np.nan_to_num(_list_matrix(j, "n", nf))
-                        comp[j["_r"].to_numpy()] = j["complete"].to_numpy()
+                    have = np.zeros(n, dtype=bool)
+                    for version in versions_:
+                        df = team.filter((pl.col("unit") == unit) & (pl.col("space") == space) & (pl.col("window") == window) & (pl.col("version") == version))
+                        j = gi.join(df, on=["game_id", "team"], how="inner")
+                        if not j.height:
+                            continue
+                        r = j["_r"].to_numpy()
+                        fill = ~have[r]
+                        M[r[fill]] = _list_matrix(j, "z", nf)[fill]
+                        Nn[r[fill]] = np.nan_to_num(_list_matrix(j, "n", nf))[fill]
+                        comp[r[fill]] = j["complete"].to_numpy()[fill]
+                        if store is self.T and version == "healthy" and len(versions_) > 1:
+                            self.target_fallback[(unit, space)] = int(fill.sum())        # rows served by the fallback (logged, not silent)
+                        have[r] = True
                     blocks[space] = (M, comp, Nn)
                 store[unit] = blocks
         self.pl = {}
@@ -1017,41 +1028,39 @@ class Pool:
         return blocks[space][0][:, j], blocks[space][2][:, j]
 
     def _build_profile(self):
-        off_keys, def_keys, self.groups5 = [], [], []
+        """S5 is a two-sided search (build plan 4c.4): the offense side of the interaction profile (the target team's features of every interaction) and
+        the defense side (the opponent's) are compared separately, each with its own feature groups (one per interaction), quality weights and sigma."""
+        off_keys, def_keys = [], []
         for _, o, d in cs.S5_PROFILE:
-            for k in o:
-                if k not in off_keys:
-                    off_keys.append(k)
-            for k in d:
-                if k not in def_keys:
-                    def_keys.append(k)
+            off_keys += [k for k in o if k not in off_keys]
+            def_keys += [k for k in d if k not in def_keys]
         self.off_keys, self.def_keys = off_keys, def_keys
-        cols_t = np.column_stack([self._feature_col(self.T, k)[0] for k in off_keys])
-        cols_p = np.column_stack([self._feature_col(self.P, k)[0] for k in off_keys])
+        self.prof_off_t = np.column_stack([self._feature_col(self.T, k)[0] for k in off_keys])
+        self.prof_off_p = np.column_stack([self._feature_col(self.P, k)[0] for k in off_keys])
         dcols = []
         for k in def_keys:
             v, nn = self._feature_col(self.P, k)
             if nn is not None and k.startswith("run_defense.rush_epa_allowed_"):
                 v = np.where(nn >= cs.S5_MIN_PLAYS, v, np.nan)                 # a run-direction result needs 30 plays
             dcols.append(v)
-        self.prof_off_t, self.prof_off_p, self.prof_def = cols_t, cols_p, np.column_stack(dcols)
-        ko = len(off_keys)
-        for _, o, d in cs.S5_PROFILE:
-            self.groups5.append([off_keys.index(k) for k in o] + [ko + def_keys.index(k) for k in d])
+        self.prof_def = np.column_stack(dcols)
+        self.groups5 = {"off": [[off_keys.index(k) for k in o] for _, o, _ in cs.S5_PROFILE],
+                        "def": [[def_keys.index(k) for k in d] for _, _, d in cs.S5_PROFILE]}
         qmap = {f"{u}.{f.name}": f.quality for u in cs.UNITS for f in cs.FEATURES[u]} | {f"x.{f.name}": f.quality for f in cs.INTERACTION_EXTRA}
-        self.q5 = np.array([cs.QUALITY[qmap[k]] for k in off_keys + def_keys], dtype=float)
         ftn = {f"{u}.{f.name}" for u in cs.UNITS for f in cs.FEATURES[u] if cs.S5_REQUIRED_SOURCE in f.source} | {f"x.{f.name}" for f in cs.INTERACTION_EXTRA}
-        self.req5 = np.array([k in ftn for k in off_keys + def_keys])
-        # sigma of the profile (walk-forward, same definition as the units)
-        Zp = np.hstack([self.prof_off_p, self.prof_def[self.opp_row]])
-        ok = (~np.isnan(Zp)).any(axis=1)
-        w = np.ones(Zp.shape[1])
-        dist = lambda A, B: group_distance(A, B, self.groups5, w, self.q5).d2
-        keys_t, d_ex, d_in = sigma_targets(Zp[ok], self.key[ok], self.team[ok], np.zeros(int(ok.sum()), dtype=int), dist)
+        self.q5 = {"off": np.array([cs.QUALITY[qmap[k]] for k in off_keys]), "def": np.array([cs.QUALITY[qmap[k]] for k in def_keys])}
+        self.req5 = {"off": np.array([k in ftn for k in off_keys]), "def": np.array([k in ftn for k in def_keys])}
+        # the matchups the S5 pool admits: every FTN-sourced profile feature present on both sides
+        self.admit5 = ~np.isnan(self.prof_off_p[:, self.req5["off"]]).any(axis=1) & ~np.isnan(self.prof_def[self.opp_row][:, self.req5["def"]]).any(axis=1)
         self.sig5 = {}
-        for kk in np.unique(self.key):
-            m = keys_t < kk
-            self.sig5[int(kk)] = float(np.nanmedian(d_ex[m])) if m.sum() >= SIGMA_MIN_TARGETS and np.isfinite(d_ex[m]).any() else float("nan")
+        for side, Z in (("off", self.prof_off_p), ("def", self.prof_def[self.opp_row])):
+            ok = self.admit5
+            dist = lambda A, B, side=side: group_distance(A, B, self.groups5[side], np.ones(A.shape[1]), self.q5[side]).d2
+            keys_t, d_ex, _ = sigma_targets(Z[ok], self.key[ok], self.team[ok] if side == "off" else self.team[self.opp_row][ok],
+                                            np.zeros(int(ok.sum()), dtype=int), dist)
+            for kk in np.unique(self.key):
+                m = keys_t < kk
+                self.sig5[(side, int(kk))] = float(np.nanmedian(d_ex[m])) if m.sum() >= SIGMA_MIN_TARGETS and np.isfinite(d_ex[m]).any() else float("nan")
 
     # ---- unit similarities over the team-game prefix
     def _sigma(self, unit, space, key):
@@ -1099,27 +1108,30 @@ class Pool:
     def clear_cache(self):
         self._cache = {}
 
-    def profile_sims(self, g: int, o: int, k: int, key: int) -> tuple:
-        """S5: (sim, completeness, quality over the first k team-game matchups, target-side missing-required flag, target-side count of present features)."""
-        tv = np.concatenate([self.prof_off_t[g], self.prof_def[o]])
-        missing_required = bool(np.isnan(tv[self.req5]).any())
-        if np.isnan(tv).all():
-            return np.full(k, np.nan), np.full(k, np.nan), np.full(k, np.nan), True
-        Pm = np.hstack([self.prof_off_p[:k], self.prof_def[self.opp_row[:k]]])
-        d = group_distance(tv[None, :], Pm, self.groups5, np.ones(len(tv)), self.q5)
-        sig = self.sig5.get(int(key), float("nan"))
-        sim = similarity(d.d2[0], sig)
-        sim = np.where(np.isnan(Pm[:, self.req5]).any(axis=1), np.nan, sim)       # S5 is an EXTENDED-only search: a past matchup without the FTN features is not in its pool
-        return sim, d.completeness[0], d.quality[0], missing_required
+    def profile_sims(self, g: int, o: int, k: int, key: int) -> dict:
+        """S5 over the first k team-game matchups: {'off': (sim, completeness, quality), 'def': (...)} and whether the target misses a required FTN feature."""
+        out, missing = {}, False
+        for side, tv, Pm in (("off", self.prof_off_t[g], self.prof_off_p[:k]), ("def", self.prof_def[o], self.prof_def[self.opp_row[:k]])):
+            missing |= bool(np.isnan(tv[self.req5[side]]).any())
+            if np.isnan(tv).all():
+                out[side] = (np.full(k, np.nan), np.full(k, np.nan), np.full(k, np.nan))
+                continue
+            d = group_distance(tv[None, :], Pm, self.groups5[side], np.ones(len(tv)), self.q5[side])
+            sim = np.where(self.admit5[:k], similarity(d.d2[0], self.sig5.get((side, int(key)), float("nan"))), np.nan)   # EXTENDED-only pool
+            out[side] = (sim, d.completeness[0], d.quality[0])
+        return out, missing
 
     # ---- the five searches
     def search(self, tg: Target, which=("S1", "S2", "S3", "S4", "S5"), keep: bool = True, sim_threshold: float = cs.SIM_THRESHOLD,
                min_neff: float = cs.MIN_NEFF) -> dict:
         """Run the searches for one target on the lineup-adjusted target vectors; returns {search: SearchResult}.
 
-        Observations are past (key < the target week) team-games, or player-games for a player market. A match is an observation whose combined similarity
-        is at least `sim_threshold`; its weight is  similarity x recency x continuity x data-quality  (separate columns in `matches`). The search is
-        no_match when its best similarity is below the threshold or its n_eff below `min_neff`: shift = 0 and the widened-uncertainty flag is set."""
+        Observations are past (key < the target week) team-games, or player-games for a player market. The similarity of an observation is one-sided for
+        S1 (the defenses faced) and two-sided for S2, S4, S5 (offense similarity x defense similarity; build plan 4c.4); S3 multiplies the player's
+        archetype similarity by the defense faced. A side's similarity is the mean of its units' similarities. A match is an observation whose similarity
+        is at least `sim_threshold`; its weight is  similarity x recency x continuity x data-quality  (separate columns in `matches`; recency and continuity
+        from features/weights.py for the market). The search is no_match when its best similarity is below the threshold or its n_eff below
+        `min_neff`: shift = 0 and the widened-uncertainty flag is set."""
         units = cs.MARKET_UNITS[tg.market]
         off_units = [u for u in units if u in cs.OFFENSE_UNITS]
         def_units = [u for u in units if u in cs.DEFENSE_UNITS]
@@ -1167,13 +1179,12 @@ class Pool:
         ac = arch_comp() if arch else None
 
         def components(search):
+            """The unit similarities a search uses (build plan 4c.4): S1 one-sided on the defenses faced (the offense is the target itself); S3 the player's
+            archetype and the defense faced; S2 and S4 two-sided, offense (team units + the player's archetype) and defense. In S2 the defense is
+            tonight's opponent itself, compared with what it was in that past game."""
             comps = {}
-            if search in ("S1", "S4"):
-                for u in def_units:
-                    comps[u] = ("def", team_comp(u, "def", o, obs_opp))
-            if search in ("S3",):
-                for u in def_units:
-                    comps[u] = ("def", team_comp(u, "def", o, obs_opp))
+            for u in def_units:
+                comps[u] = ("def", team_comp(u, "def", o, obs_opp))
             if search in ("S2", "S4"):
                 for u in off_units:
                     comps[u] = ("off", team_comp(u, "off", g, obs_row))
@@ -1184,7 +1195,8 @@ class Pool:
         def side_mean(comps, kinds):
             sims = [c[0] for kd, c in comps.values() if kd in kinds]
             if not sims:
-                return np.full(len(obs_row), np.nan)
+                n_ = len(next(iter(comps.values()))[1][0]) if comps else len(obs_row)
+                return np.full(n_, np.nan)
             arr = np.vstack(sims)
             cnt = (~np.isnan(arr)).sum(axis=0)
             return np.where(cnt > 0, np.nansum(arr, axis=0) / np.maximum(cnt, 1), np.nan)
@@ -1207,36 +1219,34 @@ class Pool:
                 sel = np.ones(len(obs_row), dtype=bool)
             idx = np.flatnonzero(sel)
             if sname == "S5":
-                ps, pc, pq, miss = self.profile_sims(g, o, k, key)
-                sim = ps[obs_row[idx]]
-                comps_sel = {"matchup_profile": ("prof", (sim, pc[obs_row[idx]], pq[obs_row[idx]]))}
+                prof, miss = self.profile_sims(g, o, k, key)
+                comps_sel = {f"matchup_{'offense' if side == 'off' else 'defense'}": (side, tuple(a[obs_row[idx]] for a in prof[side])) for side in ("off", "def")}
+                sim_off, sim_def = side_mean(comps_sel, ("off",)), side_mean(comps_sel, ("def",))
+                combined = sim_off * sim_def
                 if miss:
-                    out[sname] = SearchResult(sname, self._summary(tg, sname, sim, comps_sel, None, False, "missing_required_ftn_features", sim_threshold, min_neff,
-                                                                   best_override=float(np.nanmax(sim)) if np.isfinite(sim).any() else float("nan")))
+                    out[sname] = SearchResult(sname, self._summary(tg, sname, combined, comps_sel, None, False, "missing_required_ftn_features", sim_threshold, min_neff,
+                                                                   best_override=float(np.nanmax(combined)) if np.isfinite(combined).any() else float("nan")))
                     continue
-                combined = sim
             else:
                 allc = components(sname)
                 comps_sel = {u: (kd, (c[0][idx], c[1][idx], c[2][idx])) for u, (kd, c) in allc.items()}
-                off_side = side_mean(comps_sel, ("off", "arch")) if sname in ("S2", "S4") else None
+                sim_def = side_mean(comps_sel, ("def",))
                 if sname == "S1":
-                    combined = side_mean(comps_sel, ("def",))
-                elif sname == "S2":
-                    combined = off_side
+                    sim_off = np.full(len(idx), np.nan)
+                    combined = sim_def
                 elif sname == "S3":
-                    combined = side_mean(comps_sel, ("arch",)) * side_mean(comps_sel, ("def",))
+                    sim_off = side_mean(comps_sel, ("arch",))
+                    combined = sim_off * sim_def
                 else:
-                    combined = off_side * side_mean(comps_sel, ("def",))
-                comps_sel = {u: (kd, c) for u, (kd, c) in comps_sel.items()}
+                    sim_off = side_mean(comps_sel, ("off", "arch"))
+                    combined = sim_off * sim_def
             # weights
             rec = 0.5 ** (np.maximum(self.clock[g] - self.clock[obs_row[idx]], 0.0) / config.RECENCY_HALF_LIFE_GAMES)
-            if sname == "S1":
-                lin_past = {c: self.lin[i][obs_row[idx]] for i, c in enumerate(LINEUP_COMPONENTS)}
-                lin_t = {c: int(self.lin[i][g]) for i, c in enumerate(LINEUP_COMPONENTS)}
-                flags = wts.continuity_flags(lin_past, lin_t, obs_slot[idx], t_slot, obs_fam[idx], t_fam, obs_team[idx] != tg.team)
-                cont = np.asarray(wts.continuity_weight(flags, config.BASELINE_TO_PENALTY_MARKET[tg.market]), dtype=float) * np.ones(len(idx))
-            else:
-                cont = np.ones(len(idx))
+            # continuity from features/weights.py for the market, in every search (build plan 4c.4): a past game of another team flags every factor
+            lin_past = {c: self.lin[i][obs_row[idx]] for i, c in enumerate(LINEUP_COMPONENTS)}
+            lin_t = {c: int(self.lin[i][g]) for i, c in enumerate(LINEUP_COMPONENTS)}
+            flags = wts.continuity_flags(lin_past, lin_t, obs_slot[idx], t_slot, obs_fam[idx], t_fam, obs_team[idx] != tg.team)
+            cont = np.asarray(wts.continuity_weight(flags, config.BASELINE_TO_PENALTY_MARKET[tg.market]), dtype=float) * np.ones(len(idx))
             comp_arr = np.vstack([c[1][1] for c in comps_sel.values()]) if comps_sel else np.zeros((0, len(idx)))
             qual_arr = np.vstack([c[1][2] for c in comps_sel.values()]) if comps_sel else np.zeros((0, len(idx)))
             n_exp = max(len(comps_sel), 1)
@@ -1246,7 +1256,7 @@ class Pool:
                 quality = np.nanmean(qual_arr, axis=0) if comps_sel else np.full(len(idx), np.nan)
             final = combined * rec * cont * quality
             out[sname] = SearchResult(sname, *self._finish(tg, sname, idx, obs_row, obs_pid, obs_team, combined, comps_sel, rec, cont, quality, completeness, final,
-                                                            sim_threshold, min_neff, keep))
+                                                            sim_threshold, min_neff, keep, sim_off, sim_def))
         return out
 
     def _summary(self, tg, sname, combined, comps, final, matched, reason, sim_threshold, min_neff, applicable=True, best_override=None, n_matches=0, n_eff=0.0):
@@ -1261,7 +1271,8 @@ class Pool:
                     applicable=applicable, n_matches=n_matches, n_eff=n_eff, best_similarity=best, no_match=bool(no_match) if applicable else False,
                     widened_uncertainty=bool(no_match) if applicable else False, shift=0.0 if no_match else float("nan"), reason=reason, unit_best=unit_best)
 
-    def _finish(self, tg, sname, idx, obs_row, obs_pid, obs_team, combined, comps, rec, cont, quality, completeness, final, sim_threshold, min_neff, keep):
+    def _finish(self, tg, sname, idx, obs_row, obs_pid, obs_team, combined, comps, rec, cont, quality, completeness, final, sim_threshold, min_neff, keep,
+                sim_off=None, sim_def=None):
         ok = np.isfinite(combined) & np.isfinite(final)
         best = float(np.nanmax(combined)) if np.isfinite(combined).any() else float("nan")
         match = ok & (combined >= sim_threshold)
@@ -1285,6 +1296,8 @@ class Pool:
                     "obs_season": self.games["season"].to_numpy()[obs_row[idx][sel]], "obs_week": self.games["week"].to_numpy()[obs_row[idx][sel]]}
             for u, (kd, c) in comps.items():
                 cols[f"sim_{u}"] = c[0][sel]
+            nan = np.full(len(combined), np.nan)
+            cols.update(sim_offense=(nan if sim_off is None else sim_off)[sel], sim_defense=(nan if sim_def is None else sim_def)[sel])
             cols.update(sim_combined=combined[sel], completeness_penalty=completeness[sel], recency_weight=rec[sel], continuity_weight=cont[sel],
                         quality_weight=quality[sel], final_weight=final[sel])
             matches = pl.DataFrame(cols, schema_overrides={"target_player_id": pl.String, "obs_player_id": pl.String}, strict=False).sort(["sim_combined", "obs_game_id", "obs_team"], descending=[True, False, False])
