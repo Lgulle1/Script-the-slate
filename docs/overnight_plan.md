@@ -146,6 +146,53 @@ Also added, from the review's soundness notes:
   - **Reporting.** Per search, market and side: the improvement and the match rate, for reading only. Two runs byte-identical.
   - **Then:** set SIM_THRESHOLD, re-run the window selection, rebuild the comparable table and run the ablation gate on the chosen windows.
 
+## Per-unit searches (your decision of 2026-10-09, fixed here before anything is built or run)
+**Why.** The searches as built average four to six units into one similarity per side, so a past game counts only if it resembles tonight on all of
+them at once. At 0.40, S3 and S4 typically find one or two such games (n_eff 1.3-1.5, below MIN_NEFF 2), S1 has about 54 past games to choose from,
+and S2 fails the 0.40 floor in two targets out of three. The spec itself says never to collapse the units ("one part of a team can resemble one
+historical team while another part resembles a completely different one"). The searches are rebuilt per unit. The threshold sweep that is running
+(all units at once) is kept as the baseline of the old design.
+
+**The searches.** For every target and market, over the market's units only (comps_spec MARKET_UNITS):
+- **S1** (the target's own past games): one search per DEFENSE unit. Similarity: tonight's opponent vs the defense faced back then, on that unit.
+- **S2** (past games against tonight's defense): one search per OFFENSE unit, including the player's archetype. Similarity: tonight's offense (or
+  player) vs the offense (or player) back then, on that unit.
+- **S3** (similar players, any team; player markets): one search per pair (the player's archetype, a defense unit of the market), checked on the
+  geometric mean of the two similarities with the 0.40 floor; weight the product.
+- **S4** (all past games): one search per matched pair. The pair list is fixed now and will not grow after results: run_offense x run_defense,
+  pass_offense x pass_coverage, ol_protection x pass_rush. A pair is used only where both of its units are in the market's units. That gives the
+  game markets the run and pass pairs; pass the pass and OL pairs; rushing and QB rushing the run pair; receiving the pass pair. Each pair is checked on
+  the geometric mean with the 0.40 floor, and weighted by the product.
+- **S5**: unchanged (one matchup profile per side).
+- Units no pair or search above names (rb_rotation, receiver_usage, coverage_mix and the archetypes outside S2 / S3) take part only where listed above.
+
+**Every unit search** has its own similarity scale (the unit's sigma, as now), the threshold check, MIN_NEFF = 2 over historical team-games, weight =
+similarity x recency x continuity x quality, the 25% per-team-game cap, and the count weights on the efficiency side. A unit search without a match
+weighs 0 and is flagged. The 15% across-search team cap is taken over the target's unit searches (S1's exempt, as now), dividing by their number.
+
+**Roll-up to the model (the 4c.4 columns are kept).** Per search, shift_vol_S is the n_eff-weighted mean of its matching unit searches' volume
+shifts, and shift_eff_S the n_eff_eff-weighted mean of their efficiency shifts (n_eff counts team-games, so the count weights are in it).
+No-match units weigh 0. nomatch_S is true when no unit search of S matches. n_eff_S is the largest unit n_eff, and best_sim_S the largest unit
+best similarity. Shares and completeness use the same n_eff weights. The per-unit shifts, n_eff and flags are stored for reading; the model does not see them.
+
+**Threshold.** It is re-chosen on the per-unit searches with the rule already fixed above, unchanged: the lowest of 0.40-0.70 whose pooled
+improvement over random pairing (now per unit search, from the same unit search's observation set) has a season-week interval above 0, else
+0.70. Then the window selection is re-run (it is already per unit), the table rebuilt, and the gate run.
+
+**Unit diagnostic (reported, not used to drop units in this round).**
+- **Cells.** One per (search, unit or pair, side, quantity), over all 2020-2024 targets where that unit search matches. Each cell gets two
+  improvements: over a zero shift (the comp-free model alone, z^2 - (shift - z)^2) and over random pairing (as in the sweep).
+- **Works.** A cell works when both improvements are above zero, each 95% season-week interval excludes zero after a Bonferroni correction for the
+  number of cells m (interval level 1 - 0.05 / m, m counted before any result), and each improvement is positive in at least 2 seasons. EDGE: positive
+  but failing a condition. NO: otherwise.
+- **Report.** Per cell, the match rate, both improvements and intervals, the seasons won and the label.
+- **Diagnostic only.** Dropping units on this test and then judging the gate on the same 2020-2024 data would be choosing on the test. Any unit is
+  removed only later, by a rule written first.
+
+**Gate (unchanged).** The Phase 3 model with vs without the comparable columns, 2020-2024 walk-forward, CLEARS per market (gain > 0, interval
+excluding 0, at least 2 seasons won), layer weight 1 on CLEARS else 0 and flagged. The null control is reported. The per-unit diagnostic is added to
+the gate report. 2025 stays locked.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
