@@ -40,6 +40,6 @@ if __name__ == "__main__":
     with pl.Config(tbl_rows=200, tbl_cols=20, tbl_width_chars=220, float_precision=4):
         print(summary)
         print(detail.pivot(on="threshold", index=["market", "search", "side"], values="match_rate").sort("market", "search", "side"))
-    print(f"chosen SIM_THRESHOLD: {SW.choose_threshold(summary)} (rule: the lowest threshold whose pooled improvement is above zero with the interval's "
-          f"lower bound above zero; none: {SW.DEFAULT_THRESHOLD})")
+    print(f"chosen SIM_THRESHOLD: {SW.choose_threshold(summary)} (rule: the lowest threshold whose comps beat both random pairing and a zero shift, "
+          f"each interval above zero; none: {SW.DEFAULT_THRESHOLD} and comps weight 0 for V1)")
     print(f"{len(targets):,} targets, {rows.height:,} scored rows in {time.time() - t0:.0f}s; holdout {config.HOLDOUT_SEASON} untouched")

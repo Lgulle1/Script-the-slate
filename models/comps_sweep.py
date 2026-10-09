@@ -6,8 +6,9 @@ quantity count once: the first market of the family, MARKET_FAMILIES order, that
   random error  the same with every match replaced by a past observation drawn at random from the same search's observation set as of the same
                 target week, among those with an expectation on that side (the past games the search could have picked, ignoring similarity);
                 the real weights are kept, so n_eff and the shrinkage are identical and only the z's change; averaged over N_DRAWS draws.
-improvement = random error - real error, pooled over all searches, markets and sides, with the 3.3 season-week cluster bootstrap. The chosen
-threshold is the lowest whose pooled improvement is above zero with the interval's lower bound above zero; if none passes, DEFAULT_THRESHOLD stays.
+improvements = random error - real error and z^2 (a zero shift) - real error, pooled over all searches, markets and sides, with the 3.3 season-week
+cluster bootstrap. The chosen threshold is the lowest where BOTH are above zero with their intervals' lower bounds above zero (tightened on
+2026-10-09 after the all-units baseline, before the per-unit sweep was read); if none passes, DEFAULT_THRESHOLD stays.
 
 Everything else is as the searches run (MIN_NEFF, the 0.40 floor, the geometric-mean check, count weights, healthy vectors). One search at the lowest
 threshold serves every threshold (`restrict`: a match at threshold t is a match at the lowest threshold whose checked similarity reaches t).
@@ -149,24 +150,30 @@ def sweep_rows(pool: C.Pool, targets: list, zl: dict, counts: dict, thresholds=T
 
 
 def summarize(rows: pl.DataFrame, thresholds=THRESHOLDS) -> pl.DataFrame:
-    """Per threshold: the pooled improvement (random - real squared error), its 95% season-week cluster bootstrap interval and the number of rows."""
+    """Per threshold: the pooled improvement over random pairing (random - real squared error) and over a zero shift (z^2 - real), each with its 95%
+    season-week cluster bootstrap interval, the mean errors and the number of rows."""
     out = []
     for t in thresholds:
         r = rows.filter(pl.col("threshold") == t).sort("season", "week", "game_id", "team", "player_id", "market", "search", "side", nulls_last=True)
+        row = dict(threshold=t, n_rows=r.height)
         if r.height == 0:
-            out.append(dict(threshold=t, n_rows=0, improvement=None, ci_lo=None, ci_hi=None, real=None, random=None))
+            out.append(row)
             continue
-        d = (r["sq_error_random"] - r["sq_error_real"]).to_numpy()
-        lo, hi = compare.cluster_bootstrap(d, (r["season"] * 100 + r["week"]).to_numpy())
-        out.append(dict(threshold=t, n_rows=r.height, improvement=float(d.mean()), ci_lo=float(lo), ci_hi=float(hi),
-                        real=float(r["sq_error_real"].mean()), random=float(r["sq_error_random"].mean())))
-    return pl.DataFrame(out, schema={"threshold": pl.Float64, "n_rows": pl.Int64, "improvement": pl.Float64, "ci_lo": pl.Float64, "ci_hi": pl.Float64,
-                                     "real": pl.Float64, "random": pl.Float64})
+        cl = (r["season"] * 100 + r["week"]).to_numpy()
+        for suffix, col in (("", "sq_error_random"), ("_zero", "sq_error_zero")):
+            d = (r[col] - r["sq_error_real"]).to_numpy()
+            lo, hi = compare.cluster_bootstrap(d, cl)
+            row.update({f"improvement{suffix}": float(d.mean()), f"ci_lo{suffix}": float(lo), f"ci_hi{suffix}": float(hi)})
+        row.update(real=float(r["sq_error_real"].mean()), random=float(r["sq_error_random"].mean()), zero=float(r["sq_error_zero"].mean()))
+        out.append(row)
+    cols = ["improvement", "ci_lo", "ci_hi", "improvement_zero", "ci_lo_zero", "ci_hi_zero", "real", "random", "zero"]
+    return pl.DataFrame(out, schema={"threshold": pl.Float64, "n_rows": pl.Int64, **{c: pl.Float64 for c in cols}})
 
 
 def choose_threshold(summary: pl.DataFrame, default: float = DEFAULT_THRESHOLD) -> float:
-    """The lowest threshold whose pooled improvement is above zero with the interval's lower bound above zero; none: the default."""
-    ok = summary.filter((pl.col("improvement") > 0) & (pl.col("ci_lo") > 0)).sort("threshold")
+    """The lowest threshold whose pooled comps beat BOTH random pairing and a zero shift, each improvement above zero with its interval's lower bound
+    above zero (rule tightened on 2026-10-09, before the per-unit sweep was read); none: the default (and the comps get weight 0 for V1)."""
+    ok = summary.filter((pl.col("improvement") > 0) & (pl.col("ci_lo") > 0) & (pl.col("improvement_zero") > 0) & (pl.col("ci_lo_zero") > 0)).sort("threshold")
     return float(ok["threshold"][0]) if ok.height else default
 
 

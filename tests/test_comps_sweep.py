@@ -42,11 +42,24 @@ def test_random_pairing_keeps_the_real_weights_and_shrinkage():
         SW.random_shift(np.ones(3), 3.0, np.ones(2), rng)                                # never more matches than the set holds
 
 
-def test_the_rule_takes_the_lowest_passing_threshold_else_the_default():
-    s = pl.DataFrame({"threshold": [0.4, 0.5, 0.6, 0.7], "improvement": [0.02, 0.03, -0.01, 0.05], "ci_lo": [-0.01, 0.001, -0.02, 0.01]})
-    assert SW.choose_threshold(s) == 0.5
-    assert SW.choose_threshold(s.with_columns(ci_lo=pl.lit(-1.0))) == SW.DEFAULT_THRESHOLD == 0.70
-    assert SW.choose_threshold(s.with_columns(improvement=pl.lit(None, dtype=pl.Float64), ci_lo=pl.lit(None, dtype=pl.Float64))) == 0.70
+def test_the_rule_needs_both_random_and_zero_beaten_at_the_lowest_threshold_else_the_default():
+    """Tightened rule (2026-10-09): beating random pairing is not enough; the comps must also beat a zero shift, each interval above zero."""
+    s = pl.DataFrame({"threshold": [0.4, 0.5, 0.6, 0.7], "improvement": [0.02, 0.03, 0.04, 0.05], "ci_lo": [0.01, 0.001, 0.02, 0.01],
+                      "improvement_zero": [-0.01, 0.02, 0.03, 0.02], "ci_lo_zero": [-0.02, -0.001, 0.01, 0.005]})
+    assert SW.choose_threshold(s) == 0.6                                                 # 0.4 loses to zero, 0.5's zero interval touches it
+    assert SW.choose_threshold(s.with_columns(ci_lo_zero=pl.lit(-1.0))) == SW.DEFAULT_THRESHOLD == 0.70
+    assert SW.choose_threshold(s.with_columns(ci_lo=pl.lit(-1.0))) == 0.70
+    nulls = {c: pl.lit(None, dtype=pl.Float64) for c in ("improvement", "ci_lo", "improvement_zero", "ci_lo_zero")}
+    assert SW.choose_threshold(s.with_columns(**nulls)) == 0.70
+
+
+def test_summary_reports_the_improvement_over_a_zero_shift():
+    rows = pl.DataFrame({"threshold": [0.5] * 4, "season": [2021, 2021, 2022, 2022], "week": [1, 2, 1, 2], "game_id": list("abcd"), "team": ["A"] * 4,
+                         "player_id": [None] * 4, "market": ["spread"] * 4, "search": ["S5"] * 4, "side": ["vol"] * 4,
+                         "sq_error_real": [1.0, 2.0, 1.0, 2.0], "sq_error_zero": [2.0, 2.0, 2.0, 2.0], "sq_error_random": [1.5, 2.5, 1.5, 2.5]},
+                        schema_overrides={"player_id": pl.String})
+    s = SW.summarize(rows, (0.5,)).row(0, named=True)
+    assert s["improvement"] == pytest.approx(0.5) and s["improvement_zero"] == pytest.approx(0.5) and s["zero"] == pytest.approx(2.0)
 
 
 def test_each_quantity_counts_once_per_family():
