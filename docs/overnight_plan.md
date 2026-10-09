@@ -299,6 +299,13 @@ and tested) and the work moves to 4d.
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-09, fingerprint diagnostic (as fixed above). Two runs byte-identical (comp_unit_signal.parquet 633b7cf5c7139b40).
+  **By the fixed rule, every unit fails:** no unit's 20 fingerprint neighbours beat the unit's own trailing average on its single-game headline
+  (Bonferroni intervals all include or lie below zero; rb_rotation, receiver_usage and coverage_mix are significantly worse). Reported
+  alongside, not gated: against RANDOM neighbours the fingerprint neighbours are better with a 95% interval above zero for 5 of 9 units
+  (run_offense, pass_offense, rb_rotation, ol_protection, coverage_mix), so teams that look alike on a unit do behave alike. They never beat
+  the team's own recent average, which already carries that information: the fingerprints are informative but redundant with the team's own
+  history, rather than empty.
 - 2026-10-09, team-level sanity test (as fixed above). Two runs byte-identical (comp_team_test.parquet 6832298f70d52720, rows d7f281baea6cd198).
   FAILS in both markets: (b) is worse than the offense's own average, with intervals fully below zero.
   - Team rushing yards: matched team-games 78%, MAE (a) 39.11 vs (b) 39.75, -0.65 yards [-1.07, -0.23]; vs random +0.41 [-0.02, +0.83].
