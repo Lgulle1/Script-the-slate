@@ -24,8 +24,10 @@ Lineup versions (team units only; player archetypes describe the player himself 
   healthy     the team's own pooled value: its normal lineup. Also the vector of a historical pool game, for units no player decomposition moves.
   adjusted    healthy + sum over players of (expected share - normal share) x (his window value - the team's), with the shares from the 4a injury
               layer for the game (4a.1 play probability and 4a.2 redistributed carry / target / dropback shares: detail.exp_* vs detail.b_*).
-  actual      the same correction with the shares of who actually played (carries, targets and dropbacks in the game itself) against his normal
-              usage share (his trailing share of the team's plays over the team's games, absences counted as 0). Used for HISTORICAL POOL games: a pool vector reflects who played, not the pre-game expectation.
+  actual      the same correction for who actually played (an offensive snap in snap_counts): each player's normal usage share (his trailing
+              share of the team's plays over the team's games, absences counted as 0) restricted to the players who played and renormalised, against
+              the full normal shares. The touches that fell in the game are NOT used (that is game-to-game noise, not the lineup). Used for HISTORICAL POOL
+              games: a pool vector reflects who played, not the pre-game expectation.
 Units with a lineup correction: run_offense, pass_offense (quarterback-attributed features), receiver_usage, rb_rotation. ol_protection and the
 four defense units have no player-level data in the spec (the 4a layer models offensive skill players), so adjusted = healthy there, and so do the
 scheme features (play action, screen, motion, no-huddle, rush rate over expected); LINEUP_NOT_ADJUSTED lists them and the build log prints it.
@@ -170,6 +172,7 @@ class Inputs:
     player: pl.DataFrame           # player ledger (features/comps_ledger.player_ledger)
     slots: pl.DataFrame            # gsis_id, season, week, slot, family
     positions: pl.DataFrame        # gsis_id, season, week, position, height, weight (rosters_weekly)
+    snaps: pl.DataFrame | None = None        # game_id, team, gsis_id of every player with an offensive snap (snap_counts): who played
     detail: pl.DataFrame | None = None       # 4a expected shares (sim.inputs._detail_and_exit): game_id, team, player_id, group, exp_*, b_*, p_out
     completeness: pl.DataFrame | None = None
 
@@ -392,23 +395,21 @@ def _gid(df: pl.DataFrame) -> np.ndarray:
 
 
 def share_tables(inp: Inputs, queries: pl.DataFrame) -> pl.DataFrame:
-    """The query rows with the three share sets: actual (a_*: who really carried / was targeted / dropped back in the game) and, where the 4a layer
-    has the game, expected (e_*) and normal (b_*); 'rest' is the 4a bucket for unlisted players, valued like the team (no correction)."""
-    tot = inp.team.select("game_id", "team", tc="x.carries", tt="x.targets", td="x.dropbacks")
-    a = (inp.player.select("game_id", "team", "player_id", "c.carries", "c.targets", "c.dropbacks").join(tot, on=["game_id", "team"], how="left")
-         .select("game_id", "team", "player_id",
-                 a_carry=pl.col("c.carries") / pl.col("tc"), a_target=pl.col("c.targets") / pl.col("tt"), a_dropback=pl.col("c.dropbacks") / pl.col("td")))
-    q = queries.join(a, on=["game_id", "team", "player_id"], how="left").with_columns(
-        pl.col("a_carry").fill_null(0.0), pl.col("a_target").fill_null(0.0), pl.col("a_dropback").fill_null(0.0))
+    """The query rows with `active` (the player played: an offensive snap in snap_counts, or a carry / target / dropback in the game) and, where the
+    4a layer has the game, the expected (exp_*) and baseline (b_*) shares; 'rest' is the 4a bucket for unlisted players, valued like the team (no
+    correction)."""
+    played = inp.player.select("game_id", "team", "player_id").with_columns(active=pl.lit(True))
+    if inp.snaps is not None:
+        played = pl.concat([played, inp.snaps.select("game_id", "team", pl.col("gsis_id").alias("player_id")).with_columns(active=pl.lit(True))]).unique()
+    q = queries.join(played, on=["game_id", "team", "player_id"], how="left").with_columns(pl.col("active").fill_null(False))
+    zero = ("exp_carry", "exp_target", "exp_dropback", "b_carry", "b_target", "b_dropback")
     if inp.detail is not None:
-        d = inp.detail.filter(pl.col("player_id") != "rest").select("game_id", "team", "player_id", "exp_carry", "exp_target", "exp_dropback", "b_carry", "b_target", "b_dropback")
+        d = inp.detail.filter(pl.col("player_id") != "rest").select("game_id", "team", "player_id", *zero)
         has = inp.detail.select("game_id", "team").unique().with_columns(has_detail=pl.lit(True))
         q = (q.join(d, on=["game_id", "team", "player_id"], how="left").join(has, on=["game_id", "team"], how="left")
              .with_columns(pl.col("has_detail").fill_null(False)))
-        q = q.with_columns(*[pl.col(c).fill_null(0.0) for c in ("exp_carry", "exp_target", "exp_dropback", "b_carry", "b_target", "b_dropback")])
-    else:
-        q = q.with_columns(has_detail=pl.lit(False), **{c: pl.lit(0.0) for c in ("exp_carry", "exp_target", "exp_dropback", "b_carry", "b_target", "b_dropback")})
-    return q
+        return q.with_columns(*[pl.col(c).fill_null(0.0) for c in zero])
+    return q.with_columns(has_detail=pl.lit(False), **{c: pl.lit(0.0) for c in zero})
 
 
 def lineup_deltas(pw: PlayerWindows, pw_share: PlayerWindows, shares: pl.DataFrame, tw: dict, team_keys: list, games_index: dict, n_games: int) -> dict:
@@ -418,7 +419,7 @@ def lineup_deltas(pw: PlayerWindows, pw_share: PlayerWindows, shares: pl.DataFra
     Correction for a feature = sum over players of (share in this lineup - normal share) x (his shrunk window value - the team's value), with
     his window value shrunk toward the team's by SHRINK_K opportunities; for the share-structure features the structure is evaluated on the lineup's
     shares and on the normal shares and the difference taken. 'adjusted' uses the 4a expected vs baseline shares (games the 4a layer covers);
-    'actual' the shares of who played vs each player's normal usage share (trailing, over the team's games), for every game."""
+    'actual' each player's normal usage share restricted to the players who played (snap counts) and renormalised, vs the full normal shares, for every game."""
     K = cs.SHRINK_K
     kidx = {k: i for i, k in enumerate(pw.keys)}
     tidx = {k: i for i, k in enumerate(team_keys)}
@@ -432,7 +433,7 @@ def lineup_deltas(pw: PlayerWindows, pw_share: PlayerWindows, shares: pl.DataFra
     group_has_detail = np.array([bool(shares["has_detail"][int(r[0])]) for r in groups_idx])
     grp = shares["group"].fill_null("").to_numpy()
     pid = shares["player_id"].to_numpy()
-    s_actual = {k: shares[f"a_{k}"].to_numpy() for k in ("carry", "target", "dropback")}
+    active = shares["active"].to_numpy().astype(float)
     s_exp = {k: shares[f"exp_{k}"].to_numpy() for k in ("carry", "target", "dropback")}
     s_base = {k: shares[f"b_{k}"].to_numpy() for k in ("carry", "target", "dropback")}
     off = len(RUN_KEYS) + len(PASS_KEYS)
@@ -454,6 +455,11 @@ def lineup_deltas(pw: PlayerWindows, pw_share: PlayerWindows, shares: pl.DataFra
             val = (np.nan_to_num(rate[:, j], nan=0.0) * den[:, j] + k * mu) / np.maximum(den[:, j] + k, 1e-9)
             return np.where(np.isfinite(val) & (den[:, j] > 0), val, mu)
 
+        s_actual = {}                                                  # who played: the normal usage shares of the players who played, renormalised
+        for k in norm:
+            x = norm[k] * active
+            tot = np.bincount(gid, weights=x, minlength=n_groups)
+            s_actual[k] = np.where(tot[gid] > 0, np.divide(x, tot[gid], out=np.zeros_like(x), where=tot[gid] > 0), norm[k])      # nobody with usage played: no correction
         res = {ver: np.full((n_games, len(DELTA_KEYS)), np.nan) for ver in ("adjusted", "actual")}
         for j, key in enumerate(RUN_KEYS + PASS_KEYS):
             share = "carry" if key in RUN_KEYS else "dropback"
@@ -633,7 +639,7 @@ def load_inputs(raw_db=config.RAW_DUCKDB_PATH, max_season=None, lineup_expectati
     lineups = LU.build_lineups(raw_db, max_season, start=cs.BASE_START).with_columns(team=L.canon("team"))
     detail = load_lineup_expectations(raw_db, max_season, cache_dir) if lineup_expectations else None
     return Inputs(games=games, lineups=lineups, team=wide, player=player, slots=L.load_slots(raw_db, max_season), positions=pos, detail=detail,
-                  completeness=L.completeness(plays, games, team, pfr_pass, snaps))
+                  snaps=snaps, completeness=L.completeness(plays, games, team, pfr_pass, snaps))
 
 
 def lineup_change_log(deltas: dict, tw: dict, team_keys: list, games: pl.DataFrame, variants=VARIANTS) -> pl.DataFrame:

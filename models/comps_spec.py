@@ -127,11 +127,11 @@ FEATURES = {
         _f("completion_rate_allowed_te", f"{_P}, rosters_weekly", ["complete_pass", "receiver_player_id", "position"], "base", 2016, "same, TEs", quality="derived"),
         _f("completion_rate_allowed_rb", f"{_P}, rosters_weekly", ["complete_pass", "receiver_player_id", "position"], "base", 2016, "same, RBs", quality="derived"),
     ),
-    "coverage_mix": (      # EXTENDED space only; the participation table (approved exception), quality `estimated`; first_season here = first season with ANY classified plays
-        _f("man_rate", "participation", ["defense_man_zone_type"], "extended", 2018, "share of classified pass plays in man coverage (about 38% of plays are classified 2018-2022, ~100% from 2023)", quality="estimated"),
+    "coverage_mix": (      # EXTENDED space only; the participation table (approved exception), quality `estimated`; first_season = first season the table classifies pass attempts (2018)
+        _f("man_rate", "participation", ["defense_man_zone_type"], "extended", 2018, "share of classified pass attempts in man coverage (participation classifies ~100% of pass attempts 2018-2024; nothing before 2018)", quality="estimated"),
         _f("zone_rate", "participation", ["defense_man_zone_type"], "extended", 2018, "same, zone", quality="estimated"),
-        _f("middle_closed_rate", "participation", ["defense_coverage_type"], "extended", 2023,
-           "share of classified plays in a single-high shell (COVER_1, COVER_3); two-high (COVER_2, 2_MAN, COVER_4, COVER_6) is middle open; classified on ~49% of plays from 2023 only", quality="estimated"),
+        _f("middle_closed_rate", "participation", ["defense_coverage_type"], "extended", 2018,
+           "share of classified pass attempts in a single-high shell (COVER_1, COVER_3); two-high (COVER_2, 2_MAN, COVER_4, COVER_6) is middle open; 89-96% of attempts carry a shell 2018-2024", quality="estimated"),
     ),
     "rb_archetype": (
         _f("carry_share", f"{_P}, rosters_weekly", ["rusher_player_id", "rush"], "base", 2016, "player carries / team carries", quality="derived"),
@@ -176,7 +176,8 @@ DROPPED = (
 QUALITY_RULE = ("observed = a direct aggregate of a provided column of one table; derived = needs another table, a rank, a share of the team "
                 "total or a computed construct; estimated = the source is only partly populated (participation man/zone and coverage type)")
 # Seasons in which participation classifies a play, as a share of plays (rounded; 4c.1 logs the exact value per season in comp_completeness)
-PARTICIPATION_COMPLETENESS_NOTE = "man/zone ~38% of plays 2018-2022, ~100% from 2023; coverage type ~38% 2018-2022, ~49% from 2023; nothing before 2018"
+PARTICIPATION_COMPLETENESS_NOTE = ("share of PASS ATTEMPTS classified (measured in 4c.1, comp_completeness.parquet): man/zone ~100% 2018-2024, coverage shell 89-96% 2018-2024; "
+                                   "nothing before 2018. (The ~38% / ~49% quoted at 4c.0 were shares of ALL plays, where the table leaves run plays blank.)")
 
 # ---------------------------------------------------------------------------------------------------------------------------------- 4. WINDOWS
 WINDOWS = ("last_3", "last_6", "season_to_date", "recency_weighted", "continuity_weighted")      # 4c.6 selects one per unit and market

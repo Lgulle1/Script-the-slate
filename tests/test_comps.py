@@ -274,6 +274,18 @@ def test_healthy_vectors_of_week_w_itself_ignore_week_w_stats():
     assert at_w(a.team).height > 0 and at_w(a.team).equals(at_w(b.team))
 
 
+def test_actual_version_reflects_who_played_not_the_touches_in_the_game():
+    W = (2020, 4)
+    base = synthetic_inputs(0)
+    key = base.player["season"] * 100 + base.player["week"]
+    noisy = base.player.with_columns(pl.when(key == W[0] * 100 + W[1]).then(pl.col("c.carries") * 3 + 1).otherwise(pl.col("c.carries")).alias("c.carries"),
+                                     pl.when(key == W[0] * 100 + W[1]).then(pl.col("c.targets") * 2 + 1).otherwise(pl.col("c.targets")).alias("c.targets"))
+    a = C.build_vectors(base)
+    b = C.build_vectors(C.Inputs(**{**base.__dict__, "player": noisy}))
+    at_w = lambda v: _frame_key(v.team.filter((pl.col("season") == W[0]) & (pl.col("week") == W[1]) & (pl.col("version") == "actual")))
+    assert at_w(a).height > 0 and at_w(a).equals(at_w(b))
+
+
 def test_build_is_deterministic():
     a = C.build_vectors(synthetic_inputs(3))
     b = C.build_vectors(synthetic_inputs(3))
