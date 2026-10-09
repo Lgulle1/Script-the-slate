@@ -248,7 +248,8 @@ on them cannot work. This is not a way to rescue the layer; it finds out whether
 - **(a) The unit's own trailing average.** The recency-weighted mean of the same outcome in the team's earlier games (the comps' half-life,
   across seasons).
 - **(k) The fingerprint neighbours.** The 20 earlier team-games most similar to the target on that unit alone: recency_weighted window, the
-  unit's sigma, BASE space (EXTENDED for coverage_mix), the healthy target vector against the pool vectors, as in the searches. The prediction
+  unit's sigma, the space chosen as in the searches (EXTENDED when both sides are EXTENDED-complete and its sigma exists, else BASE; corrected
+  before the run from "BASE, EXTENDED for coverage_mix"), the healthy target vector against the pool vectors, as in the searches. The prediction
   is the similarity-weighted mean of the neighbours' own single-game outcomes.
 - **(r) Random neighbours.** 20 earlier team-games drawn at random from the same pool with (k)'s weights; 10 draws, fixed seed. Reported only.
 - **Loss.** Absolute error, in the outcome's own units.
