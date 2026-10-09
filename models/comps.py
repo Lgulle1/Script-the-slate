@@ -1420,10 +1420,13 @@ class Pool:
         summary = self._summary(tg, sname, combined, comps, final, reason is None, reason, sim_threshold, min_neff, n_matches=int(match.sum()), n_eff=n_eff)
         if top_any:                         # the closest past games whatever the threshold (the healthy-vs-adjusted comparison): (id, final weight)
             fin = np.flatnonzero(ok)
+            if len(fin) > top_any:                    # keep every observation tied with the k-th largest, then order them exactly: ties by position
+                kth = np.partition(final[fin], len(fin) - top_any)[len(fin) - top_any]
+                fin = fin[final[fin] >= kth]
             top = fin[np.lexsort((fin, -final[fin]))][:top_any]
-            rows_ = obs_row[idx][top]
-            summary["top_any"] = [(f"{self._gids[r]}|{obs_team[idx][t]}|{'' if obs_pid[idx][t] is None else obs_pid[idx][t]}", float(final[t]))
-                                  for r, t in zip(rows_, top)]
+            ti = idx[top]                             # positions in the observation arrays (index them once: they can hold 70,000 objects)
+            summary["top_any"] = [(f"{self._gids[r]}|{t_}|{'' if p_ is None else p_}", float(w_))
+                                  for r, t_, p_, w_ in zip(obs_row[ti].tolist(), obs_team[ti].tolist(), obs_pid[ti].tolist(), final[top].tolist())]
         if sensitivity:                     # analysis only (the no-match memo): matches and n_eff at other thresholds, from the same similarities
             summary["sensitivity"] = {f"{t:g}": (int((ok & (combined >= t)).sum()), cluster_neff(final[ok & (combined >= t)], obs_row[idx][ok & (combined >= t)]))
                                       for t in sensitivity}
