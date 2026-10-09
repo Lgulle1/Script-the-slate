@@ -54,13 +54,13 @@ def auto_targets(pool: C.Pool, targets: list, live: pl.DataFrame | None) -> list
     return pick
 
 
-def card(pool: C.Pool, tg: C.Target, zl: dict, who: dict, top: int):
+def card(pool: C.Pool, tg: C.Target, zl: dict, who: dict, top: int, counts: dict | None = None):
     nm = lambda p: who.get(p, p) if p else ""
     print("=" * 150)
     print(f"{tg.market} | {tg.season} week {tg.week} | {tg.game_id} | {tg.team} vs {tg.opponent}" + (f" | {nm(tg.player_id)} ({tg.player_id})" if tg.player_id else ""))
     print(f"units: {', '.join(cs.MARKET_UNITS[tg.market])}")
     pool.clear_cache()
-    feats, _, detail, retr = C.comp_shifts(pool, [tg], zl, keep_matches=False)
+    feats, _, detail, retr = C.comp_shifts(pool, [tg], zl, keep_matches=False, counts=counts)
     disp = pool.search(tg, C.SEARCHES, keep=True, sim_threshold=0.0, min_neff=0.0)
     qv, qe = C.MARKET_QUANTITIES[tg.market]
     f = feats.filter(pl.col("market") == tg.market).row(0, named=True)
@@ -70,7 +70,7 @@ def card(pool: C.Pool, tg: C.Target, zl: dict, who: dict, top: int):
         verdict = "not applicable" if not d["applicable"] else ("NO MATCH (" + str(d["reason"]) + ")" if d["nomatch"] else "match")
         print(f"\n  {s}: {verdict} | best similarity {f[f'best_sim_{s}']:.3f} | matches {d['n_matches']} | n_eff {d['n_eff_similarity']:.2f} "
               f"| shift vol {f[f'shift_vol_{s}']:+.3f}" + (f" eff {f[f'shift_eff_{s}']:+.3f}" if qe else "")
-              + f" | healthy vs adjusted: differs={rc['adjusted_differs']} overlap of the 10 closest {rc['overlap_closest_10']:.1f}, of the matches "
+              + f" | searched on healthy; vs lineup-adjusted: differs={rc['adjusted_differs']} overlap of the 10 closest {rc['overlap_closest_10']:.1f}, of the matches "
               f"{rc['overlap_top_k']:.1f}, shift change {rc['shift_vol_change']:+.3f}")
         m = disp[s].matches
         if not d["applicable"] or m is None or m.height == 0:
@@ -80,9 +80,9 @@ def card(pool: C.Pool, tg: C.Target, zl: dict, who: dict, top: int):
             z_vol=pl.Series([zl.get(qv, {}).get(k) for k in zip(m["obs_game_id"].to_list()[:top], ent[:top])], dtype=pl.Float64),
             z_eff=pl.Series([zl.get(qe, {}).get(k) if qe else None for k in zip(m["obs_game_id"].to_list()[:top], ent[:top])], dtype=pl.Float64),
             who=pl.Series([nm(p) for p in m["obs_player_id"].to_list()[:top]], dtype=pl.String))
-        sims = [c for c in m.columns if c.startswith("sim_") and c not in ("sim_combined", "sim_offense", "sim_defense")]
+        sims = [c for c in m.columns if c.startswith("sim_") and c not in ("sim_combined", "sim_check", "sim_offense", "sim_defense")]
         with pl.Config(tbl_rows=top, tbl_cols=30, tbl_width_chars=250, fmt_str_lengths=22, tbl_hide_dataframe_shape=True, float_precision=3):
-            print(m.select("obs_game_id", "obs_team", "who", *sims, "sim_combined", "recency_weight", "continuity_weight", "quality_weight", "final_weight",
+            print(m.select("obs_game_id", "obs_team", "who", *sims, "sim_check", "sim_combined", "recency_weight", "continuity_weight", "quality_weight", "final_weight",
                            "z_vol", "z_eff"))
 
 
@@ -94,7 +94,9 @@ if __name__ == "__main__":
     ap.add_argument("--target", nargs="+", action="append", default=[], help="MARKET GAME_ID TEAM [PLAYER_ID]")
     a = ap.parse_args()
     pool = C.load_pool(a.window)
-    zl = C.z_lookup(C.standardized_residuals(pl.read_parquet(config.PROCESSED_DIR / "walkforward_predictions.parquet")))
+    wf = pl.read_parquet(config.PROCESSED_DIR / "walkforward_predictions.parquet")
+    zl = C.z_lookup(C.standardized_residuals(wf))
+    counts = C.load_efficiency_counts(wf)
     who = names()
     targets = C.backtest_targets()
     chosen = []
@@ -106,5 +108,5 @@ if __name__ == "__main__":
         g = pool.games.filter((pl.col("game_id") == gid) & (pl.col("team") == team)).row(0, named=True)
         chosen.append(C.Target(market, gid, team, g["opponent"], g["season"], g["week"], pid[0] if pid else None))
     for tg in chosen:
-        card(pool, tg, zl, who, a.top)
+        card(pool, tg, zl, who, a.top, counts)
     print(f"\nholdout {config.HOLDOUT_SEASON} untouched")

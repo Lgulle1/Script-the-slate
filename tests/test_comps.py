@@ -610,7 +610,7 @@ def test_n_eff_is_the_kish_effective_sample_size_of_the_final_weights_per_histor
         r = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0)["S4"]
         w = r.matches.group_by("obs_game_id", "obs_team").agg(pl.col("final_weight").sum())["final_weight"].to_numpy()
         assert r.summary["n_eff"] == pytest.approx(w.sum() ** 2 / (w ** 2).sum())
-        assert r.summary["n_matches"] == r.matches.height and r.summary["best_similarity"] == pytest.approx(r.matches["sim_combined"].max())
+        assert r.summary["n_matches"] == r.matches.height and r.summary["best_similarity"] == pytest.approx(r.matches["sim_check"].max())
 
 
 def test_cluster_neff_counts_one_team_game_once():
@@ -626,10 +626,11 @@ def test_s5_player_matches_of_one_team_game_do_not_inflate_n_eff(pool3):
     pool, inp, _ = pool3
     tg = _player_target(inp, "targets", week=9)
     k = pool._kmax(tg.season * 100 + tg.week)
-    saved = (pool.prof_off_t.copy(), pool.prof_off_p.copy(), pool.prof_def.copy(), pool.admit5.copy(), dict(pool.sig5))
+    saved = (pool.prof_off_t.copy(), pool.prof_off_p.copy(), pool.prof_def.copy(), pool.admit5.copy(), dict(pool.sig5), pool.prof_off_th.copy())
     try:
         rng = np.random.default_rng(3)
         pool.prof_off_t[:] = rng.normal(size=pool.prof_off_t.shape)
+        pool.prof_off_th[:] = pool.prof_off_t                                   # the searches read the healthy profile
         pool.prof_off_p[:] = rng.normal(size=pool.prof_off_p.shape)
         pool.prof_def[:] = rng.normal(size=pool.prof_def.shape)
         pool.admit5[:] = True
@@ -645,7 +646,7 @@ def test_s5_player_matches_of_one_team_game_do_not_inflate_n_eff(pool3):
         assert r.summary["n_eff"] <= m.select("obs_game_id", "obs_team").unique().height + 1e-9
     finally:
         pool.prof_off_t[:], pool.prof_off_p[:], pool.prof_def[:], pool.admit5[:] = saved[:4]
-        pool.sig5 = saved[4]
+        pool.sig5, pool.prof_off_th[:] = saved[4], saved[5]
         pool.clear_cache()
 
 
@@ -669,13 +670,15 @@ def test_search_observation_sets_follow_the_plan(pool3):
     games and tonight's opponent's included (build plan 4c.0.6)."""
     pool, inp, _ = pool3
     tg = _player_target(inp, week=10)
-    res = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0)
+    res = pool.search(tg, keep=True, sim_threshold=0.0, min_neff=0, top_any=10 ** 6)
     s1, s2, s3, s4 = (res[k].matches for k in ("S1", "S2", "S3", "S4"))
     assert (s1["obs_player_id"] == tg.player_id).all() and s1.height > 0                # S1: the player's own history
     opp_of = lambda m: [inp.games.filter((pl.col("game_id") == g) & (pl.col("team") == t))["opponent"][0] for g, t in zip(m["obs_game_id"], m["obs_team"])]
     assert all(o == tg.opponent for o in opp_of(s2))                                   # S2: tonight's defense
     ids = lambda m: set(zip(m["obs_game_id"].to_list(), m["obs_player_id"].to_list()))
-    assert ids(s1) <= ids(s3) and ids(s2) <= ids(s3) and ids(s3) == ids(s4)             # S3 / S4 exclude nobody
+    # every observation with a similarity, matched or not (the 0.40 floor keeps some pairs out of the matches of S3 / S4)
+    obs = lambda s: {(i.split("|")[0], i.split("|")[2]) for i, *_ in res[s].summary["top_any"]}
+    assert ids(s1) <= obs("S3") and ids(s2) <= obs("S3") and obs("S3") == obs("S4")     # S3 / S4 exclude nobody
     ttg = _team_target(inp, week=10)
     tt = pool.search(ttg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0)["S4"].matches
     assert (tt["obs_team"] == ttg.team).any() and any(o == ttg.opponent for o in opp_of(tt))      # the team's own games and its opponent's defense too
@@ -832,7 +835,8 @@ def shifts44(pool3):
         for r in inp.player.iter_rows(named=True):
             d[(r["game_id"], r["player_id"])] = float(rng.normal())
         zl[q] = d
-    return C.comp_shifts(pool, tgs, zl, sim_threshold=0.0, min_neff=0.0), tgs, zl
+    counts = {q: {k: float(rng.integers(1, 15)) for k in zl[q]} for q in ("pts_per_play", "ypc", "catch_rate", "yds_per_rec")}
+    return C.comp_shifts(pool, tgs, zl, sim_threshold=0.0, min_neff=0.0, counts=counts), tgs, zl
 
 
 def test_shift_features_have_one_row_per_target_and_market_with_the_plan_columns(shifts44):
@@ -963,7 +967,7 @@ def test_the_healthy_run_reads_the_healthy_target_vectors(pool3):
         g = pool.idx[(tg.game_id, tg.team)]
         differs = pool.adjusted_differs(g, cs.MARKET_UNITS["spread"])
         pool.clear_cache()
-        a = pool.search(tg, which=("S1", "S4"), keep=True, sim_threshold=0.0, min_neff=0)
+        a = pool.search(tg, which=("S1", "S4"), keep=True, sim_threshold=0.0, min_neff=0, version="adjusted")
         h = pool.search(tg, which=("S1", "S4"), keep=True, sim_threshold=0.0, min_neff=0, version="healthy")
         assert a["S1"].matches.equals(h["S1"].matches)                                     # S1 reads only the defenses faced: one version
         same = a["S4"].matches.equals(h["S4"].matches)
@@ -1146,7 +1150,7 @@ def test_a_thin_efficiency_side_is_flagged_in_the_features():
     res = {s: _empty_result(s) for s in C.SEARCHES}
     res["S3"] = C.SearchResult("S3", dict(search="S3", applicable=True, no_match=False, reason=None, n_matches=8, n_eff=8.0, best_similarity=0.9), m)
     zl = {"rush_att": {(f"g{i}", f"P{i}"): 0.5 for i in range(8)}, "ypc": {("g0", "P0"): 2.0}}     # one game has an efficiency expectation
-    vals, det, _, _ = C._market_shifts(res, tg, "rush_yds", zl, cs.MIN_NEFF)
+    vals, det, _, _ = C._market_shifts(res, tg, "rush_yds", zl, cs.MIN_NEFF, {"ypc": {("g0", "P0"): 12.0}})
     assert not vals["nomatch_S3"] and vals["nomatch_eff_S3"] and vals["shift_eff_S3"] == 0.0 and vals["n_eff_eff_S3"] == pytest.approx(1.0)
     assert vals["n_eff_S3"] == pytest.approx(8.0)
 
@@ -1317,7 +1321,7 @@ def test_unit_retrieval_scores_each_unit_against_the_targets_own_z(pool3):
     zl = {q: {**{(r["game_id"], r["team"]): float(rng.normal()) for r in inp.games.iter_rows(named=True)},
               **{(r["game_id"], r["player_id"]): float(rng.normal()) for r in inp.player.iter_rows(named=True)}}
           for q in ("team_plays", "pts_per_play", "rush_att", "ypc")}
-    e = W.unit_retrieval_errors(pool, tgs, zl)
+    e = W.unit_retrieval_errors(pool, tgs, zl, counts={q: {k: 5.0 for k in zl[q]} for q in ("pts_per_play", "ypc")})
     assert set(e["market"].unique()) == {"spread", "total", "moneyline", "rush_att", "rush_yds"}
     assert set(e.filter(pl.col("market") == "rush_att")["unit"].unique()) <= set(cs.MARKET_UNITS["rush_att"])
     assert set(e.filter(pl.col("market") == "rush_yds")["side"].unique()) == {"vol", "eff"} and (e["n_neighbours"] <= W.K_NEIGHBOURS).all()
@@ -1422,3 +1426,137 @@ def test_window_summary_reports_the_targets_a_window_could_not_score():
             for w, g in (("last_3", "G1"), ("last_3", "G2"), ("season_to_date", "G2"))]
     summ, _ = W.choose(pl.DataFrame(rows), {"rush_att": {("G1", "P"): 1.0, ("G2", "P"): 1.0}})
     assert dict(zip(summ["window_family"], summ["n_unscored"])) == {"last_3": 0, "season_to_date": 1}
+
+
+# ================================================================================================================================ decisions of 2026-10-09
+def test_check_similarity_is_the_geometric_mean_of_the_factors_with_a_floor_on_the_weaker():
+    """A two-factor search is checked on sqrt(a x b), so 0.63 / 0.63 reads 0.63 (the product would read 0.40); a pair whose weaker factor is below
+    SIDE_FLOOR never passes on the average (0.95 / 0.30). S1 has one factor: its check is its similarity."""
+    a, b = np.array([0.63, 0.95, 0.9, np.nan]), np.array([0.63, 0.30, 0.9, 0.8])
+    for s in ("S2", "S3", "S4", "S5"):
+        chk = C.check_similarity(s, a * b, a, b)
+        assert chk[0] == pytest.approx(0.63) and np.isnan(chk[1]) and chk[2] == pytest.approx(0.9) and np.isnan(chk[3])
+    one = np.array([0.5, 0.2, np.nan])
+    assert np.allclose(C.check_similarity("S1", one, np.full(3, np.nan), one), one, equal_nan=True)     # S1: no floor, no square root
+    assert C.SIDE_FLOOR == 0.40
+
+
+def test_a_two_factor_search_matches_on_the_checked_similarity_and_weighs_the_product(pool3):
+    pool, inp, _ = pool3
+    tg = _player_target(inp, week=9)
+    floor_cut = 0
+    for s in ("S2", "S3", "S4"):
+        full = pool.search(tg, which=(s,), keep=True, sim_threshold=0.0, min_neff=0, top_any=10 ** 6)[s]
+        m = full.matches
+        assert m.height > 0
+        assert np.allclose(m["sim_check"].to_numpy(), np.sqrt((m["sim_offense"] * m["sim_defense"]).to_numpy()))
+        assert (np.minimum(m["sim_offense"].to_numpy(), m["sim_defense"].to_numpy()) >= C.SIDE_FLOOR).all()
+        assert np.allclose(m["sim_combined"].to_numpy(), (m["sim_offense"] * m["sim_defense"]).to_numpy())          # the weight stays the product
+        assert (m["final_weight"] - m["sim_combined"] * m["recency_weight"] * m["continuity_weight"] * m["quality_weight"]).abs().max() < 1e-12
+        assert full.summary["best_similarity"] == pytest.approx(m["sim_check"].max())
+        floor_cut += len(full.summary["top_any"]) - m.height          # observations with a similarity that the floor kept out
+        half = pool.search(tg, which=(s,), keep=True, sim_threshold=0.5, min_neff=0)[s].matches
+        want = m.filter(pl.col("sim_check") >= 0.5)
+        assert half.height == want.height and half["final_weight"].to_list() == want["final_weight"].to_list()
+        assert (half["sim_combined"] < 0.5).any() or s == "S3"          # pairs the product would have failed now pass on the per-factor scale
+    assert floor_cut > 0
+
+
+def test_searches_run_on_the_healthy_target_vectors(pool3):
+    """Decision 0: the lineup-adjusted vectors double-count a player already missing from the window; the searches read the healthy vectors and the
+    adjusted run is the stored comparison."""
+    pool, inp, _ = pool3
+    gm = next(r for r in inp.games.filter((pl.col("season") == 2020) & (pl.col("week") == 9)).iter_rows(named=True)
+              if pool.adjusted_differs(pool.idx[(r["game_id"], r["team"])], cs.MARKET_UNITS["spread"]))
+    tg = C.Target("spread", gm["game_id"], gm["team"], gm["opponent"], 2020, 9)
+    pool.clear_cache()
+    d = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0)["S4"].matches
+    h = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0, version="healthy")["S4"].matches
+    a = pool.search(tg, which=("S4",), keep=True, sim_threshold=0.0, min_neff=0, version="adjusted")["S4"].matches
+    assert d.equals(h) and not d.equals(a)
+    feats, _, _, retrieval = C.comp_shifts(pool, [tg], {}, sim_threshold=0.0, min_neff=0.0)
+    r = retrieval.filter((pl.col("search") == "S4") & (pl.col("market") == "spread")).row(0, named=True)
+    f = feats.filter(pl.col("market") == "spread").row(0, named=True)
+    assert r["adjusted_differs"] and r["nomatch_healthy"] == f["nomatch_S4"] and r["shift_vol_healthy"] == f["shift_vol_S4"]
+
+
+def _eff_result(counts, z_eff=None, one_team=False):
+    """An S3 result for a rec_yds target with one match per past game; volume z 0.5 everywhere; efficiency z and counts per game. one_team: every past
+    game is the same team's (its share cannot move to another team, so the across-search cap leaves the weights alone)."""
+    n = len(counts)
+    teams = ["TX"] * n if one_team else [f"T{i}" for i in range(n)]
+    m = pl.DataFrame({"obs_game_id": [f"g{i}" for i in range(n)], "obs_team": teams, "obs_player_id": [f"P{i}" for i in range(n)],
+                      "final_weight": [1.0] * n, "sim_combined": [0.9] * n})
+    res = {s: _empty_result(s) for s in C.SEARCHES}
+    res["S3"] = C.SearchResult("S3", dict(search="S3", applicable=True, no_match=False, reason=None, n_matches=n, n_eff=float(n), best_similarity=0.9), m)
+    z_eff = z_eff if z_eff is not None else [1.0] * n
+    zl = {"targets": {(f"g{i}", f"P{i}"): 0.5 for i in range(n)}, "yds_per_rec": {(f"g{i}", f"P{i}"): z_eff[i] for i in range(n)}}
+    cnt = {"yds_per_rec": {(f"g{i}", f"P{i}"): float(c) for i, c in enumerate(counts) if c is not None}}
+    return res, zl, cnt
+
+
+def test_efficiency_matches_are_weighted_by_their_count():
+    """Decision 8: a 1-catch game's yards per reception is mostly noise; it gets a tenth of a 10-catch game's weight. The volume side is unchanged."""
+    tg = C.Target("rec_yds", "G", "T", "O", 2022, 5, "P")
+    res, zl, cnt = _eff_result([1, 10], z_eff=[4.0, 0.0], one_team=True)
+    vals, _, sets, caps = C._market_shifts(res, tg, "rec_yds", zl, 0.0, cnt)
+    assert np.allclose(sets["S3"][4], [1.0, 10.0]) and caps["eff"]["S3"][1] == pytest.approx(10 * caps["eff"]["S3"][0]) and np.allclose(caps["vol"]["S3"], 1.0)
+    n = C.neff(np.array([1.0, 10.0]))
+    assert vals["n_eff_eff_S3"] == pytest.approx(n) and vals["n_eff_S3"] == pytest.approx(2.0)
+    assert vals["shift_eff_S3"] == pytest.approx((4.0 * 1 + 0.0 * 10) / 11 * n / (n + cs.SHRINK_K))
+
+
+def test_count_weights_lower_the_efficiency_n_eff_when_a_few_games_carry_the_counts():
+    tg = C.Target("rec_yds", "G", "T", "O", 2022, 5, "P")
+    vals_eq = C._market_shifts(*_eff_result([3] * 8)[:1], tg, "rec_yds", _eff_result([3] * 8)[1], cs.MIN_NEFF, _eff_result([3] * 8)[2])[0]
+    assert vals_eq["n_eff_eff_S3"] == pytest.approx(vals_eq["n_eff_S3"]) == pytest.approx(8.0)       # equal counts: nothing changes
+    res, zl, cnt = _eff_result([1, 1, 1, 1, 1, 1, 2, 2])
+    vals, _, _, caps = C._market_shifts(res, tg, "rec_yds", zl, cs.MIN_NEFF, cnt)
+    assert vals["n_eff_eff_S3"] < vals["n_eff_S3"] == pytest.approx(8.0)
+    assert vals["n_eff_eff_S3"] == pytest.approx(C.cluster_neff(caps["eff"]["S3"], np.array([f"g{i}|T{i}" for i in range(8)])))
+
+
+def test_a_match_with_an_efficiency_expectation_but_no_count_is_an_error():
+    tg = C.Target("rec_yds", "G", "T", "O", 2022, 5, "P")
+    res, zl, cnt = _eff_result([1, None])
+    with pytest.raises(ValueError, match="count"):
+        C._market_shifts(res, tg, "rec_yds", zl, 0.0, cnt)
+    with pytest.raises(ValueError, match="count"):
+        C._market_shifts(res, tg, "rec_yds", zl, 0.0, None)
+
+
+def test_efficiency_counts_are_the_denominators_of_the_ratios():
+    pl_log = pl.DataFrame({"game_id": ["g1"], "player_id": ["P1"], "team": ["T"], "attempts": [30], "completions": [20], "carries": [12], "targets": [7],
+                           "receptions": [5], "rush_att_ex_kneel": [3]})
+    wf = pl.DataFrame({"game_id": ["g1", "g1"], "player_id": [None, "P1"], "team": ["T", "T"], "quantity": ["team_plays", "targets"], "actual": [64.0, 7.0]})
+    c = C.efficiency_counts(pl_log, wf)
+    k = ("g1", "P1")
+    assert (c["comp_rate"][k], c["yds_per_cmp"][k], c["ypc"][k], c["catch_rate"][k], c["yds_per_rec"][k], c["qb_ypc"][k]) == (30, 20, 12, 7, 5, 3)
+    assert c["pts_per_play"][("g1", "T")] == 64.0 and set(c) == {q for _, q in C.MARKET_QUANTITIES.values() if q}
+
+
+def test_efficiency_count_columns_are_the_denominators_of_the_phase3_ratios():
+    from features import phase4_inputs as p4
+    from models import efficiency
+    want = {p4.QUANTITIES[q]: spec["ratio"][1] for q, spec in efficiency.EFFICIENCY_SPECS.items()}
+    assert C.EFF_DENOMINATORS == want
+
+
+def test_window_selection_weighs_efficiency_neighbours_by_their_count(pool3):
+    """The unit-only retrieval predicts the efficiency z the way the searches will: neighbour weight = similarity x count. Uniform counts change
+    nothing, varying counts move only the efficiency side, and an efficiency neighbour without a count is an error."""
+    from models import comps_windows as W
+    pool, inp, _ = pool3
+    tgs = [_player_target(inp, "rush_att", week=9), _player_target(inp, "rush_att", week=10)]
+    rng = np.random.default_rng(2)
+    keys = [(r["game_id"], r["player_id"]) for r in inp.player.iter_rows(named=True)]
+    zl = {q: {k: float(rng.normal()) for k in keys} for q in ("rush_att", "ypc")}
+    ones = W.unit_retrieval_errors(pool, tgs, zl, counts={"ypc": {k: 1.0 for k in keys}})
+    sevens = W.unit_retrieval_errors(pool, tgs, zl, counts={"ypc": {k: 7.0 for k in keys}})
+    varied = W.unit_retrieval_errors(pool, tgs, zl, counts={"ypc": {k: float(rng.integers(1, 30)) for k in keys}})
+    assert np.allclose(ones["sq_error"].to_numpy(), sevens["sq_error"].to_numpy())
+    vol = lambda e: e.filter(pl.col("side") == "vol")["sq_error"].to_numpy()
+    eff = lambda e: e.filter(pl.col("side") == "eff")["sq_error"].to_numpy()
+    assert np.array_equal(vol(ones), vol(varied)) and not np.allclose(eff(ones), eff(varied))
+    with pytest.raises(ValueError, match="count"):
+        W.unit_retrieval_errors(pool, tgs, zl)

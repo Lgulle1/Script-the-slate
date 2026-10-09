@@ -27,16 +27,18 @@ if __name__ == "__main__":
     a = ap.parse_args()
     t0 = time.time()
     targets = C.backtest_targets()
-    zl = C.z_lookup(C.standardized_residuals(pl.read_parquet(config.PROCESSED_DIR / "walkforward_predictions.parquet")))
+    wf = pl.read_parquet(config.PROCESSED_DIR / "walkforward_predictions.parquet")
+    zl = C.z_lookup(C.standardized_residuals(wf))
+    counts = C.load_efficiency_counts(wf)                    # efficiency neighbours weigh similarity x count (decision of 2026-10-09)
     parts = [pl.read_parquet(a.from_errors)] if a.from_errors else []
     for wf in ([] if a.from_errors else W.WINDOW_ORDER):
         if wf != "continuity_weighted":
-            parts.append(W.unit_retrieval_errors(C.load_pool(wf), targets, zl).with_columns(window_family=pl.lit(wf)))
+            parts.append(W.unit_retrieval_errors(C.load_pool(wf), targets, zl, counts=counts).with_columns(window_family=pl.lit(wf)))
         else:                                                # each market reads the continuity variant of its own penalty row
             for key in sorted({config.BASELINE_TO_PENALTY_MARKET[m] for ms in C.MARKET_FAMILIES.values() for m in ms}):
                 fams = {f for f, ms in C.MARKET_FAMILIES.items() if any(config.BASELINE_TO_PENALTY_MARKET[m] == key for m in ms)}
                 tg = [t for t in targets if C.FAMILY_OF_MARKET[t.market] in fams]
-                e = W.unit_retrieval_errors(C.load_pool(f"continuity_weighted:{key}"), tg, zl)
+                e = W.unit_retrieval_errors(C.load_pool(f"continuity_weighted:{key}"), tg, zl, counts=counts)
                 e = e.filter(pl.col("market").replace_strict(config.BASELINE_TO_PENALTY_MARKET) == key)
                 parts.append(e.with_columns(window_family=pl.lit(wf)))
         print(f"{wf}: done at {time.time() - t0:.0f}s", flush=True)

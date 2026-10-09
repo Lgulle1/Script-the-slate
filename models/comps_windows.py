@@ -4,7 +4,8 @@ Criterion (walk-forward, 2020-2024 targets only): for a target and a unit, take 
 that unit alone (the observation set and the unit's sides exactly as in the searches: the target offense vs the past offense, tonight's defense vs
 the defense that past game faced, the player's archetype vs the past player's), predict the target's comp-free standardized residual z (4c.4) by
 their similarity-weighted mean z, and score the squared error against the target's own z. A market's error is that of its volume z plus, for a
-market with an efficiency side, that of its efficiency z. The window with the lowest mean error over the targets the unit can score is chosen; ties go
+market with an efficiency side, that of its efficiency z, whose neighbours weigh similarity x count (the ratio's denominator in that past game, as in
+the searches; decision of 2026-10-09). The window with the lowest mean error over the targets the unit can score is chosen; ties go
 to the earlier window in WINDOW_ORDER. The continuity window of a market is the continuity_weighted variant of that market's penalty key.
 
 Only observations with their own expectation count (2020+ scored rows), so 2020 targets have none and the choice rests on 2021-2024.
@@ -40,16 +41,18 @@ def _player_z(pool: C.Pool, unit: str, zl: dict, q: str | None) -> np.ndarray:
     return np.array([d.get((g, p), np.nan) for g, p in zip(gids, pop["pid"].tolist())], dtype=float)
 
 
-def unit_retrieval_errors(pool: C.Pool, targets: list, zl: dict, k_neighbours: int = K_NEIGHBOURS) -> pl.DataFrame:
+def unit_retrieval_errors(pool: C.Pool, targets: list, zl: dict, k_neighbours: int = K_NEIGHBOURS, counts: dict | None = None) -> pl.DataFrame:
     """One row per (target, market, unit): the squared error of the unit-only retrieval of the volume z and of the efficiency z (null when the
-    target has no z or no past observation with one). `targets` are representatives of their market families (backtest_targets)."""
+    target has no z or no past observation with one). `targets` are representatives of their market families (backtest_targets). `counts`
+    (comps.efficiency_counts) weigh the efficiency neighbours; required as soon as an efficiency neighbour has a z."""
     rows = []
     cache_z = {}
 
-    def zarr(kind, unit, q):
-        key = (kind, unit, q)
+    def zarr(kind, unit, q, src=None):
+        key = (kind, unit, q, src is None)
         if key not in cache_z:
-            cache_z[key] = _team_z(pool, zl, q) if kind == "team" else _player_z(pool, unit, zl, q)
+            src = zl if src is None else src
+            cache_z[key] = _team_z(pool, src, q) if kind == "team" else _player_z(pool, unit, src, q)
         return cache_z[key]
 
     last = None
@@ -105,6 +108,13 @@ def unit_retrieval_errors(pool: C.Pool, targets: list, zl: dict, k_neighbours: i
                         continue
                     z_obs = zarr("player", arch[0], q)[oi] if is_player else zarr("team", None, q)[obs_row]
                     ok = np.isfinite(sim) & np.isfinite(z_obs)
+                    cnt = np.ones(len(z_obs))
+                    if side == "eff" and ok.any():
+                        if counts is None or q not in counts:
+                            raise ValueError(f"efficiency neighbours of {market} need their count (comps.efficiency_counts), none given for {q}")
+                        cnt = zarr("player", arch[0], q, counts)[oi] if is_player else zarr("team", None, q, counts)[obs_row]
+                        if (ok & ~(cnt > 0)).any():
+                            raise ValueError(f"{int((ok & ~(cnt > 0)).sum())} {q} neighbours have an efficiency z but no positive count")
                     if not ok.any():
                         continue
                     cand = np.flatnonzero(ok)
@@ -112,7 +122,7 @@ def unit_retrieval_errors(pool: C.Pool, targets: list, zl: dict, k_neighbours: i
                         kth = np.partition(sim[cand], len(cand) - k_neighbours)[len(cand) - k_neighbours]
                         cand = cand[sim[cand] >= kth]
                         cand = cand[np.lexsort((cand, -sim[cand]))][:k_neighbours]
-                    w = sim[cand]
+                    w = sim[cand] * cnt[cand]                  # the k most similar, weighted by similarity (x count on the efficiency side)
                     pred = float((w * z_obs[cand]).sum() / w.sum()) if w.sum() > 0 else float(z_obs[cand].mean())
                     rows.append(dict(season=tg.season, week=tg.week, game_id=tg.game_id, team=tg.team, player_id=tg.player_id, market=market,
                                      unit=unit, side=side, sq_error=(pred - actual) ** 2, n_neighbours=len(cand)))

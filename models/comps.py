@@ -1071,6 +1071,27 @@ def cluster_neff(w: np.ndarray, clusters) -> float:
     return float(c.sum() ** 2 / s2) if s2 > 0 else 0.0
 
 
+# Decisions of 2026-10-09 (docs/overnight_plan.md): the searches read the healthy target vectors -- the lineup-adjusted ones double-count a player
+# already missing from the window; injuries reach the models through the 4a injury features -- and the adjusted run is the stored comparison.
+SEARCH_VERSION = "healthy"
+COMPARISON_VERSION = "adjusted"
+# A search whose similarity multiplies two factors (S2, S4, S5: offense x defense; S3: archetype x defense faced) is checked against SIM_THRESHOLD on
+# their geometric mean, the per-factor scale of the one-factor S1, so one threshold means the same in every search; the weaker factor must also reach
+# SIDE_FLOOR (a 0.95 / 0.30 pair does not pass on the average). The match weight stays the product (plan 4c.4.2).
+SIDE_FLOOR = 0.40
+TWO_FACTOR_SEARCHES = ("S2", "S3", "S4", "S5")
+
+
+def check_similarity(sname: str, combined: np.ndarray, sim_a: np.ndarray, sim_b: np.ndarray) -> np.ndarray:
+    """The similarity the no-match rule reads: one-factor S1 its similarity; a two-factor search sqrt(a x b) where min(a, b) >= SIDE_FLOOR, else NaN
+    (never a match). `combined` is a x b for a two-factor search."""
+    if sname not in TWO_FACTOR_SEARCHES:
+        return np.asarray(combined, dtype=float)
+    with np.errstate(invalid="ignore"):
+        ok = np.minimum(sim_a, sim_b) >= SIDE_FLOOR
+        return np.where(ok, np.sqrt(np.where(ok, combined, 0.0)), np.nan)
+
+
 class Pool:
     """The comparable pool for one window: every vector, aligned to the games table, with the sigma of each unit and space at each week.
 
@@ -1202,7 +1223,7 @@ class Pool:
         v = self.sig.get((unit, space, int(key)))
         return float("nan") if v is None else v
 
-    def unit_sims(self, unit: str, kind: str, row: int, k: int, key: int, version: str = "adjusted") -> tuple:
+    def unit_sims(self, unit: str, kind: str, row: int, k: int, key: int, version: str = SEARCH_VERSION) -> tuple:
         """(sim, completeness, quality, shares (3, k)) arrays over the first k team-game rows for `unit` against the vector of team-game `row` (kind 'off': the target
         version -- lineup-adjusted, or 'healthy' for the comparison run -- vs the pool version; 'def': defense units, one version). A pair is compared
         in EXTENDED only when both sides are EXTENDED-complete and the EXTENDED sigma exists; otherwise in BASE."""
@@ -1252,7 +1273,7 @@ class Pool:
     def clear_cache(self):
         self._cache = {}
 
-    def profile_sims(self, g: int, o: int, k: int, key: int, version: str = "adjusted") -> dict:
+    def profile_sims(self, g: int, o: int, k: int, key: int, version: str = SEARCH_VERSION) -> dict:
         """S5 over the first k team-game matchups: {'off': (sim, completeness, quality), 'def': (...)} and whether the target misses a required FTN feature."""
         out, missing = {}, False
         off_t = self.prof_off_th if version == "healthy" else self.prof_off_t
@@ -1268,20 +1289,24 @@ class Pool:
 
     # ---- the five searches
     def search(self, tg: Target, which=("S1", "S2", "S3", "S4", "S5"), keep: bool = True, sim_threshold: float = cs.SIM_THRESHOLD,
-               min_neff: float = cs.MIN_NEFF, version: str = "adjusted", sensitivity: tuple = (), top_any: int = 0, unit_pools: dict | None = None) -> dict:
-        """Run the searches for one target on the lineup-adjusted target vectors (version='healthy': on the healthy ones, the comparison run of build plan
-        4c.1.4); returns {search: SearchResult}.
+               min_neff: float = cs.MIN_NEFF, version: str = SEARCH_VERSION, sensitivity: tuple = (), top_any: int = 0, unit_pools: dict | None = None,
+               obs_positions: bool = False) -> dict:
+        """Run the searches for one target on the healthy target vectors (SEARCH_VERSION, decision of 2026-10-09; version='adjusted': on the
+        lineup-adjusted ones, the stored comparison of build plan 4c.1.4); returns {search: SearchResult}.
 
         Observations are past (key < the target week) team-games, or, for a player market, past player-games in which the player PLAYED at one of the
         archetype's positions (in_pool). S1: the target's own past games (same team / same player); S2: past games against tonight's defense; S3, S4, S5:
         any team, any defense (build plan 4c.0.6). The similarity of an observation is one-sided for S1 (the defenses faced) and two-sided for S2, S4, S5
         (offense similarity x defense similarity; build plan 4c.4); S3 multiplies the player's archetype similarity by the defense faced. A side's
-        similarity is the mean of its units' similarities. A match is an observation whose similarity is at least `sim_threshold`; its weight is
-        similarity x recency x continuity x data-quality  (separate columns in `matches`; recency and continuity from features/weights.py for the market).
+        similarity is the mean of its units' similarities. A match is an observation whose checked similarity (`check_similarity`: a two-factor
+        search's geometric mean, with the weaker factor at least SIDE_FLOOR) is at least `sim_threshold`; its weight is similarity (the product) x recency x
+        continuity x data-quality  (separate columns in `matches`; recency and continuity from features/weights.py for the market).
         n_eff counts historical team-games (`cluster_neff`): player-games of one team-game are one cluster. The search is no_match when its best
-        similarity is below the threshold or its n_eff below `min_neff`: shift = 0 and the widened-uncertainty flag is set.
+        checked similarity is below the threshold or its n_eff below `min_neff`: shift = 0 and the widened-uncertainty flag is set.
         `unit_pools` (unit -> Pool of another window over the same games) lets each unit read its own window (4c.6.1); everything else -- the
-        observation sets, recency, continuity and the S5 profile -- comes from this pool."""
+        observation sets, recency, continuity and the S5 profile -- comes from this pool. obs_positions: each summary also carries 'obs_pos', the
+        search's observation set (pool rows for a team market, positions in the archetype population for a player market; the threshold sweep's
+        random pairing draws from it)."""
         up = unit_pools or {}
         units = cs.MARKET_UNITS[tg.market]
         off_units = [u for u in units if u in cs.OFFENSE_UNITS]
@@ -1399,6 +1424,7 @@ class Pool:
                 else:
                     sim_off = side_mean(comps_sel, ("off", "arch"))
                     combined = sim_off * sim_def
+            check = check_similarity(sname, combined, sim_off, sim_def)
             # weights
             rec = 0.5 ** (np.maximum(self.clock[g] - self.clock[obs_row[idx]], 0.0) / config.RECENCY_HALF_LIFE_GAMES)
             # continuity from features/weights.py for the market, in every search (build plan 4c.4): a past game of another team flags every factor
@@ -1416,7 +1442,9 @@ class Pool:
             final = combined * rec * cont * quality
             share = _match_shares(comps_sel, sname, len(idx))        # 4c.5: the observed / derived / estimated share behind each similarity
             summ, matches = self._finish(tg, sname, idx, obs_row, obs_pid, obs_team, combined, comps_sel, rec, cont, quality, completeness, final,
-                                         sim_threshold, min_neff, keep, sim_off, sim_def, sensitivity, top_any, share)
+                                         sim_threshold, min_neff, keep, sim_off, sim_def, sensitivity, top_any, share, check)
+            if obs_positions:
+                summ["obs_pos"] = oi[idx] if is_player else obs_row[idx]
             if forced is not None:                   # S5 without its required FTN features: no_match whatever its similarities (plan 4c.3)
                 summ.update(no_match=True, widened_uncertainty=True, shift=0.0, reason=forced, n_matches=0, n_eff=0.0)
                 if "sensitivity" in summ:
@@ -1438,19 +1466,22 @@ class Pool:
                     widened_uncertainty=bool(no_match) if applicable else False, shift=0.0 if no_match else float("nan"), reason=reason, unit_best=unit_best)
 
     def _finish(self, tg, sname, idx, obs_row, obs_pid, obs_team, combined, comps, rec, cont, quality, completeness, final, sim_threshold, min_neff, keep,
-                sim_off=None, sim_def=None, sensitivity=(), top_any=0, share=None):
+                sim_off=None, sim_def=None, sensitivity=(), top_any=0, share=None, check=None):
+        chk = combined if check is None else check                     # the similarity the no-match rule reads (check_similarity)
         ok = np.isfinite(combined) & np.isfinite(final)
-        best = float(np.nanmax(combined)) if np.isfinite(combined).any() else float("nan")
-        match = ok & (combined >= sim_threshold)
+        best = float(np.nanmax(chk)) if np.isfinite(chk).any() else float("nan")
+        with np.errstate(invalid="ignore"):
+            match = ok & (chk >= sim_threshold)
         n_eff = cluster_neff(final[match], obs_row[idx][match])      # player-games of one historical team-game count as one cluster
         reason = None
         if not np.isfinite(best):
-            reason = "no_similarity"
+            reason = "weaker_factor_below_floor" if np.isfinite(combined).any() else "no_similarity"
         elif best < sim_threshold:
             reason = "best_similarity_below_threshold"
         elif not meets_min_neff(n_eff, min_neff):
             reason = "n_eff_below_minimum"
-        summary = self._summary(tg, sname, combined, comps, final, reason is None, reason, sim_threshold, min_neff, n_matches=int(match.sum()), n_eff=n_eff)
+        summary = self._summary(tg, sname, combined, comps, final, reason is None, reason, sim_threshold, min_neff, best_override=best,
+                                n_matches=int(match.sum()), n_eff=n_eff)
         if top_any:                         # the closest past games whatever the threshold (the healthy-vs-adjusted comparison): (id, final weight)
             fin = np.flatnonzero(ok)
             if len(fin) > top_any:                    # keep every observation tied with the k-th largest, then order them exactly: ties by position
@@ -1463,8 +1494,9 @@ class Pool:
                                   for r, t_, p_, w_, x_, c_ in zip(obs_row[ti].tolist(), obs_team[ti].tolist(), obs_pid[ti].tolist(), final[top].tolist(),
                                                                    sh_.T.tolist(), completeness[top].tolist())]
         if sensitivity:                     # analysis only (the no-match memo): matches and n_eff at other thresholds, from the same similarities
-            summary["sensitivity"] = {f"{t:g}": (int((ok & (combined >= t)).sum()), cluster_neff(final[ok & (combined >= t)], obs_row[idx][ok & (combined >= t)]))
-                                      for t in sensitivity}
+            with np.errstate(invalid="ignore"):
+                summary["sensitivity"] = {f"{t:g}": (int((ok & (chk >= t)).sum()), cluster_neff(final[ok & (chk >= t)], obs_row[idx][ok & (chk >= t)]))
+                                          for t in sensitivity}
         matches = None
         if keep:
             sel = np.flatnonzero(match)
@@ -1477,7 +1509,7 @@ class Pool:
                 cols[f"sim_{u}"] = c[0][sel]
             nan = np.full(len(combined), np.nan)
             cols.update(sim_offense=(nan if sim_off is None else sim_off)[sel], sim_defense=(nan if sim_def is None else sim_def)[sel])
-            cols.update(sim_combined=combined[sel], completeness_penalty=completeness[sel], recency_weight=rec[sel], continuity_weight=cont[sel],
+            cols.update(sim_combined=combined[sel], sim_check=chk[sel], completeness_penalty=completeness[sel], recency_weight=rec[sel], continuity_weight=cont[sel],
                         quality_weight=quality[sel], final_weight=final[sel])
             if share is not None:
                 cols.update({f"share_{t[:3]}": share[i][sel] for i, t in enumerate(TAGS)})        # share_obs / share_der / share_est
@@ -1757,6 +1789,30 @@ def shift_value(w: np.ndarray, z: np.ndarray, clusters=None) -> tuple:
     return float((w * z).sum() / w.sum() * n / (n + cs.SHRINK_K)), n
 
 
+# the denominator of each efficiency ratio (models/efficiency.py EFFICIENCY_SPECS, by its walkforward_predictions name): an efficiency match weighs
+# its final weight x this count (decision of 2026-10-09), as the Phase 3 efficiency model weights its rows
+EFF_DENOMINATORS = {"comp_rate": "attempts", "yds_per_cmp": "completions", "ypc": "carries", "qb_ypc": "rush_att_ex_kneel", "catch_rate": "targets",
+                    "yds_per_rec": "receptions"}
+TEAM_EFF_COUNT = ("pts_per_play", "team_plays")      # points per play: the team's plays that game (the team_plays actual)
+
+
+def efficiency_counts(player_log: pl.DataFrame, wf: pl.DataFrame) -> dict:
+    """quantity -> {(game_id, player_id or team): count}: the denominator behind each efficiency z, from the backtest player log and the team_plays
+    actuals of walkforward_predictions (2020-2024 scored rows, where the z exist)."""
+    out = {}
+    for q, col in EFF_DENOMINATORS.items():
+        out[q] = dict(zip(zip(player_log["game_id"].to_list(), player_log["player_id"].to_list()), player_log[col].cast(pl.Float64).to_list()))
+    tp = wf.filter((pl.col("quantity") == TEAM_EFF_COUNT[1]) & pl.col("actual").is_not_null())
+    out[TEAM_EFF_COUNT[0]] = dict(zip(zip(tp["game_id"].to_list(), tp["team"].to_list()), tp["actual"].cast(pl.Float64).to_list()))
+    return out
+
+
+def load_efficiency_counts(wf: pl.DataFrame) -> dict:
+    """efficiency_counts from the backtest player log (eval.backtest, 2020-2024; 2025 never loaded) and walkforward_predictions `wf`."""
+    from eval import backtest as bt
+    return efficiency_counts(bt.load_backtest_data().player_log, wf)
+
+
 def z_lookup(zt: pl.DataFrame) -> dict:
     """quantity -> {(game_id, player_id or team): z} from standardized_residuals (rows without z are left out)."""
     out = {}
@@ -1809,11 +1865,12 @@ def _wmean(w: np.ndarray, x: np.ndarray):
 
 def _side_weights(sets: dict, j: int, min_neff: float) -> tuple:
     """The capped weights of one side (j = 1 volume z, 2 efficiency z) over the searches in `sets`: (weights per search, n_eff per search, the searches
-    that match, the teams the across-search cap left frozen). A match counts only with its own expectation. A search matches when its n_eff after
-    the per-team-game cap reaches MIN_NEFF; only matching searches enter the across-search cap (plan 4c.4.3), and the check is repeated after it
-    until the set of matching searches is stable."""
+    that match, the teams the across-search cap left frozen). A match counts only with its own expectation. On the efficiency side a match's weight
+    is its final weight x its count (sets[s][4]; decision of 2026-10-09), before the caps, so the caps and n_eff see the count-weighted weights. A
+    search matches when its n_eff after the per-team-game cap reaches MIN_NEFF; only matching searches enter the across-search cap (plan 4c.4.3), and
+    the check is repeated after it until the set of matching searches is stable."""
     cand = {s: v for s, v in sets.items() if np.isfinite(v[j]).any()}
-    base = {s: np.where(np.isfinite(v[j]), v[0]["final_weight"].to_numpy(), 0.0) for s, v in cand.items()}
+    base = {s: np.where(np.isfinite(v[j]), v[0]["final_weight"].to_numpy() * (v[4] if j == 2 else 1.0), 0.0) for s, v in cand.items()}
     weights = {s: cap_shares(base[s], cand[s][3], cs.TEAM_CAP_PER_SEARCH) for s in cand}
     nef = {s: cluster_neff(weights[s], cand[s][3]) for s in cand}
     alive = {s for s in cand if meets_min_neff(nef[s], min_neff)}
@@ -1834,9 +1891,10 @@ def _side_weights(sets: dict, j: int, min_neff: float) -> tuple:
     return weights, nef, alive, frozen
 
 
-def _market_shifts(res: dict, tg: Target, market: str, zl: dict, min_neff: float) -> tuple:
-    """The 4c.4 shifts of one target and market from its search results: (feature values, detail rows, {search: (matches, z_vol, z_eff, team_game)},
-    {'vol' / 'eff': {search: capped weights}}).
+def _market_shifts(res: dict, tg: Target, market: str, zl: dict, min_neff: float, counts: dict | None = None) -> tuple:
+    """The 4c.4 shifts of one target and market from its search results: (feature values, detail rows, {search: (matches, z_vol, z_eff, team_game,
+    efficiency count)}, {'vol' / 'eff': {search: capped weights}}). `counts` (efficiency_counts): quantity -> {(game_id, player_id or team): the
+    ratio's denominator}; a match with an efficiency expectation and no count is an error, never a silent full weight.
 
     A search is no_match when its similarity search was (4c.3), when none of its matches has a comp-free expectation, or when its n_eff over the
     matches with one stays below MIN_NEFF. The efficiency side of a matching search can be too thin on its own: shift_eff = 0 and nomatch_eff = True."""
@@ -1853,7 +1911,15 @@ def _market_shifts(res: dict, tg: Target, market: str, zl: dict, min_neff: float
             zv = np.array([zl.get(qv, {}).get(k, np.nan) for k in keys], dtype=float)
             ze = np.array([zl.get(qe, {}).get(k, np.nan) for k in keys], dtype=float) if qe else np.full(len(keys), np.nan)
             tgid = np.array([f"{g}|{t}" for g, t in zip(mt["obs_game_id"].to_list(), mt["obs_team"].to_list())])
-            sets[s] = (mt, zv, ze, tgid)
+            ce = np.full(len(keys), np.nan)
+            if np.isfinite(ze).any():
+                if counts is None or qe not in counts:
+                    raise ValueError(f"efficiency matches of {market} need their count (efficiency_counts), none given for {qe}")
+                ce = np.array([counts[qe].get(k, np.nan) for k in keys], dtype=float)
+                bad = np.isfinite(ze) & ~(ce > 0)
+                if bad.any():
+                    raise ValueError(f"{int(bad.sum())} {qe} matches have an efficiency expectation but no positive count, e.g. {keys[int(np.flatnonzero(bad)[0])]}")
+            sets[s] = (mt, zv, ze, tgid, ce)
     wv, nv, alive_v, frozen = _side_weights(sets, 1, min_neff)
     we, ne, alive_e, _ = _side_weights({s: sets[s] for s in sorted(alive_v)}, 2, min_neff) if qe else ({}, {}, set(), [])
     caps = {"vol": {s: wv.get(s, np.zeros(sets[s][0].height)) for s in sets},
@@ -1898,21 +1964,23 @@ def _hits(res: SearchResult) -> list:
 
 
 def comp_shifts(pool: Pool, targets: list, zl: dict, keep_matches: bool = True, sim_threshold: float = cs.SIM_THRESHOLD,
-                min_neff: float = cs.MIN_NEFF, healthy: bool = True) -> tuple:
+                min_neff: float = cs.MIN_NEFF, compare: bool = True, counts: dict | None = None) -> tuple:
     """4c.4 for every (target, market): (features, matches, detail, retrieval).
 
     features: one row per target and market with shift_vol_S1..S5, shift_eff_S1..S5, n_eff_S1..S5, nomatch_S1..S5, best_sim_S1..S5 (plan 4c.4.5),
-    from the searches on the lineup-adjusted target vectors, plus n_eff_eff / nomatch_eff (the efficiency side) and, from 4c.5, share_obs / share_der /
+    from the searches on the healthy target vectors (SEARCH_VERSION), plus n_eff_eff / nomatch_eff (the efficiency side) and, from 4c.5, share_obs / share_der /
     share_est and completeness per search: the observed / derived / estimated share of the feature weight behind the matches and their completeness
     penalty, averaged with the weights of the volume shift (null without a match).
     matches: the per-match table (similarity, recency, continuity, quality, final weight, the capped weights and z for volume and efficiency).
     detail: per target, market and search: how many matches had an expectation, n_eff before and after the caps, and why a search was no_match.
-    retrieval (healthy=True): per target, market and search, how the comparables change when the same search runs on the HEALTHY target vector (plan
-    4c.1.4): the overlap of the top RETRIEVAL_TOP_K matches, the shared weight mass and the change in the volume / efficiency shift (adjusted - healthy),
+    retrieval (compare=True): per target, market and search, how the comparables change when the same search runs on the LINEUP-ADJUSTED target
+    vector (plan 4c.1.4; the comparison since the decision of 2026-10-09): the overlap of the top RETRIEVAL_TOP_K matches, the shared weight mass and the
+    change in the volume / efficiency shift (adjusted - healthy),
     and overlap_closest_10: the overlap of the 10 closest past games by final weight whatever the threshold (informative when a search has no match).
     Where the two target vectors are identical the healthy run is not repeated (overlap 1, change 0).
     A match counts toward a shift only when its own comp-free expectation exists (walkforward_predictions); a search whose matches have none is no_match.
-    n_eff counts historical team-games (cluster_neff)."""
+    n_eff counts historical team-games (cluster_neff). `counts` (efficiency_counts): an efficiency match's weight is multiplied by its count (decision of
+    2026-10-09); required as soon as a match has an efficiency expectation."""
     feats, mrows, drows, crows = [], [], [], []
     last = None
     for tg, markets in _target_rows(targets, getattr(pool, "choice", None)):
@@ -1920,34 +1988,37 @@ def comp_shifts(pool: Pool, targets: list, zl: dict, keep_matches: bool = True, 
             pool.clear_cache()
             last = (tg.game_id, tg.team)
         top = RETRIEVAL_TOP_K                         # the closest games feed the healthy-vs-adjusted comparison and the no-match input shares
-        res = pool.search(tg, SEARCHES, keep=True, sim_threshold=sim_threshold, min_neff=min_neff, top_any=top)
-        differs = healthy and pool.adjusted_differs(pool.idx[(tg.game_id, tg.team)], cs.MARKET_UNITS[tg.market])
-        res_h = pool.search(tg, SEARCHES, keep=True, sim_threshold=sim_threshold, min_neff=min_neff, version="healthy", top_any=top) if differs else res
+        res = pool.search(tg, SEARCHES, keep=True, sim_threshold=sim_threshold, min_neff=min_neff, version=SEARCH_VERSION, top_any=top)
+        differs = compare and pool.adjusted_differs(pool.idx[(tg.game_id, tg.team)], cs.MARKET_UNITS[tg.market])
+        res_a = (pool.search(tg, SEARCHES, keep=True, sim_threshold=sim_threshold, min_neff=min_neff, version=COMPARISON_VERSION, top_any=top)
+                 if differs else res)
         for m in markets:
             ident = dict(season=tg.season, week=tg.week, game_id=tg.game_id, team=tg.team, player_id=tg.player_id, market=m)
-            vals, det, sets, caps = _market_shifts(res, tg, m, zl, min_neff)
+            vals, det, sets, caps = _market_shifts(res, tg, m, zl, min_neff, counts)
             feats.append(dict(season=tg.season, week=tg.week, game_id=tg.game_id, team=tg.team, opponent=tg.opponent, player_id=tg.player_id, market=m) | vals)
             drows += [ident | d for d in det]
             if keep_matches:
-                for s, (mt, zv, ze, _) in sets.items():
-                    mrows.append(mt.with_columns(market=pl.lit(m), z_vol=pl.Series(zv), z_eff=pl.Series(ze), weight_capped_vol=pl.Series(caps["vol"][s]),
+                for s, (mt, zv, ze, _, ce) in sets.items():
+                    mrows.append(mt.with_columns(market=pl.lit(m), z_vol=pl.Series(zv), z_eff=pl.Series(ze), eff_count=pl.Series(ce, dtype=pl.Float64),
+                                                 weight_capped_vol=pl.Series(caps["vol"][s]),
                                                  weight_capped_eff=pl.Series(caps["eff"][s]) if MARKET_QUANTITIES[m][1] else pl.lit(None, dtype=pl.Float64)))
-            if healthy:
-                hvals = _market_shifts(res_h, tg, m, zl, min_neff)[0] if differs else vals
+            if compare:
+                hvals = vals                                  # the search itself runs on the healthy vectors
+                avals = _market_shifts(res_a, tg, m, zl, min_neff, counts)[0] if differs else vals
                 for s in SEARCHES:
-                    ha, hh = _hits(res[s]), _hits(res_h[s])
+                    hh, ha = _hits(res[s]), _hits(res_a[s])
                     rc = retrieval_change(hh, ha, min(RETRIEVAL_TOP_K, max(len(ha), len(hh))))      # one side empty: overlap 0; both: undefined
-                    ta = [(t[0], t[1], 0.0) for t in res[s].summary.get("top_any", [])]
-                    th = [(t[0], t[1], 0.0) for t in res_h[s].summary.get("top_any", [])]
+                    th = [(t[0], t[1], 0.0) for t in res[s].summary.get("top_any", [])]
+                    ta = [(t[0], t[1], 0.0) for t in res_a[s].summary.get("top_any", [])]
                     rca = retrieval_change(th, ta, min(RETRIEVAL_TOP_K, max(len(ta), len(th))))
                     crows.append(dict(ident, search=s, adjusted_differs=bool(differs), n_matches_adjusted=len(ha), n_matches_healthy=len(hh),
                                       top_k=rc["k"], overlap_top_k=rc["overlap_top_k"], weight_mass_shared=rc["weight_mass_shared"] if ha or hh else float("nan"),
                                       overlap_closest_10=rca["overlap_top_k"],
-                                      nomatch_adjusted=vals[f"nomatch_{s}"], nomatch_healthy=hvals[f"nomatch_{s}"],
-                                      shift_vol_adjusted=vals[f"shift_vol_{s}"], shift_vol_healthy=hvals[f"shift_vol_{s}"],
-                                      shift_vol_change=vals[f"shift_vol_{s}"] - hvals[f"shift_vol_{s}"],
-                                      shift_eff_adjusted=vals[f"shift_eff_{s}"], shift_eff_healthy=hvals[f"shift_eff_{s}"],
-                                      shift_eff_change=(vals[f"shift_eff_{s}"] - hvals[f"shift_eff_{s}"]) if vals[f"shift_eff_{s}"] is not None else None))
+                                      nomatch_adjusted=avals[f"nomatch_{s}"], nomatch_healthy=hvals[f"nomatch_{s}"],
+                                      shift_vol_adjusted=avals[f"shift_vol_{s}"], shift_vol_healthy=hvals[f"shift_vol_{s}"],
+                                      shift_vol_change=avals[f"shift_vol_{s}"] - hvals[f"shift_vol_{s}"],
+                                      shift_eff_adjusted=avals[f"shift_eff_{s}"], shift_eff_healthy=hvals[f"shift_eff_{s}"],
+                                      shift_eff_change=(avals[f"shift_eff_{s}"] - hvals[f"shift_eff_{s}"]) if avals[f"shift_eff_{s}"] is not None else None))
     features = pl.DataFrame(feats, infer_schema_length=None)
     if features.height:                               # explicit types: a column can be null in every row (S2 / S4 never match at 0.70)
         features = features.with_columns(
