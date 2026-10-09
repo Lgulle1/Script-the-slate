@@ -316,6 +316,13 @@ and tested) and the work moves to 4d.
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-09, 4a ablation rerun on the current code (run_injury_ablation.py --tag rerun_20261009). Two runs byte-identical (results
+  b5a9ff05a5fe5b52, predictions 1c6805ccef66799d). **The rerun is identical to the first run (335752f)**: every result column except the new
+  weight column, and all 89,599 predictions. The role-share fixes made after the first run sit on the 4b simulation path (role-aware baselines,
+  a promoted backup taking the role's average share); the 4a injury features never call that code, so the first run was not understated.
+  - Final 4a weights under the one rule (layer_weights.csv, source the rerun file): rush_att, rush_yds, targets, rec, rec_yds CLEARS -> 1.
+  - pass_att, spread and moneyline are EDGE -> 0 (the provisional values confirmed, flag removed); everything else NO -> 0.
+  - Items 1-3 before Phase 6 are done. 4d.0 is listed (docs/coaching_sources_4d0.md) and stopped for review.
 - 2026-10-09, per-unit threshold sweep (the searches per unit / pair, healthy vectors, count weights, recency_weighted window). Two runs
   byte-identical (rows 1c0939f3d67d32a8); the summary under the tightened rule was recomputed twice from the rows (identical):
   comp_threshold_sweep_perunit.parquet. **No threshold passes.**
