@@ -279,6 +279,26 @@ and tested) and the work moves to 4d.
   - **4c.** Parked (0).
 - **Order.** Phase 6 does not start until the rule, the provisional 4a weights and the 4a rerun are done.
 
+## 4d decisions (yours, 2026-10-12)
+- **Sources** (docs/coaching_sources_4d0.md).
+  - Pro Football Reference: rejected.
+  - nflverse head coaches (schedules, per game, 2016-2024): approved as the 4d baseline.
+  - Wikipedia / Wikidata: not used for V1.
+  - Sam Hoppen's play-caller file: NOT ingested. A permission request is drafted for you to send (docs/coaching_messages_4d0.md),
+    together with a one-line question to nflverse about where its head-coach names come from.
+  - Previews: ask before downloading even a sample of a source under review.
+- **Route: option 3.**
+  - coaches_history has head_coach from nflverse for 2016-2024. offensive_coordinator and play_caller are UNKNOWN for 2016-2025, stored as
+    null, never zero or an empty string. Tests: a missing play caller is null, and a feature built from it carries no information.
+  - 2025 is the holdout and is not loaded: every role is UNKNOWN.
+  - 2026 (live) comes from data/coaches_seed.csv, the hand-built 2026 staff: head coach, offensive coordinator and offensive play caller.
+  - If Hoppen grants permission, play_caller is upgraded from his file at a pinned commit, and 4d is re-tested.
+- **Fixed before any 4d result.** Under option 3 the backtest knows the head coach but not the play caller. A flat 4d result is therefore
+  INCONCLUSIVE about play calling, not a verdict that coaching does not matter. It does not park 4d on that evidence, and the 2026 live use of
+  coaches_seed.csv stays either way. A 4d market that CLEARS gets weight 1 under the one rule, as for every layer.
+- **4e (weather): not built yet.** The backtest's weather is OBSERVED (Meteostat station readings at kickoff, 2020-2025), not known before
+  kickoff. The options for handling observed-vs-forecast weather are laid out for your choice before anything is built.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
