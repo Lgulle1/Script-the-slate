@@ -532,6 +532,17 @@ and at least three to four weeks of graded live predictions exist before Phase 6
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-12, Phase 5 status (built test-first; nothing of it has written a real prediction yet). **Built:** the prediction store (refuses and logs a started game or a missing
+  mean, append-only versions, identical rerun writes nothing, gradable = newest version stored before kickoff, schema allowlist, lines in their own log); grading
+  (idempotent, did-not-play separate); the scoped 2025+ input-history unlock with its guardrail tests; lineups for 2025+ games from timestamped charts; the scoring core
+  (live/predict.py) whose replay of 2024 week 10 reproduces the walk-forward harness exactly (866 + 42 rows, < 1e-9); live targets (97.6% of the standard eligible
+  set, plus eligible players who did not play); the weekly run (live/weekly.py, run_weekly.py) and publishing to data-snapshots through a temporary worktree.
+  **Checks on real data:** a dry run on the 2026-10-07 pull gave 1,180 predictions for the 15 games of week 5 (13 markets, none null); a fresh-container bootstrap
+  (schedules, player stats, depth charts, play-by-play for 2020-2026: about 50 seconds) gave predictions identical to the main database's (max difference 0.0) for the
+  one game still unplayed (BUF @ LA). **Not yet done:** (1) the weight-1 layers (4a for rush_att, rush_yds, targets, rec, rec_yds; 4b for spread) are not in the live
+  run, so every stored prediction is model_version "phase3" until they are wired as new versions; (2) the scheduled routine for the Friday and Sunday-morning
+  runs is not created (needs your go: it publishes to data-snapshots unattended); (3) quantiles, ladder, confidence stay null (Phase 6); (4) the weekly summary
+  against the best Phase 2 baseline on the same rows; (5) the weather and injury-status snapshot columns.
 - 2026-10-12, 4d.1 coaching prior, the fuller table (thin table plus the 10 hand-sourced play-calling stops of data/play_caller_stops.csv, confidence
   high or medium, rule 5a). Two runs byte-identical (results sha256 4d6ef4d70b8ba999..., data fingerprint 80bf534e6b9d18dd); coach_ablation_results_eligibility_v2_fuller.parquet
   and coach_stops_fuller.parquet (113 stops: 103 head-coach stops + 10 play-calling). Team-games with a prior: 270 (thin: 131); new coach without one:
