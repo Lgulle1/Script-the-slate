@@ -116,3 +116,11 @@ def test_a_change_of_stack_label_is_a_new_version_even_with_the_same_mean_and_in
     assert r.written == 2 and s.load().sort("market", "version")["stack"].to_list() == ["phase3", "phase3+4a", "phase3", "phase3+4a"]
     with pytest.raises(ValueError, match="missing columns"):
         s.write(_preds().drop("stack"), now=T0, run_id="r3")                                         # a record without its stack label is not stored
+
+
+def test_a_nan_or_infinite_mean_is_not_a_prediction(tmp_path):
+    s = ST.PredictionStore(tmp_path)
+    p = _preds([("g", "p1", "rush_att", KICK, float("nan")), ("g", "p2", "rush_att", KICK, float("inf")), ("g", "p3", "rush_att", KICK, 7.0)])
+    r = s.write(p, now=T0, run_id="r1")
+    assert (r.written, r.refused) == (1, 2) and s.load()["player_id"].to_list() == ["p3"]
+    assert "not finite" in pl.read_csv(tmp_path / "refusals.csv")["reason"][0]

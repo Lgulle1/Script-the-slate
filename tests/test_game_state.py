@@ -213,3 +213,23 @@ def test_predict_week_equals_the_walk_forward_week_and_a_fit_floor_keeps_later_g
     floored, c2 = gs.predict_week(f, 2021, 3, fit_before_key=202101, min_fit_rows=50)             # fit on 2019-2020 only
     assert c2["n_fit"] < coef["n_fit"] and c2["n_fit"] == int(((f["season"] * 100 + f["week"]) < 202101).sum())
     assert not np.allclose(floored.sort("game_id")["pts_mean"].to_numpy(), ref["pts_mean"].to_numpy())
+
+
+def test_an_earlier_game_without_a_result_does_not_turn_every_later_feature_into_NaN():
+    """A live run for week W+1 can have an unplayed game in week W (a Monday night game, a postponement): its score and plays are unknown, and the recency-weighted
+    league, team and opponent averages must skip it, not become NaN (a first live preview gave a NaN spread for every game)."""
+    import numpy as np
+    from features import team_ratings as tr
+    from models import game_state as gs
+    if not config.RAW_DUCKDB_PATH.exists():
+        pytest.skip("no local raw db")
+    inp = gs.load_inputs(max_season=2024)
+    gid = inp.games.filter((pl.col("season") == 2024) & (pl.col("week") == 9)).sort("game_id")["game_id"][0]
+    games = inp.games.with_columns(home_score=pl.when(pl.col("game_id") == gid).then(None).otherwise(pl.col("home_score")),
+                                   away_score=pl.when(pl.col("game_id") == gid).then(None).otherwise(pl.col("away_score")))
+    plays = inp.plays.filter(pl.col("game_id") != gid)
+    inp2 = gs.Inputs(games, plays, inp.qb.filter(pl.col("game_id") != gid), inp.chart, inp.status, inp.roster)
+    ratings = tr.compute_ratings(plays, n_boot=0)
+    f = gs.pregame_features(inp2, ratings, None).filter((pl.col("season") == 2024) & (pl.col("week") == 10))
+    for c in ("league_pts", "exp_plays", "pass_rate", "x_rating", "x_qb"):
+        assert f[c].is_nan().sum() == 0 and f[c].null_count() == 0, c
