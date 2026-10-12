@@ -54,10 +54,13 @@ if __name__ == "__main__":
     a = ap.parse_args()
     rows = (rows_4a(a.injury_results, a.pending_4a_rerun) + rows_4b(config.result_path("sim_backtest_results_anchored"))
             + rows_4c(config.result_path("comps_ablation_results_recency_weighted")))
-    for layer, stem, col in (("4d_coaching", "coach_ablation_results", "verdict_w12"),):
-        paths = sorted(config.ROOT.glob(f"{stem}_{config.ELIGIBLE_PLAYER_RULE['version']}_*.parquet"))
-        if paths:                                                            # the latest tagged run of a layer that has been run
-            rows += rows_ablation(layer, paths[-1], col)
+    ver = config.ELIGIBLE_PLAYER_RULE["version"]
+    for layer, name, col in (("4d_coaching", f"coach_ablation_results_{ver}_run1", "verdict_w12"),                  # the thin table (head-coach stops)
+                             ("4d_coaching_fuller", f"coach_ablation_results_{ver}_fuller", "verdict_w12"),          # plus the hand-sourced play-calling stops
+                             ("4e_weather", f"weather_ablation_results_{ver}_run1", "verdict_sev_A1")):
+        path = config.ROOT / f"{name}.parquet"
+        if path.exists():                                                    # a layer that has been run; each file named, never "the latest"
+            rows += rows_ablation(layer, path, col)
     t = pl.DataFrame(rows).with_columns(rule=pl.lit(config.LAYER_WEIGHT_RULE))
     t.write_csv(config.ROOT / "layer_weights.csv")
     with pl.Config(tbl_rows=60, tbl_width_chars=200, fmt_str_lengths=70):

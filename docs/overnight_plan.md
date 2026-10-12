@@ -444,6 +444,15 @@ and tested) and the work moves to 4d.
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-12, 4e weather ablation, run1 (observed weather degraded to forecast quality; gate as fixed in the plan). Two runs byte-identical (data
+  fingerprint 80bf534e6b9d18dd); weather_ablation_results_eligibility_v2_run1.parquet. 1,343 backtest games, 446 indoor (neutral, flagged), 133 severe
+  (outdoor, wind >= 15 mph or <= 32 F). **No market CLEARS under A1: all 13 weight 0, flagged, markets kept.** Under A1 on the severe rows pass_yds
+  has the largest gain (+1.43 yards [-0.08, +3.03], EDGE), pass_att, pass_cmp, rec_yds and rush_yds are EDGE, rush_att / targets / rec / qb_rush_*
+  are NO. Under A2 only pass_yds clears (+1.81 [+0.32, +3.37]); under A2x2 pass_cmp, pass_yds and rec_yds clear; with exact weather none clears.
+  A layer that clears at the doubled noise but not at the exact values is a sign of bootstrap noise, not signal; the rule needs all three modes, so
+  nothing passes and the thresholds are not touched. The null control (the weather columns shuffled) is flat (pass_yds +0.44 [-1.05, +2.07]).
+  **Read as the plan says: flat under degraded weather is inconclusive, not a verdict on weather.** 133 severe games (14-33 per season) is low power
+  (qb_rush has 33 rows). Re-test on the recorded forecasts after a season of forecast-time records.
 - 2026-10-12, 4d.1 coaching prior, first run (the thin table: head-coach stops only). Two runs byte-identical (results ac8bdfa7bb884b80); both then
   crashed on a path-building slip while writing the predictions file (fixed test-first), so the predictions file of this run was not saved; the
   results file and coach_stops.parquet are. 2,686 team-games: 131 with a prior (9 changes), 534 new coach without one; W1+W2 985 games, 260
