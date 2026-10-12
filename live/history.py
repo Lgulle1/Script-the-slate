@@ -35,6 +35,15 @@ def season_of(day: date) -> int:
     return day.year if day.month >= 3 else day.year - 1
 
 
+def read_played_logs(season: int, raw_db=config.RAW_DUCKDB_PATH) -> tuple:
+    """(player_log, team_log) of every game of seasons <= `season` as the raw database holds it NOW: for checking a past live run against what happened (retro checks, grading) and for
+    trailing yardsticks. Outcome-side reading, never a model input; it goes through this module so that this file stays the only one that opens the holdout (config.input_history)."""
+    if season >= config.HOLDOUT_SEASON:
+        with config.input_history(season):
+            return bl.build_player_game_log(raw_db, max_season=season), bl.build_team_game_log(raw_db, max_season=season)
+    return bl.build_player_game_log(raw_db, max_season=season), bl.build_team_game_log(raw_db, max_season=season)
+
+
 def read_input_history(cutoff: date, raw_db=config.RAW_DUCKDB_PATH) -> InputHistory:
     """Game logs, team volumes and lineups for every game strictly before `cutoff`.
 
