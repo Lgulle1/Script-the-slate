@@ -61,3 +61,24 @@ def test_an_unchanged_file_publishes_nothing(repos):
     a = work / "records" / "a.csv"; a.write_text("1")
     first = PB.publish(work, [a], "one", branch="data-snapshots", remote="origin")
     assert PB.publish(work, [a], "again", branch="data-snapshots", remote="origin") is None and first
+
+
+def test_sync_brings_the_published_records_into_a_fresh_checkout_so_versions_continue(repos, tmp_path):
+    origin, work = repos
+    (work / "records" / "predictions").mkdir(parents=True)
+    f = work / "records" / "predictions" / "run_a.parquet"; f.write_bytes(b"abc")
+    PB.publish(work, [f], "one", branch="data-snapshots", remote="origin")
+    fresh = tmp_path / "fresh"
+    _git(tmp_path, "clone", "-q", str(origin), str(fresh))
+    assert not (fresh / "records").exists()
+    n = PB.sync_records(fresh, ["records/predictions", "records/lines"])
+    assert n == 1 and (fresh / "records" / "predictions" / "run_a.parquet").read_bytes() == b"abc"
+    assert PB.sync_records(fresh, ["records/predictions", "records/lines"]) == 1                    # idempotent; a path that does not exist yet (records/lines) is not an error
+
+
+def test_new_files_under_an_ignored_records_directory_are_still_published(repos):
+    origin, work = repos
+    (work / ".gitignore").write_text("records/predictions/\n"); _git(work, "add", ".gitignore"); _git(work, "commit", "-qm", "ignore"); _git(work, "push", "-q", "origin", "main")
+    (work / "records" / "predictions").mkdir(parents=True)
+    f = work / "records" / "predictions" / "run_b.parquet"; f.write_bytes(b"zz")
+    assert PB.publish(work, [f], "ignored dir", branch="data-snapshots", remote="origin")

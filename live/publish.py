@@ -40,7 +40,7 @@ def publish(repo, files, message: str, branch: str = BRANCH, remote: str = "orig
                 dst = wt / rel
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(repo / rel, dst)
-            _git(wt, "add", "--", *[str(r) for r in rels])
+            _git(wt, "add", "-f", "--", *[str(r) for r in rels])
             if not _git(wt, "status", "--porcelain").stdout.strip():
                 return None
             _git(wt, "commit", "-q", "-m", message)
@@ -54,3 +54,21 @@ def publish(repo, files, message: str, branch: str = BRANCH, remote: str = "orig
             _git(repo, "worktree", "remove", "--force", str(wt), check=False)
             shutil.rmtree(tmp, ignore_errors=True)
     return None
+
+
+def sync_records(repo, paths, branch: str = BRANCH, remote: str = "origin") -> int:
+    """Copy the given record paths (files or directories under records/) from the remote data-snapshots branch into the working tree, so a run in a fresh
+    checkout continues the published version numbers. Returns the number of files brought in; a path the branch does not have yet is skipped."""
+    repo = Path(repo).resolve()
+    _git(repo, "fetch", "-q", remote, branch)
+    n = 0
+    for p in paths:
+        if p.split("/")[0] != "records":
+            raise ValueError(f"{p}: only records/ paths are synced")
+        listed = _git(repo, "ls-tree", "-r", "--name-only", f"{remote}/{branch}", "--", p, check=False).stdout.split()
+        if not listed:
+            continue
+        _git(repo, "checkout", f"{remote}/{branch}", "--", *listed)
+        _git(repo, "reset", "-q", "--", *listed, check=False)                        # leave the index as it was: these files belong to the other branch
+        n += len(listed)
+    return n

@@ -18,3 +18,7 @@ dist/
 .duckdb
 *.duckdb
 *.duckdb.wal
+
+# Phase 5 run records live on the data-snapshots branch only
+records/predictions/
+records/lines/
