@@ -513,6 +513,33 @@ no feature; the 2025 holdout guard rejects a 2025 target and a 2025 training row
 **Gate (from the build plan, unchanged):** the weekly cycle runs with no manual step beyond starting the two scripts, every prediction is stored before kickoff,
 and at least three to four weeks of graded live predictions exist before Phase 6.
 
+## Residual pattern screen (asked for by the project manager, 2026-10-12; fixed here BEFORE any candidate feature is built or any residual is looked at)
+- **Question.** Which signals the Phase 3 models do not use yet carry information about the models' misses (actual - prediction)? This is a SCREEN, not a layer:
+  it sets no weight and changes no prediction. A survivor is a hypothesis that earns its own layer gate and a full ablation (the feature inside the retrained model,
+  the 4a/4d/4e procedure) before it can get weight 1.
+- **Data.** The committed walk-forward predictions of `vol_x_eff` (eligibility_v2), 2020-2024 player-games with a prediction and an actual. Seasons <= 2024 only (asserted);
+  no sportsbook line, spread, total or moneyline column is read (pure track); weather (temp, wind, roof) was settled by 4e and is not retested.
+- **Markets.** targets, rush_att, pass_att, rec_yds, rush_yds, pass_yds. Each candidate is tested only on the markets listed with it.
+- **Candidates (fixed, 21; each strictly as-of: schedule facts known in advance, or built only from games before the row's week cutoff).**
+  - Schedule context, all six markets: X1 own rest days; X2 opponent rest days; X3 after-bye flag (rest >= 13); X4 prime-time flag (Thursday, Monday, or kickoff 19:00+);
+    X5 divisional game; X6 week of the season; X7 head referee's trailing plays per game above the league mean (>= 20 earlier games); X8 head referee's trailing penalties per game.
+  - Player trend, receiving markets (targets, rec_yds): X9 snap-share trend (mean offense_pct of the last 3 games - last 8; also tested on rush_att, rush_yds); X10 target-share trend
+    (last 3 - last 8); X11 air-yards share, trailing 8; X12 average depth of target, trailing 8; X13 luck: trailing-8 (rec yards - expected rec yards) per game (ff_opportunity);
+    X14 average separation, trailing (nextgen); X15 yards after the catch above expectation, trailing (nextgen).
+  - Player trend, rushing markets (rush_att, rush_yds): X16 carry-share trend (last 3 - last 8); X17 luck: trailing-8 (rush yards - expected rush yards) per game.
+  - Team tendency: X18 script-adjusted pass tendency = trailing-8 pass rate in neutral situations (win probability 0.2-0.8, quarters 1-3) minus overall pass rate, on pass_att, rush_att, targets;
+    X19 no-huddle rate, trailing 8, on pass_att, rush_att.
+  - Opponent defense: X20 pressure rate (QB hits + sacks per dropback), trailing 8, on pass_att, pass_yds, targets; X21 man-coverage rate (participation) and blitz rate (>= 5 rushers),
+    trailing 8, on targets, rec_yds, pass_yds (counted as two candidates in the multiplicity count).
+- **Test.** For each (candidate, market): rows with the candidate present (coverage < 70% of the market's rows -> reported as "insufficient coverage", not tested). Standardize the candidate on the
+  training seasons only. Folds 2021, 2022, 2023, 2024: fit residual ~ a + b * z by least squares on the earlier seasons, predict the residual on the fold season, and score
+  gain = mean(|r|) - mean(|r - r_hat|) (the absolute-error gain every ablation here uses). The pooled gain over the four folds gets the season-week cluster bootstrap (eval.compare.cluster_bootstrap, 10,000 resamples,
+  seed config.BOOTSTRAP_SEED) at the Bonferroni level 1 - 0.05 / m, m = the number of (candidate, market) cells actually tested (printed). Squared-error gain is reported next to it, not used for the verdict.
+- **Verdict.** CLEARS at the Bonferroni level: gain > 0, the interval above zero, wins in >= 2 of the 4 fold seasons, and the sign of b the same in every fold. EDGE and NO as in eval.compare.verdict.
+  A candidate that clears nowhere is reported as null. No threshold is tuned afterwards to produce a survivor.
+- **Limits, stated now.** Linear, one candidate at a time: an interaction or a non-linear effect is not tested; a candidate that fails here can still help inside a retrained tree model, and one
+  that passes may not survive it. Also reported: the noise floor (what a perfect-mean Poisson outcome would miss by) beside the model's error for each volume market, so "how far from the best possible" is on the page.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
