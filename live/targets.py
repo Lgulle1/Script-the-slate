@@ -96,7 +96,7 @@ def player_rows(games: pl.DataFrame, chart: pl.DataFrame, history_players: pl.Da
     on_chart = _chart_players(chart.filter(pl.col("team").is_in(teams)))
     recent = _recent_players(history_players, history_teams, teams)
     cand = pl.concat([on_chart.select("team", "player_id", "family", "slot", *elig.CHART_COLUMNS),
-                      recent.join(on_chart.select("team", "player_id"), on=["team", "player_id"], how="anti").select(
+                      recent.join(on_chart.select("player_id").unique(), on="player_id", how="anti").select(           # a player on any team's chart is not also a "recent player" of his old team
                           "team", "player_id", "family", "slot", *[pl.lit(False).alias(c) for c in elig.CHART_COLUMNS])]).drop_nulls("family")
     cand = cand.join(usage_prev(history_players, cand["player_id"].to_list()), on="player_id", how="left")
     for c in elig.usage_columns():

@@ -30,6 +30,12 @@ def _weights(tmp_path, layers):
     return p
 
 
+def _played():
+    from eval import backtest as bt
+    d = bt.load_backtest_data().player_log.filter((pl.col("season") == S) & (pl.col("week") == WK))
+    return d.select("player_id", "game_id")
+
+
 @pytest.fixture(scope="module")
 def replay4a(tmp_path_factory):
     tmp = tmp_path_factory.mktemp("replay")
@@ -48,7 +54,12 @@ def replay4a(tmp_path_factory):
     return out, active
 
 
-def _compare(live: pl.DataFrame, ref: pl.DataFrame, tag: str):
+def _compare(live: pl.DataFrame, ref: pl.DataFrame, tag: str, played: pl.DataFrame | None = None):
+    """`played`: (player_id, game_id) of the game each player actually played that week. A player traded that week is listed by the stale chart for his old team too; the
+    committed predictions only have the game he played, so only that live row is compared."""
+    if played is not None:
+        keep = live.filter(pl.col("player_id").is_null())
+        live = pl.concat([live.filter(pl.col("player_id").is_not_null()).join(played, on=["player_id", "game_id"], how="semi"), keep])
     ref = ref.select(player_id=pl.when(pl.col("kind") == "player").then(pl.col("entity")), game_id=pl.when(pl.col("kind") == "game").then(pl.col("entity")), market="market", ref="prediction")
     lp = live.filter(pl.col("player_id").is_not_null()).join(ref.filter(pl.col("player_id").is_not_null()).drop("game_id"), on=["player_id", "market"], how="inner")
     lg = live.filter(pl.col("player_id").is_null()).drop("player_id").join(ref.filter(pl.col("game_id").is_not_null()).drop("player_id"), on=["game_id", "market"], how="inner")
@@ -66,7 +77,7 @@ def test_the_phase3_markets_match_the_committed_phase3_predictions(replay4a):
     p = out["predictions"]
     owned = {m for ms in active.values() for m in ms}
     ref = pl.read_parquet(BASE).filter((pl.col("method") == "vol_x_eff") & (pl.col("season") == S) & (pl.col("week") == WK) & ~pl.col("market").is_in(sorted(owned)))
-    assert _compare(p.filter(pl.col("stack") == "phase3"), ref, "phase3") > 100
+    assert _compare(p.filter(pl.col("stack") == "phase3"), ref, "phase3", _played()) > 100
 
 
 @needs_all
@@ -76,7 +87,7 @@ def test_the_4a_markets_match_the_committed_injury_layer_predictions(replay4a):
     ref = pl.read_parquet(INJ).filter((pl.col("season") == S) & (pl.col("week") == WK) & pl.col("market").is_in(sorted(active["4a_injuries"])))
     live = p.filter(pl.col("stack") == "phase3+4a")
     assert set(live["market"]) == active["4a_injuries"]
-    assert _compare(live, ref, "4a") > 300
+    assert _compare(live, ref, "4a", _played()) > 300
 
 
 @needs_all

@@ -95,3 +95,13 @@ def test_replay_of_2024_week_10_finds_the_standard_eligible_set():
     assert len(ref.keys() - live.keys()) / len(ref) < 0.03                                                   # recall: a usage-eligible player back from a long absence can be missed
     played = set(zip(data.player_log.filter((pl.col("season") == 2024) & (pl.col("week") == 10))["player_id"], data.player_log.filter((pl.col("season") == 2024) & (pl.col("week") == 10))["game_id"]))
     assert len(live.keys() - played) > 0                                                                     # and eligible players who did not play are predicted too (did-not-play rows)
+
+
+def test_a_traded_player_on_the_new_teams_chart_is_not_also_a_recent_player_of_his_old_team():
+    games = TG.target_games(_sched(), 2026, 3)
+    trows = TG.team_rows(_sched(), games)
+    chart = _chart([("CCC", "wrx", "WR", 1), ("AAA", "qb1", "QB", 1)])                               # wrx now on CCC's chart
+    hist = _hist([("wrx", "2026_01_AAA_BBB", "AAA", "WR", 10, 0.0, 6.0, 1)])                          # but his last games were with AAA
+    th = pl.DataFrame({"game_id": ["2026_01_AAA_BBB"], "team": ["AAA"], "gameday": [date(2026, 9, 10)]})
+    p = TG.player_rows(games, chart, hist, th, trows)
+    assert p.filter(pl.col("player_id") == "wrx")["team"].to_list() == ["CCC"]
