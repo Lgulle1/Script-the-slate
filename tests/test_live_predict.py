@@ -57,7 +57,8 @@ def test_feature_rows_of_an_unplayed_week_equal_the_standard_ones(world):
 @needs_db
 def test_the_live_path_reproduces_the_walk_forward_predictions_of_that_week(world):
     wk, data = world["wk"], world["data"]
-    models = LP.fit_models(world["full_vol"], world["full_eff"], cutoff=world["cut"])               # the replay fits on rows before the cutoff, as the harness does
+    data0 = world["data"]
+    models = LP.fit_models(world["full_vol"], world["full_eff"], data0.player_log.filter(pl.col("gameday") < world["cut"]), data0.team_log.filter(pl.col("gameday") < world["cut"]))               # the replay fits on rows before the cutoff, as the harness does
     vt = vf.FeatureTables({q: wk(d) for q, d in world["live_vol"].players.items()}, wk(world["live_vol"].teams))
     et = vf.FeatureTables({q: wk(d) for q, d in world["live_eff"].players.items()}, wk(world["live_eff"].teams))
     elig_of = {(r["game_id"], r["player_id"]): r["elig"] for r in wk(data.player_log).iter_rows(named=True) if r["elig"]}

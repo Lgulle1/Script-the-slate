@@ -42,7 +42,7 @@ def test_a_weight_other_than_zero_or_one_is_refused(tmp_path):
         LY.read_active(_csv(tmp_path, [("4a_injuries", "rec", "EDGE", 0.5)]))
 
 
-def test_the_committed_weights_file_reads_and_validates():
+def test_the_committed_weights_file_reads_and_every_layer_it_turns_on_has_a_builder():
     a = LY.read_active()
     LY.validate(a)
     assert a["4a_injuries"] == {"rush_att", "rush_yds", "targets", "rec", "rec_yds"} and a["4b_simulation"] == {"spread"}

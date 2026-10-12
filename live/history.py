@@ -68,13 +68,13 @@ class InjuryInputs:
     input_only: bool = True
 
 
-def read_input_injury_inputs(cutoff: date, raw_db, targets: pl.DataFrame) -> InjuryInputs:
+def read_input_injury_inputs(cutoff: date, raw_db, targets: pl.DataFrame, future_games: pl.DataFrame | None = None) -> InjuryInputs:
     """The layer-4a inputs through the scoped unlock: 2025+ games enter as input history only (plan P5.7 item 4). `targets`: season, week, team, game_id, gameday."""
     from models import injuries as ij
     through = season_of(cutoff) if season_of(cutoff) >= config.HOLDOUT_SEASON else max(config.BACKTEST_SEASONS)
 
     def load():
-        return (ij.build_player_weeks(raw_db, through, targets=targets), ij.build_role_frame(raw_db, through, targets=targets),
+        return (ij.build_player_weeks(raw_db, through, targets=targets, future_games=future_games), ij.build_role_frame(raw_db, through, targets=targets, future_games=future_games),
                 ij.load_injury_rows(raw_db, through), ij.load_roster_status(raw_db, through))
 
     if through >= config.HOLDOUT_SEASON:
@@ -83,3 +83,33 @@ def read_input_injury_inputs(cutoff: date, raw_db, targets: pl.DataFrame) -> Inj
     else:
         pw, frame, inj, ros = load()
     return InjuryInputs(pw, frame, inj, ros, through)
+
+
+@dataclass(frozen=True)
+class GameStateInputs:
+    """The 4b.2 pre-game features of every team-game (played or scheduled) from the history through the target week, and the schedule rows."""
+    games: pl.DataFrame
+    features: pl.DataFrame
+    through_season: int
+    input_only: bool = True
+
+
+def read_input_game_state(cutoff: date, raw_db, fit_floor: date | None = None) -> GameStateInputs:
+    """Layer-4b inputs through the scoped unlock (plan P5.7 item 4): ratings, plays, QB books, depth charts, injury statuses and rosters of 2025+ games enter as history
+    only. The 4a.1 status models behind the QB-absence probability are fit on games before `fit_floor` (2020-2024 rows only) when it is given."""
+    from features import team_ratings as tr
+    from models import game_state as gs
+    through = season_of(cutoff) if season_of(cutoff) >= config.HOLDOUT_SEASON else max(config.BACKTEST_SEASONS)
+
+    def load():
+        inp = gs.load_inputs(raw_db, through)
+        ratings = tr.compute_ratings(inp.plays, n_boot=0)
+        feats = gs.pregame_features(inp, ratings, gs.status_models_by_week(inp, raw_db, through, fit_floor=fit_floor))
+        return inp.games, feats
+
+    if through >= config.HOLDOUT_SEASON:
+        with config.input_history(through):
+            games, feats = load()
+    else:
+        games, feats = load()
+    return GameStateInputs(games, feats, through)

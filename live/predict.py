@@ -1,8 +1,7 @@
 """Phase 3 prediction for targets that have not been played: fit once on the training feature tables, predict the target feature rows.
 
-`fit_models(vol_tables, eff_tables, cutoff=None)` fits one LightGBM per volume / efficiency quantity on the rows of the training tables (when `cutoff` is
-given, only rows dated before it: the replay used by the tests to reproduce the walk-forward harness; live, the tables hold 2020-2024 games only and
-`cutoff` is None, so models stay fit on 2020-2024 rows, plan P5.4). `predict(models, vol_target, eff_target)` returns, per (game_id, player_id) and per
+`fit_models(vol_tables, eff_tables, player_keys, team_keys)` fits one LightGBM per volume / efficiency quantity on the training tables' rows that are in the keys (live: the
+2020-2024 game logs, so models stay fit on 2020-2024 rows, plan P5.4; a replay: the games before the replayed week's cutoff). `predict(models, vol_target, eff_target)` returns, per (game_id, player_id) and per
 (game_id, team), the combined market predictions of models/combine.py, restricted to the markets each player is eligible for.
 """
 from __future__ import annotations
@@ -27,27 +26,24 @@ class LiveModels:
     n_train: dict
 
 
-def _train(df: pl.DataFrame, cutoff, positive_den: bool):
-    if cutoff is not None:
-        df = df.filter(pl.col("gameday") < cutoff)
-    if positive_den:
-        df = df.filter(pl.col("den") > 0)
-    return df
-
-
-def fit_models(vol: FeatureTables, eff: FeatureTables, cutoff=None, min_train=vm.MIN_TRAIN_ROWS) -> LiveModels:
+def fit_models(vol: FeatureTables, eff: FeatureTables, player_keys: pl.DataFrame, team_keys: pl.DataFrame, min_train=vm.MIN_TRAIN_ROWS) -> LiveModels:
+    """Fit once. The training rows are the feature rows whose (player_id, gameday) / (team, gameday) are in `player_keys` / `team_keys` (the training window's game logs: 2020-2024,
+    or the games before a replayed week's cutoff). The rows are joined exactly as the walk-forward harness joins them (models/volume.py, models/efficiency.py): LightGBM is not
+    invariant to the order of its training rows (a ratio model moved by up to 0.03 in a replay with another order), so the order is part of what a replay must reproduce."""
     n, vm_, em_ = {}, {}, {}
+    pk, tk = player_keys.select("player_id", "gameday"), team_keys.select("team", "gameday")
     for q in PLAYER_SPECS:
-        tr = _train(vol.players[q], cutoff, False)
+        tr = vol.players[q].join(pk, on=["player_id", "gameday"], how="inner")
         n[q] = tr.height
         if tr.height >= min_train:
             vm_[q] = vm._fit(tr)
     for q in efficiency.EFFICIENCY_SPECS:
-        tr = _train(eff.players[q], cutoff, True)
+        tr = eff.players[q].join(pk, on=["player_id", "gameday"], how="inner").filter(pl.col("den") > 0)
         n[q] = tr.height
         if tr.height >= min_train:
             em_[q] = vm._fit(tr)
-    tv, te = _train(vol.teams, cutoff, False), _train(eff.teams, cutoff, True)
+    tv = vol.teams.join(tk, on=["team", "gameday"], how="inner")
+    te = eff.teams.join(tk, on=["team", "gameday"], how="inner").filter(pl.col("den") > 0)
     n["plays"], n["pts_per_play"] = tv.height, te.height
     return LiveModels(vm_, em_, vm._fit(tv) if tv.height >= min_train else None, vm._fit(te) if te.height >= min_train else None, n)
 

@@ -144,7 +144,8 @@ def _trailing_normal(pw: pl.DataFrame) -> pl.DataFrame:
     return pw.with_columns(ratio=pl.when(~pl.col("early_exit")).then(pl.col("work")))
 
 
-def build_player_weeks(raw_db=config.RAW_DUCKDB_PATH, max_season=None, as_of_fn=main_run_as_of, targets: pl.DataFrame | None = None) -> pl.DataFrame:
+def build_player_weeks(raw_db=config.RAW_DUCKDB_PATH, max_season=None, as_of_fn=main_run_as_of, targets: pl.DataFrame | None = None,
+                       future_games: pl.DataFrame | None = None) -> pl.DataFrame:
     """One row per rostered (ACT / INA) player-game, regular season, FEATURE_HISTORY_START..max_season.
 
     Columns: season, week, team, gsis_id, position, group, gameday, report_status, practice_status (as posted by
@@ -184,7 +185,8 @@ def build_player_weeks(raw_db=config.RAW_DUCKDB_PATH, max_season=None, as_of_fn=
                          .when(pl.col("group").is_in(list(SPECIAL_GROUPS))).then(pl.col("st_pct")).otherwise(pl.col("defense_pct")))
     inj = inj.with_columns(date_modified=pl.col("date_modified").dt.convert_time_zone("UTC"))
     # 4a.3: is he on the NEXT report (his team's next game week) with a real primary injury?
-    nxt_week = games.select("season", "team", "week").unique().sort("season", "team", "week").with_columns(
+    nxt_src = games.select("season", "team", "week") if future_games is None else pl.concat([games.select("season", "team", "week"), future_games.select("season", "team", "week").cast(games.select("season", "team", "week").schema)])
+    nxt_week = nxt_src.unique().sort("season", "team", "week").with_columns(
         next_week=pl.col("week").shift(-1).over("season", "team"))
     text = pl.concat_str([pl.col("report_primary_injury").fill_null(""), pl.lit(" "), pl.col("practice_primary_injury").fill_null("")]).str.to_lowercase()
     real = (text.str.strip_chars() != "") & ~pl.any_horizontal([text.str.contains(w) for w in NOT_AN_INJURY])
@@ -368,7 +370,7 @@ def _trailing_mean_shares(frame: pl.DataFrame) -> pl.DataFrame:
     return frame.with_columns([pl.Series(f"base_{s}", out[s]).fill_nan(None) for s in SHARE_STATS])
 
 
-def build_role_frame(raw_db=config.RAW_DUCKDB_PATH, max_season=None, targets: pl.DataFrame | None = None) -> pl.DataFrame:
+def build_role_frame(raw_db=config.RAW_DUCKDB_PATH, max_season=None, targets: pl.DataFrame | None = None, future_games: pl.DataFrame | None = None) -> pl.DataFrame:
     """One row per (team-game, player) in a role: everyone who took an offensive snap, plus the depth-chart player of every
     role who did not (played = False), plus the usual OL starters. Columns: season, week, game_id, team, gameday, player_id, role,
     played, carry_share, target_share, dropback_share, snap_share, carries, rush_yds, targets, rec_yds, receptions, base_*.
@@ -393,7 +395,7 @@ def build_role_frame(raw_db=config.RAW_DUCKDB_PATH, max_season=None, targets: pl
                .join(played.select("game_id", "player_id"), on=["game_id", "player_id"], how="anti")
                .select("season", "week", "game_id", "team", "player_id", role=pl.col("expected_role").replace_strict(ROLE_OF_EXPECTED),
                        played=pl.lit(False), carry_share=pl.lit(0.0), target_share=pl.lit(0.0), dropback_share=pl.lit(0.0), snap_share=pl.lit(0.0)))
-    pw = build_player_weeks(raw_db, max_season, targets=targets)
+    pw = build_player_weeks(raw_db, max_season, targets=targets, future_games=future_games)
     ol = (pw.filter((pl.col("group") == "OL") & (pl.col("normal_snap_pct") >= OL_STARTER_PCT))
           .join(games, on=["season", "week", "team"], how="inner")
           .select("season", "week", "game_id", "team", player_id="gsis_id", role=pl.lit("OL"), played="played", carry_share=pl.lit(0.0),

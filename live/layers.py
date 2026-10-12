@@ -12,7 +12,7 @@ import polars as pl
 import config
 
 CODE = {"4a_injuries": "4a", "4b_simulation": "4b"}          # the layers that have a live builder; their stack code
-BUILDERS = set(CODE)
+BUILDERS = {"4a_injuries", "4b_simulation"}                   # the layers wired into live/weekly.py
 
 
 class LayerError(RuntimeError):
@@ -32,9 +32,6 @@ def read_active(path=None) -> dict:
 
 
 def validate(active: dict) -> None:
-    missing = sorted(set(active) - BUILDERS)
-    if missing:
-        raise LayerError(f"layer(s) {missing} have weight 1.0 in layer_weights.csv but no live builder: wire them before running (a layer is never dropped silently)")
     claims: dict = {}
     for layer, markets in active.items():
         for m in markets:
@@ -42,6 +39,9 @@ def validate(active: dict) -> None:
     clash = {m: ls for m, ls in claims.items() if len(ls) > 1}
     if clash:
         raise LayerError(f"markets claimed by more than one layer: {clash}")
+    missing = sorted(set(active) - BUILDERS)
+    if missing:
+        raise LayerError(f"layer(s) {missing} have weight 1.0 in layer_weights.csv but no live builder: wire them before running (a layer is never dropped silently)")
 
 
 def layer_of(market: str, active: dict):

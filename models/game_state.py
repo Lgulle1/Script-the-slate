@@ -350,6 +350,25 @@ def walk_forward(features: pl.DataFrame, min_fit_rows: int = MIN_FIT_ROWS, min_s
     return pl.concat(preds), pl.DataFrame(coefs)
 
 
+def predict_week(features: pl.DataFrame, season: int, week: int, fit_before_key: int | None = None, min_fit_rows: int = MIN_FIT_ROWS) -> tuple[pl.DataFrame, dict | None]:
+    """Team-game predictions for ONE (season, week) with the scaling terms fit on the team-games whose season * 100 + week is before `fit_before_key`
+    (default: this week's own key: the walk-forward fit). A live run passes the key of the first 2025 week, so the terms stay fit on 2020-2024 games only
+    (plan P5.4) while the target week's pre-game features come from all the history. Same least squares as `walk_forward`; returns (predictions, coefficients)."""
+    f = features.with_columns(y=(pl.col("pf") - pl.col("league_pts")).cast(pl.Float64))
+    ok = f.filter(pl.all_horizontal([pl.col(c).is_not_null() for c in (*FEATURES, "league_pts")]))
+    key = season * 100 + week
+    lim = key if fit_before_key is None else min(key, fit_before_key)
+    ok_key = (ok["season"] * 100 + ok["week"]).to_numpy()
+    X_all, y_all = _design(ok), ok["y"].to_numpy().astype(float)
+    tr_m = (ok_key < lim) & ~np.isnan(y_all)
+    te = ok.filter((pl.col("season") == season) & (pl.col("week") == week))
+    if tr_m.sum() < min_fit_rows or not te.height:
+        return te.head(0).drop("y"), None
+    beta, *_ = np.linalg.lstsq(X_all[tr_m], y_all[tr_m], rcond=None)
+    coef = dict(season=season, week=week, n_fit=int(tr_m.sum()), **{n: float(b) for n, b in zip(("c", *FEATURES), beta)})
+    return te.with_columns(pts_mean=pl.col("league_pts") + pl.Series(_design(te) @ beta)).drop("y"), coef
+
+
 def side_points(side: dict, coef: dict) -> float:
     """Expected points for one side: league average + c + sum(coefficient * feature) (the same formula walk_forward uses)."""
     return side["league_pts"] + coef["c"] + sum(coef[f] * side[f] for f in FEATURES)
@@ -391,12 +410,13 @@ def qb_points_per_tenth(coefs: pl.DataFrame) -> pl.DataFrame:
     return coefs.with_columns(qb_pts_per_0_1_epa=pl.col("x_qb") * 0.1 * EXAMPLE_DROPBACKS)
 
 
-def status_models_by_week(inp: Inputs, raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> dict:
-    """{(season, week): 4a.1 status model fit before that week's first kickoff} for the seasons the injury layer covers."""
+def status_models_by_week(inp: Inputs, raw_db=config.RAW_DUCKDB_PATH, max_season=None, fit_floor=None) -> dict:
+    """{(season, week): 4a.1 status model fit before that week's first kickoff} for the seasons the injury layer covers.
+    `fit_floor` (a date): no model is fit on games on or after it (a live run passes 2025-03-01: 2020-2024 games only)."""
     from models import injuries as ij
     pw = ij.build_player_weeks(raw_db, max_season)
     cut = inp.games.group_by("season", "week").agg(pl.col("gameday").min()).rows()
-    return {(s, w): ij.fit_status_model(pw, c) for s, w, c in cut if s >= config.FEATURE_HISTORY_START}
+    return {(s, w): ij.fit_status_model(pw, c if fit_floor is None else min(c, fit_floor)) for s, w, c in cut if s >= config.FEATURE_HISTORY_START}
 
 
 def build_expectations(raw_db=config.RAW_DUCKDB_PATH, max_season=None, ratings: pl.DataFrame | None = None):

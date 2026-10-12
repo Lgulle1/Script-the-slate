@@ -83,13 +83,13 @@ def build_injury_features(data, raw_db=config.RAW_DUCKDB_PATH, max_season=None) 
     return _assemble(prow, trow)
 
 
-def build_live_injury_features(pw, frame, injuries, ros, games: pl.DataFrame, season: int, week: int, cutoff, fit_cutoff, now) -> dict:
+def build_live_injury_features(pw, frame, injuries, ros, games: pl.DataFrame, season: int, week: int, cutoff, fit_cutoff, now, status_clock=None) -> dict:
     """Injury features of the games about to be played (`games`: game_id, team, gameday), from frames that already hold the target rows (live/history.py).
 
     The status, shift and early-exit models are fit on games before `fit_cutoff` (2020-2024 rows only, plan P5.4); the team players, baselines and statuses come from the
-    history before `cutoff` and the injury reports posted by min(now, the main run of the game's day)."""
+    history before `cutoff` and the injury reports posted by min(now, the main run of the game's day) (`status_clock(gameday)` replaces that rule, for replays)."""
     trio = (ij.fit_status_model(pw, fit_cutoff), ij.fit_shifts(frame, fit_cutoff), ij.fit_exit_model(pw, fit_cutoff))
-    clock = lambda gameday: min(ij._utc(now), ij.main_run_as_of(gameday))
+    clock = status_clock or (lambda gameday: min(ij._utc(now), ij.main_run_as_of(gameday)))
     p, t = _week_rows(trio, _prepare(pw, frame, injuries, ros), games, season, week, cutoff, clock)
     return _assemble(p, t)
 

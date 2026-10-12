@@ -192,3 +192,24 @@ def test_state_model_for_a_week_uses_only_earlier_team_games(inp):
     a = full.filter((pl.col("season") == key[0]) & (pl.col("week") == key[1])).sort("game_id", "team").select(cols).to_numpy()
     b = part.filter((pl.col("season") == key[0]) & (pl.col("week") == key[1])).sort("game_id", "team").select(cols).to_numpy()
     assert a.shape == b.shape and np.allclose(a, b, atol=1e-9)
+
+
+def test_predict_week_equals_the_walk_forward_week_and_a_fit_floor_keeps_later_games_out_of_the_fit():
+    import numpy as np
+    from models import game_state as gs
+    rng = np.random.default_rng(3)
+    rows = []
+    for s in (2019, 2020, 2021):
+        for w in range(1, 6):
+            for g in range(20):
+                x = rng.normal(size=4)
+                rows.append(dict(season=s, week=w, game_id=f"{s}{w}{g}", gameday=None, team=f"T{g}", opp="O", pf=20 + 3 * x[0] + rng.normal(), pa=20.0, x_home=x[1], x_rest=x[2], league_pts=22.0,
+                                 x_rating=x[0], x_qb=x[3]))
+    f = pl.DataFrame(rows)
+    tp, _ = gs.walk_forward(f, min_fit_rows=50)
+    one, coef = gs.predict_week(f, 2021, 3, min_fit_rows=50)
+    ref = tp.filter((pl.col("season") == 2021) & (pl.col("week") == 3)).sort("game_id")
+    assert np.allclose(one.sort("game_id")["pts_mean"].to_numpy(), ref["pts_mean"].to_numpy(), atol=1e-12, rtol=0)
+    floored, c2 = gs.predict_week(f, 2021, 3, fit_before_key=202101, min_fit_rows=50)             # fit on 2019-2020 only
+    assert c2["n_fit"] < coef["n_fit"] and c2["n_fit"] == int(((f["season"] * 100 + f["week"]) < 202101).sum())
+    assert not np.allclose(floored.sort("game_id")["pts_mean"].to_numpy(), ref["pts_mean"].to_numpy())
