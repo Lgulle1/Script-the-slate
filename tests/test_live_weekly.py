@@ -28,7 +28,7 @@ def test_a_run_before_the_week_stores_every_game_and_a_manifest(models, tmp_path
     assert (t["stored_at"] < t["kickoff_time"]).all() and set(t["model_version"]) == {"mv-test"}
     assert t.filter(pl.col("player_id").is_null())["market"].is_in(["spread", "moneyline", "total"]).all()
     m = json.loads(next((tmp_path / "s").glob("manifest_*.json")).read_text())
-    assert m["history"]["newest_game"] < m["cutoff"] and m["chart"]["teams"] == 32 and m["written"] == out["written"]
+    assert m["history"]["newest_game"] < m["cutoff"] and m["chart"]["teams"] == 2 * m["n_games"] and m["written"] == out["written"]
     assert pl.read_csv(tmp_path / "lines.csv").height == 15                                                 # the lines went to their own log
 
 

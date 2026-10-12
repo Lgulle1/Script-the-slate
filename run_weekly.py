@@ -27,13 +27,14 @@ def main(argv=None):
     ap.add_argument("--store", type=Path, default=config.ROOT / "records" / "predictions")
     ap.add_argument("--lines", type=Path, default=config.ROOT / "records" / "lines" / "lines_log.csv")
     a = ap.parse_args(argv)
-    now = datetime.fromisoformat(a.now.replace("Z", "+00:00")) if a.now else datetime.now(timezone.utc)
-    if now.tzinfo is None:
+    fixed = datetime.fromisoformat(a.now.replace("Z", "+00:00")) if a.now else None
+    if fixed is not None and fixed.tzinfo is None:
         raise SystemExit("--now needs a timezone (e.g. 2026-10-16T20:00:00Z)")
     if a.bootstrap or not config.RAW_DUCKDB_PATH.exists():
         print("bootstrap:", refresh_live.bootstrap())
     elif a.refresh:
         print("refresh:", refresh_live.refresh())
+    now = fixed or datetime.now(timezone.utc)          # the clock is read AFTER the pull: rows are stamped pulled_at = the pull time, and a run only sees rows pulled by its clock
     if not a.no_sync:           # continue the published version numbers; a failed sync stops the run rather than restarting at version 1
         print("synced records:", publish.sync_records(config.ROOT, ["records/predictions", "records/lines"]))
     before = set(a.store.glob("*")) if a.store.exists() else set()
