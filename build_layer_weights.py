@@ -41,6 +41,12 @@ def rows_4c(path: Path) -> list:
             for r in pl.read_parquet(path).iter_rows(named=True)]
 
 
+def rows_ablation(layer: str, path: Path, verdict_col: str, note: str = "") -> list:
+    """A layer whose runner already decided its weights (4d, 4e): market, the verdict column named, layer_weight, its decision."""
+    return [dict(layer=layer, market=r["market"], verdict=r[verdict_col], weight=r["layer_weight"], source=path.name, note=r.get("decision") or note)
+            for r in pl.read_parquet(path).iter_rows(named=True)]
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--injury-results", type=Path, default=config.result_path("injury_ablation_results"))
@@ -48,6 +54,10 @@ if __name__ == "__main__":
     a = ap.parse_args()
     rows = (rows_4a(a.injury_results, a.pending_4a_rerun) + rows_4b(config.result_path("sim_backtest_results_anchored"))
             + rows_4c(config.result_path("comps_ablation_results_recency_weighted")))
+    for layer, stem, col in (("4d_coaching", "coach_ablation_results", "verdict_w12"),):
+        paths = sorted(config.ROOT.glob(f"{stem}_{config.ELIGIBLE_PLAYER_RULE['version']}_*.parquet"))
+        if paths:                                                            # the latest tagged run of a layer that has been run
+            rows += rows_ablation(layer, paths[-1], col)
     t = pl.DataFrame(rows).with_columns(rule=pl.lit(config.LAYER_WEIGHT_RULE))
     t.write_csv(config.ROOT / "layer_weights.csv")
     with pl.Config(tbl_rows=60, tbl_width_chars=200, fmt_str_lengths=70):

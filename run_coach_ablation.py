@@ -40,6 +40,10 @@ def results_name(tag: str | None = None) -> str:
     return f"coach_ablation_results_{config.ELIGIBLE_PLAYER_RULE['version']}" + (f"_{tag}" if tag else "")
 
 
+def predictions_name(tag: str | None = None) -> str:
+    return f"coach_ablation_predictions_{config.ELIGIBLE_PLAYER_RULE['version']}" + (f"_{tag}" if tag else "") + ".parquet"
+
+
 def null_features(feats: pl.DataFrame, seed: int = NULL_SEED) -> pl.DataFrame:
     """The coaching columns shuffled among the team-games of the same season and week (a fixed permutation): the same values, no information."""
     f = feats.sort("season", "week", "game_id", "team")
@@ -125,8 +129,7 @@ def run(tag=None, results_dir=None, pred_dir=None, save=True):
             b"coach_columns": json.dumps(cp.COACH_COLUMNS).encode(), b"counts": json.dumps(counts).encode(), b"null_seed": str(NULL_SEED).encode(),
             b"layer_weight_rule": b"1.0 only if CLEARS on W1+W2 and the W0 interval's upper bound >= 0, else 0.0; " + config.LAYER_WEIGHT_RULE.encode()})
         pq.write_table(arrow, (results_dir or config.ROOT) / f"{results_name(tag)}.parquet")
-        with_.sort("market", "season", "week", "entity").write_parquet(
-            (pred_dir or config.PROCESSED_DIR) / f"coach_ablation_predictions_{config.ELIGIBLE_PLAYER_RULE['version']}" + (f"_{tag}" if tag else "") + ".parquet")
+        with_.sort("market", "season", "week", "entity").write_parquet((pred_dir or config.PROCESSED_DIR) / predictions_name(tag))
         stops.write_parquet((results_dir or config.ROOT) / "coach_stops.parquet")
     return table, fp, counts
 

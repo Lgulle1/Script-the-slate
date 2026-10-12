@@ -39,6 +39,10 @@ def results_name(tag: str | None = None) -> str:
     return f"weather_ablation_results_{config.ELIGIBLE_PLAYER_RULE['version']}" + (f"_{tag}" if tag else "")
 
 
+def predictions_name(tag: str | None = None) -> str:
+    return f"weather_ablation_predictions_{config.ELIGIBLE_PLAYER_RULE['version']}" + (f"_{tag}" if tag else "") + ".parquet"
+
+
 def null_features(feats: pl.DataFrame, games: pl.DataFrame, seed: int = NULL_SEED) -> pl.DataFrame:
     """The weather columns shuffled among the games of the same season and week (a fixed permutation): the same values, no information.
     games: game_id, season, week."""
@@ -122,7 +126,7 @@ def run(tag=None, results_dir=None, pred_dir=None, save=True):
             b"layer_weight_rule": b"1.0 only if CLEARS on severe rows under A1, A2 and A2x2 and not worse on the other rows; " + config.LAYER_WEIGHT_RULE.encode()})
         pq.write_table(arrow, (results_dir or config.ROOT) / f"{results_name(tag)}.parquet")
         pl.concat([w.with_columns(variant=pl.lit(k)) for k, w in withs.items()]).sort("variant", "market", "season", "week", "entity").write_parquet(
-            (pred_dir or config.PROCESSED_DIR) / (f"weather_ablation_predictions_{config.ELIGIBLE_PLAYER_RULE['version']}" + (f"_{tag}" if tag else "") + ".parquet"))
+            (pred_dir or config.PROCESSED_DIR) / predictions_name(tag))
     return table, fp, counts
 
 

@@ -355,6 +355,42 @@ and tested) and the work moves to 4d.
 - **A cheaper upgrade than the 640-entry hand build.** The 36 events without a prior need only the new coach's earlier play-calling stops: 36
   sourced lookups. This, or Hoppen's file, is the lever that matters for 4d.
 
+## Decisions of 2026-10-12, second batch (yours)
+- **Hoppen's play-caller file: not pursued.** The permission request and the nflverse question are not being sent; I stop raising them. 4d runs
+  on the nflverse head coach plus hand-sourced prior-stop lookups only.
+- **Forecast recording runs on a schedule, on its own branch.** Every ~6 hours (UTC), Wednesday through Monday, pushing only
+  records/weather_forecast_log.csv to the branch data-snapshots, never the working branch. The snapshot closest to 24 hours before kickoff is
+  the one that matters. The task's approval setting and the first scheduled run are checked and reported (a missed week cannot be recovered).
+- **The 2026 as-of snapshots are committed.** The injury reports, depth charts and rosters as pulled on 2026-10-07 cannot be pulled again as
+  they stood; they go to tracked files, and the weekly run keeps saving them the same way.
+- **.env** stays uncommitted and gitignored (confirmed); **.claude/settings.local.json** stays local.
+- **Coaching columns go into the Phase 3 models, not the 4b hooks** (approved). The 4b simulation carries weight only for spread and the three
+  tendencies do not map onto the EPA ratings. The hooks stay empty unless a market CLEARS.
+- **Heavy runs are sequential** (four at once ran a process out of memory).
+- **4e: a flat result under degraded weather is inconclusive, not a verdict on weather.** There are 133 severe-weather games (14-33 per
+  season) and three variants that must all pass. The real test is the recorded forecasts.
+
+## 4d.1, the fuller table (fixed before any lookup or rerun)
+- **Why.** The first 4d.1 run (below, in the Log) is flat and has a prior in only 9 of 45 head-coach changes. The other 36 new head coaches were
+  mostly coordinators. Their earlier play-calling stops are the missing prior.
+- **The lookups.** For each of the 36 changes in 2020-2024 without a head-coach prior: the stops where he called the offense's plays, with the
+  franchise and seasons, in data/play_caller_stops.csv (tracked: it is hand-made). Columns: coach, franchise (current code), first_season,
+  last_season, hired_by, hire_key, source_url, confidence (high / medium / low), note.
+- **Rules.**
+  1. Only career history that ended BEFORE his first game as head coach (stop's last key < hire key); the code refuses a row that does not.
+  2. Each row sourced by hand with a URL and a confidence. Not Pro Football Reference / Sports Reference, and not ESPN / ABC / Disney sites: their
+     terms ban automated collection and use for models (docs/coaching_sources_4d0.md). Wikipedia pages, team and league releases and press reports,
+     read one fact at a time.
+  3. A stop counts when he was the offense's play caller. A coordinator title without play calling is not a stop; unclear = low confidence.
+  4. Only stops in the play-by-play window (2016 on) can give tendencies; earlier ones are recorded as "pre-2016, unusable".
+  5. The tendencies come from play-by-play of that franchise's offense over the seasons he called plays (whole seasons). The existing prior code
+     weights them (recency half-life 3 seasons, length games / (games + 17)). A stop with the hiring franchise is excluded (the rule that a prior never
+     uses the current team's games).
+  6. The rerun uses rows of confidence high or medium. Counts of every kind are reported.
+  7. A second pass re-checks five random rows against a different source; a disagreement is resolved or the row dropped.
+- **Gate and reading.** Unchanged (W1+W2, CLEARS and not worse on W0). Both results are reported, the thin and the fuller; the thin one is already in
+  the Log and is not replaced.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
@@ -392,6 +428,12 @@ and tested) and the work moves to 4d.
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-12, 4d.1 coaching prior, first run (the thin table: head-coach stops only). Two runs byte-identical (results ac8bdfa7bb884b80); both then
+  crashed on a path-building slip while writing the predictions file (fixed test-first), so the predictions file of this run was not saved; the
+  results file and coach_stops.parquet are. 2,686 team-games: 131 with a prior (9 changes), 534 new coach without one; W1+W2 985 games, 260
+  post-change. **No market clears: all weight 0, flagged.** EDGE in pass_cmp, rush_att, rush_yds, rec and rec_yds with intervals across zero
+  (rush_att +0.0065 [-0.015, +0.028]); NO elsewhere; spread is significantly worse on W1+W2 (-0.10 points [-0.21, -0.01]). The null control gives
+  gains of the same size. Read as the plan says: inconclusive about play calling, not a verdict on coaching.
 - 2026-10-12, scan of the gitignored files (data/ is ignored as a whole, plus .env, .claude/ and caches).
   - **Hand-made inputs:** only data/coaches_seed.csv, the 2026 staff, now tracked (24d7477). data/coaches_history.csv is generated and tracked too.
   - **Rebuildable by scripts, left ignored:** data/raw/raw.duckdb (462 MB, the nflverse and Meteostat pulls), data/processed (218 MB), the

@@ -1,3 +1,5 @@
+**Not being sent (2026-10-12): the Hoppen file is not pursued and the nflverse question is dropped.** Kept only as a record.
+
 # 4d.0: messages to send (drafts; nothing has been sent)
 
 ## 1. To Sam Hoppen: permission to use all_playcallers.csv

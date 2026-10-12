@@ -41,3 +41,11 @@ def test_the_null_control_keeps_the_values_but_breaks_the_team_link():
         assert sorted(n.filter(pl.col("week") == w)["coach_games"].to_list()) == sorted(f.filter(pl.col("week") == w)["coach_games"].to_list())
     assert n["coach_state"].to_list() != f["coach_state"].to_list()
     assert n.equals(RC.null_features(f))                                                # deterministic
+
+
+def test_output_names_carry_the_tag_and_build_valid_paths(tmp_path):
+    """A precedence slip once crashed a finished run while writing the predictions (Path / str + str)."""
+    import run_weather_ablation as RWx
+    assert RC.predictions_name(None).endswith("eligibility_v2.parquet") and RC.predictions_name("run1").endswith("eligibility_v2_run1.parquet")
+    assert RWx.predictions_name("t").startswith("weather_ablation_predictions_") and RWx.predictions_name("t").endswith("_t.parquet")
+    assert (tmp_path / RC.predictions_name("run1")).parent == tmp_path
