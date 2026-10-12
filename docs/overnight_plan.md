@@ -444,6 +444,49 @@ game as head coach was used. The "none / not a caller" verdicts of the other 26 
   (`read_asof_charts`, which drops the 2025-season rows).** Guard: tests/test_depth_live.py fails if any Python file outside ingest/save_asof.py,
   ingest/scheduled_snapshot.py and features/depth_live.py mentions the asof directory (mutation-checked with a module that reads the file directly).
 
+## Phase 5 gates (fixed 2026-10-12, before anything of Phase 5 is built; spec: docs/build_plan.md "Phase 5")
+**P5.1 What the weekly run produces.** `run_weekly.py` writes, for every game kicking off in the coming window, one record per (eligible player, market) and
+one per (game, game market) for the 13 markets, with: prediction_id, run_id, run_timestamp (UTC), kickoff_time (UTC), version (1, 2, ...), game_id,
+player_id (null for game markets), market, model_version, mean, median, quantiles (5, 10, 25, 50, 75, 90, 95), the threshold ladder, confidence components,
+comp shifts and no_match flags, the injury-status snapshot used, and input_hash.
+- **mean** is the Phase 3 combined prediction. **median, quantiles, ladder, confidence and comp shifts are NULL (never 0) until a calibrated source exists**
+  (Phase 6 supplies them under a NEW model_version; the comps layer is parked at weight 0, so its shift columns stay null with no_match = null).
+- **Layers.** model_version is a hash of the code revision and of layer_weights.csv. A layer enters a market's prediction only with weight 1 in that file
+  (today: 4a for rush_att, rush_yds, targets, rec, rec_yds; 4b for spread; Phase 3 for all markets). 4c, 4d and 4e have weight 0 and are not in the run.
+- **Pure track.** The prediction record has no column derived from a sportsbook line (schema allowlist, tested). The schedule line (spread, moneyline,
+  total) is logged to its OWN table (lines_log), keyed by game and capture time, and is read by nothing in the prediction path.
+
+**P5.2 Inputs are as-of stamped.** Every input table of a run is the state at run_timestamp: injuries, depth charts, rosters and schedule are read through
+the as-of rule (rows published or stamped at or before run_timestamp; depth charts through features.depth_live.chart_as_of with the game's week), weather from
+the recorded forecast nearest before the run. The run stores, per input table, the row count, the newest stamp used and a hash, and input_hash is the hash of
+those. Nothing dated after run_timestamp can enter a feature (tested with a row stamped one second after).
+
+**P5.3 Stored before kickoff, always, and never edited.**
+- The writer takes the clock as a parameter. A record whose kickoff_time is at or before the writer's clock is REFUSED and the refusal is logged (game,
+  player, market, clock, kickoff) in refusals.csv; nothing is written for it.
+- Rows are append-only. A rerun for the same (game, player, market) writes version = previous max + 1 and leaves earlier versions byte-identical; a rerun
+  with identical inputs and model_version writes nothing new (idempotent), so the Sunday-morning rerun adds a version only when something changed.
+- Grading uses the highest version stored before kickoff (stored_at < kickoff_time). A version stored after kickoff is never graded (and cannot exist, by the
+  refusal above). The store is tracked in git (records/predictions/) and pushed to the data-snapshots branch by the run, so the commit time is an outside timestamp.
+
+**P5.4 Holdout.** No Phase 5 code path may use a 2025 outcome as a training row, a target, an evaluation or a tuning input; the loaders' cap_season guard stays.
+**OPEN DECISION (yours, blocks only P5.1 step "generate predictions"):** a 2026 prediction needs each player's and team's recent form, which includes 2025 games.
+Recommended: the live feature builder may read 2025 and 2026-to-date games as INPUT HISTORY for 2026 targets (trailing form, ratings, rosters) through one
+named function that cannot return them as targets, while every model is still FIT on 2020-2024 rows only; the one-time 2025 benchmark of Phase 6 is then
+unaffected (it scores 2020-2024-fit models on 2025 outcomes, and live use of 2025 inputs changes nothing it measures). The alternative is to skip 2025
+entirely (2024 history plus 2026 in-season only): purer, but veterans' features go stale by a season and 2025 rookies have none.
+
+**P5.5 Grading (`grade_week.py`)** is idempotent (a second run adds no rows and changes none), keeps the pure and the market-aware tracks in separate tables,
+grades an eligible non-player as actual = 0 with did_not_play = true and reports those rows separately, and writes the weekly summary next to the best Phase 2
+baseline on the same rows.
+
+**P5.6 Tests that must exist before the run is trusted:** a game with a past kickoff writes nothing and is logged; a rerun creates version 2 and leaves
+version 1 byte-identical; an identical rerun writes nothing; the prediction table has no sportsbook-derived column; a row stamped after run_timestamp changes
+no feature; the 2025 holdout guard rejects a 2025 target and a 2025 training row; a prediction stored after kickoff is never graded; grading twice is identical.
+
+**Gate (from the build plan, unchanged):** the weekly cycle runs with no manual step beyond starting the two scripts, every prediction is stored before kickoff,
+and at least three to four weeks of graded live predictions exist before Phase 6.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
