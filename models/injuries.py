@@ -144,7 +144,7 @@ def _trailing_normal(pw: pl.DataFrame) -> pl.DataFrame:
     return pw.with_columns(ratio=pl.when(~pl.col("early_exit")).then(pl.col("work")))
 
 
-def build_player_weeks(raw_db=config.RAW_DUCKDB_PATH, max_season=None, as_of_fn=main_run_as_of) -> pl.DataFrame:
+def build_player_weeks(raw_db=config.RAW_DUCKDB_PATH, max_season=None, as_of_fn=main_run_as_of, targets: pl.DataFrame | None = None) -> pl.DataFrame:
     """One row per rostered (ACT / INA) player-game, regular season, FEATURE_HISTORY_START..max_season.
 
     Columns: season, week, team, gsis_id, position, group, gameday, report_status, practice_status (as posted by
@@ -172,6 +172,8 @@ def build_player_weeks(raw_db=config.RAW_DUCKDB_PATH, max_season=None, as_of_fn=
     finally:
         con.close()
     games = bl.build_team_game_log(raw_db, max_season).select("season", "week", "team", "game_id", "gameday")
+    if targets is not None:
+        games = pl.concat([games, targets.select(games.columns).cast(games.schema)])
     sn = ids.add_canonical_gsis_id(sn).drop_nulls("gsis_id")
     sn = sn.with_columns(any_snap=(pl.col("offense_snaps").fill_null(0) + pl.col("defense_snaps").fill_null(0) + pl.col("st_snaps").fill_null(0)) > 0)
     pw = ro.join(games, on=["season", "week", "team"], how="inner")
@@ -366,18 +368,23 @@ def _trailing_mean_shares(frame: pl.DataFrame) -> pl.DataFrame:
     return frame.with_columns([pl.Series(f"base_{s}", out[s]).fill_nan(None) for s in SHARE_STATS])
 
 
-def build_role_frame(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataFrame:
+def build_role_frame(raw_db=config.RAW_DUCKDB_PATH, max_season=None, targets: pl.DataFrame | None = None) -> pl.DataFrame:
     """One row per (team-game, player) in a role: everyone who took an offensive snap, plus the depth-chart player of every
     role who did not (played = False), plus the usual OL starters. Columns: season, week, game_id, team, gameday, player_id, role,
-    played, carry_share, target_share, dropback_share, snap_share, carries, rush_yds, targets, rec_yds, receptions, base_*."""
+    played, carry_share, target_share, dropback_share, snap_share, carries, rush_yds, targets, rec_yds, receptions, base_*.
+    `targets` (season, week, team, game_id, gameday): games not yet played; they get the chart role holders (played = False) and the OL starters, no outcome."""
     from features import phase4_inputs as p4
 
     cutoffs = p4.week_cutoffs(raw_db, max_season)
+    if targets is not None:
+        cutoffs = pl.concat([cutoffs, targets.group_by("season", "week").agg(cutoff_date=pl.col("gameday").min()).cast(cutoffs.schema)]).unique(["season", "week"], keep="first").sort("season", "week")
     roles = p4.build_player_game_roles(raw_db, max_season)
     chart = p4._expected_roles(raw_db, max_season, cutoffs)
     log = bl.build_player_game_log(raw_db, max_season).select("game_id", "player_id", "rush_yds_ex_kneel", "rushing_yards", "carries",
                                                                "targets", "receiving_yards", "receptions")
     games = bl.build_team_game_log(raw_db, max_season).select("season", "week", "team", "game_id", "gameday")
+    if targets is not None:
+        games = pl.concat([games, targets.select(games.columns).cast(games.schema)])
     played = roles.select("season", "week", "game_id", "team", "player_id", role=pl.col("expected_role").replace_strict(ROLE_OF_EXPECTED, default="other"),
                           played=pl.lit(True), carry_share=pl.col("carry_share").fill_null(0.0), target_share=pl.col("target_share").fill_null(0.0),
                           dropback_share=pl.col("dropback_share").fill_null(0.0), snap_share=pl.col("snap_share"))
@@ -386,7 +393,7 @@ def build_role_frame(raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> pl.DataF
                .join(played.select("game_id", "player_id"), on=["game_id", "player_id"], how="anti")
                .select("season", "week", "game_id", "team", "player_id", role=pl.col("expected_role").replace_strict(ROLE_OF_EXPECTED),
                        played=pl.lit(False), carry_share=pl.lit(0.0), target_share=pl.lit(0.0), dropback_share=pl.lit(0.0), snap_share=pl.lit(0.0)))
-    pw = build_player_weeks(raw_db, max_season)
+    pw = build_player_weeks(raw_db, max_season, targets=targets)
     ol = (pw.filter((pl.col("group") == "OL") & (pl.col("normal_snap_pct") >= OL_STARTER_PCT))
           .join(games, on=["season", "week", "team"], how="inner")
           .select("season", "week", "game_id", "team", player_id="gsis_id", role=pl.lit("OL"), played="played", carry_share=pl.lit(0.0),

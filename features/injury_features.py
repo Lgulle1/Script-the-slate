@@ -27,39 +27,71 @@ TEAM_COLUMNS = ["inj_team_qb_out", "inj_team_skill_out", "inj_team_ol_out"]
 SKILL_ROLES = ("WR1", "WR2", "WR3", "RB1", "TE1")
 
 
+def _prepare(pw, frame, injuries, ros):
+    """The lookups every week of the build shares."""
+    status_fn = ij.make_status_lookup(injuries)
+    blocked = {k[:2]: set(g["gsis_id"].to_list()) for k, g in
+               ros.filter(pl.col("roster_status").is_in(list(ij.BLOCKED_ROSTER_STATUSES))).partition_by("season", "week", as_dict=True).items()}
+    groups = dict(pw.sort("gameday").group_by("gsis_id", maintain_order=True).agg(pl.col("group").last()).iter_rows())
+    by_team = {k[0]: g for k, g in frame.partition_by("team", as_dict=True).items()}
+    return status_fn, blocked, groups, by_team
+
+
+def _week_rows(trio, lookups, games: pl.DataFrame, season: int, week: int, cutoff, as_of_of) -> tuple:
+    """Player and team feature rows of the given team-games (one week), models in `trio` = (status, shifts, exit), `as_of_of(gameday)` the status clock."""
+    model, shifts, exit_model = trio
+    status_fn, blocked, groups, by_team = lookups
+    prow, trow = [], []
+    for g in games.iter_rows(named=True):
+        out = ij.game_expected_shares(by_team[g["team"]], shifts, model, None, None, g["game_id"], g["team"], season, week, g["gameday"],
+                                      as_of_of(g["gameday"]), cutoff, exit_model=exit_model, status_fn=status_fn,
+                                      blocked_ids=blocked.get((season, week), set()), player_groups=groups, with_eff=False)
+        listed = out.filter(pl.col("player_id") != "rest")
+        for r in listed.iter_rows(named=True):
+            prow.append(dict(player_id=r["player_id"], game_id=g["game_id"], inj_exp_snap_share=r["exp_snap_share"], inj_p_out=r["p_out"],
+                             inj_p_exit=r["p_exit"], inj_exp_carry_share=r["exp_carry"], inj_exp_target_share=r["exp_target"],
+                             inj_exp_dropback_share=r["exp_dropback"], inj_exp_snap=r["exp_snap"],
+                             inj_d_carry=r["exp_carry"] - r["base_carry"], inj_d_target=r["exp_target"] - r["base_target"],
+                             inj_d_dropback=r["exp_dropback"] - r["base_dropback"], role=r["role"]))
+        roles = dict(zip(listed["player_id"], listed["role"]))
+        po = dict(zip(listed["player_id"], listed["p_out"]))
+        trow.append(dict(game_id=g["game_id"], team=g["team"],
+                         inj_team_qb_out=sum(v for k, v in po.items() if roles[k] == "QB"),
+                         inj_team_skill_out=sum(v for k, v in po.items() if roles[k] in SKILL_ROLES),
+                         inj_team_ol_out=sum(v for k, v in po.items() if roles[k] == "OL")))
+    return prow, trow
+
+
+def _assemble(prow, trow) -> dict:
+    players = pl.DataFrame(prow).drop("role").unique(["player_id", "game_id"], keep="first")
+    return {"players": players, "teams": pl.DataFrame(trow)}
+
+
 def build_injury_features(data, raw_db=config.RAW_DUCKDB_PATH, max_season=None) -> dict:
     """{'players': DataFrame, 'teams': DataFrame} for every team-game of `data` (a backtest.BacktestData)."""
     cap = config.cap_season(max_season)
     pw = ij.build_player_weeks(raw_db, cap)
     frame = ij.build_role_frame(raw_db, cap)
-    status_fn = ij.make_status_lookup(ij.load_injury_rows(raw_db, cap))
-    ros = ij.load_roster_status(raw_db, cap)
-    blocked = {k[:2]: set(g["gsis_id"].to_list()) for k, g in
-               ros.filter(pl.col("roster_status").is_in(list(ij.BLOCKED_ROSTER_STATUSES))).partition_by("season", "week", as_dict=True).items()}
-    groups = dict(pw.sort("gameday").group_by("gsis_id", maintain_order=True).agg(pl.col("group").last()).iter_rows())
-    by_team = {k[0]: g for k, g in frame.partition_by("team", as_dict=True).items()}
+    lookups = _prepare(pw, frame, ij.load_injury_rows(raw_db, cap), ij.load_roster_status(raw_db, cap))
     prow, trow = [], []
     for season, week, cutoff in data.weeks:
-        model, shifts, exit_model = ij.fit_status_model(pw, cutoff), ij.fit_shifts(frame, cutoff), ij.fit_exit_model(pw, cutoff)
-        for g in data.team_log.filter((pl.col("season") == season) & (pl.col("week") == week)).iter_rows(named=True):
-            out = ij.game_expected_shares(by_team[g["team"]], shifts, model, None, None, g["game_id"], g["team"], season, week, g["gameday"],
-                                          ij.main_run_as_of(g["gameday"]), cutoff, exit_model=exit_model, status_fn=status_fn,
-                                          blocked_ids=blocked.get((season, week), set()), player_groups=groups, with_eff=False)
-            listed = out.filter(pl.col("player_id") != "rest")
-            for r in listed.iter_rows(named=True):
-                prow.append(dict(player_id=r["player_id"], game_id=g["game_id"], inj_exp_snap_share=r["exp_snap_share"], inj_p_out=r["p_out"],
-                                 inj_p_exit=r["p_exit"], inj_exp_carry_share=r["exp_carry"], inj_exp_target_share=r["exp_target"],
-                                 inj_exp_dropback_share=r["exp_dropback"], inj_exp_snap=r["exp_snap"],
-                                 inj_d_carry=r["exp_carry"] - r["base_carry"], inj_d_target=r["exp_target"] - r["base_target"],
-                                 inj_d_dropback=r["exp_dropback"] - r["base_dropback"], role=r["role"]))
-            roles = dict(zip(listed["player_id"], listed["role"]))
-            po = dict(zip(listed["player_id"], listed["p_out"]))
-            trow.append(dict(game_id=g["game_id"], team=g["team"],
-                             inj_team_qb_out=sum(v for k, v in po.items() if roles[k] == "QB"),
-                             inj_team_skill_out=sum(v for k, v in po.items() if roles[k] in SKILL_ROLES),
-                             inj_team_ol_out=sum(v for k, v in po.items() if roles[k] == "OL")))
-    players = pl.DataFrame(prow).drop("role").unique(["player_id", "game_id"], keep="first")
-    return {"players": players, "teams": pl.DataFrame(trow)}
+        trio = (ij.fit_status_model(pw, cutoff), ij.fit_shifts(frame, cutoff), ij.fit_exit_model(pw, cutoff))
+        games = data.team_log.filter((pl.col("season") == season) & (pl.col("week") == week))
+        p, t = _week_rows(trio, lookups, games, season, week, cutoff, ij.main_run_as_of)
+        prow += p
+        trow += t
+    return _assemble(prow, trow)
+
+
+def build_live_injury_features(pw, frame, injuries, ros, games: pl.DataFrame, season: int, week: int, cutoff, fit_cutoff, now) -> dict:
+    """Injury features of the games about to be played (`games`: game_id, team, gameday), from frames that already hold the target rows (live/history.py).
+
+    The status, shift and early-exit models are fit on games before `fit_cutoff` (2020-2024 rows only, plan P5.4); the team players, baselines and statuses come from the
+    history before `cutoff` and the injury reports posted by min(now, the main run of the game's day)."""
+    trio = (ij.fit_status_model(pw, fit_cutoff), ij.fit_shifts(frame, fit_cutoff), ij.fit_exit_model(pw, fit_cutoff))
+    clock = lambda gameday: min(ij._utc(now), ij.main_run_as_of(gameday))
+    p, t = _week_rows(trio, _prepare(pw, frame, injuries, ros), games, season, week, cutoff, clock)
+    return _assemble(p, t)
 
 
 def attach(tables, feats: dict, opponents: pl.DataFrame):
