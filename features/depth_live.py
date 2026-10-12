@@ -50,3 +50,11 @@ def chart_as_of(frame: pl.DataFrame, cutoff: str, week: int) -> pl.DataFrame:
     return (d.select(season=pl.col("chart_season"), week=pl.lit(week, dtype=pl.Int32), team="team", gsis_id="gsis_id",
                      position=pl.col("pos_abb").replace_strict(LEGACY_POSITION), depth_team=pl.col("pos_rank").cast(pl.String), formation=pl.lit("Offense"), dt="dt")
             .unique().sort("team", "position", "depth_team", "gsis_id"))
+
+
+def read_asof_charts(snapshot_dir) -> pl.DataFrame:
+    """The depth charts of one records/asof/<stamp>/ snapshot: the ONLY way feature code may read that file (it also holds charts of the 2025 holdout
+    season, January-February 2026; live_charts drops them). Raises HoldoutError if the snapshot holds nothing from a live season."""
+    from pathlib import Path
+    path = Path(snapshot_dir) / "depth_charts.parquet"
+    return live_charts(pl.read_parquet(path))

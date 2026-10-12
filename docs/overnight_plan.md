@@ -439,8 +439,10 @@ game as head coach was used. The "none / not a caller" verdicts of the other 26 
 - **A guard bug found by this work, fixed.** ingest/save_asof.py kept charts by the YEAR of `dt` >= 2026, which includes January and February 2026
   (the 2025 season, the holdout). Now it uses the season rule above (test-first). The snapshot already committed, records/asof/2026-10-07T00/depth_charts.parquet,
   holds 810,358 rows, of which 158,515 are January-February 2026 (2025-season) charts. No code reads that file's rows before March 2026 (chart_as_of and
-  live_charts drop them); they are the same rows the raw database already holds. They have not been deleted from the file, because a snapshot is never rewritten;
-  say if you want the file regenerated without them.
+  live_charts drop them); they are the same rows the raw database already holds. They have not been deleted from the file, because a snapshot is never rewritten
+  (decided 2026-10-12: leave it as is). **Rule: that file, and any later asof depth_charts.parquet, is read only through features.depth_live
+  (`read_asof_charts`, which drops the 2025-season rows).** Guard: tests/test_depth_live.py fails if any Python file outside ingest/save_asof.py,
+  ingest/scheduled_snapshot.py and features/depth_live.py mentions the asof directory (mutation-checked with a module that reads the file directly).
 
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is

@@ -65,3 +65,27 @@ def test_a_frame_of_nothing_but_holdout_charts_is_refused_and_old_layout_rows_ar
         DL.live_charts(only_holdout)
     old = _frame().head(3).with_columns(season=pl.lit(2024, dtype=pl.Int32), week=pl.lit(1, dtype=pl.Int32))             # a Phase 3 row (season set) is not this module's input
     assert DL.live_charts(pl.concat([old, _frame().filter(pl.col("gsis_id") == "bq1")])).height == 1
+
+
+def test_the_asof_snapshot_is_read_only_through_depth_live(tmp_path):
+    d = tmp_path / "2026-10-07T00"
+    d.mkdir()
+    _frame().write_parquet(d / "depth_charts.parquet")
+    out = DL.read_asof_charts(d)
+    assert not {"old_playoff_qb", "holdout_qb"} & set(out["gsis_id"].to_list()) and out["chart_season"].min() == 2026         # the Jan-Feb 2026 rows of the real file never come back
+
+
+def test_no_code_outside_the_ingest_savers_and_depth_live_touches_the_asof_snapshots():
+    """records/asof/<stamp>/depth_charts.parquet holds 2025-season rows (plan, 'Phase 5 blockers'): feature, model and eval code must not open it."""
+    from pathlib import Path
+    root = Path(config.ROOT)
+    allowed = {root / "ingest" / "save_asof.py", root / "ingest" / "scheduled_snapshot.py", root / "features" / "depth_live.py"}
+    bad = []
+    for path in root.rglob("*.py"):
+        rel = path.relative_to(root)
+        if rel.parts[0] in ("tests", ".git", "data") or path in allowed:
+            continue
+        text = path.read_text()
+        if "records/asof" in text or 'records" / "asof"' in text or "ASOF_DIR" in text or "save_asof" in text or "asof/" in text:
+            bad.append(str(rel))
+    assert not bad, f"read the asof snapshots only through features.depth_live: {bad}"
