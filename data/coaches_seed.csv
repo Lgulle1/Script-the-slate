@@ -1,0 +1,129 @@
+team,role,name,start_year_with_team,prior_stops,source_url,confidence
+Arizona Cardinals,head_coach,Mike LaFleur,2026,Rams OC 2023-25 (non-playcaller); Jets OC/playcaller 2021-22,https://abc7news.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,high
+Arizona Cardinals,offensive_coordinator,Nathaniel Hackett,2026,Packers OC 2019-21; Broncos HC 2022; Packers defensive analyst 2025 (other stops/years not confirmed),https://arizonasports.com/nfl/arizona-cardinals/coaching-staff-3,high
+Arizona Cardinals,offensive_play_caller,Mike LaFleur (HC),2026,see head_coach row,https://abc7news.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,high
+Arizona Cardinals,defensive_coordinator,Nick Rallis,2023,Retained from Gannon staff; earlier stops not confirmed,https://arizonasports.com/nfl/arizona-cardinals/coaching-staff-3,high
+Atlanta Falcons,head_coach,Kevin Stefanski,2026,unknown (not in fetched sources),https://atlantafalcons.com/news/atlanta-falcons-2026-coaching-staff,high
+Atlanta Falcons,offensive_coordinator,Tommy Rees,2026,Notre Dame QB coach 2018-19; Notre Dame OC 2020-22; Alabama OC 2023; Browns pass game/TE 2024; Browns OC 2025,https://en.wikipedia.org/wiki/Tommy_Rees_(American_football),high
+Atlanta Falcons,offensive_play_caller,Tommy Rees (OC),2026,Officially designated play caller per Falcons.com announcement; called plays at Notre Dame/Alabama and Browns (from Week 10 2025),https://www.atlantafalcons.com/news/tommy-rees-offensive-play-caller-kevin-stefanski,high
+Atlanta Falcons,defensive_coordinator,Jeff Ulbrich,2025,unknown (retained from 2025 staff; prior stops not fetched),https://atlantafalcons.com/news/atlanta-falcons-2026-coaching-staff,medium
+Baltimore Ravens,head_coach,Jesse Minter,2026,Chargers DC 2024-25; earlier unknown,https://www.baltimoreravens.com/news/ravens-announce-2026-coaching-staff,high
+Baltimore Ravens,offensive_coordinator,Declan Doyle,2026,Iowa student asst 2016-18; Saints off asst 2019-22; Broncos TE 2023-24; Bears OC 2025,https://en.wikipedia.org/wiki/Declan_Doyle,high
+Baltimore Ravens,offensive_play_caller,Declan Doyle (OC),2026,first-time playcaller,https://abc7news.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,high
+Baltimore Ravens,defensive_coordinator,Anthony Weaver,2026,Dolphins DC 2024-25; Ravens 2021-23; Texans 2016-20 (DC final yr); Browns 2014-15; Bills 2013; Jets 2012,https://www.baltimoreravens.com/news/ravens-announce-2026-coaching-staff,high
+Buffalo Bills,head_coach,Joe Brady,2026,Bills OC (promoted Jan 2026; playcaller since Nov 2023); earlier unknown,https://en.wikipedia.org/wiki/2026_Buffalo_Bills_season,high
+Buffalo Bills,offensive_coordinator,Pete Carmichael Jr.,2026,Saints OC (years not confirmed); Broncos senior assistant ~2 yrs (years not confirmed),https://en.wikipedia.org/wiki/2026_Buffalo_Bills_season,medium
+Buffalo Bills,offensive_play_caller,Joe Brady (HC),2023 (playcaller),Bills OC; plays called since Nov 2023,https://abc7news.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,high
+Buffalo Bills,defensive_coordinator,Jim Leonhard,2026,Broncos DBs coach 2024; Broncos pass game coordinator 2025,https://en.wikipedia.org/wiki/2026_Buffalo_Bills_season,medium
+Carolina Panthers,head_coach,Dave Canales,2024,Called plays for Panthers 2024-25; Seahawks/Buccaneers stops years not confirmed,https://www.foxcarolina.com/2026/02/24/panthers-make-big-coaching-change-ahead-2026-season,high
+Carolina Panthers,offensive_coordinator,Brad Idzik,unknown,Seattle and Tampa Bay with Canales; years not confirmed,https://www.foxcarolina.com/2026/02/24/panthers-make-big-coaching-change-ahead-2026-season,medium
+Carolina Panthers,offensive_play_caller,Brad Idzik (OC),2026 (playcaller),first-time playcaller; leans on assoc HC Darrell Bevell,https://abc7news.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,high
+Carolina Panthers,defensive_coordinator,Ejiro Evero,2024,Broncos DC (years not confirmed); confirmed returning for 2026,https://www.panthers.com/news/with-all-10-head-coaching-vacancies-filled-ejiro-evero-set-to-return-defensive-coordinator,high
+Chicago Bears,head_coach,Ben Johnson,2025,Lions OC 2022-24,https://abc7news.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,high
+Chicago Bears,offensive_coordinator,Press Taylor,unknown,Jaguars OC ~3 seasons; Bears passing game coordinator 2025 (sources conflict on current title),https://www.fantasyalarm.com/articles/nfl/fantasy-football-draft-guide/2026-nfc-north-fantasy-football-coaching-systems/191472,medium
+Chicago Bears,offensive_play_caller,Ben Johnson (HC),2025,Lions OC/playcaller 2022-24,https://abc7news.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,high
+Chicago Bears,defensive_coordinator,Dennis Allen,unknown,unknown; single source only,https://www.fantasyalarm.com/articles/nfl/fantasy-football-draft-guide/2026-nfc-north-fantasy-football-coaching-systems/191472,low
+Cincinnati Bengals,head_coach,Zac Taylor,2019,HC since 2019,https://abc7news.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,high
+Cincinnati Bengals,offensive_coordinator,Dan Pitcher,2026,Bengals OC 2026; confirmed via multiple July 2026 press sources,https://wtop.com/nfl/2026/07/bengals-oc-dan-pitcher-says-more-explosive-plays-and-fewer-turnovers-are-the-goal-in-2026/,high
+Cincinnati Bengals,offensive_play_caller,Zac Taylor (HC),2019,HC and playcaller all 8 seasons,https://abc7news.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,high
+Cincinnati Bengals,defensive_coordinator,Al Golden,2025,Bengals LB coach 2021; Notre Dame DC through 2024,https://www.fox19.com/2026/09/09/reintroduction-al-golden/,high
+Cleveland Browns,head_coach,Todd Monken,2026,Ravens OC 2023-25; Georgia OC 2020-22; Buccaneers OC 2016-18,https://rotowire.com/football/article/afc-north-preview-2026-fantasy-impact-of-coaching-and-personnel-changes-123705,high
+Cleveland Browns,offensive_coordinator,Travis Switzer,2026,Ravens run game coordinator (years not confirmed),https://www.nfl.com/news/2026-nfl-draft-expectations-for-7-teams-with-new-coaching-staffs,medium
+Cleveland Browns,offensive_play_caller,Todd Monken (HC),2026,Playcaller Ravens/Georgia/Tampa,https://abc7news.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,high
+Cleveland Browns,defensive_coordinator,Mike Rutenberg,2026,Falcons defensive pass game coordinator (NFL.com); CBS says Jets assistant 2021-24 (sources differ),https://www.nfl.com/news/2026-nfl-draft-expectations-for-7-teams-with-new-coaching-staffs,medium
+Dallas Cowboys,head_coach,Brian Schottenheimer,2025 (with team since 2022),Seahawks OC 2018-20; Jaguars passing game coord 2021 (called plays last 4 games); Cowboys consultant 2022; Cowboys OC 2023-24; Cowboys HC 2025-,https://en.wikipedia.org/wiki/Brian_Schottenheimer,high
+Dallas Cowboys,offensive_coordinator,Klayton Adams,2025,Colorado co-OC/OL 2018; Colts asst OL 2019-20; Colts TE 2021-22; Cardinals OL 2023-24; Cowboys OC 2025-,https://en.wikipedia.org/wiki/Klayton_Adams,high
+Dallas Cowboys,offensive_play_caller,Brian Schottenheimer,2025,same as head coach row,https://www.dallascowboys.com/news/klayton-adams-to-join-cowboys-as-offensive-coordinator-under-brian-schottenheimer,high
+Dallas Cowboys,defensive_coordinator,Christian Parker,2026,Texas A&M def analyst 2018; Packers def QC 2019-20; Broncos DBs 2021-23; Eagles pass game coord/DBs 2024-25; Cowboys DC 2026-,https://en.wikipedia.org/wiki/Christian_Parker_(American_football),high
+Denver Broncos,head_coach,Sean Payton,2023,Saints HC 2018-21; Broncos HC 2023- (2022 media/out of coaching - not source-confirmed),https://en.wikipedia.org/wiki/Sean_Payton,high
+Denver Broncos,offensive_coordinator,Davis Webb,2026 (with team since 2023),Broncos QB coach 2023-24; Broncos pass game coord/QB coach 2025; Broncos OC 2026-,https://en.wikipedia.org/wiki/Davis_Webb,high
+Denver Broncos,offensive_play_caller,Davis Webb,2026,same as OC row; Payton delegated play calling to Webb (first time in his HC career),https://www.denverbroncos.com/news/i-wouldn-t-do-it-if-i-didn-t-think-it-was-going-to-help-our-team-win-hc-sean-payton-announces-oc-davis-webb-to-call-plays-for-broncos-offense,high
+Denver Broncos,defensive_coordinator,Vance Joseph,2023,Cardinals DC 2019-22; Broncos DC 2023-,https://en.wikipedia.org/wiki/Vance_Joseph,high
+Detroit Lions,head_coach,Dan Campbell,2021,Saints asst HC/TE 2016-20; Lions HC 2021-,https://en.wikipedia.org/wiki/Dan_Campbell,high
+Detroit Lions,offensive_coordinator,Drew Petzing,2026,Vikings asst QB 2018 & WR 2019; Browns TE 2020-21 & QB 2022; Cardinals OC 2023-25; Lions OC 2026-,https://en.wikipedia.org/wiki/Drew_Petzing,high
+Detroit Lions,offensive_play_caller,Drew Petzing,2026,same as OC row; Cardinals play caller ~3 seasons,https://fantasy-api.cbssports.com/fantasy/football/news/lions-play-caller-drew-petzing-fantasy-football-outlook-2026/,medium
+Detroit Lions,defensive_coordinator,Kelvin Sheppard,2025 (with team since 2021),LSU dir player development 2020; Lions OLB 2021; Lions LB 2022-24; Lions DC 2025-,https://en.wikipedia.org/wiki/Kelvin_Sheppard,high
+Green Bay Packers,head_coach,Matt LaFleur,2019,Titans OC 2018 (play caller); Packers HC 2019-,https://en.wikipedia.org/wiki/Matt_LaFleur,high
+Green Bay Packers,offensive_coordinator,Adam Stenavich,2022 as OC (with team since 2019),49ers asst OL 2018; Packers OL 2019-20; Packers OL/run game coord 2021; Packers OC 2022-,https://en.wikipedia.org/wiki/Adam_Stenavich,high
+Green Bay Packers,offensive_play_caller,Matt LaFleur (HC),2019,HC calls plays himself; Stenavich is OC but LaFleur is play caller per multiple 2026 sources,https://heavy.com/sports/nfl/green-bay-packers/packers-matt-lafleur-nfl-play-caller-ranking/,high
+Green Bay Packers,defensive_coordinator,Jonathan Gannon,2026,Colts DBs 2018-20; Eagles DC 2021-22; Cardinals HC 2023-25 (fired Jan 2026); Packers DC 2026-,https://en.wikipedia.org/wiki/Jonathan_Gannon,high
+Houston Texans,head_coach,DeMeco Ryans,2023,49ers ILB 2018-20; 49ers DC 2021-22; Texans HC 2023-,https://en.wikipedia.org/wiki/DeMeco_Ryans,high
+Houston Texans,offensive_coordinator,Nick Caley,2025,Patriots TE/FB 2018-22; Rams TE 2023 & TE/pass game coord 2024; Texans OC 2025-,https://en.wikipedia.org/wiki/Nick_Caley,high
+Houston Texans,offensive_play_caller,Nick Caley,2025,same as OC row,https://www.fantasyalarm.com/articles/nfl/fantasy-football-draft-guide/2026-afc-south-fantasy-football-coaching-systems/191460,medium
+Houston Texans,defensive_coordinator,Matt Burke,2023,Dolphins DC 2018; Eagles def special asst 2019 & run game coord/DL 2020; Jets game mgmt 2021; Cardinals DL 2022; Texans DC 2023-,https://en.wikipedia.org/wiki/Matt_Burke_(American_football),high
+Indianapolis Colts,head_coach,Shane Steichen,2023,Chargers QB coach/interim OC 2019 & OC 2020; Eagles OC 2021-22; Colts HC 2023-,https://en.wikipedia.org/wiki/Shane_Steichen,high
+Indianapolis Colts,offensive_coordinator,Jim Bob Cooter,2023,Lions OC 2016-18; Jets RB 2019-20; Eagles offensive consultant 2021; Jaguars pass game coord 2022; Colts OC 2023-,https://www.nationalfootballpost.com/report-colts-to-hire-jim-bob-cooter-as-oc,medium
+Indianapolis Colts,offensive_play_caller,Shane Steichen,2023,same as head coach row,https://1075thefan.com/539352/shane-steichen-will-continue-to-call-colts-play/,medium
+Indianapolis Colts,defensive_coordinator,Lou Anarumo,2025,Giants DBs 2018; Bengals DC 2019-24; Colts DC 2025-,https://en.wikipedia.org/wiki/Lou_Anarumo,high
+Jacksonville Jaguars,head_coach,Liam Coen,2025,Rams asst WR 2018-19 & asst QB 2020; Kentucky OC 2021; Rams OC 2022; Kentucky OC 2023; Buccaneers OC 2024; Jaguars HC 2025-,https://en.wikipedia.org/wiki/Liam_Coen,high
+Jacksonville Jaguars,offensive_coordinator,Grant Udinski,2025,Baylor GA 2019; Panthers asst 2020-21; Vikings asst to HC 2022; Vikings asst QB 2023; Vikings asst OC/asst QB 2024; Jaguars OC 2025-,https://en.wikipedia.org/wiki/Grant_Udinski,high
+Jacksonville Jaguars,offensive_play_caller,Liam Coen,2025,same as head coach row (Udinski calls plays in preseason only),https://roundtable.io/sports/nfl/jaguars/news/jaguars-offensive-coordinator-to-call-plays-during-preseason,high
+Jacksonville Jaguars,defensive_coordinator,Anthony Campanile,2025,Boston College co-DC/DBs 2018; Michigan LB 2019; Dolphins LB 2020-23; Packers LB/run game coord 2024; Jaguars DC 2025-,https://en.wikipedia.org/wiki/Anthony_Campanile,high
+Kansas City Chiefs,head_coach,Andy Reid,2013,Chiefs HC 2018-present (earlier Eagles 1999-2012),https://en.wikipedia.org/wiki/Andy_Reid,high
+Kansas City Chiefs,offensive_coordinator,Eric Bieniemy,2026 (previously with team 2018-22),Chiefs OC 2018-22; Commanders asst HC/OC 2023; UCLA OC 2024; Bears RB coach 2025; Chiefs OC 2026-,https://en.wikipedia.org/wiki/Eric_Bieniemy,high
+Kansas City Chiefs,offensive_play_caller,Andy Reid,2013,same as head coach row; Reid retains primary play calling in 2026,https://atozsports.com/nfl/kansas-city-chiefs-news/chiefs-andy-reid-confirms-suspicions-about-whether-new-offensive-coordinator-eric-bieniemy-will-call-plays-in-2026/,high
+Kansas City Chiefs,defensive_coordinator,Steve Spagnuolo,2019,Chiefs DC 2019-present (2018 no position listed); 2026 status not explicitly confirmed by fetched source,https://en.wikipedia.org/wiki/Steve_Spagnuolo,medium
+Las Vegas Raiders,head_coach,Klint Kubiak,2026,MIN QB coach 2019-20; MIN OC 2021; DEN pass game coord/QB 2022 (called plays from Nov); SF pass game coord 2023; NO OC 2024; SEA OC 2025,https://en.wikipedia.org/wiki/Klint_Kubiak,high
+Las Vegas Raiders,offensive_coordinator,Andrew Janocko,2026,MIN co-OL/asst OL/WR 2018-20; MIN QB coach 2021; CHI QB coach 2022-23; NO QB coach 2024; SEA QB coach 2025,https://en.wikipedia.org/wiki/Andrew_Janocko,high
+Las Vegas Raiders,offensive_play_caller,Klint Kubiak,2026,See head_coach row; called plays as DEN (late 2022) and SEA OC 2025,https://abc7chicago.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,medium
+Las Vegas Raiders,defensive_coordinator,Rob Leonard,2026,NYG asst LB 2018; MIA LB/asst DL/OLB 2019-21; BAL OLB 2022; LV DL coach 2023-24; LV DL coach/run game coord 2025,https://en.wikipedia.org/wiki/Rob_Leonard,high
+Los Angeles Chargers,head_coach,Jim Harbaugh,2024,Michigan HC 2018-2023,https://en.wikipedia.org/wiki/Jim_Harbaugh,high
+Los Angeles Chargers,offensive_coordinator,Mike McDaniel,2026,SF run game coord 2018-20; SF OC 2021; MIA HC 2022-25,https://en.wikipedia.org/wiki/Mike_McDaniel,high
+Los Angeles Chargers,offensive_play_caller,Mike McDaniel,2026,See OC row; MIA HC who called plays,https://abc7chicago.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,medium
+Los Angeles Chargers,defensive_coordinator,Chris O'Leary,2026,Notre Dame defensive analyst to DB/safeties coach (6 seasons); LAC safeties coach 2024; Western Michigan DC 2025,https://www.nationalfootballpost.com/chargers-hire-western-michigans-chris-oleary-as-dc,high
+Los Angeles Rams,head_coach,Sean McVay,2017,LAR HC 2017-present (no other stops in window),https://en.wikipedia.org/wiki/Sean_McVay,high
+Los Angeles Rams,offensive_coordinator,Nathan Scheelhaase,2026,Iowa State RB 2018/WR 2019-20/run game coord 2021-22/OC-QB 2023; LAR offensive asst 2024; LAR pass game coord 2025,https://en.wikipedia.org/wiki/Nathan_Scheelhaase,high
+Los Angeles Rams,offensive_play_caller,Sean McVay,2017,See head_coach row; has called plays since 2018,https://en.wikipedia.org/wiki/Sean_McVay,high
+Los Angeles Rams,defensive_coordinator,Chris Shula,2024,LAR asst LB 2017-18; OLB 2019-20; LB 2021; pass game coord/DB 2022; pass rush coord/LB 2023,https://en.wikipedia.org/wiki/Chris_Shula,high
+Miami Dolphins,head_coach,Jeff Hafley,2026,Ohio State co-DC/DB 2019; Boston College HC 2020-23; GB DC 2024-25,https://en.wikipedia.org/wiki/Jeff_Hafley,high
+Miami Dolphins,offensive_coordinator,Bobby Slowik,2026,SF offensive asst 2019-20; SF pass game specialist 2021; SF pass game coord 2022; HOU OC 2023-24; MIA senior pass game coord 2025,https://en.wikipedia.org/wiki/Bobby_Slowik,high
+Miami Dolphins,offensive_play_caller,Bobby Slowik,2026,See OC row; called plays as HOU OC 2023-24,https://abc7chicago.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,medium
+Miami Dolphins,defensive_coordinator,Sean Duggan,2026,UMass LB 2018; Ohio State GA 2019; Boston College LB 2020-22 and co-DC 2023; GB defensive asst 2024; GB LB 2025,https://en.wikipedia.org/wiki/Sean_Duggan_(American_football),high
+Minnesota Vikings,head_coach,Kevin O'Connell,2022,WAS QB coach/PGC 2018; WAS OC 2019; LAR OC 2020-21,https://en.wikipedia.org/wiki/Kevin_O%27Connell_(American_football),high
+Minnesota Vikings,offensive_coordinator,Wes Phillips,2022,WAS TE coach 2018; LAR TE coach 2019-20; LAR TE/pass game coord 2021,https://en.wikipedia.org/wiki/Wes_Phillips,high
+Minnesota Vikings,offensive_play_caller,Kevin O'Connell,2022,See head_coach row; Phillips does not call plays,https://atozsports.com/nfl/minnesota-vikings-news/kevin-oconnells-new-offensive-coordinator-mike-mcdaniel-drew-petzing-grant-udinski-davis-webb/,high
+Minnesota Vikings,defensive_coordinator,Brian Flores,2023,MIA HC 2019-21; PIT senior def asst/LB 2022,https://en.wikipedia.org/wiki/Brian_Flores,high
+New England Patriots,head_coach,Mike Vrabel,2025,TEN HC 2018-23; CLE consultant 2024,https://en.wikipedia.org/wiki/Mike_Vrabel,high
+New England Patriots,offensive_coordinator,Josh McDaniels,2025,NE OC/QB 2018-21; LV HC 2022-23; 2024 not confirmed,https://en.wikipedia.org/wiki/Josh_McDaniels,high
+New England Patriots,offensive_play_caller,Josh McDaniels,2025,See OC row,https://abc7chicago.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,medium
+New England Patriots,defensive_coordinator,Zak Kuhr,2026,Texas asst 2019; TEN DQC 2020 and ILB asst 2021-23; NYG def asst 2024; NE ILB coach/def play caller 2025,https://en.wikipedia.org/wiki/Zak_Kuhr,high
+New Orleans Saints,head_coach,Kellen Moore,2025,DAL QB coach 2018; DAL OC 2019-22; LAC OC 2023; PHI OC 2024,https://en.wikipedia.org/wiki/Kellen_Moore,high
+New Orleans Saints,offensive_coordinator,Doug Nussmeier,2025,DAL TE coach 2018-19; DAL QB coach 2020-22; LAC QB coach 2023; PHI QB coach 2024,https://en.wikipedia.org/wiki/Doug_Nussmeier,high
+New Orleans Saints,offensive_play_caller,Kellen Moore,2025,See head_coach row; called plays as DAL/LAC/PHI OC,https://abc7chicago.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,medium
+New Orleans Saints,defensive_coordinator,Brandon Staley,2025,CHI OLB 2018; DEN OLB 2019; LAR DC 2020; LAC HC 2021-23; SF asst HC/defense 2024,https://en.wikipedia.org/wiki/Brandon_Staley,high
+New York Giants,head_coach,John Harbaugh,2026,BAL HC 2018-2025,https://en.wikipedia.org/wiki/John_Harbaugh,high
+New York Giants,offensive_coordinator,Matt Nagy,2026,CHI HC 2018-21; KC senior asst/QB 2022; KC OC 2023-25,https://en.wikipedia.org/wiki/Matt_Nagy,high
+New York Giants,offensive_play_caller,Matt Nagy,2026,See OC row; called plays at KC,https://abc7chicago.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,medium
+New York Giants,defensive_coordinator,Dennard Wilson,2026,NYJ DB/pass game coord 2018-20; PHI DB 2021 and PGC/DB 2022; BAL DB 2023; TEN DC 2024-25,https://en.wikipedia.org/wiki/Dennard_Wilson,high
+New York Jets,head_coach,Aaron Glenn,unknown,Detroit Lions DC 2021-24,https://jetsxfactor.com/2026/02/24/jets-aaron-glenn-tout-super-power-play-caller/,high
+New York Jets,offensive_coordinator,Frank Reich,2026,Indianapolis Colts HC 2018-22; Carolina Panthers HC (partial season; year per source unclear); Stanford HC 2025 per one source; years unverified,https://jetsxfactor.com/2026/02/04/jets-hire-frank-reich-report/,medium
+New York Jets,offensive_play_caller,Frank Reich,2026,same as OC (details unverified),https://6abc.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,medium
+New York Jets,defensive_coordinator,Brian Duker,2026,Miami Dolphins secondary coach/pass game coordinator (years unknown); Glenn calls defensive plays,https://jetsxfactor.com/2026/02/24/jets-aaron-glenn-tout-super-power-play-caller/,medium
+Philadelphia Eagles,head_coach,Nick Sirianni,unknown,unknown,https://www.inquirer.com/eagles/eagles-coaching-staff-2026-20260311.html,medium
+Philadelphia Eagles,offensive_coordinator,Sean Mannion,2026,Green Bay Packers quarterbacks coach (about 2 yrs; exact years unknown); retired QB,https://www.bleedinggreennation.com/news/171965/eagles-officially-confirm-coaching-staff-changes-finally,medium
+Philadelphia Eagles,offensive_play_caller,Sean Mannion,2026,same as OC,https://6abc.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,medium
+Philadelphia Eagles,defensive_coordinator,Vic Fangio,unknown,unknown,https://www.inquirer.com/eagles/eagles-coaching-staff-2026-20260311.html,medium
+Pittsburgh Steelers,head_coach,Mike McCarthy,2026,unknown,https://www.steelers.com/news/steelers-complete-2026-coaching-staff,medium
+Pittsburgh Steelers,offensive_coordinator,Brian Angelichio,2026,Minnesota Vikings pass game coord/TEs 2022-25; Carolina Panthers 2020-21; Washington 2019; Green Bay Packers 2016-18,https://www.steelers.com/news/steelers-complete-2026-coaching-staff,high
+Pittsburgh Steelers,offensive_play_caller,Mike McCarthy,2026,unknown,https://steelersnow.com/mike-mccarthy-outlines-steelers-oc-brian-angelichios-role/,medium
+Pittsburgh Steelers,defensive_coordinator,Patrick Graham,2026,Las Vegas Raiders DC 2022-25; New York Giants DC 2020-21; Miami Dolphins 2019; Green Bay Packers 2018,https://www.steelers.com/news/steelers-complete-2026-coaching-staff,high
+San Francisco 49ers,head_coach,Kyle Shanahan,unknown,unknown,https://6abc.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,medium
+San Francisco 49ers,offensive_coordinator,Klay Kubiak,2021 (OC since 2025),49ers: def QC 2021; asst QB 2022-23; passing game specialist 2024; OC 2025,https://abc7news.com/15955106,high
+San Francisco 49ers,offensive_play_caller,Kyle Shanahan (HC),2019,Shanahan is confirmed play caller for 2026; Kubiak (OC) defers play-calling to Shanahan,https://www.nbcsportsbayarea.com/nfl/san-francisco-49ers/kyle-shanahan-top-offensive-play-caller/1871644/,high
+San Francisco 49ers,defensive_coordinator,Raheem Morris,unknown,unknown,https://www.aol.com/articles/49ers-hiring-former-cowboys-dc-210928735.html,low
+Seattle Seahawks,head_coach,Mike Macdonald,2024,Baltimore Ravens DC (years unknown),https://www.seahawks.com/news/seattle-seahawks-finalize-2026-coaching-staff,medium
+Seattle Seahawks,offensive_coordinator,Brian Fleury,2026,San Francisco 49ers TEs coach (years unknown); NFL assistant since 2013; first OC job,https://wtop.com/nfl/2026/02/new-seahawks-offensive-coordinator-brian-fleury-eager-for-opportunity/,medium
+Seattle Seahawks,offensive_play_caller,Brian Fleury,2026,first NFL play-calling job; called defensive plays in college,https://www.seahawks.com/news/takeaways-from-seahawks-coordinators-brian-fleury-aden-durde-jay-harbaugh,medium
+Seattle Seahawks,defensive_coordinator,Aden Durde,unknown,unknown,https://www.seahawks.com/news/seattle-seahawks-finalize-2026-coaching-staff,medium
+Tampa Bay Buccaneers,head_coach,Todd Bowles,2022 (5th season in 2026),unknown,https://www.buccaneers.com/news/buccaneers-make-changes-2026-coaching-staff,medium
+Tampa Bay Buccaneers,offensive_coordinator,Zac Robinson,2026,Atlanta Falcons OC 2024-25; Los Angeles Rams 2019-23 (asst QB/WR to pass game coord/QB coach),https://www.buccaneers.com/news/zac-robinson-hired-bucs-offensive-coordinator,high
+Tampa Bay Buccaneers,offensive_play_caller,Zac Robinson,2026,same as OC,https://www.buccaneers.com/news/zac-robinson-hired-bucs-offensive-coordinator,high
+Tampa Bay Buccaneers,defensive_coordinator,Todd Bowles (HC doubles as DC/play caller),unknown,unknown,https://roundtable.io/sports/nfl/bucs/news/bowles-won-t-give-up-play-calling-for-buccaneers-defense,medium
+Tennessee Titans,head_coach,Robert Saleh,2026,San Francisco 49ers DC 2025; New York Jets HC 2021-24; 49ers DC 2017-20,https://www.profootballrumors.com/robert-saleh,high
+Tennessee Titans,offensive_coordinator,Brian Daboll,2026,New York Giants 2022-25 (listed as OC per source; role title unverified); earlier Bills/Eagles,https://www.tennesseetitans.com/news/titans-finalize-coaching-staff-under-robert-saleh,medium
+Tennessee Titans,offensive_play_caller,Brian Daboll,2026,same as OC,https://6abc.com/post/calls-plays-every-nfl-team-2026-what-know/19783946/,medium
+Tennessee Titans,defensive_coordinator,Gus Bradley,2026,unknown (San Francisco 49ers staff before Titans per Eberflus article; years unknown),https://www.tennesseetitans.com/news/titans-finalize-coaching-staff-under-robert-saleh,medium
+Washington Commanders,head_coach,Dan Quinn,unknown,unknown,https://www.profootballrumors.com/players/william-gay,medium
+Washington Commanders,offensive_coordinator,David Blough,2024 (OC since 2026),Commanders asst QBs coach 2024-25; retired QB 2023,https://www.commanders.com/news/washington-commanders-ian-rapoport-mike-florio-david-blough-daronte-jones,high
+Washington Commanders,offensive_play_caller,David Blough,2024 (OC since 2026),same as OC; never called plays professionally before,https://www.commanders.com/news/washington-commanders-ian-rapoport-mike-florio-david-blough-daronte-jones,high
+Washington Commanders,defensive_coordinator,Daronte Jones,2026,Minnesota Vikings DB/pass game coord 2022-25; LSU DC 2021; Cincinnati Bengals CB 2020-21; Miami Dolphins asst DB 2018-19,https://www.commanders.com/news/daronte-jones-commanders-defensive-coordinator-things-to-know,high
