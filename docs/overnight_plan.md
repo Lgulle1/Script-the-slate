@@ -550,6 +550,13 @@ and at least three to four weeks of graded live predictions exist before Phase 6
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-12, recording routine: the first design FAILED its push test and was replaced. A routine that starts a fresh session each time (trig_01AmDK2LY8cnxUoGCvKqZXBu) gets no repository in its
+  session sources, so the git proxy refuses the push with a 403 ("not in this session's authorized repository set"); the commits would have been lost with the container. Test fires #1 and #2
+  looked fine only because they recorded nothing to push. Fix: a dedicated long-lived session created WITH the repository as its source and data-snapshots as its outcome branch
+  (session_01HEYLULjTuAturFyEuhYJWC, permission mode default with Bash/Read/Write/Edit pre-approved: it ran without stopping for approval), and a routine that messages that session
+  (trig_01QnyyzrPT7HbYGzpkut8cf9, "RECORD", 7 0,6,12,18 UTC on Sun, Mon, Wed-Sat). The old trigger is disabled. **Push path proven once:** the session recorded 2 forecast rows and
+  pushed commit 5187a6d822af697bfcdb51d58c2a6a7919050156 to origin/data-snapshots at 2026-10-12 15:03 UTC. The first scheduled run is 18:07 UTC today (checked 18:30 UTC).
+  A weekly-prediction session is built the same way (session_01EMRZGLMaRbQhgNWY6yd5Zo); its first message is a dry run.
 - 2026-10-12, Phase 5 layers wired and replayed (P5.7). Layers on/off come from layer_weights.csv (4a for rush_att, rush_yds, targets, rec, rec_yds; 4b for spread); each record carries its
   stack label ("phase3", "phase3+4a", "phase3+4b"); grading and summaries are per label. **Replay of the whole live path on 2024 week 10** (outcomes of the week removed from a working
   copy of the database, targets from the schedule and chart, features from history, models fit on rows before the cutoff): the Phase 3 markets, the 4a markets and the 4b spread equal
