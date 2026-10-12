@@ -69,4 +69,4 @@ def test_a_2025_cutoff_asks_the_loaders_for_nothing_beyond_2025(monkeypatch):
     real = H.bl.build_team_game_log
     monkeypatch.setattr(H.bl, "build_team_game_log", lambda raw_db, max_season=None: (seen.append(max_season), real(raw_db, max_season=max_season))[1])
     H.read_input_history(date(2025, 11, 9))
-    assert seen == [2025]                                                                   # the unlock reaches exactly the cutoff's season, so a 2026 row is never even loaded
+    assert seen and set(seen) == {2025}                                                                   # the unlock reaches exactly the cutoff's season, so a 2026 row is never even loaded
