@@ -407,6 +407,41 @@ and tested) and the work moves to 4d.
   second source calls him the play caller but only loosely (Tom Cable shared the offense).
 - **Not a stop:** Bevell's DET 2019-2020 (the hiring franchise, and already the head-coach stop).
 
+### Pre-hire audit of the play-calling stops (2026-10-12, asked by the project manager)
+Rule 1 is enforced in code (manual_stops raises if a stop's last game is not before the hire) and read by hand here: every row below uses facts
+about seasons that ended before the coach's first game as head coach; the sources and their publication dates (where the page shows one) are:
+| coach (hire) | first source, date | second source, date | after the hire? |
+|---|---|---|---|
+| Stefanski (CLE 2020) | vikings.com, 2019 | NFL.com, Dec 2018 | no |
+| Bevell (DET 2020, week 13) | NFL.com, Jan 2018 | MyNorthwest, Jan 2018 | no |
+| A. Smith (ATL 2021) | CBS, 2019 | SI / NBC Sports press release, Aug 2020 and Oct 2020 | no (Wikipedia, undated live page, is not relied on for a date) |
+| O'Connell (MIN 2022) | commanders.com, 12 Oct 2019 | commanders.com, Oct 2019 | no |
+| McDaniels (LV 2022) | Boston Globe, 18 Dec 2021 | CBS, Feb 2019 and Dec 2020 | no |
+| Hackett (DEN 2022) | jaguars.com, 2016 | abc7news, 2016; Fox Sports, Nov 2018 | no |
+| Daboll (NYG 2022) | Bills.com, 14 Aug 2018 | **Giants.com, 28 Jan 2022: after the hire was announced (4 Jan 2022) but before his first game; it is a summary of the same Bills years, read for the dates only** | second source only |
+| Steichen (IND 2023) | chargers.com, Oct 2019; CBS, Jun 2022 | NBC Sports Philadelphia, Jun 2022 | no |
+| Canales (CAR 2024) | tampabay28, Aug 2023 | SI, 23 Feb 2023 | no |
+What cannot be dated: Wikipedia pages (live, undated) were used as second sources only, for titles and years. No source published after a coach's first
+game as head coach was used. The "none / not a caller" verdicts of the other 26 coaches rest on the same kind of pages; a missing stop adds no information
+(null prior), so an error there can only leave a coach without a prior, never give him a wrong one.
+
+### 2025+ depth-chart loader: a Phase 5 blocker, fixed (2026-10-12)
+- **The problem.** nflverse's depth charts since the 2025 season have a different layout: a snapshot timestamp `dt`, no season or week, positions as
+  `pos_abb`. The raw table holds 1,169,694 such rows (season NULL). Every Phase 3-4 loader filters on season and week, so they all skip these rows:
+  harmless for the 2020-2024 backtest, but live predictions would see no depth chart.
+- **The fix, test-first** (tests/test_depth_live.py, 6 tests): features/depth_live.py `chart_as_of(frame, cutoff, week)` gives the newest offensive
+  chart per team at or before the cutoff in the old columns (season, week, team, gsis_id, position, depth_team, formation); a team with no chart yet has
+  no rows. A chart belongs to the season that starts in March, so January and February 2026 charts are the 2025 season. The holdout guard: a cutoff in
+  the 2025 season raises HoldoutError, and no 2025-season row is ever returned (tested with December and February charts). On the real table: the
+  2026-10-07 chart gives all 32 teams, 982 offensive rows, KC QB1 = 00-0033873.
+- **Not yet wired.** The Phase 5 live feature builder calls chart_as_of for each team's coming game (week from the schedule); the backtest loaders are
+  unchanged, so no historical result moves.
+- **A guard bug found by this work, fixed.** ingest/save_asof.py kept charts by the YEAR of `dt` >= 2026, which includes January and February 2026
+  (the 2025 season, the holdout). Now it uses the season rule above (test-first). The snapshot already committed, records/asof/2026-10-07T00/depth_charts.parquet,
+  holds 810,358 rows, of which 158,515 are January-February 2026 (2025-season) charts. No code reads that file's rows before March 2026 (chart_as_of and
+  live_charts drop them); they are the same rows the raw database already holds. They have not been deleted from the file, because a snapshot is never rewritten;
+  say if you want the file regenerated without them.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
@@ -444,6 +479,16 @@ and tested) and the work moves to 4d.
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-12, 4d.1 coaching prior, the fuller table (thin table plus the 10 hand-sourced play-calling stops of data/play_caller_stops.csv, confidence
+  high or medium, rule 5a). Two runs byte-identical (results sha256 4d6ef4d70b8ba999..., data fingerprint 80bf534e6b9d18dd); coach_ablation_results_eligibility_v2_fuller.parquet
+  and coach_stops_fuller.parquet (113 stops: 103 head-coach stops + 10 play-calling). Team-games with a prior: 270 (thin: 131); new coach without one:
+  395 (thin: 534); W1+W2 games 985, post-change 260. **No market clears: all 13 weight 0, flagged, markets kept.** Thin to fuller on W1+W2: no gain interval
+  excludes zero on the positive side in either run; EDGE in pass_att, pass_cmp, rush_att, rush_yds, targets, rec, rec_yds and moneyline (gains of
+  +0.006 pass attempts [-0.073, +0.076], +0.003 rush attempts [-0.019, +0.025], +0.0035 receiving yards [-0.028, +0.036]); pass_yds, qb_rush_att
+  (-0.049 [-0.092, -0.003]), qb_rush_yds, spread (-0.023 [-0.152, +0.108]) and total are NO. Spread, significantly worse in the thin run (-0.10 [-0.21, -0.01]),
+  is no longer significant (the shuffled control gives -0.10 in the fuller run too: it was the noise level, not the prior). The null control
+  gives gains of similar size to the real ones. Read as the plan says: inconclusive about play calling (only 9 of 36 missing coaches had a
+  play-calling stop to add: 27 of the 45 changes in 2020-2024 still have no prior), not a verdict on coaching. The coaching columns stay out of the V1 weights.
 - 2026-10-12, 4e weather ablation, run1 (observed weather degraded to forecast quality; gate as fixed in the plan). Two runs byte-identical (data
   fingerprint 80bf534e6b9d18dd); weather_ablation_results_eligibility_v2_run1.parquet. 1,343 backtest games, 446 indoor (neutral, flagged), 133 severe
   (outdoor, wind >= 15 mph or <= 32 F). **No market CLEARS under A1: all 13 weight 0, flagged, markets kept.** Under A1 on the severe rows pass_yds

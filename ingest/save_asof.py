@@ -15,6 +15,7 @@ from pathlib import Path
 import polars as pl
 
 import config
+from features.depth_live import dt_season
 
 ASOF_DIR = config.ROOT / "records" / "asof"
 TABLES = ("injuries", "rosters_weekly", "schedules", "depth_charts")
@@ -29,11 +30,11 @@ def is_asof_slot(now: datetime, tolerance_hours: float = 1.0) -> bool:
 
 
 def live_rows(frames: dict) -> dict:
-    """Each table limited to live-season rows: by season where the table has one, by the snapshot timestamp `dt` year for the new depth-chart layout."""
+    """Each table limited to live-season rows: by season where the table has one, by the season of the snapshot timestamp `dt` (the season starts in March, so January and February 2026 charts are the holdout season) for the new depth-chart layout."""
     out = {}
     for name, f in frames.items():
         if "dt" in f.columns:
-            f = f.filter(pl.col("dt").cast(pl.String).str.slice(0, 4).cast(pl.Int32, strict=False) >= LIVE_FIRST)
+            f = f.filter(dt_season(pl.col("dt")) >= LIVE_FIRST)
         elif "season" in f.columns:
             f = f.filter(pl.col("season") >= LIVE_FIRST)
         out[name] = f

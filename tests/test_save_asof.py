@@ -13,15 +13,15 @@ def _frames():
         "injuries": pl.DataFrame({"season": [2026, 2026, 2025], "week": [1, 2, 18], "gsis_id": ["a", "b", "c"]}),
         "rosters_weekly": pl.DataFrame({"season": [2026, 2025], "week": [1, 1], "gsis_id": ["a", "z"]}),
         "schedules": pl.DataFrame({"season": [2026, 2026, 2024], "game_id": ["g1", "g2", "g0"]}),
-        "depth_charts": pl.DataFrame({"season": [None, None, None], "dt": ["2026-10-07T06:02:29Z", "2025-12-30T06:00:00Z", "2026-01-02T00:00:00Z"],
-                                      "gsis_id": ["a", "b", "c"]}, schema_overrides={"season": pl.Int32}),
+        "depth_charts": pl.DataFrame({"season": [None, None, None, None], "dt": ["2026-10-07T06:02:29Z", "2025-12-30T06:00:00Z", "2026-01-02T00:00:00Z", "2026-03-05T00:00:00Z"],
+                                      "gsis_id": ["a", "b", "c", "d"]}, schema_overrides={"season": pl.Int32}),
     }
 
 
 def test_only_live_season_rows_are_kept_and_the_holdout_never_is():
     out = SA.live_rows(_frames())
     assert out["injuries"]["gsis_id"].to_list() == ["a", "b"] and out["rosters_weekly"]["gsis_id"].to_list() == ["a"] and out["schedules"]["game_id"].to_list() == ["g1", "g2"]
-    assert sorted(out["depth_charts"]["gsis_id"].to_list()) == ["a", "c"]                    # the 2025-dated depth chart row (holdout) is dropped
+    assert sorted(out["depth_charts"]["gsis_id"].to_list()) == ["a", "d"]                    # December and January / February charts are the 2025 season (holdout): dropped; March on is 2026
     for t, f in out.items():
         assert (f["season"].drop_nulls() > config.HOLDOUT_SEASON).all() if "season" in f.columns and t != "depth_charts" else True
 
