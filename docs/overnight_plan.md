@@ -549,6 +549,12 @@ and at least three to four weeks of graded live predictions exist before Phase 6
   data/processed/residual_screen_cells_lad_total_gain.parquet, kept and not used for any verdict.
 - **Limits, stated now.** Linear, one candidate at a time: an interaction or a non-linear effect is not tested; a candidate that fails here can still help inside a retrained tree model, and one
   that passes may not survive it. Also reported: the noise floor (what a perfect-mean Poisson outcome would miss by) beside the model's error for each volume market, so "how far from the best possible" is on the page.
+- **Residual screen result (2026-10-12, third run, amendments 1 and 2 applied; 74 cells tested, Bonferroni level 0.99932; 8 cells untested for coverage < 70%: separation and YAC-above-expectation (51%), referee plays / penalties on targets and rec_yds (69%)).**
+  1 CLEARS, 25 EDGE, 48 NO. The one CLEARS: X9 snap-share trend on rec_yds, gain 0.0236 yards per row (0.13% of the 17.8-yard mean miss), positive in all four fold seasons, interval [0.0069, 0.0425].
+  Statistically real, practically negligible; the same candidate is EDGE on targets (+0.0029, 0.17%) and rush_yds. No other candidate (rest, bye, divisional, prime time, week, referee, air-yards share, depth of target, luck vs expectation, carry-share trend,
+  neutral-script pass tendency, no-huddle, opponent pressure / man / blitz rate) cleared anywhere. Largest EDGE: opponent blitz rate on pass_yds (+0.126 yards, interval [-0.34, +0.37], 2,044 QB-games). Intercept-only (calibration) gains: rec_yds +0.083, pass_yds -0.26: nothing to recalibrate.
+  Reading: the Phase 3 stack is not missing a simple linear signal in this data; the remaining miss is mostly per-game variance. Weights unchanged (the screen sets none). Open, not tested: interactions and non-linear effects,
+  richer matchup data (receiver vs the specific defender, route-level), in-game events. X9 on rec_yds may enter a layer gate only if the project manager asks for one.
 
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
