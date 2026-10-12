@@ -37,11 +37,11 @@ def main(argv=None):
     now = fixed or datetime.now(timezone.utc)          # the clock is read AFTER the pull: rows are stamped pulled_at = the pull time, and a run only sees rows pulled by its clock
     if not a.no_sync:           # continue the published version numbers; a failed sync stops the run rather than restarting at version 1
         print("synced records:", publish.sync_records(config.ROOT, ["records/predictions", "records/lines"]))
-    before = set(a.store.glob("*")) if a.store.exists() else set()
+    before = set(a.store.rglob("*")) if a.store.exists() else set()
     out = weekly.run(now, store_dir=a.store, lines_path=a.lines)
-    print({k: v for k, v in out.items() if k not in ("manifest", "predictions")})
+    print({k: v for k, v in out.items() if k not in ("manifest", "predictions", "debug", "explanations", "margin_terms")})
     if a.push and out.get("status") == "ok":
-        new = sorted(set(a.store.glob("*")) - before) + [p for p in (a.store / "refusals.csv", a.lines) if p.exists()]
+        new = sorted(p for p in set(a.store.rglob("*")) - before if p.is_file()) + [p for p in (a.store / "refusals.csv", a.lines) if p.exists()]
         sha = publish.publish(config.ROOT, new, f"predictions {out['manifest']['run_id']}: {out['written']} written, {out['refused']} refused, {out['unchanged']} unchanged")
         print("published:", sha)
     return out

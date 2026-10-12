@@ -23,6 +23,7 @@ from eval import backtest as bt
 from features import volume_features as vf
 from features import injury_features as inf
 from live import derive as DV
+from live import explain as EX
 from live import history as H
 from live import layer_sim as LS
 from live import layers as LY
@@ -32,6 +33,7 @@ from live import store as ST
 from live import targets as TG
 from models import efficiency as ef
 
+EXPLAIN_DIR = "explain"             # attribution files live in a subdirectory: PredictionStore.load reads every *.parquet in the store root
 FIT_FLOOR = date(config.HOLDOUT_SEASON, 3, 1)       # models are fit on games before this date at most: 2020-2024 rows only (plan P5.4)
 
 
@@ -165,6 +167,8 @@ def run(now: datetime, raw_db=config.RAW_DUCKDB_PATH, store_dir=None, models: Tr
     elig_of = {(r["game_id"], r["player_id"]): r["elig"] for r in prows.filter(pl.col("elig") != "").iter_rows(named=True)}
     debug: dict = {}
     scored = {None: _score(models.base, vt, et, elig_of, games)}
+    explained = [EX.explain_stack(models.base, vt, et, elig_of, LY.stack_label(None))]
+    margin_terms = pl.DataFrame()
     if "4a_injuries" in active:
         future = TG.team_rows(sched, TG.schedule_frame(sched).filter((pl.col("season") == season) & (pl.col("week") > week))).select("season", "week", "team")
         inp = H.read_input_injury_inputs(cutoff, live_db, trows.select("season", "week", "team", "game_id", "gameday"), future_games=future)
@@ -175,6 +179,7 @@ def run(now: datetime, raw_db=config.RAW_DUCKDB_PATH, store_dir=None, models: Tr
         vt_i, et_i = inf.attach(vt, feats, opp), inf.attach(et, feats, opp)
         debug["injury"] = dict(feats=feats, vt=vt_i, et=et_i)
         scored["4a_injuries"] = _score(models.injury, vt_i, et_i, elig_of, games)
+        explained.append(EX.explain_stack(models.injury, vt_i, et_i, elig_of, LY.stack_label("4a_injuries")))
     if "4b_simulation" in active:
         floor_key = season * 100 + week if replay else min(season * 100 + week, config.HOLDOUT_SEASON * 100 + 1)       # scaling terms fit on 2020-2024 games only
         gsin = H.read_input_game_state(cutoff, live_db, fit_floor=replay.get("fit_cutoff") or min(cutoff, FIT_FLOOR))
@@ -183,6 +188,7 @@ def run(now: datetime, raw_db=config.RAW_DUCKDB_PATH, store_dir=None, models: Tr
         sp = LS.spread_rows(ge).join(hh.select("game_id", "input_hash"), on="game_id").with_columns(player_id=pl.lit(None, dtype=pl.String), market=pl.lit("spread"))
         scored["4b_simulation"] = sp.select("game_id", "player_id", "market", "mean", "input_hash")
         debug["sim"] = dict(expectations=ge)
+        margin_terms = LS.margin_terms_live(gsin.features, gsin.games, gids, season, week, floor_key).with_columns(stack=pl.lit(LY.stack_label("4b_simulation")))
     k = games.select("game_id", "kickoff_time")
     mv = version or model_version(layer_weights_csv)
     parts = []
@@ -195,6 +201,12 @@ def run(now: datetime, raw_db=config.RAW_DUCKDB_PATH, store_dir=None, models: Tr
     preds = pl.concat(parts).join(k, on="game_id").with_columns(model_version=pl.lit(mv), input_hash=pl.col("input_hash").fill_null("none"))
     rid = run_id or now.strftime("run_%Y%m%dT%H%M%SZ")
     res = ST.PredictionStore(store_dir).write(preds.select("game_id", "player_id", "market", "kickoff_time", "model_version", "stack", "mean", "input_hash"), now=now, run_id=rid)
+    expl = pl.concat([e for e in explained if e.height], how="diagonal_relaxed") if any(e.height for e in explained) else pl.DataFrame()
+    if expl.height:
+        (store_dir / EXPLAIN_DIR).mkdir(parents=True, exist_ok=True)
+        expl.with_columns(run_id=pl.lit(rid)).write_parquet(store_dir / EXPLAIN_DIR / f"{rid}.parquet")
+        if margin_terms.height:
+            margin_terms.with_columns(run_id=pl.lit(rid)).write_parquet(store_dir / EXPLAIN_DIR / f"{rid}_margin.parquet")
     if lines_path is not None:
         LN.log_lines(games.select("game_id", "spread_line", "total_line", "home_moneyline", "away_moneyline"), captured_at=now, path=lines_path)
     manifest = dict(run_id=rid, run_timestamp=now.isoformat(), season=season, week=week, model_version=mv, n_games=len(gids), cutoff=str(cutoff),
@@ -207,4 +219,4 @@ def run(now: datetime, raw_db=config.RAW_DUCKDB_PATH, store_dir=None, models: Tr
                     train_rows=models.base.n_train)
     store_dir.mkdir(parents=True, exist_ok=True)
     (store_dir / f"manifest_{rid}.json").write_text(json.dumps(manifest, indent=1, default=str))
-    return dict(status="ok", written=res.written, refused=res.refused, unchanged=res.unchanged, season=season, week=week, manifest=manifest, predictions=preds, debug=debug)
+    return dict(status="ok", written=res.written, refused=res.refused, unchanged=res.unchanged, season=season, week=week, manifest=manifest, predictions=preds, debug=debug, explanations=expl, margin_terms=margin_terms)
