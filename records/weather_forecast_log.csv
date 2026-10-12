@@ -1,0 +1,3 @@
+game_id,kickoff_utc,pulled_at,hours_before_kickoff,source,temp_f,wind_mph,precip_in,indoor,station_id,station_km
+2026_05_BUF_LA,2026-10-13T00:15:00,2026-10-12T11:42:40.401772,12.538777285555556,meteostat_forecast,66.2,5.1573793000000006,,true,KHHR0,3.4335999999999998
+2026_06_SEA_DEN,2026-10-16T00:15:00,2026-10-12T11:42:40.401772,84.53877728555555,meteostat_forecast,57.379999999999995,11.4953635,,false,72469,13.8243
