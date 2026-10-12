@@ -391,6 +391,22 @@ and tested) and the work moves to 4d.
 - **Gate and reading.** Unchanged (W1+W2, CLEARS and not worse on W0). Both results are reported, the thin and the fuller; the thin one is already in
   the Log and is not replaced.
 
+### 4d.1 fuller table: lookups done, rule 5a (written 2026-10-12 after the lookups, BEFORE the rerun; nothing was run on them)
+- **Coverage.** 36 head-coach changes without a prior (35 coaches; Raheem Morris twice). Hand lookups (six sub-agents, Wikipedia/team/press pages; no PFR,
+  Sports-Reference, ESPN/ABC/Disney) found a usable play-calling stop before the hire for 9 coaches (10 rows in data/play_caller_stops.csv): Stefanski,
+  Bevell, A. Smith, O'Connell, McDaniels, Hackett, Daboll, Steichen (2 stops), Canales. The other 26 coaches have none (defensive or special-teams
+  coaches, college only, or a coordinator title where someone else called the plays: Sirianni, Callahan, McDaniel, and O'Connell's Rams years).
+  All 35 verdicts, with source and confidence, are in data/play_caller_lookups_4d1.csv. Confidence: 7 stop rows high, 3 medium (Bevell, Smith, McDaniels).
+- **Rule 5a.** Rule 5 says whole seasons. A season in which he took the play calling over or lost it part-way is included only if he called at least
+  half of the team's games that season, and only when the switch week is sourced. So left out: Stefanski MIN 2018 (last 3 games), Steichen PHI 2021
+  (took over "about midway", week unknown). Kept: O'Connell WAS 2019 (from week 6), Hackett JAX 2016 (from week 9) and 2018 (to week 12), Steichen LAC 2019
+  (from week 9). Partial seasons still carry some of the other caller's plays; that noise is accepted and stated.
+- **Second pass (rule 7).** Five rows drawn with random.Random(20261012): A. Smith TEN, Bevell SEA, O'Connell WAS, Hackett JAX, McDaniels NE, each re-checked
+  against a different source than the first (search results from SI/NBC Sports, commanders.com, profootballrumors, Fox Sports, NBC Sports Boston/CBS).
+  All five agree. Smith 2020 is now supported by a second report; McDaniels 2019-2020 by CBS (Newton defending his play-calling). Bevell stays medium: the
+  second source calls him the play caller but only loosely (Tom Cable shared the offense).
+- **Not a stop:** Bevell's DET 2019-2020 (the hiring franchise, and already the head-coach stop).
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming

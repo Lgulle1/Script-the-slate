@@ -108,9 +108,9 @@ def ablation_rows(without: pl.DataFrame, with_: pl.DataFrame, data, win: pl.Data
     return pl.DataFrame(rows, infer_schema_length=None).with_columns(pl.col(pl.Null).cast(pl.Float64))
 
 
-def run(tag=None, results_dir=None, pred_dir=None, save=True):
+def run(tag=None, results_dir=None, pred_dir=None, save=True, extra_stops=None):
     data = bt.load_backtest_data()
-    feats, stops = cp.build()
+    feats, stops = cp.build(extra_stops=extra_stops)
     feats = feats.filter(pl.col("season").is_in(config.BACKTEST_SEASONS))
     assert feats["season"].is_in(config.BACKTEST_SEASONS).all(), "coaching features outside the backtest seasons"
     win = cp.windows(feats)
@@ -130,7 +130,7 @@ def run(tag=None, results_dir=None, pred_dir=None, save=True):
             b"layer_weight_rule": b"1.0 only if CLEARS on W1+W2 and the W0 interval's upper bound >= 0, else 0.0; " + config.LAYER_WEIGHT_RULE.encode()})
         pq.write_table(arrow, (results_dir or config.ROOT) / f"{results_name(tag)}.parquet")
         with_.sort("market", "season", "week", "entity").write_parquet((pred_dir or config.PROCESSED_DIR) / predictions_name(tag))
-        stops.write_parquet((results_dir or config.ROOT) / "coach_stops.parquet")
+        stops.write_parquet((results_dir or config.ROOT) / (f"coach_stops_{tag}.parquet" if extra_stops else "coach_stops.parquet"))
     return table, fp, counts
 
 
@@ -153,7 +153,8 @@ if __name__ == "__main__":
     ap.add_argument("--tag", default=None)
     ap.add_argument("--results-dir", type=Path, default=None)
     ap.add_argument("--pred-dir", type=Path, default=None)
+    ap.add_argument("--stops-extra", type=Path, default=None, help="hand-sourced play-calling stops (data/play_caller_stops.csv): the fuller table")
     a = ap.parse_args()
-    table, fp, counts = run(a.tag, a.results_dir, a.pred_dir)
+    table, fp, counts = run(a.tag, a.results_dir, a.pred_dir, extra_stops=a.stops_extra)
     print_summary(table, fp, counts)
     print(f"\nsaved {results_name(a.tag)}.parquet ({table.height} rows)")
