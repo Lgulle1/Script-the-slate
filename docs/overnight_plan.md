@@ -550,6 +550,12 @@ and at least three to four weeks of graded live predictions exist before Phase 6
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-12, retrospective check of 2026 week 5 (**NOT a track record**; scripts/retro_check_2026_week5.py, retro_check_2026_week5.parquet). The full live stack was run as of 2026-10-07 13:00 UTC
+  (only data pulled by then) and graded on the 14 games played by 12 Oct against results pulled afterwards. The predictions were made after the fact, so they count toward no gate and no record.
+  Played players only, MAE of the model vs each player's mean of his last four games: pass_att 6.16 vs 7.88 (n 25), pass_cmp 3.79 vs 5.05, pass_yds 57.9 vs 70.8, rec 1.33 vs 1.43 (n 187), rec_yds 18.6 vs 20.0,
+  targets 1.68 vs 1.87, rush_att 3.44 vs 3.56 (n 59), rush_yds 20.8 vs 21.0, qb_rush_att 1.59 vs 1.61 (n 7), qb_rush_yds 27.7 vs 28.8; game markets (n 14): spread MAE 10.26, total MAE 10.89, moneyline Brier-style
+  error 0.458 (no yardstick). 14 games is far too few to separate model from baseline, and nothing here compares with a market. Eligible players who did not play: 77 receiving, 27 rushing, 3 passing rows
+  (reported separately, as in grading). Direction matches the 2020-2024 backtest; it is a sanity check of the live path on unseen games, nothing more.
 - 2026-10-12, recording routine: the first design FAILED its push test and was replaced. A routine that starts a fresh session each time (trig_01AmDK2LY8cnxUoGCvKqZXBu) gets no repository in its
   session sources, so the git proxy refuses the push with a 403 ("not in this session's authorized repository set"); the commits would have been lost with the container. Test fires #1 and #2
   looked fine only because they recorded nothing to push. Fix: a dedicated long-lived session created WITH the repository as its source and data-snapshots as its outcome branch
