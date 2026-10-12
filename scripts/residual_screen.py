@@ -149,6 +149,13 @@ def team_features(b: pl.DataFrame) -> pl.DataFrame:
     return b
 
 
+def lad_fit(z: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """(intercept, slope) of the median regression y ~ a + b z (plan amendment 1: the models are fit to the median, so least squares' mean-shifting intercept costs absolute error)."""
+    from sklearn.linear_model import QuantileRegressor
+    m = QuantileRegressor(quantile=0.5, alpha=0.0, solver="highs").fit(z.reshape(-1, 1), y)
+    return np.array([m.intercept_, m.coef_[0]])
+
+
 def screen(b: pl.DataFrame) -> tuple[pl.DataFrame, pl.DataFrame]:
     cells, cover = [], []
     for cand, markets in CANDIDATES.items():
@@ -169,8 +176,7 @@ def screen(b: pl.DataFrame) -> tuple[pl.DataFrame, pl.DataFrame]:
                 if not sd:
                     continue
                 z = ((tr[cand] - mu) / sd).to_numpy()
-                A = np.column_stack([np.ones(len(z)), z])
-                beta, *_ = np.linalg.lstsq(A, tr["resid"].to_numpy(), rcond=None)
+                beta = lad_fit(z, tr["resid"].to_numpy())
                 r_hat = beta[0] + beta[1] * ((te[cand] - mu) / sd).to_numpy()
                 r = te["resid"].to_numpy()
                 gains.append(np.abs(r) - np.abs(r - r_hat))

@@ -537,6 +537,11 @@ and at least three to four weeks of graded live predictions exist before Phase 6
   seed config.BOOTSTRAP_SEED) at the Bonferroni level 1 - 0.05 / m, m = the number of (candidate, market) cells actually tested (printed). Squared-error gain is reported next to it, not used for the verdict.
 - **Verdict.** CLEARS at the Bonferroni level: gain > 0, the interval above zero, wins in >= 2 of the 4 fold seasons, and the sign of b the same in every fold. EDGE and NO as in eval.compare.verdict.
   A candidate that clears nowhere is reported as null. No threshold is tuned afterwards to produce a survivor.
+- **Amendment 1 (2026-10-12, written after the first run, BEFORE the rerun; the estimator changes, no threshold, list or verdict rule does).** The first run fit each correction by least squares, as written above.
+  It was invalid by construction: every Phase 3 model is fit to the median (L1) and its residuals are right-skewed (targets: mean residual +0.31, median -0.04; rec_yds +3.39 vs -2.20), so the least-squares INTERCEPT alone
+  shifts predictions toward the mean and costs absolute error (adding the training-mean residual to 2024 targets: MAE 1.730 -> 1.759; adding the median: 1.730 -> 1.730). Result: 72 of 74 cells showed a negative gain regardless of the candidate. Those numbers are kept
+  as data/processed/residual_screen_cells_ols_invalid.parquet and are not evidence about any candidate. The fit is now least absolute deviations (median regression, sklearn QuantileRegressor, quantile 0.5, no penalty), the estimator that matches the metric.
+  Everything else (candidates, coverage rule, folds, gain, Bonferroni level over the 74 cells, verdict) is unchanged.
 - **Limits, stated now.** Linear, one candidate at a time: an interaction or a non-linear effect is not tested; a candidate that fails here can still help inside a retrained tree model, and one
   that passes may not survive it. Also reported: the noise floor (what a perfect-mean Poisson outcome would miss by) beside the model's error for each volume market, so "how far from the best possible" is on the page.
 
