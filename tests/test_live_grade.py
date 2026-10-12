@@ -15,7 +15,7 @@ TUE = datetime(2026, 10, 20, 14, 0, tzinfo=timezone.utc)
 def _store(tmp_path):
     s = ST.PredictionStore(tmp_path / "preds")
     rows = [("g1", "p1", "rush_att", 12.0), ("g1", "p2", "rush_att", 8.0), ("g1", None, "spread", 3.5), ("g1", None, "moneyline", 0.62)]
-    s.write(pl.DataFrame([dict(game_id=g, player_id=p, market=m, kickoff_time=KICK, model_version="mv1", mean=v, input_hash="h") for g, p, m, v in rows],
+    s.write(pl.DataFrame([dict(game_id=g, player_id=p, market=m, kickoff_time=KICK, model_version="mv1", stack="phase3", mean=v, input_hash="h") for g, p, m, v in rows],
                          schema_overrides={"player_id": pl.String}), now=T0, run_id="r1")
     return s
 
@@ -65,3 +65,14 @@ def test_the_summary_reports_did_not_play_rows_separately(tmp_path):
     g = GR.grade(s.gradable(), _actuals(), tmp_path / "graded.parquet", graded_at=TUE)
     t = GR.summary(g).filter(pl.col("market") == "rush_att").row(0, named=True)
     assert (t["n_played"], t["n_did_not_play"], t["mae_played"]) == (1, 1, 3.0) and t["mae_did_not_play"] == 8.0
+
+
+def test_summaries_are_reported_per_stack_label_and_never_blended(tmp_path):
+    s = ST.PredictionStore(tmp_path / "preds")
+    rows = [("g1", "p1", "rush_att", 12.0, "phase3"), ("g2", "p3", "rush_att", 10.0, "phase3+4a")]
+    s.write(pl.DataFrame([dict(game_id=g, player_id=p, market=m, kickoff_time=KICK, model_version="mv1", stack=st, mean=v, input_hash="h") for g, p, m, v, st in rows]),
+            now=T0, run_id="r1")
+    act = pl.DataFrame({"game_id": ["g1", "g2"], "player_id": ["p1", "p3"], "market": ["rush_att", "rush_att"], "actual": [15.0, 10.0]})
+    g = GR.grade(s.gradable(), act, tmp_path / "graded.parquet", graded_at=TUE)
+    t = GR.summary(g).sort("stack")
+    assert t["stack"].to_list() == ["phase3", "phase3+4a"] and t["market"].to_list() == ["rush_att", "rush_att"] and t["mae_played"].to_list() == [3.0, 0.0]        # two rows, never one blended average

@@ -64,3 +64,25 @@ def test_a_game_with_no_earlier_chart_gets_no_weekly_rows(tmp_path):
     DV.build_live_db(raw, out, NOW)
     con = duckdb.connect(str(out), read_only=True)
     assert con.execute("SELECT count(*) FROM depth_charts WHERE season = 2026 AND week = 1").fetchone()[0] == 0
+
+
+def test_a_replay_copy_hides_the_outcomes_of_games_on_or_after_a_date_but_not_pre_game_information(tmp_path):
+    raw, out = tmp_path / "raw.duckdb", tmp_path / "replay.duckdb"
+    con = duckdb.connect(str(raw))
+    con.execute("CREATE TABLE schedules (game_id VARCHAR, season INTEGER, week INTEGER, game_type VARCHAR, gameday VARCHAR, home_team VARCHAR, away_team VARCHAR, home_score INTEGER, "
+                "away_score INTEGER, result INTEGER, total INTEGER, pulled_at TIMESTAMP)")
+    con.execute("INSERT INTO schedules VALUES ('g1',2024,9,'REG','2024-11-03','BBB','AAA',20,17,3,37,'2026-10-07 12:00:00'),('g2',2024,10,'REG','2024-11-10','BBB','AAA',24,21,3,45,'2026-10-07 12:00:00')")
+    con.execute("CREATE TABLE player_stats (player_id VARCHAR, game_id VARCHAR, carries INTEGER, pulled_at TIMESTAMP)")
+    con.execute("INSERT INTO player_stats VALUES ('p','g1',10,'2026-10-07 12:00:00'),('p','g2',12,'2026-10-07 12:00:00')")
+    con.execute("CREATE TABLE snap_counts (game_id VARCHAR, offense_snaps INTEGER, pulled_at TIMESTAMP)")
+    con.execute("INSERT INTO snap_counts VALUES ('g1',50,'2026-10-07 12:00:00'),('g2',60,'2026-10-07 12:00:00')")
+    con.execute("CREATE TABLE injuries (season INTEGER, week INTEGER, gsis_id VARCHAR, report_status VARCHAR, pulled_at TIMESTAMP)")
+    con.execute("INSERT INTO injuries VALUES (2024,10,'p','Questionable','2026-10-07 12:00:00')")
+    con.close()
+    from datetime import date
+    DV.build_live_db(raw, out, NOW, apply_pulled_at_clock=False, hide_outcomes_from=date(2024, 11, 10))
+    c = duckdb.connect(str(out), read_only=True)
+    assert c.execute("SELECT game_id, home_score, away_score, result, total FROM schedules ORDER BY game_id").fetchall() == [("g1", 20, 17, 3, 37), ("g2", None, None, None, None)]
+    assert c.execute("SELECT game_id FROM player_stats").fetchall() == [("g1",)] and c.execute("SELECT game_id FROM snap_counts").fetchall() == [("g1",)]
+    assert c.execute("SELECT count(*) FROM injuries").fetchone()[0] == 1                             # the week-10 injury report is pre-game information: kept
+    assert c.execute("SELECT count(*) FROM schedules").fetchone()[0] == 2                            # the clock filter was off: 2026 pulls stay for a 2024 replay

@@ -55,3 +55,31 @@ def read_input_history(cutoff: date, raw_db=config.RAW_DUCKDB_PATH) -> InputHist
     player_log = player_log.filter(pl.col("gameday") < cutoff)
     tv = tv.join(team_log.select("game_id").unique(), on="game_id", how="inner")
     return InputHistory(player_log=player_log, team_log=team_log, cutoff=cutoff, through_season=through, team_volume=tv, lineups=ln)
+
+
+@dataclass(frozen=True)
+class InjuryInputs:
+    """The 4a frames for a live run: player weeks, role frame (both holding the target games), injury reports and weekly roster statuses."""
+    player_weeks: pl.DataFrame
+    frame: pl.DataFrame
+    injuries: pl.DataFrame
+    rosters: pl.DataFrame
+    through_season: int
+    input_only: bool = True
+
+
+def read_input_injury_inputs(cutoff: date, raw_db, targets: pl.DataFrame) -> InjuryInputs:
+    """The layer-4a inputs through the scoped unlock: 2025+ games enter as input history only (plan P5.7 item 4). `targets`: season, week, team, game_id, gameday."""
+    from models import injuries as ij
+    through = season_of(cutoff) if season_of(cutoff) >= config.HOLDOUT_SEASON else max(config.BACKTEST_SEASONS)
+
+    def load():
+        return (ij.build_player_weeks(raw_db, through, targets=targets), ij.build_role_frame(raw_db, through, targets=targets),
+                ij.load_injury_rows(raw_db, through), ij.load_roster_status(raw_db, through))
+
+    if through >= config.HOLDOUT_SEASON:
+        with config.input_history(through):
+            pw, frame, inj, ros = load()
+    else:
+        pw, frame, inj, ros = load()
+    return InjuryInputs(pw, frame, inj, ros, through)

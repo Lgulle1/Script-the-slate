@@ -15,7 +15,7 @@ PAST = datetime(2026, 10, 15, 0, 15, tzinfo=timezone.utc)                  # Thu
 
 def _preds(rows=None):
     rows = rows or [("2026_07_AAA_BBB", "p1", "rush_att", KICK, 12.0), ("2026_07_AAA_BBB", None, "spread", KICK, 3.5)]
-    return pl.DataFrame([dict(game_id=g, player_id=p, market=m, kickoff_time=k, model_version="mv1", mean=v, input_hash="h1") for g, p, m, k, v in rows],
+    return pl.DataFrame([dict(game_id=g, player_id=p, market=m, kickoff_time=k, model_version="mv1", stack="phase3", mean=v, input_hash="h1") for g, p, m, k, v in rows],
                         schema_overrides={"player_id": pl.String})
 
 
@@ -107,3 +107,12 @@ def test_a_new_input_hash_or_model_version_with_the_same_mean_is_still_a_new_ver
     assert s.write(_preds().with_columns(input_hash=pl.lit("h2")), now=T0 + timedelta(hours=1), run_id="r2").written == 2                    # the inputs moved, the mean did not
     assert s.write(_preds().with_columns(input_hash=pl.lit("h2"), model_version=pl.lit("mv2")), now=T0 + timedelta(hours=2), run_id="r3").written == 2
     assert s.load().filter(pl.col("market") == "spread").sort("version")["version"].to_list() == [1, 2, 3]
+
+
+def test_a_change_of_stack_label_is_a_new_version_even_with_the_same_mean_and_inputs(tmp_path):
+    s = ST.PredictionStore(tmp_path)
+    s.write(_preds(), now=T0, run_id="r1")
+    r = s.write(_preds().with_columns(stack=pl.lit("phase3+4a")), now=T0 + timedelta(hours=1), run_id="r2")
+    assert r.written == 2 and s.load().sort("market", "version")["stack"].to_list() == ["phase3", "phase3+4a", "phase3", "phase3+4a"]
+    with pytest.raises(ValueError, match="missing columns"):
+        s.write(_preds().drop("stack"), now=T0, run_id="r3")                                         # a record without its stack label is not stored

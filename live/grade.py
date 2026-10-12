@@ -25,7 +25,7 @@ def grade(gradable: pl.DataFrame, actuals: pl.DataFrame, path, graded_at) -> pl.
     j = j.filter(pl.col("actual").is_not_null() | ~is_game)                                  # a missing game result waits; a missing player result is a did-not-play
     j = j.with_columns(did_not_play=pl.col("actual").is_null() & ~is_game, actual=pl.col("actual").fill_null(0.0))
     new = j.select(
-        "prediction_id", "game_id", "player_id", "market", "version", "model_version", "mean", "actual", "did_not_play", track=pl.lit("pure"),
+        "prediction_id", "game_id", "player_id", "market", "version", "model_version", "stack", "mean", "actual", "did_not_play", track=pl.lit("pure"),
         error=pl.col("mean") - pl.col("actual"), abs_error=(pl.col("mean") - pl.col("actual")).abs(),
         brier=pl.when(pl.col("market") == "moneyline").then((pl.col("mean") - pl.col("actual")) ** 2).otherwise(None),
         quantile_band=pl.lit(None, dtype=pl.Int32), graded_at=pl.lit(graded_at).cast(pl.Datetime("us", "UTC"))).sort("game_id", "market", "player_id")
@@ -37,9 +37,9 @@ def grade(gradable: pl.DataFrame, actuals: pl.DataFrame, path, graded_at) -> pl.
 
 
 def summary(graded: pl.DataFrame) -> pl.DataFrame:
-    """Per market: played rows and did-not-play rows reported separately, never pooled into one average."""
+    """Per stack label and market: played rows and did-not-play rows reported separately; stacks are never blended into one average."""
     played, dnp = pl.col("did_not_play").not_(), pl.col("did_not_play")
-    return (graded.group_by("market").agg(
+    return (graded.group_by("stack", "market").agg(
         n_played=played.sum(), n_did_not_play=dnp.sum(),
         mae_played=pl.col("abs_error").filter(played).mean(), mae_did_not_play=pl.col("abs_error").filter(dnp).mean(),
-        brier=pl.col("brier").mean()).sort("market"))
+        brier=pl.col("brier").mean()).sort("stack", "market"))

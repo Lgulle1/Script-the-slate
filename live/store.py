@@ -19,13 +19,13 @@ import polars as pl
 
 RECORD_COLUMNS = [
     "prediction_id", "run_id", "run_timestamp", "stored_at", "kickoff_time", "version", "game_id", "player_id", "market", "model_version",
-    "mean", "median", "q05", "q10", "q25", "q50", "q75", "q90", "q95", "ladder", "confidence", "comp_shift", "no_match", "injury_status", "input_hash"]
-INPUT_REQUIRED = ["game_id", "market", "kickoff_time", "model_version", "mean", "input_hash"]
+    "stack", "mean", "median", "q05", "q10", "q25", "q50", "q75", "q90", "q95", "ladder", "confidence", "comp_shift", "no_match", "injury_status", "input_hash"]
+INPUT_REQUIRED = ["game_id", "market", "kickoff_time", "model_version", "stack", "mean", "input_hash"]
 INPUT_OPTIONAL = [c for c in RECORD_COLUMNS if c not in ("prediction_id", "run_id", "run_timestamp", "stored_at", "version") and c not in INPUT_REQUIRED]
 KEY = ["game_id", "player_id", "market"]
 SCHEMA = {"prediction_id": pl.String, "run_id": pl.String, "run_timestamp": pl.Datetime("us", "UTC"), "stored_at": pl.Datetime("us", "UTC"),
           "kickoff_time": pl.Datetime("us", "UTC"), "version": pl.Int32, "game_id": pl.String, "player_id": pl.String, "market": pl.String, "model_version": pl.String,
-          "mean": pl.Float64, "median": pl.Float64, **{q: pl.Float64 for q in ("q05", "q10", "q25", "q50", "q75", "q90", "q95")},
+          "stack": pl.String, "mean": pl.Float64, "median": pl.Float64, **{q: pl.Float64 for q in ("q05", "q10", "q25", "q50", "q75", "q90", "q95")},
           "ladder": pl.String, "confidence": pl.String, "comp_shift": pl.String, "no_match": pl.Boolean, "injury_status": pl.String, "input_hash": pl.String}
 REFUSAL_COLUMNS = ["clock", "run_id", "game_id", "player_id", "market", "kickoff_time", "reason"]
 
@@ -96,13 +96,13 @@ class PredictionStore:
             return result
         existing = self.load()
         latest = (existing.sort("version").group_by(KEY, maintain_order=True).last()
-                  .select(*KEY, prev_version="version", prev_model=pl.col("model_version"), prev_hash=pl.col("input_hash"), prev_mean="mean")) if existing.height else None
+                  .select(*KEY, prev_version="version", prev_model=pl.col("model_version"), prev_stack=pl.col("stack"), prev_hash=pl.col("input_hash"), prev_mean="mean")) if existing.height else None
         if latest is not None:
             p = p.join(latest, on=KEY, how="left", nulls_equal=True)
-            same = (pl.col("prev_version").is_not_null() & (pl.col("prev_model") == pl.col("model_version")) & (pl.col("prev_hash") == pl.col("input_hash"))
+            same = (pl.col("prev_version").is_not_null() & (pl.col("prev_model") == pl.col("model_version")) & (pl.col("prev_stack") == pl.col("stack")) & (pl.col("prev_hash") == pl.col("input_hash"))
                     & (pl.col("prev_mean") == pl.col("mean")))
             result.unchanged = p.filter(same).height
-            p = p.filter(~same).with_columns(version=(pl.col("prev_version").fill_null(0) + 1).cast(pl.Int32)).drop("prev_version", "prev_model", "prev_hash", "prev_mean")
+            p = p.filter(~same).with_columns(version=(pl.col("prev_version").fill_null(0) + 1).cast(pl.Int32)).drop("prev_version", "prev_model", "prev_stack", "prev_hash", "prev_mean")
         else:
             p = p.with_columns(version=pl.lit(1, dtype=pl.Int32))
         if p.is_empty():

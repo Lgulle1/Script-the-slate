@@ -28,22 +28,42 @@ def _raw_tables(con) -> list:
     return [r[0] for r in con.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'main' AND table_type = 'BASE TABLE'").fetchall()]
 
 
-def build_live_db(raw_db, out_path, now: datetime, target_season: int | None = None, target_week: int | None = None) -> Path:
+def build_live_db(raw_db, out_path, now: datetime, target_season: int | None = None, target_week: int | None = None, *,
+                  apply_pulled_at_clock: bool = True, hide_outcomes_from=None) -> Path:
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     if out.exists():
         out.unlink()
     shutil.copyfile(raw_db, out)
+    # apply_pulled_at_clock=False and hide_outcomes_from=<date> are for the replay tests only: a past week is scored as if unplayed on today's pull
     now_naive = now.astimezone(tz=__import__("datetime").timezone.utc).replace(tzinfo=None)
     con = duckdb.connect(str(out))
     try:
-        for t in _raw_tables(con):
-            if "pulled_at" in {r[0] for r in con.execute(f"DESCRIBE {t}").fetchall()}:
-                con.execute(f"DELETE FROM {t} WHERE pulled_at > ?", [now_naive])
+        if apply_pulled_at_clock:
+            for t in _raw_tables(con):
+                if "pulled_at" in {r[0] for r in con.execute(f"DESCRIBE {t}").fetchall()}:
+                    con.execute(f"DELETE FROM {t} WHERE pulled_at > ?", [now_naive])
+        if hide_outcomes_from is not None:
+            _hide_outcomes(con, hide_outcomes_from)
         _add_weekly_charts(con, now_naive, target_season, target_week)
     finally:
         con.close()
     return out
+
+
+def _hide_outcomes(con, day) -> None:
+    """Remove what only the games on or after `day` produce (stats, snaps, plays, scores); injury reports, rosters and charts are pre-game information and stay."""
+    ids = [r[0] for r in con.execute("SELECT DISTINCT game_id FROM schedules WHERE game_type = 'REG' AND gameday >= ?", [str(day)]).fetchall()]
+    if not ids:
+        return
+    con.execute("CREATE TEMP TABLE hidden_games (game_id VARCHAR)")
+    con.executemany("INSERT INTO hidden_games VALUES (?)", [(i,) for i in ids])
+    for t in ("player_stats", "snap_counts", "pbp"):
+        if t in _raw_tables(con):
+            con.execute(f"DELETE FROM {t} WHERE game_id IN (SELECT game_id FROM hidden_games)")
+    cols = {r[0] for r in con.execute("DESCRIBE schedules").fetchall()}
+    sets = ", ".join(f"{c} = NULL" for c in ("home_score", "away_score", "result", "total", "overtime") if c in cols)
+    con.execute(f"UPDATE schedules SET {sets} WHERE game_id IN (SELECT game_id FROM hidden_games)")
 
 
 def _add_weekly_charts(con, now_naive: datetime, target_season, target_week) -> None:
