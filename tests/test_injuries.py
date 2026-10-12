@@ -431,3 +431,17 @@ def test_fixed_roles_keeps_the_charted_starters_share_when_baselines_overshoot()
     assert get(plain, "AAA_QB") < 0.7                                    # old: everyone scaled down together
     assert get(fixed, "AAA_QB") == pytest.approx(0.95) and get(fixed, "AAA_o1") == pytest.approx(0.05)
     assert fixed["exp_dropback"].sum() == pytest.approx(1.0)
+
+
+# ---- 2025+ injury rows carry no posting time (date_modified is NULL in nflverse's new format): a row in a pull made by the run clock counts as posted
+def test_a_status_row_without_a_posting_time_counts_as_posted_and_one_posted_later_does_not():
+    from datetime import datetime, timezone
+    from models import injuries as ij
+    t = lambda h: datetime(2026, 10, 9, h, tzinfo=timezone.utc)
+    inj = pl.DataFrame({"gsis_id": ["a", "b", "b"], "season": [2026] * 3, "week": [5] * 3, "report_status": ["Out", "Questionable", "Out"],
+                        "practice_status": [None, None, None], "date_modified": [None, t(10), t(20)]},
+                       schema_overrides={"date_modified": pl.Datetime("us", "UTC"), "practice_status": pl.String, "report_status": pl.String})
+    fn = ij.make_status_lookup(inj)
+    assert fn("a", 2026, 5, t(12))[0] == "Out"                                       # no timestamp: posted
+    assert fn("b", 2026, 5, t(12))[0] == "Questionable" and fn("b", 2026, 5, t(23))[0] == "Out"      # timestamps still decide
+    assert ij.status_as_of(inj, "a", 2026, 5, t(12))[0] == "Out" and ij.status_as_of(inj, "b", 2026, 5, t(12))[0] == "Questionable"

@@ -194,7 +194,7 @@ def build_player_weeks(raw_db=config.RAW_DUCKDB_PATH, max_season=None, as_of_fn=
             .with_columns(next_week_injury=pl.col("next_week_injury").fill_null(False)).drop("next_week"))
     pw = pw.join(inj.drop("report_primary_injury", "practice_primary_injury"), on=["season", "week", "team", "gsis_id"], how="left")
     asof = pl.Series([None if g is None else as_of_fn(g) for g in pw["gameday"].to_list()], dtype=pl.Datetime("us", "UTC"))
-    posted = (pl.col("date_modified") <= asof)
+    posted = pl.col("date_modified").is_null() | (pl.col("date_modified") <= asof)         # 2025+ rows carry no posting time (see make_status_lookup)
     pw = pw.with_columns(report_status=pl.when(posted).then(pl.col("report_status")).otherwise(None),
                          practice_status=pl.when(posted).then(pl.col("practice_status")).otherwise(None))
     pw = pw.with_columns(report_status=pl.col("report_status").map_elements(clean_report, return_dtype=pl.String, skip_nulls=False),
@@ -289,7 +289,7 @@ def fit_status_model(pw: pl.DataFrame, cutoff: date, k: float = SHRINK_K) -> Sta
 def status_as_of(injuries: pl.DataFrame, gsis_id: str, season: int, week: int, as_of: datetime) -> tuple[str, str]:
     """(report status, practice status) of the latest injury row posted at or before `as_of`; ('none', 'none') if none yet."""
     r = injuries.filter((pl.col("gsis_id") == gsis_id) & (pl.col("season") == season) & (pl.col("week") == week)
-                        & (pl.col("date_modified") <= _utc(as_of))).sort("date_modified")
+                        & (pl.col("date_modified").is_null() | (pl.col("date_modified") <= _utc(as_of)))).sort("date_modified", nulls_last=False)
     if not r.height:
         return NONE, NONE
     last = r.row(r.height - 1, named=True)
@@ -597,13 +597,13 @@ def _team_players(frame: pl.DataFrame, game_id: str, team: str, cutoff: date) ->
 def make_status_lookup(injuries: pl.DataFrame):
     """Fast `status_fn(gsis_id, season, week, as_of) -> (report, practice)` over the injuries rows (same rule as status_as_of)."""
     rows: dict = {}
-    for r in injuries.sort("date_modified").iter_rows(named=True):
+    for r in injuries.sort("date_modified", nulls_last=False).iter_rows(named=True):
         rows.setdefault((r["gsis_id"], r["season"], r["week"]), []).append((r["date_modified"], r["report_status"], r["practice_status"]))
 
     def status_fn(gsis_id, season, week, as_of):
         last = None
         for dm, rep, pra in rows.get((gsis_id, season, week), ()):
-            if dm <= _utc(as_of):
+            if dm is None or dm <= _utc(as_of):                 # 2025+ rows have no posting time: a row in a pull made by the run clock counts as posted
                 last = (clean_report(rep), clean_practice(pra))
         return last or (NONE, NONE)
     return status_fn
