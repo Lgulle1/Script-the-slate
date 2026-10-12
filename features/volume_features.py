@@ -304,19 +304,26 @@ def build_feature_tables(player_log, team_log, team_volume, lineups) -> FeatureT
     return FeatureTables(players, build_team_game_features(team_log, team_volume, side, "plays"))
 
 
-def load_feature_tables(data, raw_db=config.RAW_DUCKDB_PATH, max_season=None, injury=None, comps=None, comp_searches=None) -> FeatureTables:
+def load_feature_tables(data, raw_db=config.RAW_DUCKDB_PATH, max_season=None, injury=None, comps=None, comp_searches=None, coach=None) -> FeatureTables:
     """Volume feature tables for a backtest.BacktestData (seasons capped in SQL for the volume/lineup inputs).
 
     `injury` (features.injury_features.build_injury_features output) adds the 4a injury columns as extra features; None = Phase 3.
     `comps` (the models.comps.comp_shifts feature table) adds the comparable columns of each quantity's market (features.comps_features, 4c.5),
-    for `comp_searches` (default all five)."""
+    for `comp_searches` (default all five). `coach` (features.coach_prior.features, 4d.1) adds the coaching-prior columns."""
     from eval import backtest as bt
     cap = config.cap_season(max_season)  # raises config.HoldoutError for 2025+
     tv = build_team_volume(raw_db, cap)
     ln = lu.build_lineups(raw_db, cap)
     bt.assert_no_holdout(tv.join(data.team_log.select("game_id", "season").unique(), on="game_id", how="inner"))
     tables = build_feature_tables(data.player_log, data.team_log, tv, ln)
-    return _with_comps(_with_injury(tables, injury, data), comps, PLAYER_SPECS, comp_searches)
+    return _with_coach(_with_comps(_with_injury(tables, injury, data), comps, PLAYER_SPECS, comp_searches), coach)
+
+
+def _with_coach(tables, coach):
+    if coach is None:
+        return tables
+    from features import coach_prior as cp
+    return cp.attach(tables, coach)
 
 
 def _with_comps(tables, comps, specs, searches=None):
