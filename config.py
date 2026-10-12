@@ -1,4 +1,6 @@
 """Central constants for script-the-slate."""
+import contextlib
+import contextvars
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -33,6 +35,23 @@ class HoldoutError(ValueError):
     """A training or evaluation loader was asked for the locked holdout season (or later)."""
 
 
+_INPUT_HISTORY_THROUGH = contextvars.ContextVar("input_history_through", default=None)
+
+
+@contextlib.contextmanager
+def input_history(through_season: int):
+    """Scoped unlock of the season cap for ONE reader: live/history.py (plan "Phase 5 gates", P5.4). Inside the block an explicit
+    max_season of HOLDOUT_SEASON through `through_season` passes cap_season; max_season=None still means the last backtest season, nothing
+    beyond `through_season` passes, and the cap is restored when the block exits (also on an exception). A test fails if any other file uses this."""
+    if int(through_season) < HOLDOUT_SEASON:
+        raise ValueError("input_history is only for seasons at or after the holdout; earlier seasons need no unlock")
+    token = _INPUT_HISTORY_THROUGH.set(int(through_season))
+    try:
+        yield
+    finally:
+        _INPUT_HISTORY_THROUGH.reset(token)
+
+
 def cap_season(max_season=None) -> int:
     """The season cap every training/evaluation loader applies.
 
@@ -42,6 +61,9 @@ def cap_season(max_season=None) -> int:
     """
     if max_season is None:
         return max(BACKTEST_SEASONS)
+    through = _INPUT_HISTORY_THROUGH.get()
+    if through is not None and HOLDOUT_SEASON <= int(max_season) <= through:
+        return int(max_season)
     if int(max_season) >= HOLDOUT_SEASON:
         raise HoldoutError(f"max_season={max_season} reaches season {HOLDOUT_SEASON}+, which is the locked holdout; "
                            f"training/evaluation loaders stop at {max(BACKTEST_SEASONS)}")
