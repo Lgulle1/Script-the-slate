@@ -20,6 +20,7 @@ import polars as pl
 import config
 from eval import backtest as bt
 from features import volume_features as vf
+from live import derive as DV
 from live import history as H
 from live import lines as LN
 from live import predict as LP
@@ -88,7 +89,7 @@ def _row_hash(df: pl.DataFrame, keys: list, drop=("label", "den")) -> pl.DataFra
 
 
 def run(now: datetime, raw_db=config.RAW_DUCKDB_PATH, store_dir=None, models: LP.LiveModels | None = None, run_id: str | None = None,
-        lines_path=None, version: str | None = None) -> dict:
+        lines_path=None, version: str | None = None, work_dir=None) -> dict:
     now = now.astimezone(timezone.utc)
     store_dir = Path(store_dir or config.ROOT / "records" / "predictions")
     season = ST_season = H.season_of(now.date())
@@ -97,13 +98,14 @@ def run(now: datetime, raw_db=config.RAW_DUCKDB_PATH, store_dir=None, models: LP
     if tw is None:
         return dict(status="no upcoming game", written=0)
     season, week = tw
+    live_db = DV.build_live_db(raw_db, Path(work_dir or config.PROCESSED_DIR / "live") / "live.duckdb", now, season, week)
     games = TG.target_games(sched, season, week)
     cutoff = games["gameday"].min()
     trows = TG.team_rows(sched, games)
-    charts = read_charts(raw_db, now)
+    charts = read_charts(live_db, now)
     from features.depth_live import chart_as_of
     chart = chart_as_of(charts, now.strftime("%Y-%m-%dT%H:%M:%SZ"), week).rename({"team": "team"})
-    hist = H.read_input_history(cutoff, raw_db, target_games=trows.select("season", "week", "team", "gameday"), asof=now.replace(tzinfo=None))
+    hist = H.read_input_history(cutoff, live_db)
     prows = TG.player_rows(games, chart, hist.player_log, hist.team_log, trows)
     P = pl.concat([hist.player_log, _align(prows, hist.player_log)])
     T = pl.concat([hist.team_log, _align(trows, hist.team_log)])
