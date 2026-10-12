@@ -470,11 +470,19 @@ those. Nothing dated after run_timestamp can enter a feature (tested with a row 
   refusal above). The store is tracked in git (records/predictions/) and pushed to the data-snapshots branch by the run, so the commit time is an outside timestamp.
 
 **P5.4 Holdout.** No Phase 5 code path may use a 2025 outcome as a training row, a target, an evaluation or a tuning input; the loaders' cap_season guard stays.
-**OPEN DECISION (yours, blocks only P5.1 step "generate predictions"):** a 2026 prediction needs each player's and team's recent form, which includes 2025 games.
-Recommended: the live feature builder may read 2025 and 2026-to-date games as INPUT HISTORY for 2026 targets (trailing form, ratings, rosters) through one
-named function that cannot return them as targets, while every model is still FIT on 2020-2024 rows only; the one-time 2025 benchmark of Phase 6 is then
-unaffected (it scores 2020-2024-fit models on 2025 outcomes, and live use of 2025 inputs changes nothing it measures). The alternative is to skip 2025
-entirely (2024 history plus 2026 in-season only): purer, but veterans' features go stale by a season and 2025 rookies have none.
+**DECIDED 2026-10-12 (yours): 2025 and 2026-to-date games may be read as INPUT HISTORY for live targets; every model stays FIT on 2020-2024 rows only.**
+Reason you gave: the holdout protects the models, not the data; reading 2025 results as recent form does not touch the question the benchmark answers; skipping
+2025 would stale every veteran's features and leave 2025 rookies with none; fitting on 2025 would burn the one-time benchmark. Guardrails, each with a test:
+1. **One named function** (`live/history.py: read_input_history`) is the only code allowed to read 2025+ games. It opens a scoped unlock in config
+   (`config.input_history`, a context manager that lifts the loaders' season cap to the requested season for that block only), and returns rows with
+   gameday strictly before the cutoff (the target's kickoff / week cutoff), marked input-only. It returns no targets and no training rows. A mutation test
+   (a version that returns on-or-after-cutoff rows, or a target row) must fail the tests, and a test fails if `input_history(` is used anywhere else.
+2. **The Phase 6 benchmark path** uses as-of cutoffs inside 2025 only: it never sees a 2026 row, and a 2025 week-10 target never sees week 11 or later
+   (tested on `read_input_history` with 2025 cutoffs).
+3. **Standardization is as-of too.** League means and standard deviations (z-scores, shrinkage, any normalisation) use only data before the target, in the
+   live path as in the backtest (future-blindness test on the live feature function: appending rows dated after the cutoff changes no feature).
+4. **Refit rule.** Models stay fit on 2020-2024 until the Phase 6 benchmark has run once and its result is recorded in this plan. Refitting on 2025 is then a
+   separate decision of yours, and from then on 2026 is the clean holdout.
 
 **P5.5 Grading (`grade_week.py`)** is idempotent (a second run adds no rows and changes none), keeps the pure and the market-aware tracks in separate tables,
 grades an eligible non-player as actual = 0 with did_not_play = true and reports those rows separately, and writes the weekly summary next to the best Phase 2
