@@ -550,6 +550,15 @@ and at least three to four weeks of graded live predictions exist before Phase 6
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-12, Phase 5 layers wired and replayed (P5.7). Layers on/off come from layer_weights.csv (4a for rush_att, rush_yds, targets, rec, rec_yds; 4b for spread); each record carries its
+  stack label ("phase3", "phase3+4a", "phase3+4b"); grading and summaries are per label. **Replay of the whole live path on 2024 week 10** (outcomes of the week removed from a working
+  copy of the database, targets from the schedule and chart, features from history, models fit on rows before the cutoff): the Phase 3 markets, the 4a markets and the 4b spread equal
+  the committed walk-forward predictions to < 1e-9 (the 4b expected margin and SD too). Defects the replay found and that are fixed: (1) 2025+ injury rows have no posting time
+  (date_modified is NULL in nflverse's new format): a row in a pull made by the run clock now counts as posted (2020-2024 byte-identical); (2) a team on a bye in the target week got a wrong
+  next-report flag: the future schedule is now passed (2020-2024 byte-identical); (3) LightGBM fits depend on training-row order (a catch-rate model moved by up to 0.03): fits now join rows as
+  the walk-forward harness does; (4) a traded player was predicted for both teams: a player on any chart is not also a recent player of his old team (a stale chart can still list him).
+  Notes: the live spread is the seeded simulated mean (backtest mode, 2,000 draws), so it carries the same fixed-seed Monte Carlo wobble as the validated layer (SD about 0.3); a game with no
+  margin SD yet gets no 4b record and no phase-3 fallback. The 4a/4b sub-models (status, shifts, early exit; margin scaling terms and SD) are fit on games before 2025-03-01 only.
 - 2026-10-12, Phase 5 status (built test-first; nothing of it has written a real prediction yet). **Built:** the prediction store (refuses and logs a started game or a missing
   mean, append-only versions, identical rerun writes nothing, gradable = newest version stored before kickoff, schema allowlist, lines in their own log); grading
   (idempotent, did-not-play separate); the scoped 2025+ input-history unlock with its guardrail tests; lineups for 2025+ games from timestamped charts; the scoring core
