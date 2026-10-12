@@ -1,0 +1,12 @@
+python-dotenv==1.2.3
+polars==2.0.0
+duckdb==1.5.6
+meteostat==2.1.5
+nflreadpy==0.1.5
+numpy==2.5.3
+requests==2.34.2
+lightgbm==4.7.0
+pyarrow==25.0.1
+scipy==1.18.1
+pandas==3.0.5
+scikit-learn==1.9.1
