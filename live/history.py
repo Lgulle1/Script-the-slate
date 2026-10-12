@@ -15,6 +15,7 @@ import polars as pl
 
 import config
 from eval import baselines as bl
+from features import lineups as lu
 
 
 @dataclass(frozen=True)
@@ -43,3 +44,22 @@ def read_input_history(cutoff: date, raw_db=config.RAW_DUCKDB_PATH) -> InputHist
     team_log = team_log.filter(pl.col("gameday") < cutoff)
     player_log = player_log.filter(pl.col("gameday") < cutoff)
     return InputHistory(player_log=player_log, team_log=team_log, cutoff=cutoff, through_season=through)
+
+
+def lineups_from_snapshots(charts: pl.DataFrame, games: pl.DataFrame) -> pl.DataFrame:
+    """Lineup group ids (features.lineups.COMPONENTS) of 2025+ team-games from the timestamped charts (raw layout: dt, team, pos_abb, pos_rank, gsis_id, pos_grp).
+
+    `games` has season, week, team, gameday. Each game takes the newest offensive chart strictly BEFORE its game day (the convention of eval/baselines.build_role_table),
+    so nothing from the day itself leaks in; a game with no earlier chart gets no row (continuity then treats it as unchanged, never as a change)."""
+    from datetime import datetime, time
+    from features.depth_live import LEGACY_POSITION, OFFENSE_GROUP
+    c = charts.filter(pl.col("season").is_null() & (pl.col("pos_grp") == OFFENSE_GROUP) & pl.col("gsis_id").is_not_null() & pl.col("pos_abb").is_in(list(LEGACY_POSITION)))
+    c = c.with_columns(snap=pl.col("dt").str.to_datetime(time_zone="UTC", strict=False).dt.replace_time_zone(None)).drop_nulls("snap")
+    snaps = c.select("team", "snap").unique().sort("snap")
+    g = games.select("season", "week", "team", "gameday").unique().with_columns(game_start=pl.col("gameday").map_elements(lambda d: datetime.combine(d, time()), return_dtype=pl.Datetime("us"))).sort("game_start")
+    picked = g.join_asof(snaps, left_on="game_start", right_on="snap", by="team", strategy="backward", allow_exact_matches=False, check_sortedness=False).drop_nulls("snap")
+    if picked.is_empty():
+        return pl.DataFrame(schema={"season": pl.Int32, "week": pl.Int32, "team": pl.String, **{k: pl.Int64 for k in lu.COMPONENTS}})
+    d = picked.join(c.select("team", "snap", "gsis_id", position=pl.col("pos_abb").replace_strict(LEGACY_POSITION), depth_team=pl.col("pos_rank").cast(pl.String)),
+                    on=["team", "snap"], how="inner").select("season", "week", "team", "gsis_id", "position", "depth_team")
+    return lu.lineups_from_chart(d)

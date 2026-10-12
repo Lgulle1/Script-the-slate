@@ -40,6 +40,13 @@ def build_lineups(raw_db=config.RAW_DUCKDB_PATH, max_season=None, start=None) ->
             " ORDER BY season, week, club_code, gsis_id, depth_team, position, pulled_at DESC)").pl()
     finally:
         con.close()
+    return lineups_from_chart(d)
+
+
+def lineups_from_chart(d: pl.DataFrame) -> pl.DataFrame:
+    """The group ids of build_lineups from an offensive chart frame (season, week, team, gsis_id, position, depth_team); one row per (team, season, week).
+
+    Shared with the 2025+ snapshot path (live/history.py), which turns each timestamped chart into this frame."""
     d = d.with_columns(slot=pl.col("depth_team").cast(pl.Int32, strict=False))
     comp = {
         "QB": (pl.col("position") == "QB") & (pl.col("slot") == 1),
