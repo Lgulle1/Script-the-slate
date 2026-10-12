@@ -392,6 +392,16 @@ and tested) and the work moves to 4d.
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-12, scan of the gitignored files (data/ is ignored as a whole, plus .env, .claude/ and caches).
+  - **Hand-made inputs:** only data/coaches_seed.csv, the 2026 staff, now tracked (24d7477). data/coaches_history.csv is generated and tracked too.
+  - **Rebuildable by scripts, left ignored:** data/raw/raw.duckdb (462 MB, the nflverse and Meteostat pulls), data/processed (218 MB), the
+    DuckDB tables derived from them, data_audit.json.
+  - **Not re-obtainable as they stood:** every raw table is one pull, stamped 2026-10-07. Historical seasons can be pulled again, but upstream
+    corrections would change the bytes (the data fingerprints would move). What cannot be pulled again at all is anything that is only true
+    as of a moment: the 15 stored 2026 weather forecasts and the 2026 injury reports, depth charts and rosters as of 2026-10-07. The forecast
+    recorder keeps its snapshots in the tracked records/weather_forecast_log.csv for this reason. The 2026 injury / depth-chart / roster
+    snapshots are not saved anywhere outside the raw database.
+  - **Not committed on purpose:** .env (a contact string for the weather API) and .claude/settings.local.json (local permissions).
 - 2026-10-09, 4a ablation rerun on the current code (run_injury_ablation.py --tag rerun_20261009). Two runs byte-identical (results
   b5a9ff05a5fe5b52, predictions 1c6805ccef66799d). **The rerun is identical to the first run (335752f)**: every result column except the new
   weight column, and all 89,599 predictions. The role-share fixes made after the first run sit on the 4b simulation path (role-aware baselines,
