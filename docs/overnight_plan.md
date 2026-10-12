@@ -484,6 +484,24 @@ Reason you gave: the holdout protects the models, not the data; reading 2025 res
 4. **Refit rule.** Models stay fit on 2020-2024 until the Phase 6 benchmark has run once and its result is recorded in this plan. Refitting on 2025 is then a
    separate decision of yours, and from then on 2026 is the clean holdout.
 
+**P5.7 Wiring the weight-1 layers into the live run (decided 2026-10-12: layers first, then the schedule; fixed before the wiring is built).**
+1. **The weights file decides.** A prediction for market M uses layer L exactly when layer_weights.csv has weight 1.0 for (L, M). No layer name or market list is hard-coded
+   in the run: code holds only a registry of layer builders by name, and a layer with weight 1.0 but no builder stops the run with an error (never silently dropped, never
+   silently added). Phase 6 changing a weight changes the run with no code change.
+2. **Stack label per prediction.** Every record carries `stack` = "phase3" plus "+4a" / "+4b" for each layer actually used for that record's market (e.g. "phase3+4a", "phase3+4b").
+   It is part of the record schema and of the store's identity check (a change of stack is a new version). Grading and every summary are reported per stack label and never
+   blended; a week that mixes stacks shows one block per label.
+3. **Exact replay with the layers in.** After wiring, the 2024 week 10 replay is rerun against the committed walk-forward predictions of every layer: the Phase 3 predictions, the
+   4a "with injury features" predictions (injury_ablation_predictions_*), and the 4b simulated spread. Required: identical to within 1e-9, as for Phase 3. Any drift means the live
+   path differs from the backtest and nothing is stored until it is explained.
+4. **Holdout.** The inputs of 4a and 4b for 2025 and 2026-to-date (injury reports, weekly rosters, snap counts, ratings, game state) come through the scoped input-history
+   function only (live/history.py); the layers' own sub-models (status, shifts, early exit; ratings and state coefficients) stay fit on 2020-2024 rows; the same mutation tests
+   (cutoff comparison, no filter, over-wide unlock) apply to every new reader.
+5. **Timing.** A game that kicks off before the full stack is wired gets no stored record rather than a weak-stack one (decided by you); the store's refusal rule makes this
+   automatic, and nothing is stored for a game until the stack in force is final for it.
+6. **Before the schedule exists:** the full test suite passes; the push path to data-snapshots has landed once; then the Friday 20:00 UTC and Sunday-morning routine is created
+   and its approval setting is reported.
+
 **P5.5 Grading (`grade_week.py`)** is idempotent (a second run adds no rows and changes none), keeps the pure and the market-aware tracks in separate tables,
 grades an eligible non-player as actual = 0 with did_not_play = true and reports those rows separately, and writes the weekly summary next to the best Phase 2
 baseline on the same rows.
