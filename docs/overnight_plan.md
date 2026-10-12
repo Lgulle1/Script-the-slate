@@ -513,6 +513,49 @@ no feature; the 2025 holdout guard rejects a 2025 target and a 2025 training row
 **Gate (from the build plan, unchanged):** the weekly cycle runs with no manual step beyond starting the two scripts, every prediction is stored before kickoff,
 and at least three to four weeks of graded live predictions exist before Phase 6.
 
+## Residual pattern screen (asked for by the project manager, 2026-10-12; fixed here BEFORE any candidate feature is built or any residual is looked at)
+- **Question.** Which signals the Phase 3 models do not use yet carry information about the models' misses (actual - prediction)? This is a SCREEN, not a layer:
+  it sets no weight and changes no prediction. A survivor is a hypothesis that earns its own layer gate and a full ablation (the feature inside the retrained model,
+  the 4a/4d/4e procedure) before it can get weight 1.
+- **Data.** The committed walk-forward predictions of `vol_x_eff` (eligibility_v2), 2020-2024 player-games with a prediction and an actual. Seasons <= 2024 only (asserted);
+  no sportsbook line, spread, total or moneyline column is read (pure track); weather (temp, wind, roof) was settled by 4e and is not retested.
+- **Markets.** targets, rush_att, pass_att, rec_yds, rush_yds, pass_yds. Each candidate is tested only on the markets listed with it.
+- **Candidates (fixed, 21; each strictly as-of: schedule facts known in advance, or built only from games before the row's week cutoff).**
+  - Schedule context, all six markets: X1 own rest days; X2 opponent rest days; X3 after-bye flag (rest >= 13); X4 prime-time flag (Thursday, Monday, or kickoff 19:00+);
+    X5 divisional game; X6 week of the season; X7 head referee's trailing plays per game above the league mean (>= 20 earlier games); X8 head referee's trailing penalties per game.
+  - Player trend, receiving markets (targets, rec_yds): X9 snap-share trend (mean offense_pct of the last 3 games - last 8; also tested on rush_att, rush_yds); X10 target-share trend
+    (last 3 - last 8); X11 air-yards share, trailing 8; X12 average depth of target, trailing 8; X13 luck: trailing-8 (rec yards - expected rec yards) per game (ff_opportunity);
+    X14 average separation, trailing (nextgen); X15 yards after the catch above expectation, trailing (nextgen).
+  - Player trend, rushing markets (rush_att, rush_yds): X16 carry-share trend (last 3 - last 8); X17 luck: trailing-8 (rush yards - expected rush yards) per game.
+  - Team tendency: X18 script-adjusted pass tendency = trailing-8 pass rate in neutral situations (win probability 0.2-0.8, quarters 1-3) minus overall pass rate, on pass_att, rush_att, targets;
+    X19 no-huddle rate, trailing 8, on pass_att, rush_att.
+  - Opponent defense: X20 pressure rate (QB hits + sacks per dropback), trailing 8, on pass_att, pass_yds, targets; X21 man-coverage rate (participation) and blitz rate (>= 5 rushers),
+    trailing 8, on targets, rec_yds, pass_yds (counted as two candidates in the multiplicity count).
+- **Test.** For each (candidate, market): rows with the candidate present (coverage < 70% of the market's rows -> reported as "insufficient coverage", not tested). Standardize the candidate on the
+  training seasons only. Folds 2021, 2022, 2023, 2024: fit residual ~ a + b * z by least squares on the earlier seasons, predict the residual on the fold season, and score
+  gain = mean(|r|) - mean(|r - r_hat|) (the absolute-error gain every ablation here uses). The pooled gain over the four folds gets the season-week cluster bootstrap (eval.compare.cluster_bootstrap, 10,000 resamples,
+  seed config.BOOTSTRAP_SEED) at the Bonferroni level 1 - 0.05 / m, m = the number of (candidate, market) cells actually tested (printed). Squared-error gain is reported next to it, not used for the verdict.
+- **Verdict.** CLEARS at the Bonferroni level: gain > 0, the interval above zero, wins in >= 2 of the 4 fold seasons, and the sign of b the same in every fold. EDGE and NO as in eval.compare.verdict.
+  A candidate that clears nowhere is reported as null. No threshold is tuned afterwards to produce a survivor.
+- **Amendment 1 (2026-10-12, written after the first run, BEFORE the rerun; the estimator changes, no threshold, list or verdict rule does).** The first run fit each correction by least squares, as written above.
+  It was invalid by construction: every Phase 3 model is fit to the median (L1) and its residuals are right-skewed (targets: mean residual +0.31, median -0.04; rec_yds +3.39 vs -2.20), so the least-squares INTERCEPT alone
+  shifts predictions toward the mean and costs absolute error (adding the training-mean residual to 2024 targets: MAE 1.730 -> 1.759; adding the median: 1.730 -> 1.730). Result: 72 of 74 cells showed a negative gain regardless of the candidate. Those numbers are kept
+  as data/processed/residual_screen_cells_ols_invalid.parquet and are not evidence about any candidate. The fit is now least absolute deviations (median regression, sklearn QuantileRegressor, quantile 0.5, no penalty), the estimator that matches the metric.
+  Everything else (candidates, coverage rule, folds, gain, Bonferroni level over the 74 cells, verdict) is unchanged.
+- **Amendment 2 (2026-10-12, written after the second run, BEFORE the third; again the estimator/score changes, no list, level or verdict rule).** The median-regression run returned 9 CLEARS, all on rec_yds, and the
+  per-season gains were nearly identical (about 0.12 per row) for unrelated candidates (rest days, week number, divisional game, after-bye flag). A gain that does not depend on the candidate is the fitted INTERCEPT
+  (a median shift of the Phase 3 prediction), not the candidate. The gain is therefore scored against the intercept-only median correction fitted on the same training seasons: gain = mean(|r - a|) - mean(|r - a - b z|),
+  so only what the candidate's slope adds counts. The intercept-only gain is reported beside it (it is a calibration finding about the Phase 3 product, handled separately, not a candidate). The second run's table is
+  data/processed/residual_screen_cells_lad_total_gain.parquet, kept and not used for any verdict.
+- **Limits, stated now.** Linear, one candidate at a time: an interaction or a non-linear effect is not tested; a candidate that fails here can still help inside a retrained tree model, and one
+  that passes may not survive it. Also reported: the noise floor (what a perfect-mean Poisson outcome would miss by) beside the model's error for each volume market, so "how far from the best possible" is on the page.
+- **Residual screen result (2026-10-12, third run, amendments 1 and 2 applied; 74 cells tested, Bonferroni level 0.99932; 8 cells untested for coverage < 70%: separation and YAC-above-expectation (51%), referee plays / penalties on targets and rec_yds (69%)).**
+  1 CLEARS, 25 EDGE, 48 NO. The one CLEARS: X9 snap-share trend on rec_yds, gain 0.0236 yards per row (0.13% of the 17.8-yard mean miss), positive in all four fold seasons, interval [0.0069, 0.0425].
+  Statistically real, practically negligible; the same candidate is EDGE on targets (+0.0029, 0.17%) and rush_yds. No other candidate (rest, bye, divisional, prime time, week, referee, air-yards share, depth of target, luck vs expectation, carry-share trend,
+  neutral-script pass tendency, no-huddle, opponent pressure / man / blitz rate) cleared anywhere. Largest EDGE: opponent blitz rate on pass_yds (+0.126 yards, interval [-0.34, +0.37], 2,044 QB-games). Intercept-only (calibration) gains: rec_yds +0.083, pass_yds -0.26: nothing to recalibrate.
+  Reading: the Phase 3 stack is not missing a simple linear signal in this data; the remaining miss is mostly per-game variance. Weights unchanged (the screen sets none). Open, not tested: interactions and non-linear effects,
+  richer matchup data (receiver vs the specific defender, route-level), in-game events. X9 on rec_yds may enter a layer gate only if the project manager asks for one.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
@@ -550,6 +593,19 @@ and at least three to four weeks of graded live predictions exist before Phase 6
     15% average), the weights are left as they are and logged, never forced. See the 4c.4 review fixes above.
 
 ## Log
+- 2026-10-12, retrospective check of 2026 week 5 (**NOT a track record**; scripts/retro_check_2026_week5.py, retro_check_2026_week5.parquet). The full live stack was run as of 2026-10-07 13:00 UTC
+  (only data pulled by then) and graded on the 14 games played by 12 Oct against results pulled afterwards. The predictions were made after the fact, so they count toward no gate and no record.
+  Played players only, MAE of the model vs each player's mean of his last four games: pass_att 6.16 vs 7.88 (n 25), pass_cmp 3.79 vs 5.05, pass_yds 57.9 vs 70.8, rec 1.33 vs 1.43 (n 187), rec_yds 18.6 vs 20.0,
+  targets 1.68 vs 1.87, rush_att 3.44 vs 3.56 (n 59), rush_yds 20.8 vs 21.0, qb_rush_att 1.59 vs 1.61 (n 7), qb_rush_yds 27.7 vs 28.8; game markets (n 14): spread MAE 10.26, total MAE 10.89, moneyline Brier-style
+  error 0.458 (no yardstick). 14 games is far too few to separate model from baseline, and nothing here compares with a market. Eligible players who did not play: 77 receiving, 27 rushing, 3 passing rows
+  (reported separately, as in grading). Direction matches the 2020-2024 backtest; it is a sanity check of the live path on unseen games, nothing more.
+- 2026-10-12, recording routine: the first design FAILED its push test and was replaced. A routine that starts a fresh session each time (trig_01AmDK2LY8cnxUoGCvKqZXBu) gets no repository in its
+  session sources, so the git proxy refuses the push with a 403 ("not in this session's authorized repository set"); the commits would have been lost with the container. Test fires #1 and #2
+  looked fine only because they recorded nothing to push. Fix: a dedicated long-lived session created WITH the repository as its source and data-snapshots as its outcome branch
+  (session_01HEYLULjTuAturFyEuhYJWC, permission mode default with Bash/Read/Write/Edit pre-approved: it ran without stopping for approval), and a routine that messages that session
+  (trig_01QnyyzrPT7HbYGzpkut8cf9, "RECORD", 7 0,6,12,18 UTC on Sun, Mon, Wed-Sat). The old trigger is disabled. **Push path proven once:** the session recorded 2 forecast rows and
+  pushed commit 5187a6d822af697bfcdb51d58c2a6a7919050156 to origin/data-snapshots at 2026-10-12 15:03 UTC. The first scheduled run is 18:07 UTC today (checked 18:30 UTC).
+  A weekly-prediction session is built the same way (session_01EMRZGLMaRbQhgNWY6yd5Zo); its first message is a dry run.
 - 2026-10-12, Phase 5 layers wired and replayed (P5.7). Layers on/off come from layer_weights.csv (4a for rush_att, rush_yds, targets, rec, rec_yds; 4b for spread); each record carries its
   stack label ("phase3", "phase3+4a", "phase3+4b"); grading and summaries are per label. **Replay of the whole live path on 2024 week 10** (outcomes of the week removed from a working
   copy of the database, targets from the schedule and chart, features from history, models fit on rows before the cutoff): the Phase 3 markets, the 4a markets and the 4b spread equal

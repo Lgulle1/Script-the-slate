@@ -22,7 +22,9 @@ def current_season() -> int:
 
 def _pull(seasons, db_path) -> dict:
     config.ensure_data_dirs()
-    return {name: fn(seasons, db_path) for name, fn in TABLES.items()}
+    out = {"players": pn.pull_players()}          # the player-id master table (data/script_the_slate.duckdb): ingest.ids reads it to match snap-count ids to gsis ids
+    out.update({name: fn(seasons, db_path) for name, fn in TABLES.items()})
+    return out
 
 
 def bootstrap(db_path=config.RAW_DUCKDB_PATH) -> dict:

@@ -28,6 +28,22 @@ def game_expectations_live(features: pl.DataFrame, games: pl.DataFrame, game_ids
     return ge.filter(pl.col("game_id").is_in(game_ids)).select("game_id", "margin_mean", "margin_sd")
 
 
+def margin_terms_live(features: pl.DataFrame, games: pl.DataFrame, game_ids: list, season: int, week: int, floor_key: int) -> pl.DataFrame:
+    """The 4b.2 expected margin of each target game by term (live.explain.margin_decomposition), from the same fit game_expectations_live uses."""
+    from live import explain as EX
+    target, coef = gs.predict_week(features, season, week, floor_key)
+    if coef is None:
+        return pl.DataFrame()
+    side = {(r["game_id"], r["team"]): r for r in target.iter_rows(named=True)}
+    out = []
+    for g in games.filter(pl.col("game_id").is_in(game_ids)).iter_rows(named=True):
+        h, a = side.get((g["game_id"], g["home_team"])), side.get((g["game_id"], g["away_team"]))
+        if h is None or a is None:
+            continue
+        out.append(EX.margin_decomposition(h, a, coef).with_columns(game_id=pl.lit(g["game_id"])))
+    return pl.concat(out) if out else pl.DataFrame()
+
+
 def spread_rows(ge: pl.DataFrame) -> pl.DataFrame:
     """(game_id, mean) for the spread market; a game without an SD yet (fewer than MIN_SD_GAMES earlier games) has no 4b prediction."""
     rows = [(r["game_id"], spread_sim_mean(r["game_id"], r["margin_mean"], r["margin_sd"])) for r in ge.iter_rows(named=True)

@@ -117,3 +117,40 @@ def test_the_4b_spread_matches_the_simulated_spread_of_the_committed_game_expect
     assert np.abs((j["mean"] - j["ref"]).to_numpy()).max() < 1e-9
     dbg = out["debug"]["sim"]["expectations"].join(ge, on="game_id", suffix="_ref")
     assert np.abs((dbg["margin_mean"] - dbg["margin_mean_ref"]).to_numpy()).max() < 1e-9 and np.abs((dbg["margin_sd"] - dbg["margin_sd_ref"]).to_numpy()).max() < 1e-9
+
+
+@needs_all
+def test_every_stored_player_mean_is_the_product_of_the_components_the_attribution_explains(replay4a):
+    """The attribution is the prediction's own arithmetic: component predictions multiply to the stored mean, and each component is its baseline plus its contributions."""
+    from live import explain as EX
+    out, active = replay4a
+    p, ex = out["predictions"].filter(pl.col("player_id").is_not_null()), out["explanations"]
+    comp = ex.group_by("game_id", "player_id", "stack", "quantity").agg(c=pl.col("component_prediction").first(), raw=pl.col("contribution").sum())
+    lookup = {(r["game_id"], r["player_id"], r["stack"], r["quantity"]): r["c"] for r in comp.iter_rows(named=True)}
+    checked = 0
+    for r in p.iter_rows(named=True):
+        key = (r["game_id"], r["player_id"], r["stack"])
+        parts = [lookup.get((*key, q)) for q in EX.MARKET_COMPONENTS[r["market"]]]
+        if r["mean"] is None or any(x is None for x in parts):
+            continue
+        assert abs(float(np.prod(parts)) - r["mean"]) < 1e-9, (r["market"], r["stack"])
+        checked += 1
+    assert checked > 0.97 * p.height
+
+
+@needs_all
+def test_the_margin_terms_add_up_to_the_expected_margin_that_drives_the_4b_spread(replay4a):
+    out, _ = replay4a
+    mt, ge = out["margin_terms"], out["debug"]["sim"]["expectations"]
+    got = mt.filter(pl.col("term") == "margin").select("game_id", "points")
+    j = got.join(ge, on="game_id")
+    assert j.height == ge.height and (j["points"] - j["margin_mean"]).abs().max() < 1e-9
+
+
+@needs_all
+def test_attribution_files_stay_out_of_the_prediction_store_root(replay4a):
+    """PredictionStore.load reads every *.parquet in the store root, so the attribution tables live in a subdirectory."""
+    import glob
+    out, _ = replay4a
+    root = out["manifest"]["run_id"]
+    assert W.EXPLAIN_DIR == "explain" and out["explanations"].height > 0

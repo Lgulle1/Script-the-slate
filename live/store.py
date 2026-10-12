@@ -88,9 +88,9 @@ class PredictionStore:
         started = p.filter(pl.col("kickoff_time") <= now)
         self._refuse(started, now, run_id, lambda r: f"kickoff {r['kickoff_time'].isoformat()} is not after the clock {now.isoformat()}")
         p = p.filter(pl.col("kickoff_time") > now)
-        nomean = p.filter(pl.col("mean").is_null())
-        self._refuse(nomean, now, run_id, lambda r: "no mean: a market with a missing component is not a prediction")
-        p = p.filter(pl.col("mean").is_not_null())
+        nomean = p.filter(pl.col("mean").is_null() | ~pl.col("mean").is_finite().fill_null(False))
+        self._refuse(nomean, now, run_id, lambda r: "no mean: a market with a missing component is not a prediction" if r["mean"] is None else f"mean {r['mean']} is not finite")
+        p = p.filter(pl.col("mean").is_not_null() & pl.col("mean").is_finite())
         result.refused = started.height + nomean.height
         if p.is_empty():
             return result

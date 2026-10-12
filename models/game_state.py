@@ -285,10 +285,15 @@ def pregame_features(inp: Inputs, ratings: pl.DataFrame, status_models: dict | N
                 return [None] * len(cols), 0
             pos = np.array([clock[(a, b)] for a, b in zip(past["season"].to_list(), past["week"].to_list())])
             wt = 0.5 ** ((here - pos) / config.RECENCY_HALF_LIFE_GAMES)
-            return [float((wt * past[c].to_numpy().astype(float)).sum() / wt.sum()) for c in cols], past.height
+            out = []
+            for c in cols:                                       # a game with no result yet (a live run's unplayed earlier game) has NaN plays: it carries no weight
+                v = past[c].to_numpy().astype(float)
+                ok = np.isfinite(v)
+                out.append(float((wt[ok] * v[ok]).sum() / wt[ok].sum()) if ok.any() else None)
+            return out, past.height
         (pl_a, db_a), n_a = wmean(hist[team], ["plays", "dropbacks"])
         (pa_b,), _ = wmean(hist[opp], ["opp_plays"])
-        m = lpos < here
+        m = (lpos < here) & np.isfinite(lpts)
         wt = 0.5 ** ((here - lpos[m]) / config.RECENCY_HALF_LIFE_GAMES)
         league_pts = float((wt * lpts[m]).sum() / wt.sum()) if m.any() else None
         ra, rb = rmap.get((s, w, team)), rmap.get((s, w, opp))

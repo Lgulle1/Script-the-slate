@@ -1,0 +1,21 @@
+game_id,team,name,pos,pass_att,pass_cmp,pass_yds,qb_rush_att,qb_rush_yds,rush_att,rush_yds,targets,rec,rec_yds
+2026_05_BUF_LA,BUF,Josh Allen,QB,31.5,20.0,224.2,6.1,30.5,,,,,
+2026_05_BUF_LA,BUF,James Cook,RB,,,,,,17.3,82.9,2.2,1.7,11.3
+2026_05_BUF_LA,BUF,Ray Davis,RB,,,,,,1.7,7.1,,,
+2026_05_BUF_LA,BUF,Ty Johnson,RB,,,,,,1.9,7.8,2.5,2.0,13.8
+2026_05_BUF_LA,BUF,Dalton Kincaid,TE,,,,,,,,4.4,3.0,31.8
+2026_05_BUF_LA,BUF,DJ Moore,WR,,,,,,,,4.8,3.0,36.1
+2026_05_BUF_LA,BUF,Josh Palmer,WR,,,,,,,,1.8,1.1,13.3
+2026_05_BUF_LA,BUF,Keon Coleman,WR,,,,,,,,4.6,3.0,36.4
+2026_05_BUF_LA,BUF,Khalil Shakir,WR,,,,,,,,5.5,3.6,38.9
+2026_05_BUF_LA,BUF,Tyrell Shavers,WR,,,,,,,,1.6,1.0,11.5
+2026_05_BUF_LA,LA,Matthew Stafford,QB,36.8,24.8,271.8,,,,,,,
+2026_05_BUF_LA,LA,Blake Corum,RB,,,,,,7.8,32.9,1.1,0.9,6.6
+2026_05_BUF_LA,LA,Kyren Williams,RB,,,,,,14.4,62.4,4.7,3.8,27.4
+2026_05_BUF_LA,LA,Colby Parkinson,TE,,,,,,,,3.1,2.2,21.5
+2026_05_BUF_LA,LA,Terrance Ferguson,TE,,,,,,,,2.5,1.6,15.9
+2026_05_BUF_LA,LA,Tyler Higbee,TE,,,,,,,,3.9,2.9,25.4
+2026_05_BUF_LA,LA,Davante Adams,WR,,,,,,,,7.7,4.9,63.7
+2026_05_BUF_LA,LA,Jordan Whittington,WR,,,,,,,,1.2,0.8,7.9
+2026_05_BUF_LA,LA,Konata Mumpfield,WR,,,,,,,,2.7,1.6,20.2
+2026_05_BUF_LA,LA,Puka Nacua,WR,,,,,,,,9.0,6.4,80.8
