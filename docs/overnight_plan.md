@@ -299,6 +299,62 @@ and tested) and the work moves to 4d.
 - **4e (weather): not built yet.** The backtest's weather is OBSERVED (Meteostat station readings at kickoff, 2020-2025), not known before
   kickoff. The options for handling observed-vs-forecast weather are laid out for your choice before anything is built.
 
+## 4e gate (yours, 2026-10-12: option D with A1 and A2 together; fixed before anything is built)
+- **Why.** The backtest only has OBSERVED weather (Meteostat station readings at kickoff), which nobody knew before kickoff. A layer that only
+  works on exact observed weather will not work live. So the gate is run on weather degraded to forecast quality, three ways.
+- **Variants (outdoor games only; applied to training and test rows alike; one draw per game from a generator seeded by the game id).**
+  - **A1 bins.** Wind <10 / 10-15 / 15-20 / 20+ mph; temperature <=32 / 33-50 / 51-70 / >70 F; precipitation yes / no. The model sees the bin index.
+  - **A2 noise.** Wind +/- N(0, 4 mph), temperature +/- N(0, 4 F), precipitation flipped with probability 0.2, seed 20261012. The sizes are my
+    assumption, not measured.
+  - **A2x2.** The same draws at double size: N(0, 8 mph), N(0, 8 F), flip probability 0.4.
+- **Pass rule.** A market keeps weight 1 only if the layer CLEARS under A1, under A2 AND under A2x2 (an AND, so stricter, never a pick of the
+  best). CLEARS is the one rule: gain > 0, the 95% season-week interval excluding zero, >= 2 seasons won. Judged, as the build plan says,
+  on outdoor games with real wind (>= 15 mph) or cold (<= 32 F), taken from the observed values; on the other rows the layer must not be
+  significantly worse (interval entirely below zero). Results on exact observed weather are reported for reference only and never gate.
+- **Domes and closed roofs.** An indoor game (fixed dome, or a retractable roof closed) gets fixed neutral values in every variant (wind 0,
+  precipitation 0, temperature 70 F) and an explicit indoor flag. It is never binned or noised. A test changes an indoor game's observed
+  weather and checks that its features do not move. Roof state unknown: the weather features are missing (null, with the completeness
+  penalty), not neutral. A missing weather row never crashes the pipeline.
+- **Route.** Features into the Phase 3 volume and efficiency models and a per-market ablation, as for 4a and 4c. The learned shifts inside the
+  4b simulation are wired only if a market CLEARS.
+- **Forecast record (option C), running from 2026-10-12.** ingest/record_forecasts.py snapshots every live-season forecast into the tracked
+  records/weather_forecast_log.csv (append-only, with pulled_at and hours_before_kickoff). After a season it gives a real forecast-time
+  backtest and measured forecast errors to replace A2's assumed sizes. The recurring schedule is waiting on your go-ahead.
+- **Licences.** The pipeline uses Meteostat: https://dev.meteostat.net/license.html says the data is "published under the terms of the Creative
+  Commons Attribution 4.0 International (CC BY 4.0) license", that you "must give credit to Meteostat and its meteorological data providers"
+  (example "Source: Meteostat, Deutscher Wetterdienst"), may share and adapt it "even commercially", and that data fetched through the Python
+  library comes from providers whose own licences should be reviewed (not yet done per provider). Open-Meteo, only option B and not used:
+  https://open-meteo.com/en/terms says "You may only use the free API services for non-commercial purposes", and commercial examples include
+  "Operating websites or apps that have subscriptions or display advertisements". If this ever becomes a paid product, Open-Meteo would
+  need its paid plan; Meteostat's attribution and the providers' licences would need checking.
+
+## 4d.1 gate (fixed before anything is built; my reading of the plan is listed for your veto)
+- **What the data allows.** Under option 3 only head coaches are known. The 2020-2024 seasons have 45 head-coach change events (34 at week 1,
+  11 in-season). Only 9 have an earlier head-coach stop elsewhere in the 2016+ data: McCarthy (DAL 2020), Rivera (WAS 2020), Bevell (JAX
+  2021 wk 15), Bowles (TB 2022), Pederson (JAX 2022), Wilks (CAR 2022 wk 6), Payton (DEN 2023), Reich (CAR 2023), Quinn (WAS 2024). The
+  other 36 were coordinators or assistants, whose play-calling stops are UNKNOWN. So the layer can act in about a fifth of the events.
+- **The prior** (build plan 4d.1). From play-by-play at each prior stop (a head-coach stint with another team, never the current team):
+  - **Pass rate over expected.** Mean of (pass - xpass) over designed pass and run plays (nflfastR xpass, tagged derived).
+  - **Pace.** Median seconds between a team's consecutive plays in neutral states: win probability 0.2-0.8, outside the last 2 minutes of each
+    half, same drive, no timeout, penalty, spike or kneel.
+  - **Fourth-down aggressiveness.** Go rate minus the league's same-season go rate in the same situation, in neutral states. A situation is
+    ydstogo 1 / 2 / 3-4 / 5-7 / 8+ by yardline_100 1-20 / 21-40 / 41-60 / 61-80 / 81-99.
+  - **Weights.** A stop is weighted by recency, 0.5 ^ (seasons since the stop ended / 3), and by length, games / (games + 17). The coach prior is
+    the weighted mean over his prior stops. Blend with the current stint: weight 6 / (6 + games under him with this team so far).
+  - **Rules.** A coach with no prior stop gets no prior (null, marked no-prior). Walk-forward only: a stop counts only if it ended before the
+    target game. A team without a coaching change gets no prior.
+- **Where it enters.** Feature columns into the Phase 3 volume and efficiency models (coach_prior_proe, coach_prior_pace, coach_prior_go4,
+  coach_prior_weight, coach_games, coach_state), then a per-market ablation as for 4a and 4c. This departs from the build plan's wording (fill the
+  4b.1 hook and the 4b.3 starting values): the 4b simulation carries weight only for spread and the ratings are EPA, which none of the three
+  tendencies maps onto, so the Phase 3 models are where the layer can show lift. The 4b hooks stay empty; wire them only if a market CLEARS.
+- **Windows.** W1: weeks 1-6 of every season. W2: a team-game within the first six games under a new head coach. W0: everything else.
+- **Pass rule per market.** CLEARS on the W1 + W2 rows (gain > 0, the 95% season-week interval excluding zero, >= 2 seasons won) AND not
+  significantly worse on W0 (the interval's upper bound >= 0). Otherwise weight 0, flagged. Judged on 2020-2024 only; 2025 stays locked.
+- **Reading a flat result** (as already written): inconclusive about play calling, not a verdict on coaching. With 9 events it is also a
+  low-power test, so the report states n for each window.
+- **A cheaper upgrade than the 640-entry hand build.** The 36 events without a prior need only the new coach's earlier play-calling stops: 36
+  sourced lookups. This, or Hoppen's file, is the lever that matters for 4d.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
