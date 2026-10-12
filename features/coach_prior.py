@@ -189,6 +189,34 @@ def windows(f: pl.DataFrame) -> pl.DataFrame:
             .select("game_id", "team", "season", "week", "early", "post_change", "window"))
 
 
+def manual_stops(pbp: pl.DataFrame, cg: pl.DataFrame, rows: pl.DataFrame, confidences=("high", "medium")) -> pl.DataFrame:
+    """Stops for hand-sourced play-calling spells (data/play_caller_stops.csv: coach, franchise, first_season, last_season, hired_by, hire_key,
+    source_url, confidence, note): the three tendencies of that franchise's offense over the seasons he called plays, in the shape of `tendencies`.
+    Rows below the confidence list are left out. A stop must END before his first game as head coach (its last game key < hire_key), else ValueError."""
+    keep = rows.filter(pl.col("confidence").is_in(list(confidences)))
+    p = pbp.with_columns(franchise=pl.col("posteam").replace(FRANCHISE))
+    prx, pcx, fox = proe_rows(p), pace_gaps(p), fourth_rows(p)
+    out = []
+    for r in keep.iter_rows(named=True):
+        games = cg.filter((pl.col("franchise") == r["franchise"]) & pl.col("season").is_between(r["first_season"], r["last_season"]))
+        if games.height == 0:
+            raise ValueError(f"no games of {r['franchise']} in {r['first_season']}-{r['last_season']} for {r['coach']}")
+        last_key = int(games["key"].max())
+        if last_key >= r["hire_key"]:
+            raise ValueError(f"{r['coach']}: the stop at {r['franchise']} ends at {last_key}, not before his first game as head coach ({r['hire_key']})")
+        ids = games["game_id"].to_list()
+        a = prx.filter(pl.col("game_id").is_in(ids) & (pl.col("posteam").replace(FRANCHISE) == r["franchise"]))
+        b = pcx.filter(pl.col("game_id").is_in(ids) & (pl.col("posteam").replace(FRANCHISE) == r["franchise"]))
+        c = fox.filter(pl.col("game_id").is_in(ids) & (pl.col("posteam").replace(FRANCHISE) == r["franchise"]))
+        out.append(dict(coach=r["coach"], franchise=r["franchise"], stint=None, n_games=games.height, first_key=int(games["key"].min()), last_key=last_key,
+                        last_season=int(r["last_season"]), proe=float(a["proe"].mean()) if a.height else None, n_proe=a.height,
+                        pace=float(b["dt"].median()) if b.height else None, n_pace=b.height,
+                        go4=float((c["go"] - c["exp_go"]).mean()) if c.height else None, n_go4=c.height))
+    schema = {"coach": pl.String, "franchise": pl.String, "stint": pl.Int64, "n_games": pl.Int64, "first_key": pl.Int64, "last_key": pl.Int64,
+              "last_season": pl.Int64, "proe": pl.Float64, "n_proe": pl.Int64, "pace": pl.Float64, "n_pace": pl.Int64, "go4": pl.Float64, "n_go4": pl.Int64}
+    return pl.DataFrame(out, schema=schema)
+
+
 COACH_COLUMNS = ["coach_state", "coach_games", "coach_prior_proe", "coach_prior_pace", "coach_prior_go4", "coach_prior_weight"]
 
 
@@ -207,10 +235,14 @@ def attach(tables, feats: pl.DataFrame | None):
     return FeatureTables(players, tables.teams.join(f, on=["game_id", "team"], how="left", maintain_order="left"))
 
 
-def build(raw_db=config.RAW_DUCKDB_PATH) -> tuple:
-    """(features for 2016-2024, stops): head coaches per game from nflverse schedules, plays from the raw database; the holdout is never read."""
+def build(raw_db=config.RAW_DUCKDB_PATH, extra_stops: str | None = None) -> tuple:
+    """(features for 2016-2024, stops): head coaches per game from nflverse schedules, plays from the raw database; the holdout is never read.
+    extra_stops: path of the hand-sourced play-calling stops CSV (manual_stops), added to the head-coach stops."""
     from ingest.build_coaches_history import load_head_coach_games
     games = load_head_coach_games(raw_db)
     cg = coach_games(games)
-    stops = tendencies(load_pbp(raw_db), cg)
+    pbp = load_pbp(raw_db)
+    stops = tendencies(pbp, cg)
+    if extra_stops:
+        stops = pl.concat([stops, manual_stops(pbp, cg, pl.read_csv(extra_stops))], how="diagonal_relaxed")
     return features(games, stops), stops

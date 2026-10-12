@@ -158,3 +158,48 @@ def test_attach_refuses_a_table_missing_requested_columns_or_with_duplicate_keys
         CP.attach(_tables(), _feats().drop("coach_prior_pace"))
     with pytest.raises(ValueError):
         CP.attach(_tables(), pl.concat([_feats(), _feats()]))
+
+
+# ---------------------------------------------------------------------------------------------------------------- hand-sourced play-calling stops
+def _stop_rows(rows):
+    return pl.DataFrame([dict(coach=c, franchise=f, first_season=a, last_season=b, hired_by=h, hire_key=k, source_url="u", confidence=conf, note="")
+                         for c, f, a, b, h, k, conf in rows])
+
+
+def _two_season_world():
+    """OFFEN's offense in 2018-2019 (two games a season, run-heavy: xpass .5, always runs) and the league's other teams."""
+    games = _games([(2018, 1, "OFFEN", "X"), (2018, 2, "OFFEN", "X"), (2019, 1, "OFFEN", "X"), (2019, 2, "OFFEN", "X"), (2019, 1, "HIRER", "W"), (2019, 2, "HIRER", "W"), (2020, 1, "HIRER", "Y"), (2020, 2, "HIRER", "Y")])
+    plays = []
+    for s in (2018, 2019):
+        for wk in (1, 2):
+            gid = f"{s}_{wk:02d}_OFFEN"
+            for i in range(4):
+                plays.append(dict(season=s, week=wk, game_id=gid, posteam="OFFEN", defteam="Z", drive=1.0, play_id=float(i + 1), qtr=2.0, down=1.0, ydstogo=10.0,
+                                  yardline_100=60.0, play_type="run", rush=1.0, xpass=0.5, wp=0.5, game_seconds_remaining=2000.0 - 40 * i,
+                                  half_seconds_remaining=800.0 - 40 * i, timeout=0.0, penalty=0.0, qb_spike=0.0, qb_kneel=0.0, **{"pass": 0.0}))
+    return games, pl.DataFrame(plays)
+
+
+def test_manual_stops_take_their_tendencies_from_the_franchises_offense_in_the_seasons_he_called_plays():
+    games, pbp = _two_season_world()
+    rows = _stop_rows([("Y", "OFFEN", 2018, 2019, "HIRER", 202001, "high")])
+    s = CP.manual_stops(pbp, CP.coach_games(games), rows)
+    r = s.row(0, named=True)
+    assert (r["coach"], r["franchise"], r["n_games"], r["last_key"], r["last_season"]) == ("Y", "OFFEN", 4, 201902, 2019)
+    assert r["proe"] == pytest.approx(-0.5) and r["pace"] == pytest.approx(40.0)                  # all runs against a 0.5 expectation; 40 s between plays
+
+
+def test_a_manual_stop_that_does_not_end_before_the_hire_is_refused():
+    games, pbp = _two_season_world()
+    with pytest.raises(ValueError, match="before"):
+        CP.manual_stops(pbp, CP.coach_games(games), _stop_rows([("Y", "OFFEN", 2018, 2019, "HIRER", 201902, "high")]))       # the hire is the stop's last game
+
+
+def test_low_confidence_rows_stay_out_of_the_primary_table_and_manual_stops_make_a_prior():
+    games, pbp = _two_season_world()
+    rows = _stop_rows([("Y", "OFFEN", 2018, 2019, "HIRER", 202001, "low")])
+    assert CP.manual_stops(pbp, CP.coach_games(games), rows).height == 0
+    rows = _stop_rows([("Y", "OFFEN", 2018, 2019, "HIRER", 202001, "medium")])
+    stops = CP.manual_stops(pbp, CP.coach_games(games), rows)
+    f = CP.features(games, stops).filter((pl.col("team") == "HIRER") & (pl.col("season") == 2020)).sort("week")
+    assert f["coach_state"].to_list() == [1.0, 1.0] and f["coach_prior_proe"].to_list() == pytest.approx([-0.5, -0.5])
