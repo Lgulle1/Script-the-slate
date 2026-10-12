@@ -167,7 +167,7 @@ def screen(b: pl.DataFrame) -> tuple[pl.DataFrame, pl.DataFrame]:
             cover.append(dict(candidate=cand, market=m, rows=d.height, coverage=cov, tested=cov >= MIN_COVERAGE))
             if cov < MIN_COVERAGE:
                 continue
-            gains, sq, per_season, signs, cl, g_rows = [], [], {}, [], [], []
+            gains, sq, per_season, signs, cl, g_rows, null_gain = [], [], {}, [], [], [], []
             for f in FOLDS:
                 tr, te = d.filter(pl.col("season") < f), d.filter(pl.col("season") == f)
                 if tr.height < 500 or te.height < 100:
@@ -179,15 +179,17 @@ def screen(b: pl.DataFrame) -> tuple[pl.DataFrame, pl.DataFrame]:
                 beta = lad_fit(z, tr["resid"].to_numpy())
                 r_hat = beta[0] + beta[1] * ((te[cand] - mu) / sd).to_numpy()
                 r = te["resid"].to_numpy()
-                gains.append(np.abs(r) - np.abs(r - r_hat))
-                sq.append(r ** 2 - (r - r_hat) ** 2)
+                a0 = float(np.median(tr["resid"].to_numpy()))                           # intercept-only (median) correction: the null the candidate must beat
+                null_gain.append(np.abs(r) - np.abs(r - a0))
+                gains.append(np.abs(r - a0) - np.abs(r - r_hat))                       # incremental gain of the slope over the intercept-only correction (plan amendment 2)
+                sq.append((r - a0) ** 2 - (r - r_hat) ** 2)
                 cl.append(te["cluster"].to_numpy())
                 per_season[f] = float(gains[-1].mean())
                 signs.append(np.sign(beta[1]))
             if not gains:
                 continue
             g, s, c = np.concatenate(gains), np.concatenate(sq), np.concatenate(cl)
-            cells.append(dict(candidate=cand, market=m, n=len(g), gain=float(g.mean()), sq_gain=float(s.mean()), seasons_won=int(sum(v > 0 for v in per_season.values())),
+            cells.append(dict(candidate=cand, market=m, n=len(g), gain=float(g.mean()), intercept_only_gain=float(np.concatenate(null_gain).mean()), sq_gain=float(s.mean()), seasons_won=int(sum(v > 0 for v in per_season.values())),
                               sign_stable=bool(len(set(signs)) == 1), slope_sign=float(signs[-1]), per_season=str({k: round(v, 5) for k, v in per_season.items()}),
                               mean_abs_resid=float(np.abs(np.concatenate([x for x in [d.filter(pl.col("season") >= 2021)["resid"].to_numpy()]])).mean()),
                               _g=g, _c=c))

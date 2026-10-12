@@ -542,6 +542,11 @@ and at least three to four weeks of graded live predictions exist before Phase 6
   shifts predictions toward the mean and costs absolute error (adding the training-mean residual to 2024 targets: MAE 1.730 -> 1.759; adding the median: 1.730 -> 1.730). Result: 72 of 74 cells showed a negative gain regardless of the candidate. Those numbers are kept
   as data/processed/residual_screen_cells_ols_invalid.parquet and are not evidence about any candidate. The fit is now least absolute deviations (median regression, sklearn QuantileRegressor, quantile 0.5, no penalty), the estimator that matches the metric.
   Everything else (candidates, coverage rule, folds, gain, Bonferroni level over the 74 cells, verdict) is unchanged.
+- **Amendment 2 (2026-10-12, written after the second run, BEFORE the third; again the estimator/score changes, no list, level or verdict rule).** The median-regression run returned 9 CLEARS, all on rec_yds, and the
+  per-season gains were nearly identical (about 0.12 per row) for unrelated candidates (rest days, week number, divisional game, after-bye flag). A gain that does not depend on the candidate is the fitted INTERCEPT
+  (a median shift of the Phase 3 prediction), not the candidate. The gain is therefore scored against the intercept-only median correction fitted on the same training seasons: gain = mean(|r - a|) - mean(|r - a - b z|),
+  so only what the candidate's slope adds counts. The intercept-only gain is reported beside it (it is a calibration finding about the Phase 3 product, handled separately, not a candidate). The second run's table is
+  data/processed/residual_screen_cells_lad_total_gain.parquet, kept and not used for any verdict.
 - **Limits, stated now.** Linear, one candidate at a time: an interaction or a non-linear effect is not tested; a candidate that fails here can still help inside a retrained tree model, and one
   that passes may not survive it. Also reported: the noise floor (what a perfect-mean Poisson outcome would miss by) beside the model's error for each volume market, so "how far from the best possible" is on the page.
 
