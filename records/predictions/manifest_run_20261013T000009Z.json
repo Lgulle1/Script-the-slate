@@ -1,0 +1,67 @@
+{
+ "run_id": "run_20261013T000009Z",
+ "run_timestamp": "2026-10-13T00:00:09.334421+00:00",
+ "season": 2026,
+ "week": 5,
+ "model_version": "8f610d7f9b:22b64a64",
+ "n_games": 15,
+ "cutoff": "2026-10-08",
+ "layers": {
+  "phase3": [],
+  "4a_injuries": [
+   "rec",
+   "rec_yds",
+   "rush_att",
+   "rush_yds",
+   "targets"
+  ],
+  "4b_simulation": [
+   "spread"
+  ]
+ },
+ "stacks": [
+  [
+   "phase3",
+   140
+  ],
+  [
+   "phase3+4a",
+   1039
+  ],
+  [
+   "phase3+4b",
+   15
+  ]
+ ],
+ "history": {
+  "player_rows": 36968,
+  "team_rows": 3358,
+  "newest_game": "2026-10-05",
+  "through_season": 2026
+ },
+ "chart": {
+  "rows": 951,
+  "teams": 30
+ },
+ "schedule": {
+  "rows": 272,
+  "newest_pull": "2026-10-12 23:58:47.633898"
+ },
+ "written": 72,
+ "refused": 1122,
+ "unchanged": 0,
+ "train_rows": {
+  "pass_att": 2344,
+  "rush_att": 6210,
+  "targets": 21632,
+  "qb_rush_att": 613,
+  "comp_pct": 2341,
+  "yds_per_cmp": 2338,
+  "ypc": 5437,
+  "catch_pct": 18897,
+  "yds_per_rec": 17177,
+  "qb_ypc": 595,
+  "plays": 2686,
+  "pts_per_play": 2686
+ }
+}
