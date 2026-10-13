@@ -96,8 +96,10 @@ def log_prop_lines(rows: pl.DataFrame, captured_at: datetime, path, schedule: pl
     captured_at = captured_at.astimezone(timezone.utc)
     games = {r["game_id"]: r for r in schedule.iter_rows(named=True)}
     by_name: dict = {}
+    by_id: dict = {}
     for r in players.iter_rows(named=True):
         by_name.setdefault(normalize_name(r["display_name"]), []).append(r)
+        by_id.setdefault(r["gsis_id"], []).append(r)
     last = _last_logged(path)
     out, rej = [], []
     unchanged = 0
@@ -118,7 +120,10 @@ def log_prop_lines(rows: pl.DataFrame, captured_at: datetime, path, schedule: pl
         if captured_at >= g["kickoff_time"]:
             reject(f"captured at or after kickoff ({g['kickoff_time'].isoformat()})")
             continue
-        cand = [p for p in by_name.get(normalize_name(r.get("player_name") or ""), []) if p["latest_team"] in (g["home_team"], g["away_team"])]
+        if r.get("player_id"):                                              # already resolved by the caller (the app picks a stored player): no name matching
+            cand = [p for p in by_id.get(r["player_id"], [])]
+        else:
+            cand = [p for p in by_name.get(normalize_name(r.get("player_name") or ""), []) if p["latest_team"] in (g["home_team"], g["away_team"])]
         if len(cand) != 1:
             reject("player not matched in the game's teams" if not cand else "more than one player matches")
             continue

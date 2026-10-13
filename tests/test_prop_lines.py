@@ -116,3 +116,11 @@ def test_nothing_in_the_prediction_path_reads_the_prop_log():
         if re.search(r"prop_lines", p.read_text()):
             users.append(p.name)
     assert users == [], users
+
+
+def test_a_row_with_a_resolved_player_id_skips_name_matching(tmp_path):
+    rows = _rows({"player_name": "typed any way", "player_id": "p_nacua"})
+    r = _log(tmp_path, rows)
+    assert r.written == 1 and _read(tmp_path)["player_id"].to_list() == ["p_nacua"]
+    r2 = _log(tmp_path, _rows({"player_id": "no_such_id"}), at=T0 + timedelta(hours=1))
+    assert r2.refused == 1
