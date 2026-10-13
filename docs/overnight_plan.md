@@ -571,6 +571,18 @@ and at least three to four weeks of graded live predictions exist before Phase 6
   S2: all 12 disagreement cells were "no edge"; hit rates 49.0%-51.3% against the 52.38% break-even, none with a lower bound above it. The 4b spread's earlier CLEARS was against the Phase 3 spread, not against the line; it is a better forecast than Phase 3 and still a worse one than the market.
   Nothing changes in the model or the weights. Player-prop lines remain unscored (no source; a source is the project manager's decision). Output: data/processed/lines_comparison_games.parquet; script scripts/lines_comparison.py.
 
+## Player-prop line logging (asked for by the project manager, 2026-10-12; fixed here BEFORE the logger is built)
+- **Purpose.** Collect sportsbook player-prop lines week by week, timestamped before kickoff, in their OWN append-only table, so that a later pre-registered test can ask whether the model's player numbers carry information a prop line does not. The log is read by nothing in the prediction path (the same rule as the game-line log, live/lines.py): no model, feature, weight or stored prediction ever reads it. A test enforces it.
+- **Source.** None is chosen or downloaded. The first source is manual entry: a CSV of lines the project manager (or I, from screenshots he sends) types in, one row per line as the book showed it. An API or paid-data adapter is a separate decision for the project manager, with its terms read first; it would write the same table.
+- **The table** (records/lines/prop_lines_log.csv, append-only, never edited): captured_at (UTC), book, game_id, player_id, player_name (as typed), team, market (one of our player markets), book_market (the book's own name), side (over / under / at_least), line (number), price (American odds, empty if unknown), is_alt (alternate ladder rung vs the posted main line), source (manual / the adapter's name), note. A missing value is empty, never 0.
+- **Rules.**
+  1. A line captured at or after the game's kickoff is refused and written to the rejects file (an in-play line depends on the game state and is not comparable to a pre-game prediction).
+  2. A row is written only if it differs from the last logged row with the same (book, game_id, player_id, market, side, line, is_alt): a changed price is a new row, an identical re-capture is not (counted as unchanged).
+  3. A player name is matched to a gsis id by name and team against the player table; no match or more than one match is rejected with the reason, never guessed. A market the book calls by another name is mapped by an explicit table; an unmapped market is rejected.
+  4. Every refusal goes to records/lines/prop_lines_rejects.csv with its reason; nothing is dropped silently.
+  5. Published to data-snapshots like the other records, so the commit time is an outside timestamp of when each line was logged.
+- **The test that will use it is written later, before the first look at the data.** It will be pre-registered in this plan with its thresholds, its multiplicity correction and the number of weeks of data required. Nothing here compares a model number with a line.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
