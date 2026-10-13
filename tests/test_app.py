@@ -90,7 +90,7 @@ def test_the_player_report_shows_the_ladder_drivers_and_says_confidence_componen
     assert not at.exception
     assert any("Not stored" in c.value for c in at.caption)
     assert any("rec_targets" in str(d.value.to_dict()) for d in at.dataframe)
-    assert any(m.value == "80.0" for m in at.metric)
+    assert any(m.value == "8.0" for m in at.metric)                                    # the first market of the first player: targets
 
 
 def test_the_lines_log_leaves_every_stored_prediction_byte_identical_and_logs_the_line(records):
