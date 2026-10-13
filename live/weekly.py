@@ -23,6 +23,7 @@ from eval import backtest as bt
 from features import volume_features as vf
 from features import injury_features as inf
 from live import derive as DV
+from live import distribution as DI
 from live import explain as EX
 from live import history as H
 from live import layer_sim as LS
@@ -31,8 +32,10 @@ from live import lines as LN
 from live import predict as LP
 from live import store as ST
 from live import targets as TG
+from eval import calibrate as CAL
 from models import efficiency as ef
 
+CALIBRATOR_PATH = config.PROCESSED_DIR / "calibrator_v1"
 EXPLAIN_DIR = "explain"             # attribution files live in a subdirectory: PredictionStore.load reads every *.parquet in the store root
 FIT_FLOOR = date(config.HOLDOUT_SEASON, 3, 1)       # models are fit on games before this date at most: 2020-2024 rows only (plan P5.4)
 
@@ -130,7 +133,7 @@ def _score(models: LP.LiveModels, vt, et, elig_of, games) -> pl.DataFrame:
 
 
 def run(now: datetime, raw_db=config.RAW_DUCKDB_PATH, store_dir=None, models: Trained | None = None, run_id: str | None = None,
-        lines_path=None, version: str | None = None, work_dir=None, layer_weights_csv=None, replay: dict | None = None) -> dict:
+        lines_path=None, version: str | None = None, work_dir=None, layer_weights_csv=None, replay: dict | None = None, calibrator="auto") -> dict:
     """One run at the clock `now`. `replay` (tests only): {"hide_outcomes_from": date, "status_clock": fn, "fit_cutoff": date} scores a past week as if unplayed."""
     now = now.astimezone(timezone.utc)
     replay = replay or {}
@@ -200,7 +203,10 @@ def run(now: datetime, raw_db=config.RAW_DUCKDB_PATH, store_dir=None, models: Tr
         parts.append(keep.with_columns(stack=pl.lit(LY.stack_label(layer))))
     preds = pl.concat(parts).join(k, on="game_id").with_columns(model_version=pl.lit(mv), input_hash=pl.col("input_hash").fill_null("none"))
     rid = run_id or now.strftime("run_%Y%m%dT%H%M%SZ")
-    res = ST.PredictionStore(store_dir).write(preds.select("game_id", "player_id", "market", "kickoff_time", "model_version", "stack", "mean", "input_hash"), now=now, run_id=rid)
+    if calibrator == "auto":                                    # the committed 2020-2024 calibrator; a replay skips it (its pool holds the replayed week's future)
+        calibrator = CAL.Calibrator.load(CALIBRATOR_PATH) if (not replay and CALIBRATOR_PATH.with_suffix(".json").exists()) else None
+    preds = DI.attach(preds, calibrator)
+    res = ST.PredictionStore(store_dir).write(preds.select("game_id", "player_id", "market", "kickoff_time", "model_version", "stack", "mean", "input_hash", *DI.DIST_COLUMNS), now=now, run_id=rid)
     expl = pl.concat([e for e in explained if e.height], how="diagonal_relaxed") if any(e.height for e in explained) else pl.DataFrame()
     if expl.height:
         (store_dir / EXPLAIN_DIR).mkdir(parents=True, exist_ok=True)
@@ -216,6 +222,7 @@ def run(now: datetime, raw_db=config.RAW_DUCKDB_PATH, store_dir=None, models: Tr
                     chart=dict(rows=chart.height, teams=chart["team"].n_unique()),
                     schedule=dict(rows=sched.height, newest_pull=str(sched["pulled_at"].max())),
                     written=res.written, refused=res.refused, unchanged=res.unchanged,
+                    calibration=dict(hash=calibrator.hash if calibrator else None, pool="Phase 3 walk-forward 2020-2024", with_distribution=int(preds["q50"].is_not_null().sum())),
                     train_rows=models.base.n_train)
     store_dir.mkdir(parents=True, exist_ok=True)
     (store_dir / f"manifest_{rid}.json").write_text(json.dumps(manifest, indent=1, default=str))
