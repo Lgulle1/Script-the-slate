@@ -582,6 +582,8 @@ and at least three to four weeks of graded live predictions exist before Phase 6
   4. Every refusal goes to records/lines/prop_lines_rejects.csv with its reason; nothing is dropped silently.
   5. Published to data-snapshots like the other records, so the commit time is an outside timestamp of when each line was logged.
 - **The test that will use it is written later, before the first look at the data.** It will be pre-registered in this plan with its thresholds, its multiplicity correction and the number of weeks of data required. Nothing here compares a model number with a line.
+- **Prop-line logger built (2026-10-13), as specified above.** live/prop_lines.py (`log_prop_lines`), scripts/log_prop_lines.py (CSV in, `--push` publishes the log and the rejects file to data-snapshots), tests/test_prop_lines.py (10 tests: matched player and our market name, kickoff refusal, dedup and changed price, append-only, unmatched / ambiguous / wrong-team rejection, suffix and case matching, alt flag and unmapped market, QB rushing mapped to qb_rush_*, game by team + gameday and missing price stays empty, and that nothing in live/ models/ features/ eval/ sim/ ingest/ or the root run scripts reads the log).
+  No source is chosen or downloaded; the first source is manual entry. Smoke run against the real schedule: a line for the already-started Monday night game was refused with the kickoff reason.
 
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
