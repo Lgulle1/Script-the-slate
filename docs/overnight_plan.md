@@ -725,6 +725,13 @@ distribution, not only its point. All on the weeks 1-5 reconstruction rows (vers
 5. **Game environment.** Only 6.9% [4.2, 9.5] of the model's standardized miss is shared by teammates in the same game (the line's: 5.8% [3.2, 8.5]): misses are mostly individual, not whole-game. Across 78 games the correlation of the model's normalized miss with the size of the total-points surprise is 0.17 (the line's 0.19). Per game the share of rows where the model was closer
    runs from 17% to 82% (standard deviation 0.129 against 0.105 expected from chance alone), so most of the spread between games is what coin flips would give.
 
+**Addendum, 2026-10-14 (asked for: "was the model on the right side of the line overall?"; fixed before it is computed).** On the same 1,755 weeks 1-5 rows: the model is on the right side when it is above the line and the real number went over, or below and under
+(ties and pushes removed). Reported overall and by market, split by lean (over / under) and by week, with a game-cluster 95% interval (2,000 draws, seed 7) on the overall and per-market rates; the break-even for a -110 price (52.4%) is shown beside it. Written to
+data/processed/weeks_review_side.parquet; the rows with their bars to weeks_review_rows.parquet for the worked example on the page. Descriptive only.
+
+**Result of the addendum (2026-10-14; byte-identical on two runs).** Right side of the line, weeks 1-5, 1,755 lines: 51.3% [48.7, 53.8]; leaning over 50.1% (n=753), under 52.2% (n=1,002); by market pass_yds 50.9, rush_yds 47.9, rec 52.1, rec_yds 51.1, qb_rush_yds 54.1 (n=37);
+by week 51.1, 49.8, 49.4, 49.4, 56.5. A coin flip, below the 52.4% needed at -110. The page "Bars and Lines" now carries this, a plain-language account of bars with two real week-1 examples chosen by a stated rule, and a table of the four tests.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
