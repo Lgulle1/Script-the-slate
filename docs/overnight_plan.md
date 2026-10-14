@@ -697,6 +697,23 @@ pass_yds n=114 -2.23 yds [-4.73, +0.28]; qb_rush_yds n=37 -0.45 [-1.96, +0.98]; 
 - **Observation, not tested here:** the downward bias is a plausible reason the lines are closer, and a level shift in 2025-2026 volume relative to the 2020-2024 fit would produce it. Whether that is the cause is a question for the one-time 2025 holdout report and a
   walk-forward bias check, each with its own gate written first; nothing is adjusted from this.
 
+## What weeks 1-5 teach: probability scoring, bars and game environment (asked for by the project manager, 2026-10-14; fixed BEFORE it is computed)
+
+Question from the project manager: the goal is not the closest single number; if the model says 35, the line is 37.5 and the player gets 40, a lower bar (an alternate line near 30) still hits. So score the model's whole
+distribution, not only its point. All on the weeks 1-5 reconstruction rows (version retro) joined to the imported FanDuel main lines; players who played; descriptive; nothing here sets a weight, a threshold or a gate.
+1. **Consistency by market and week.** For each market and each week, MAE(line) - MAE(model) on the last line; reported as a market x week grid and the count of weeks (of 5) in which the model was closer. No test; a grid.
+2. **The same event, two probabilities.** For every row with a distribution (not the QB rushing markets, which are below the calibrator's burn-in) and both main-line prices: the event is "the real number went over the line"
+   (actual > line; whole-number pushes dropped). The model's probability is the share of its calibrator-pool sample (the K nearest past predictions, width scale applied around the median) above the line; the book's is its de-vigged implied probability,
+   p_over = implied(over) / (implied(over) + implied(under)). Scores: Brier and log loss of each, and the paired difference (book minus model; positive = the model's probabilities were better) with a game-cluster bootstrap (2,000 draws, seed 7).
+   Reading rule as before: an interval that includes 0 is "no difference detected"; one that lies on a side is reported as that side, per market, uncorrected for the number of markets.
+3. **Bars (the alternate-line view).** Per market, for the model's 90, 80, 70, 60 and 50% bars (the highest whole value reached or beaten in that share of the pool sample, width scale applied): how often the real number reached the bar,
+   with a game-cluster 95% interval. If the model says "80% to reach it", the hit rate should be near 80%. No alternate-line prices exist in the file (every row is a main line), so this is a hit-rate table, not a profit table.
+   Also: among rows where the model's lean at the main line was wrong, the share in which the 80% bar was still reached.
+4. **Who is right when they disagree.** Per market, rows split into thirds by |model - line| / the market's mean absolute miss; in each third the share where the model was closer.
+5. **Game environment.** (a) The share of the model's miss that is shared inside a team-game: the intraclass correlation of the standardized miss within (game, team), with a game-cluster bootstrap. (b) Per game: normalized MAE of the model and of the line (miss divided by the market's mean absolute miss), the share of rows where the model was closer,
+   the surprise in total points (actual - model, actual - book) and in the quarterback's pass attempts (actual - model). (c) The correlation, across games, of the model's normalized MAE with the size of the total-points surprise.
+   These say where misses concentrate; they do not say why a particular player missed, and nothing is adjusted from them.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
