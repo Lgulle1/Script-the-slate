@@ -23,3 +23,5 @@ dist/
 records/predictions/
 records/lines/
 records/graded/
+records/retro_2026/
+records/holdout_2025/
