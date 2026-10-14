@@ -67,3 +67,1289 @@ captured_at,book,game_id,player_name,book_market,side,line,reason
 2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Wan'Dale Robinson,Receiving Yards,under,,no capture time for this row
 2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Wan'Dale Robinson,Receptions,over,,no capture time for this row
 2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Wan'Dale Robinson,Receptions,under,,no capture time for this row
+2026-09-09T23:53:41+00:00,FanDuel,2026_01_NE_SEA,Kyle Williams,Receiving Yards,over,0.5,more than one player matches
+2026-09-09T23:53:41+00:00,FanDuel,2026_01_NE_SEA,Kyle Williams,Receiving Yards,under,0.5,more than one player matches
+2026-09-10T00:20:04+00:00,FanDuel,2026_01_NE_SEA,Kyle Williams,Receptions,over,0.5,more than one player matches
+2026-09-10T00:20:04+00:00,FanDuel,2026_01_NE_SEA,Kyle Williams,Receptions,under,0.5,more than one player matches
+2026-09-10T00:20:17+00:00,FanDuel,2026_01_NE_SEA,Kyle Williams,Receiving Yards,over,0.5,more than one player matches
+2026-09-10T00:20:17+00:00,FanDuel,2026_01_NE_SEA,Kyle Williams,Receiving Yards,under,0.5,more than one player matches
+2026-09-11T21:32:41+00:00,FanDuel,2026_01_WAS_PHI,Hollywood Brown,Receiving Yards,over,11.5,player not matched in the game's teams
+2026-09-11T21:32:41+00:00,FanDuel,2026_01_WAS_PHI,Hollywood Brown,Receiving Yards,under,11.5,player not matched in the game's teams
+2026-09-11T21:32:42+00:00,FanDuel,2026_01_WAS_PHI,Hollywood Brown,Receptions,over,1.5,player not matched in the game's teams
+2026-09-11T21:32:42+00:00,FanDuel,2026_01_WAS_PHI,Hollywood Brown,Receptions,under,1.5,player not matched in the game's teams
+2026-09-13T17:02:55+00:00,FanDuel,2026_01_BUF_HOU,Joshua Palmer,Receptions,over,1.5,player not matched in the game's teams
+2026-09-13T17:02:55+00:00,FanDuel,2026_01_BUF_HOU,Joshua Palmer,Receptions,under,1.5,player not matched in the game's teams
+2026-09-13T17:03:55+00:00,FanDuel,2026_01_BUF_HOU,Joshua Palmer,Receiving Yards,over,12.5,player not matched in the game's teams
+2026-09-13T17:03:56+00:00,FanDuel,2026_01_BUF_HOU,Joshua Palmer,Receiving Yards,under,12.5,player not matched in the game's teams
+2026-09-13T20:26:38+00:00,FanDuel,2026_01_WAS_PHI,Hollywood Brown,Receptions,over,1.5,player not matched in the game's teams
+2026-09-13T20:26:38+00:00,FanDuel,2026_01_WAS_PHI,Hollywood Brown,Receptions,under,1.5,player not matched in the game's teams
+2026-09-13T20:26:39+00:00,FanDuel,2026_01_WAS_PHI,Hollywood Brown,Receiving Yards,over,10.5,player not matched in the game's teams
+2026-09-13T20:26:40+00:00,FanDuel,2026_01_WAS_PHI,Hollywood Brown,Receiving Yards,under,10.5,player not matched in the game's teams
+2026-09-15T11:10:27+00:00,FanDuel,2026_02_DET_BUF,Joshua Palmer,Receiving Yards,over,13.5,player not matched in the game's teams
+2026-09-15T11:10:27+00:00,FanDuel,2026_02_DET_BUF,Joshua Palmer,Receiving Yards,under,13.5,player not matched in the game's teams
+2026-09-15T11:10:27+00:00,FanDuel,2026_02_DET_BUF,Joshua Palmer,Receptions,over,1.5,player not matched in the game's teams
+2026-09-15T11:10:27+00:00,FanDuel,2026_02_DET_BUF,Joshua Palmer,Receptions,under,1.5,player not matched in the game's teams
+2026-09-18T00:15:15+00:00,FanDuel,2026_02_DET_BUF,Joshua Palmer,Receptions,over,1.5,player not matched in the game's teams
+2026-09-18T00:15:15+00:00,FanDuel,2026_02_DET_BUF,Joshua Palmer,Receptions,under,1.5,player not matched in the game's teams
+2026-09-18T00:15:24+00:00,FanDuel,2026_02_DET_BUF,Joshua Palmer,Receiving Yards,over,10.5,player not matched in the game's teams
+2026-09-18T00:15:24+00:00,FanDuel,2026_02_DET_BUF,Joshua Palmer,Receiving Yards,under,10.5,player not matched in the game's teams
+2026-09-20T17:02:46+00:00,FanDuel,2026_02_GB_NYJ,Isaiah Williams,Receptions,over,1.5,more than one player matches
+2026-09-20T17:02:46+00:00,FanDuel,2026_02_GB_NYJ,Isaiah Williams,Receptions,under,1.5,more than one player matches
+2026-09-24T03:26:36+00:00,FanDuel,2026_03_NE_JAX,Javonte Williams,Receptions,over,4.5,player not matched in the game's teams
+2026-09-24T03:26:36+00:00,FanDuel,2026_03_NE_JAX,Javonte Williams,Receptions,under,4.5,player not matched in the game's teams
+2026-09-25T04:15:22+00:00,FanDuel,2026_03_NYJ_DET,Isaiah Williams,Receptions,over,2.5,more than one player matches
+2026-09-25T04:15:22+00:00,FanDuel,2026_03_NYJ_DET,Isaiah Williams,Receptions,under,2.5,more than one player matches
+2026-09-25T13:42:59+00:00,FanDuel,2026_03_NE_JAX,Javonte Williams,Receptions,over,2.5,player not matched in the game's teams
+2026-09-25T13:42:59+00:00,FanDuel,2026_03_NE_JAX,Javonte Williams,Receptions,under,2.5,player not matched in the game's teams
+2026-09-27T17:04:18+00:00,FanDuel,2026_03_NYJ_DET,Isaiah Williams,Receptions,over,3.5,more than one player matches
+2026-09-27T17:04:18+00:00,FanDuel,2026_03_NYJ_DET,Isaiah Williams,Receptions,under,3.5,more than one player matches
+2026-10-01T04:21:59+00:00,FanDuel,2026_04_NYJ_CHI,Isaiah Williams,Receiving Yards,over,23.5,more than one player matches
+2026-10-01T04:21:59+00:00,FanDuel,2026_04_NYJ_CHI,Isaiah Williams,Receiving Yards,under,23.5,more than one player matches
+2026-10-01T04:21:59+00:00,FanDuel,2026_04_NYJ_CHI,Isaiah Williams,Receptions,over,2.5,more than one player matches
+2026-10-01T04:21:59+00:00,FanDuel,2026_04_NYJ_CHI,Isaiah Williams,Receptions,under,2.5,more than one player matches
+2026-10-02T14:39:31+00:00,FanDuel,2026_04_NE_BUF,Kyle Williams,Receptions,over,0.5,more than one player matches
+2026-10-02T14:39:31+00:00,FanDuel,2026_04_NE_BUF,Kyle Williams,Receptions,under,0.5,more than one player matches
+2026-10-04T17:03:07+00:00,FanDuel,2026_04_NYJ_CHI,Isaiah Williams,Receiving Yards,over,22.5,more than one player matches
+2026-10-04T17:03:07+00:00,FanDuel,2026_04_NYJ_CHI,Isaiah Williams,Receiving Yards,under,22.5,more than one player matches
+2026-10-04T17:03:28+00:00,FanDuel,2026_04_NE_BUF,Kyle Williams,Receptions,over,0.5,more than one player matches
+2026-10-04T17:03:28+00:00,FanDuel,2026_04_NE_BUF,Kyle Williams,Receptions,under,0.5,more than one player matches
+2026-10-04T17:03:31+00:00,FanDuel,2026_04_NYJ_CHI,Isaiah Williams,Receptions,over,2.5,more than one player matches
+2026-10-04T17:03:31+00:00,FanDuel,2026_04_NYJ_CHI,Isaiah Williams,Receptions,under,2.5,more than one player matches
+2026-10-04T20:05:26+00:00,FanDuel,2026_04_MIA_MIN,Aaron Jones Sr.,Receptions,over,3.5,more than one player matches
+2026-10-04T20:05:26+00:00,FanDuel,2026_04_MIA_MIN,Aaron Jones Sr.,Receptions,under,3.5,more than one player matches
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,A.J. Brown,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,A.J. Brown,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,A.J. Brown,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,A.J. Brown,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,AJ Barner,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,AJ Barner,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,AJ Barner,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,AJ Barner,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Cooper Kupp,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Cooper Kupp,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Cooper Kupp,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Cooper Kupp,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,DeMario Douglas,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,DeMario Douglas,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,DeMario Douglas,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,DeMario Douglas,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Drake Maye,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Drake Maye,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Drake Maye,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Drake Maye,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Elijah Arroyo,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Elijah Arroyo,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,George Holani,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,George Holani,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,George Holani,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,George Holani,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,George Holani,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,George Holani,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Hunter Henry,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Hunter Henry,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Hunter Henry,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Hunter Henry,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Jadarian Price,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Jadarian Price,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Jadarian Price,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Jadarian Price,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Jadarian Price,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Jadarian Price,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Jaxon Smith-Njigba,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Jaxon Smith-Njigba,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Jaxon Smith-Njigba,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Jaxon Smith-Njigba,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Kyle Williams,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Kyle Williams,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Rashid Shaheed,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Rashid Shaheed,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Rashid Shaheed,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Rashid Shaheed,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Rashid Shaheed,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Rashid Shaheed,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Rhamondre Stevenson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Rhamondre Stevenson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Rhamondre Stevenson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Rhamondre Stevenson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Rhamondre Stevenson,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Rhamondre Stevenson,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Romeo Doubs,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Romeo Doubs,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Romeo Doubs,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Romeo Doubs,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Sam Darnold,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Sam Darnold,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Sam Darnold,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,Sam Darnold,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,TreVeyon Henderson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,TreVeyon Henderson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,TreVeyon Henderson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,TreVeyon Henderson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,TreVeyon Henderson,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NE_SEA,TreVeyon Henderson,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Blake Corum,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Blake Corum,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Brock Purdy,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Brock Purdy,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Brock Purdy,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Brock Purdy,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Christian McCaffrey,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Christian McCaffrey,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Christian McCaffrey,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Christian McCaffrey,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Christian McCaffrey,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Christian McCaffrey,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Colby Parkinson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Colby Parkinson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Colby Parkinson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Colby Parkinson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Davante Adams,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Davante Adams,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Davante Adams,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Davante Adams,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,De'Zhaun Stribling,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,De'Zhaun Stribling,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,De'Zhaun Stribling,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,De'Zhaun Stribling,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Deebo Samuel Sr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Deebo Samuel Sr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Deebo Samuel Sr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Deebo Samuel Sr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Kyren Williams,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Kyren Williams,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Kyren Williams,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Kyren Williams,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Kyren Williams,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Kyren Williams,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Matthew Stafford,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Matthew Stafford,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Mike Evans,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Mike Evans,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Mike Evans,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Mike Evans,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Puka Nacua,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Puka Nacua,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Puka Nacua,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Puka Nacua,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Terrance Ferguson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Terrance Ferguson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Terrance Ferguson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_SF_LA,Terrance Ferguson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Aaron Rodgers,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Aaron Rodgers,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Bijan Robinson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Bijan Robinson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Bijan Robinson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Bijan Robinson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Bijan Robinson,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Bijan Robinson,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Brian Robinson Jr.,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Brian Robinson Jr.,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Cooper Rush,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Cooper Rush,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,DK Metcalf,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,DK Metcalf,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,DK Metcalf,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,DK Metcalf,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Darnell Washington,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Darnell Washington,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Darnell Washington,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Darnell Washington,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Drake London,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Drake London,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Drake London,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Drake London,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Jaylen Warren,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Jaylen Warren,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Jaylen Warren,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Jaylen Warren,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Jaylen Warren,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Jaylen Warren,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Kyle Pitts Sr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Kyle Pitts Sr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Kyle Pitts Sr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Kyle Pitts Sr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Michael Pittman Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Michael Pittman Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Michael Pittman Jr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Michael Pittman Jr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Pat Freiermuth,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Pat Freiermuth,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Pat Freiermuth,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Pat Freiermuth,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Rico Dowdle,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Rico Dowdle,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Rico Dowdle,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Rico Dowdle,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Rico Dowdle,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Rico Dowdle,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Roman Wilson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Roman Wilson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Roman Wilson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ATL_PIT,Roman Wilson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Daniel Jones,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Daniel Jones,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Daniel Jones,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Daniel Jones,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Derrick Henry,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Derrick Henry,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Derrick Henry,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Derrick Henry,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Ja'Kobi Lane,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Ja'Kobi Lane,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Ja'Kobi Lane,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Ja'Kobi Lane,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Jonathan Taylor,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Jonathan Taylor,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Jonathan Taylor,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Jonathan Taylor,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Jonathan Taylor,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Jonathan Taylor,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Josh Downs,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Josh Downs,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Justice Hill,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Justice Hill,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Justice Hill,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Justice Hill,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Keenan Allen,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Keenan Allen,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Keenan Allen,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Keenan Allen,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Lamar Jackson,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Lamar Jackson,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Lamar Jackson,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Lamar Jackson,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Mark Andrews,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Mark Andrews,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Mark Andrews,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Mark Andrews,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Rashod Bateman,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Rashod Bateman,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Rashod Bateman,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Rashod Bateman,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Tyler Warren,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Tyler Warren,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Zay Flowers,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Zay Flowers,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Zay Flowers,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BAL_IND,Zay Flowers,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,C.J. Stroud,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,C.J. Stroud,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,C.J. Stroud,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,C.J. Stroud,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,DJ Moore,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,DJ Moore,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,DJ Moore,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,DJ Moore,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Dalton Kincaid,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Dalton Kincaid,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Dalton Kincaid,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Dalton Kincaid,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Dalton Schultz,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Dalton Schultz,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Dalton Schultz,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Dalton Schultz,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,David Montgomery,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,David Montgomery,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,David Montgomery,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,David Montgomery,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,David Montgomery,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,David Montgomery,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Dawson Knox,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Dawson Knox,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Dawson Knox,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Dawson Knox,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,James Cook III,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,James Cook III,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,James Cook III,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,James Cook III,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,James Cook III,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,James Cook III,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Josh Allen,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Josh Allen,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Josh Allen,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Josh Allen,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Joshua Palmer,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Joshua Palmer,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Joshua Palmer,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Joshua Palmer,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Kayshon Boutte,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Kayshon Boutte,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Kayshon Boutte,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Kayshon Boutte,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Keon Coleman,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Keon Coleman,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Keon Coleman,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Keon Coleman,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Khalil Shakir,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Khalil Shakir,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Khalil Shakir,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Khalil Shakir,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Nico Collins,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Nico Collins,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Nico Collins,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Nico Collins,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Woody Marks,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Woody Marks,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Woody Marks,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Woody Marks,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Woody Marks,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Woody Marks,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Xavier Hutchinson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Xavier Hutchinson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Xavier Hutchinson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_BUF_HOU,Xavier Hutchinson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Bryce Young,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Bryce Young,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Bryce Young,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Bryce Young,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Caleb Williams,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Caleb Williams,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Caleb Williams,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Caleb Williams,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Chuba Hubbard,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Chuba Hubbard,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Chuba Hubbard,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Chuba Hubbard,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Chuba Hubbard,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Chuba Hubbard,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Cole Kmet,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Cole Kmet,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Cole Kmet,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Cole Kmet,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Colston Loveland,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Colston Loveland,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Colston Loveland,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Colston Loveland,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,D'Andre Swift,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,D'Andre Swift,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,D'Andre Swift,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,D'Andre Swift,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,D'Andre Swift,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,D'Andre Swift,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Darren Waller,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Darren Waller,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Darren Waller,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Darren Waller,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Jalen Coker,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Jalen Coker,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Jalen Coker,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Jalen Coker,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Jonathon Brooks,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Jonathon Brooks,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Jonathon Brooks,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Jonathon Brooks,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Jonathon Brooks,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Jonathon Brooks,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Kalif Raymond,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Kalif Raymond,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Kalif Raymond,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Kalif Raymond,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Kyle Monangai,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Kyle Monangai,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Kyle Monangai,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Kyle Monangai,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Luther Burden III,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Luther Burden III,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Luther Burden III,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Luther Burden III,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Rome Odunze,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Rome Odunze,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Rome Odunze,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Rome Odunze,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Tetairoa McMillan,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Tetairoa McMillan,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Tetairoa McMillan,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Tetairoa McMillan,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Xavier Legette,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Xavier Legette,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Xavier Legette,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CHI_CAR,Xavier Legette,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Bhayshul Tuten,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Bhayshul Tuten,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Bhayshul Tuten,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Bhayshul Tuten,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Bhayshul Tuten,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Bhayshul Tuten,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Brenton Strange,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Brenton Strange,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Brenton Strange,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Brenton Strange,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Brian Thomas Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Brian Thomas Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Brian Thomas Jr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Brian Thomas Jr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Chris Rodriguez Jr.,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Chris Rodriguez Jr.,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Denzel Boston,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Denzel Boston,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Denzel Boston,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Denzel Boston,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Deshaun Watson,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Deshaun Watson,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Deshaun Watson,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Deshaun Watson,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Dylan Sampson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Dylan Sampson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Harold Fannin Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Harold Fannin Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Harold Fannin Jr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Harold Fannin Jr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Jakobi Meyers,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Jakobi Meyers,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Jakobi Meyers,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Jakobi Meyers,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Jerry Jeudy,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Jerry Jeudy,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Jerry Jeudy,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Jerry Jeudy,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,KC Concepcion Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,KC Concepcion Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,KC Concepcion Jr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,KC Concepcion Jr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Parker Washington,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Parker Washington,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Parker Washington,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Parker Washington,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Quinshon Judkins,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Quinshon Judkins,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Quinshon Judkins,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Quinshon Judkins,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Quinshon Judkins,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Quinshon Judkins,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Travis Hunter,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Travis Hunter,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Travis Hunter,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Travis Hunter,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Trevor Lawrence,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Trevor Lawrence,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Trevor Lawrence,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_CLE_JAX,Trevor Lawrence,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Amon-Ra St. Brown,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Amon-Ra St. Brown,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Amon-Ra St. Brown,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Amon-Ra St. Brown,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Chris Olave,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Chris Olave,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Chris Olave,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Chris Olave,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Devaughn Vele,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Devaughn Vele,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Devaughn Vele,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Devaughn Vele,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Jahmyr Gibbs,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Jahmyr Gibbs,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Jahmyr Gibbs,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Jahmyr Gibbs,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Jahmyr Gibbs,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Jahmyr Gibbs,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Jameson Williams,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Jameson Williams,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Jameson Williams,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Jameson Williams,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Jared Goff,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Jared Goff,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Juwan Johnson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Juwan Johnson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Juwan Johnson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Juwan Johnson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Sam LaPorta,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Sam LaPorta,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Sam LaPorta,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Sam LaPorta,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Travis Etienne Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Travis Etienne Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Travis Etienne Jr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Travis Etienne Jr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Travis Etienne Jr.,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Travis Etienne Jr.,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Tyler Shough,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Tyler Shough,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Tyler Shough,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NO_DET,Tyler Shough,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Adonai Mitchell,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Adonai Mitchell,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Adonai Mitchell,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Adonai Mitchell,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Braelon Allen,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Braelon Allen,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Breece Hall,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Breece Hall,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Breece Hall,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Breece Hall,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Breece Hall,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Breece Hall,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Calvin Ridley,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Calvin Ridley,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Calvin Ridley,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Calvin Ridley,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Cam Ward,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Cam Ward,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Cam Ward,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Cam Ward,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Carnell Tate,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Carnell Tate,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Carnell Tate,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Carnell Tate,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Garrett Wilson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Garrett Wilson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Garrett Wilson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Garrett Wilson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Geno Smith,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Geno Smith,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Geno Smith,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Geno Smith,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Gunnar Helm,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Gunnar Helm,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Gunnar Helm,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Gunnar Helm,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Kenyon Sadiq,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Kenyon Sadiq,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Kenyon Sadiq,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Kenyon Sadiq,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Mason Taylor,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Mason Taylor,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Mason Taylor,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Mason Taylor,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Omar Cooper Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Omar Cooper Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Omar Cooper Jr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Omar Cooper Jr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Tony Pollard,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Tony Pollard,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Tony Pollard,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Tony Pollard,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Tony Pollard,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Tony Pollard,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Tyjae Spears,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Tyjae Spears,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Tyjae Spears,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Tyjae Spears,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Tyjae Spears,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Tyjae Spears,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Wan'Dale Robinson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Wan'Dale Robinson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Wan'Dale Robinson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_NYJ_TEN,Wan'Dale Robinson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Andrei Iosivas,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Andrei Iosivas,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Andrei Iosivas,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Andrei Iosivas,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Baker Mayfield,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Baker Mayfield,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Baker Mayfield,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Baker Mayfield,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Bucky Irving,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Bucky Irving,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Bucky Irving,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Bucky Irving,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Bucky Irving,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Bucky Irving,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Cade Otton,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Cade Otton,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Cade Otton,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Cade Otton,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Chase Brown,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Chase Brown,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Chase Brown,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Chase Brown,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Chase Brown,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Chase Brown,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Chris Godwin Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Chris Godwin Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Chris Godwin Jr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Chris Godwin Jr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Emeka Egbuka,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Emeka Egbuka,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Emeka Egbuka,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Emeka Egbuka,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Erick All Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Erick All Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Erick All Jr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Erick All Jr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Ja'Marr Chase,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Ja'Marr Chase,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Ja'Marr Chase,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Ja'Marr Chase,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Jalen McMillan,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Jalen McMillan,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Jalen McMillan,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Jalen McMillan,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Joe Burrow,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Joe Burrow,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Joe Burrow,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Joe Burrow,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Mike Gesicki,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Mike Gesicki,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Mike Gesicki,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Mike Gesicki,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Samaje Perine,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Samaje Perine,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Samaje Perine,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Samaje Perine,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Ted Hurst III,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Ted Hurst III,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Ted Hurst III,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Ted Hurst III,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Tee Higgins,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Tee Higgins,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Tee Higgins,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Tee Higgins,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Tez Johnson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Tez Johnson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Tez Johnson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_TB_CIN,Tez Johnson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Charlie Kolar,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Charlie Kolar,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Charlie Kolar,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Charlie Kolar,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,David Njoku,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,David Njoku,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,David Njoku,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,David Njoku,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Elijah Higgins,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Elijah Higgins,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Elijah Higgins,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Elijah Higgins,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Jacoby Brissett,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Jacoby Brissett,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Jeremiyah Love,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Jeremiyah Love,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Jeremiyah Love,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Jeremiyah Love,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Justin Herbert,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Justin Herbert,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Justin Herbert,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Justin Herbert,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Keaton Mitchell,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Keaton Mitchell,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Kendrick Bourne,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Kendrick Bourne,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Kendrick Bourne,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Kendrick Bourne,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Ladd McConkey,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Ladd McConkey,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Ladd McConkey,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Ladd McConkey,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Marvin Harrison Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Marvin Harrison Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Marvin Harrison Jr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Marvin Harrison Jr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Michael Wilson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Michael Wilson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Michael Wilson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Michael Wilson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Omarion Hampton,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Omarion Hampton,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Quentin Johnston,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Quentin Johnston,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Quentin Johnston,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Quentin Johnston,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Tre' Harris,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Tre' Harris,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Tre' Harris,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Tre' Harris,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Trey McBride,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Trey McBride,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Trey McBride,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_ARI_LAC,Trey McBride,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Aaron Jones Sr.,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Aaron Jones Sr.,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Christian Watson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Christian Watson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Christian Watson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Christian Watson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jauan Jennings,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jauan Jennings,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jauan Jennings,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jauan Jennings,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jayden Reed,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jayden Reed,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jayden Reed,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jayden Reed,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jordan Addison,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jordan Addison,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jordan Addison,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jordan Addison,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jordan Love,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jordan Love,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jordan Love,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jordan Love,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jordan Mason,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Jordan Mason,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Josh Oliver,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Josh Oliver,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Justin Jefferson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Justin Jefferson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Justin Jefferson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Justin Jefferson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Kyler Murray,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Kyler Murray,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Kyler Murray,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Kyler Murray,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,MarShawn Lloyd,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,MarShawn Lloyd,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,MarShawn Lloyd,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,MarShawn Lloyd,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,MarShawn Lloyd,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,MarShawn Lloyd,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Matthew Golden,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Matthew Golden,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Matthew Golden,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Matthew Golden,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,T.J. Hockenson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,T.J. Hockenson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,T.J. Hockenson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,T.J. Hockenson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Tucker Kraft,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Tucker Kraft,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Tucker Kraft,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_GB_MIN,Tucker Kraft,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Ashton Jeanty,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Ashton Jeanty,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Ashton Jeanty,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Ashton Jeanty,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Ashton Jeanty,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Ashton Jeanty,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Brock Bowers,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Brock Bowers,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Brock Bowers,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Brock Bowers,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Caleb Douglas,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Caleb Douglas,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Caleb Douglas,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Caleb Douglas,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Chris Bell,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Chris Bell,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Chris Bell,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Chris Bell,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,De'Von Achane,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,De'Von Achane,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,De'Von Achane,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,De'Von Achane,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,De'Von Achane,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,De'Von Achane,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Greg Dulcich,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Greg Dulcich,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Greg Dulcich,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Greg Dulcich,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Jack Bech,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Jack Bech,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Jack Bech,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Jack Bech,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Jalen Nailor,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Jalen Nailor,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Jalen Nailor,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Jalen Nailor,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Kirk Cousins,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Kirk Cousins,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Malik Washington,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Malik Washington,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Malik Washington,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Malik Washington,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Malik Willis,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Malik Willis,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Malik Willis,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Malik Willis,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Michael Mayer,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Michael Mayer,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Michael Mayer,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Michael Mayer,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Mike Washington Jr.,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Mike Washington Jr.,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Tre Tucker,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Tre Tucker,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Tre Tucker,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_MIA_LV,Tre Tucker,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Chig Okonkwo,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Chig Okonkwo,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Chig Okonkwo,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Chig Okonkwo,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Dallas Goedert,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Dallas Goedert,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Dallas Goedert,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Dallas Goedert,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,DeVonta Smith,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,DeVonta Smith,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,DeVonta Smith,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,DeVonta Smith,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Dontayvion Wicks,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Dontayvion Wicks,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Dontayvion Wicks,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Dontayvion Wicks,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jacory Croskey-Merritt,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jacory Croskey-Merritt,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jacory Croskey-Merritt,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jacory Croskey-Merritt,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jacory Croskey-Merritt,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jacory Croskey-Merritt,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jalen Hurts,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jalen Hurts,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jalen Hurts,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jalen Hurts,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jayden Daniels,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jayden Daniels,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jayden Daniels,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Jayden Daniels,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Rachaad White,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Rachaad White,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Rachaad White,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Rachaad White,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Rachaad White,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Rachaad White,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Saquon Barkley,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Saquon Barkley,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Saquon Barkley,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Saquon Barkley,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Saquon Barkley,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Saquon Barkley,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Stefon Diggs,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Stefon Diggs,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Stefon Diggs,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Stefon Diggs,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Tank Bigsby,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Tank Bigsby,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Terry McLaurin,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Terry McLaurin,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Terry McLaurin,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_WAS_PHI,Terry McLaurin,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Cam Skattebo,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Cam Skattebo,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,CeeDee Lamb,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,CeeDee Lamb,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,CeeDee Lamb,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,CeeDee Lamb,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Dak Prescott,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Dak Prescott,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Dak Prescott,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Dak Prescott,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Darnell Mooney,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Darnell Mooney,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,George Pickens,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,George Pickens,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,George Pickens,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,George Pickens,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Isaiah Likely,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Isaiah Likely,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Isaiah Likely,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Isaiah Likely,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Jake Ferguson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Jake Ferguson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Jake Ferguson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Jake Ferguson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Javonte Williams,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Javonte Williams,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Jaxson Dart,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Jaxson Dart,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Jaxson Dart,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Jaxson Dart,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,KaVontae Turpin,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,KaVontae Turpin,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Malachi Fields,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Malachi Fields,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Malachi Fields,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Malachi Fields,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Malik Davis,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Malik Davis,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Malik Nabers,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Malik Nabers,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Malik Nabers,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Malik Nabers,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Najee Harris,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Najee Harris,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Theo Johnson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Theo Johnson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Theo Johnson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Theo Johnson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Tyrone Tracy Jr.,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DAL_NYG,Tyrone Tracy Jr.,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Bo Nix,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Bo Nix,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Bo Nix,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Bo Nix,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Brashard Smith,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Brashard Smith,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Courtland Sutton,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Courtland Sutton,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Courtland Sutton,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Courtland Sutton,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,J.K. Dobbins,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,J.K. Dobbins,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,J.K. Dobbins,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,J.K. Dobbins,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Jaylen Waddle,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Jaylen Waddle,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Jaylen Waddle,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Jaylen Waddle,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Kenneth Walker III,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Kenneth Walker III,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Kenneth Walker III,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Kenneth Walker III,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Kenneth Walker III,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Kenneth Walker III,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Patrick Mahomes II,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Patrick Mahomes II,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Patrick Mahomes II,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Patrick Mahomes II,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Rashee Rice,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Rashee Rice,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Rashee Rice,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Rashee Rice,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Travis Kelce,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Travis Kelce,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Travis Kelce,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Travis Kelce,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Tyquan Thornton,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Tyquan Thornton,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Tyquan Thornton,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Tyquan Thornton,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Xavier Worthy,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Xavier Worthy,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Xavier Worthy,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Xavier Worthy,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Xavier Worthy,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_01_DEN_KC,Xavier Worthy,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Amon-Ra St. Brown,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Amon-Ra St. Brown,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Dalton Kincaid,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Dalton Kincaid,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Jahmyr Gibbs,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Jahmyr Gibbs,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Jahmyr Gibbs,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Jahmyr Gibbs,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,James Cook III,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,James Cook III,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,James Cook III,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,James Cook III,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,James Cook III,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,James Cook III,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Jameson Williams,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Jameson Williams,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Jared Goff,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Jared Goff,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Jared Goff,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Jared Goff,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Josh Allen,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Josh Allen,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Josh Allen,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Josh Allen,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Sam LaPorta,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_DET_BUF,Sam LaPorta,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Bijan Robinson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Bijan Robinson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Bijan Robinson,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Bijan Robinson,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Brian Robinson Jr.,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Brian Robinson Jr.,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Bryce Young,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Bryce Young,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Bryce Young,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Bryce Young,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Chuba Hubbard,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Chuba Hubbard,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Darren Waller,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Darren Waller,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Drake London,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Drake London,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Jahan Dotson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Jahan Dotson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Jalen Coker,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Jalen Coker,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Tetairoa McMillan,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Tetairoa McMillan,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Tommy Tremble,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Tommy Tremble,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Xavier Legette,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Xavier Legette,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Xavier Legette,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CAR_ATL,Xavier Legette,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CIN_HOU,C.J. Stroud,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CIN_HOU,C.J. Stroud,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CIN_HOU,Chase Brown,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CIN_HOU,Chase Brown,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CIN_HOU,David Montgomery,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CIN_HOU,David Montgomery,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CIN_HOU,Ja'Marr Chase,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CIN_HOU,Ja'Marr Chase,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CIN_HOU,Joe Burrow,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CIN_HOU,Joe Burrow,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CIN_HOU,Nico Collins,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CIN_HOU,Nico Collins,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Baker Mayfield,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Baker Mayfield,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Bucky Irving,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Bucky Irving,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Cade Otton,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Cade Otton,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Chris Godwin Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Chris Godwin Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Chris Godwin Jr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Chris Godwin Jr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Denzel Boston,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Denzel Boston,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Deshaun Watson,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Deshaun Watson,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Emeka Egbuka,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Emeka Egbuka,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Harold Fannin Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Harold Fannin Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Jerry Jeudy,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Jerry Jeudy,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,KC Concepcion Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,KC Concepcion Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,KC Concepcion Jr.,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,KC Concepcion Jr.,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Kenny Gainwell,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Kenny Gainwell,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Kenny Gainwell,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Kenny Gainwell,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Quinshon Judkins,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Quinshon Judkins,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Quinshon Judkins,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_CLE_TB,Quinshon Judkins,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Breece Hall,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Breece Hall,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Geno Smith,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Geno Smith,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Isaiah Williams,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Isaiah Williams,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Jayden Reed,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Jayden Reed,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Jordan Love,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Jordan Love,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Jordan Love,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Jordan Love,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Kenyon Sadiq,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Kenyon Sadiq,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,MarShawn Lloyd,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,MarShawn Lloyd,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Mason Taylor,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Mason Taylor,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Matthew Golden,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Matthew Golden,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Tucker Kraft,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_GB_NYJ,Tucker Kraft,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Caleb Williams,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Caleb Williams,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Caleb Williams,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Caleb Williams,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Colston Loveland,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Colston Loveland,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,D'Andre Swift,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,D'Andre Swift,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,D'Andre Swift,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,D'Andre Swift,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Jordan Addison,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Jordan Addison,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Jordan Mason,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Jordan Mason,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Justin Jefferson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Justin Jefferson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Kyle Monangai,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Kyle Monangai,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Luther Burden III,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,Luther Burden III,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,T.J. Hockenson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIN_CHI,T.J. Hockenson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Bryce Lance,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Bryce Lance,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Juwan Johnson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Juwan Johnson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Lamar Jackson,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Lamar Jackson,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Mark Andrews,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Mark Andrews,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Travis Etienne Jr.,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Travis Etienne Jr.,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Tyler Shough,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Tyler Shough,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Tyler Shough,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NO_BAL,Tyler Shough,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Calvin Ridley,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Calvin Ridley,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Calvin Ridley,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Calvin Ridley,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Cam Ward,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Cam Ward,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Cam Ward,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Cam Ward,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Carnell Tate,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Carnell Tate,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Dallas Goedert,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Dallas Goedert,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,DeVonta Smith,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,DeVonta Smith,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Dontayvion Wicks,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Dontayvion Wicks,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Gunnar Helm,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Gunnar Helm,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Jalen Hurts,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Jalen Hurts,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Jalen Hurts,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Jalen Hurts,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Makai Lemon,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Makai Lemon,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Makai Lemon,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Makai Lemon,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Saquon Barkley,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Saquon Barkley,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Saquon Barkley,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Saquon Barkley,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Tony Pollard,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Tony Pollard,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Tyjae Spears,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Tyjae Spears,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Tyjae Spears,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Tyjae Spears,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Wan'Dale Robinson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PHI_TEN,Wan'Dale Robinson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PIT_NE,Drake Maye,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PIT_NE,Drake Maye,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PIT_NE,TreVeyon Henderson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_PIT_NE,TreVeyon Henderson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIA_SF,Brock Purdy,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIA_SF,Brock Purdy,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIA_SF,De'Von Achane,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIA_SF,De'Von Achane,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIA_SF,Malik Willis,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_MIA_SF,Malik Willis,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Drew Lock,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Drew Lock,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Jacoby Brissett,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Jacoby Brissett,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Jacoby Brissett,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Jacoby Brissett,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Jaxon Smith-Njigba,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Jaxon Smith-Njigba,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Jeremiyah Love,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Jeremiyah Love,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Marvin Harrison Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Marvin Harrison Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Michael Wilson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Michael Wilson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Trey McBride,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_SEA_ARI,Trey McBride,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_WAS_DAL,CeeDee Lamb,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_WAS_DAL,CeeDee Lamb,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_WAS_DAL,George Pickens,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_WAS_DAL,George Pickens,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_WAS_DAL,Jacory Croskey-Merritt,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_WAS_DAL,Jacory Croskey-Merritt,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_WAS_DAL,Javonte Williams,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_WAS_DAL,Javonte Williams,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_WAS_DAL,Stefon Diggs,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_WAS_DAL,Stefon Diggs,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_IND_KC,Noah Gray,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_IND_KC,Noah Gray,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Cam Skattebo,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Cam Skattebo,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Cam Skattebo,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Cam Skattebo,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Colby Parkinson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Colby Parkinson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Davante Adams,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Davante Adams,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Isaiah Likely,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Isaiah Likely,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Jaxson Dart,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Jaxson Dart,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Jaxson Dart,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Jaxson Dart,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Kyren Williams,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Kyren Williams,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Kyren Williams,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Kyren Williams,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Malik Nabers,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Malik Nabers,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Matthew Stafford,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Matthew Stafford,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Puka Nacua,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Puka Nacua,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Tutu Atwell,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Tutu Atwell,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Tutu Atwell,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_02_NYG_LA,Tutu Atwell,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_ATL_GB,Austin Hooper,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_ATL_GB,Austin Hooper,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_ATL_GB,Chris Brooks,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_ATL_GB,Chris Brooks,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_ATL_GB,Jonnu Smith,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_ATL_GB,Jonnu Smith,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_CIN_PIT,Roman Wilson,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_CIN_PIT,Roman Wilson,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_NE_JAX,Travis Hunter,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_NE_JAX,Travis Hunter,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_SEA_WAS,Dyami Brown,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_SEA_WAS,Dyami Brown,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_SEA_WAS,Jadarian Price,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_SEA_WAS,Jadarian Price,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_SEA_WAS,Rachaad White,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_SEA_WAS,Rachaad White,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_LA_DEN,Courtland Sutton,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_LA_DEN,Courtland Sutton,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_LA_DEN,Courtland Sutton,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_LA_DEN,Courtland Sutton,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_PHI_CHI,Tank Bigsby,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_03_PHI_CHI,Tank Bigsby,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Chig Okonkwo,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Chig Okonkwo,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Chig Okonkwo,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Chig Okonkwo,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Darius Slayton,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Darius Slayton,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Darius Slayton,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Darius Slayton,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Jacory Croskey-Merritt,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Jacory Croskey-Merritt,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Jonathan Taylor,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Jonathan Taylor,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Jonathan Taylor,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Jonathan Taylor,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Treylon Burks,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Treylon Burks,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Treylon Burks,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_IND_WAS,Treylon Burks,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Cam Skattebo,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Cam Skattebo,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Jacoby Brissett,Passing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Jacoby Brissett,Passing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Marvin Harrison Jr.,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Marvin Harrison Jr.,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Marvin Harrison Jr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Marvin Harrison Jr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Michael Wilson,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Michael Wilson,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Trey McBride,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Trey McBride,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Trey McBride,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_ARI_NYG,Trey McBride,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_GB_TB,MarShawn Lloyd,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_GB_TB,MarShawn Lloyd,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,DJ Moore,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,DJ Moore,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,DJ Moore,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,DJ Moore,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,Dalton Kincaid,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,Dalton Kincaid,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,Dalton Kincaid,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,Dalton Kincaid,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,Dawson Knox,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,Dawson Knox,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,James Cook III,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,James Cook III,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,James Cook III,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,James Cook III,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,James Cook III,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,James Cook III,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,Josh Allen,Rushing Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,Josh Allen,Rushing Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,Khalil Shakir,Receiving Yards,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_NE_BUF,Khalil Shakir,Receiving Yards,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_TEN_BAL,Derrick Henry,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_TEN_BAL,Derrick Henry,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_TEN_BAL,Justice Hill,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_TEN_BAL,Justice Hill,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_MIA_MIN,Aaron Jones Sr.,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_MIA_MIN,Aaron Jones Sr.,Receptions,under,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_DEN_SF,Evan Engram,Receptions,over,,no capture time for this row
+2026-10-14T14:32:23.429685+00:00,FanDuel,2026_04_DEN_SF,Evan Engram,Receptions,under,,no capture time for this row
