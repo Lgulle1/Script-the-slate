@@ -1,0 +1,14 @@
+captured_at,book,game_id,player_id,player_name,team,market,book_market,side,line,price,is_alt,source,note
+2026-10-14T12:12:57.616512+00:00,user_book,2026_06_SEA_DEN,00-0038543,Jaxon Smith-Njigba,SEA,rec,Receptions,over,6.5,,false,manual,posted line typed by the user; side and price not given
+2026-10-14T12:12:57.616512+00:00,user_book,2026_06_SEA_DEN,00-0036613,Jaylen Waddle,DEN,rec,Receptions,over,4.5,,false,manual,posted line typed by the user; side and price not given
+2026-10-14T12:12:57.616512+00:00,user_book,2026_06_SEA_DEN,00-0033908,Cooper Kupp,SEA,rec,Receptions,over,2.5,,false,manual,posted line typed by the user; side and price not given
+2026-10-14T12:12:57.616512+00:00,user_book,2026_06_SEA_DEN,00-0037545,Rashid Shaheed,SEA,rec,Receptions,over,2.5,,false,manual,posted line typed by the user; side and price not given
+2026-10-14T12:12:57.616512+00:00,user_book,2026_06_SEA_DEN,00-0040730,RJ Harvey,DEN,rec,Receptions,over,3.5,,false,manual,posted line typed by the user; side and price not given
+2026-10-14T12:12:57.616512+00:00,user_book,2026_06_SEA_DEN,00-0033881,Evan Engram,DEN,rec,Receptions,over,2.5,,false,manual,posted line typed by the user; side and price not given
+2026-10-14T12:12:57.616512+00:00,user_book,2026_06_SEA_DEN,00-0039868,Troy Franklin,DEN,rec,Receptions,over,1.5,,false,manual,posted line typed by the user; side and price not given
+2026-10-14T12:12:57.616512+00:00,user_book,2026_06_SEA_DEN,00-0034348,Courtland Sutton,DEN,rec,Receptions,over,3.5,,false,manual,posted line typed by the user; side and price not given
+2026-10-14T12:12:57.616512+00:00,user_book,2026_06_SEA_DEN,00-0039793,AJ Barner,SEA,rec,Receptions,over,2.5,,false,manual,posted line typed by the user; side and price not given
+2026-10-14T12:12:57.616512+00:00,user_book,2026_06_SEA_DEN,00-0039299,George Holani,SEA,rec,Receptions,over,1.5,,false,manual,posted line typed by the user; side and price not given
+2026-10-14T12:12:57.616512+00:00,user_book,2026_06_SEA_DEN,00-0040648,Tory Horton,SEA,rec,Receptions,over,0.5,,false,manual,posted line typed by the user; side and price not given
+2026-10-14T12:12:57.616512+00:00,user_book,2026_06_SEA_DEN,00-0038976,Marvin Mims Jr.,DEN,rec,Receptions,over,1.5,,false,manual,posted line typed by the user; side and price not given
+2026-10-14T12:12:57.616512+00:00,user_book,2026_06_SEA_DEN,00-0038797,Emanuel Wilson,SEA,rec,Receptions,over,1.5,,false,manual,posted line typed by the user; side and price not given (surname only: taken to be Seattle's Emanuel Wilson)
