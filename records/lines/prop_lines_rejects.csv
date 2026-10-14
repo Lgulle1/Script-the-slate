@@ -1,0 +1,69 @@
+captured_at,book,game_id,player_name,book_market,side,line,reason
+2026-10-08T22:09:34+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receiving Yards,over,19.5,player not matched in the game's teams
+2026-10-08T22:09:34+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receiving Yards,under,19.5,player not matched in the game's teams
+2026-10-08T22:09:35+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receptions,over,1.5,player not matched in the game's teams
+2026-10-08T22:09:35+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receptions,under,1.5,player not matched in the game's teams
+2026-10-09T03:52:11+00:00,FanDuel,2026_05_CLE_NYJ,Isaiah Williams,Receptions,over,2.5,more than one player matches
+2026-10-09T03:52:11+00:00,FanDuel,2026_05_CLE_NYJ,Isaiah Williams,Receptions,under,2.5,more than one player matches
+2026-10-10T18:00:51+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receiving Yards,over,20.5,player not matched in the game's teams
+2026-10-10T18:00:51+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receiving Yards,under,20.5,player not matched in the game's teams
+2026-10-10T18:00:51+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receptions,over,1.5,player not matched in the game's teams
+2026-10-10T18:00:51+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receptions,under,1.5,player not matched in the game's teams
+2026-10-11T00:31:52+00:00,FanDuel,2026_05_NYG_WAS,Antonio Williams,Receptions,over,3.5,more than one player matches
+2026-10-11T00:31:52+00:00,FanDuel,2026_05_NYG_WAS,Antonio Williams,Receptions,under,3.5,more than one player matches
+2026-10-11T17:02:34+00:00,FanDuel,2026_05_CLE_NYJ,Isaiah Williams,Receptions,over,2.5,more than one player matches
+2026-10-11T17:02:34+00:00,FanDuel,2026_05_CLE_NYJ,Isaiah Williams,Receptions,under,2.5,more than one player matches
+2026-10-11T17:03:26+00:00,FanDuel,2026_05_NYG_WAS,Antonio Williams,Receptions,over,3.5,more than one player matches
+2026-10-11T17:03:26+00:00,FanDuel,2026_05_NYG_WAS,Antonio Williams,Receptions,under,3.5,more than one player matches
+2026-10-08T22:09:34+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receiving Yards,over,19.5,player not matched in the game's teams
+2026-10-08T22:09:34+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receiving Yards,under,19.5,player not matched in the game's teams
+2026-10-08T22:09:35+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receptions,over,1.5,player not matched in the game's teams
+2026-10-08T22:09:35+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receptions,under,1.5,player not matched in the game's teams
+2026-10-09T03:52:11+00:00,FanDuel,2026_05_CLE_NYJ,Isaiah Williams,Receptions,over,2.5,more than one player matches
+2026-10-09T03:52:11+00:00,FanDuel,2026_05_CLE_NYJ,Isaiah Williams,Receptions,under,2.5,more than one player matches
+2026-10-10T18:00:51+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receiving Yards,over,20.5,player not matched in the game's teams
+2026-10-10T18:00:51+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receiving Yards,under,20.5,player not matched in the game's teams
+2026-10-10T18:00:51+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receptions,over,1.5,player not matched in the game's teams
+2026-10-10T18:00:51+00:00,FanDuel,2026_05_BUF_LA,Joshua Palmer,Receptions,under,1.5,player not matched in the game's teams
+2026-10-11T00:31:52+00:00,FanDuel,2026_05_NYG_WAS,Antonio Williams,Receptions,over,3.5,more than one player matches
+2026-10-11T00:31:52+00:00,FanDuel,2026_05_NYG_WAS,Antonio Williams,Receptions,under,3.5,more than one player matches
+2026-10-11T17:02:34+00:00,FanDuel,2026_05_CLE_NYJ,Isaiah Williams,Receptions,over,2.5,more than one player matches
+2026-10-11T17:02:34+00:00,FanDuel,2026_05_CLE_NYJ,Isaiah Williams,Receptions,under,2.5,more than one player matches
+2026-10-11T17:03:26+00:00,FanDuel,2026_05_NYG_WAS,Antonio Williams,Receptions,over,3.5,more than one player matches
+2026-10-11T17:03:26+00:00,FanDuel,2026_05_NYG_WAS,Antonio Williams,Receptions,under,3.5,more than one player matches
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_PHI_JAX,Brenton Strange,Receiving Yards,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_PHI_JAX,Brenton Strange,Receiving Yards,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_PHI_JAX,Brenton Strange,Receptions,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_PHI_JAX,Brenton Strange,Receptions,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_CHI_GB,Cole Kmet,Receiving Yards,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_CHI_GB,Cole Kmet,Receiving Yards,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_CHI_GB,Cole Kmet,Receptions,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_CHI_GB,Cole Kmet,Receptions,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_CHI_GB,Jonnu Smith,Receiving Yards,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_CHI_GB,Jonnu Smith,Receiving Yards,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_CHI_GB,Jonnu Smith,Receptions,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_CHI_GB,Jonnu Smith,Receptions,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_CIN_MIA,Dohnte Meyers,Receptions,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_CIN_MIA,Dohnte Meyers,Receptions,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_CIN_MIA,Will Kacmarek,Receptions,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_CIN_MIA,Will Kacmarek,Receptions,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,C.J. Stroud,Passing Yards,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,C.J. Stroud,Passing Yards,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Calvin Ridley,Receiving Yards,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Calvin Ridley,Receiving Yards,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Cam Ward,Passing Yards,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Cam Ward,Passing Yards,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Carnell Tate,Receiving Yards,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Carnell Tate,Receiving Yards,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Carnell Tate,Receptions,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Carnell Tate,Receptions,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Nico Collins,Receiving Yards,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Nico Collins,Receiving Yards,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Nico Collins,Receptions,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Nico Collins,Receptions,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Tony Pollard,Rushing Yards,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Tony Pollard,Rushing Yards,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Wan'Dale Robinson,Receiving Yards,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Wan'Dale Robinson,Receiving Yards,under,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Wan'Dale Robinson,Receptions,over,,no capture time for this row
+2026-10-14T13:48:20.543895+00:00,FanDuel,2026_05_HOU_TEN,Wan'Dale Robinson,Receptions,under,,no capture time for this row
