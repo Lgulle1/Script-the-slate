@@ -621,6 +621,31 @@ and at least three to four weeks of graded live predictions exist before Phase 6
 - **Verdict.** The one weight rule per market (gain > 0, 95% interval above 0, wins in at least 2 seasons), no multiplicity correction (one test per market, as for every layer gate), and the control must not clear. CLEARS in a market = comparables are a weight-1 candidate THERE via stage 2 (not wired live: there is no live comparables builder); otherwise they stay parked. No threshold or feature is changed after the result.
 - **Result (2026-10-13; run_meta_comps.py, data/processed/meta_comps_results.parquet; rules above, nothing changed after seeing it).** The comparable shifts add nothing through the stage-2 stacker. Absolute-error gain of "with comps" over "without": targets -0.17% (interval below zero), rec -0.33% (below zero), rec_yds -0.03% (through zero), rush_att -0.13% (through zero), rush_yds +0.07% (EDGE: interval through zero, 3 of 4 seasons). The permuted-block control is also negative everywhere (-0.11% to -0.72%), so the comparable block is noise to the stacker, not a signal that fails for another reason. No market CLEARS: the comparables stay parked at weight 0 for V1.
 
+## BettingPros FanDuel export, import and week-5 comparison (2026-10-14; fixed BEFORE the importer is built or any line is compared with any number)
+
+Source: a CSV the project manager supplied (FanDuel NFL 2026 week 5 player props, 1,771 rows, 15 games, 11 markets). The manager says it was pulled by another
+assistant from BettingPros' public odds feed; I have not verified that, and I do not fetch BettingPros myself (its robots.txt disallows /api/, which is where the feed lives).
+Every line from this file is labeled `source = bettingpros_import`.
+
+1. **What is imported.** Only Over/Under rows of the four markets the model also predicts: passing-yards, rushing-yards, receiving-yards, receptions
+   (a quarterback's rushing yards map to qb_rush_yds as in the existing logger). Touchdown, "most yards", first/last scorer and DST rows are skipped and counted,
+   not rejected. Team codes JAC and LAR are mapped to the schedule's JAX and LA.
+2. **Two rows per selection, each with its own honest timestamp.** The OPENING line is logged with `captured_at` = the file's opening timestamp (every one is before kickoff).
+   The LAST line is logged with `captured_at` = the file's line-updated timestamp. A line whose stamp is at or after kickoff is normally refused (the standing rule). For this
+   file, 96% of last-line stamps fall 11-212 seconds after kickoff, which reads as the book locking the market, not as a played-game price, but I cannot verify that. So:
+   `log_prop_lines` gets an optional `grace_seconds` (default 0, so nothing else changes); this import uses 300; a row inside the grace is logged with the note
+   `stamp N s after kickoff` so it can always be told apart; a row beyond it is refused with the reason. The comparison below uses the LAST line and reports its result also
+   with the opening line, so the reader sees whether the answer depends on the close.
+3. **What the comparison is, and is not.** The only week-5 numbers that exist are the retrospective ones in retro_check_2026_week5.parquet (made after the fact, never fit on
+   a 2026 outcome, never shown a line). They are not a prospective record and CANNOT clear or fail any gate; one week is also too few rows for a verdict. So this is descriptive only:
+   for each market, with players who did not play removed from both sides (the bet is void), and ties to the line (pushes) removed from the hit-rate rows:
+   - MAE of the model's point prediction against the actual, MAE of the line against the actual, and their difference, with a game-cluster bootstrap 95% interval (2,000 draws, seed 7).
+   - When the model is above the line, how often the real number went over; below, under; reported for all rows and for the third of rows with the largest |model - line| / line.
+   - The same two tables with the opening line.
+   Reading rule, fixed now: if the interval of (MAE line - MAE model) includes 0, "no difference detected in one week". It is never reported as an edge or as a failure of the model.
+4. **Nothing in the prediction path reads the prop log** (the existing guard test stays). Older results are never overwritten; outputs are new files
+   (data/processed/prop_import_week5_comparison.parquet).
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
