@@ -682,6 +682,11 @@ had not been played. Code and models are frozen at the current commit; nothing i
   rush_att -11.0%, rush_yds -12.0%, targets -6.5% (mean absolute error lower than the baseline's by that much). By week: 4.7%, 13.3%, 7.0%, -0.1%, 9.4%. Every market's mean prediction is below the real mean (bias, mean prediction minus actual: rec_yds -4.9, pass_yds -6.0,
   rush_yds -3.7), and totals were under-predicted in 4 of 5 weeks (mean predicted 44-46 vs actual 40-49). The 10-90 band held 78-90% by market (80% nominal). Game winners 57.7% of 78. Descriptive only.
 
+**Lines for weeks 1-5 received (2026-10-14, after the reconstruction was published at 6b514e8).** Two files: weeks 1-4 (8,688 rows, same layout as the week-5 file) and a second week-5 file that is identical row for row to the first
+(not imported twice). Fixed before the comparison is run: the weeks 1-4 file goes through the same importer and the same rules as the week-5 file (open and last rows, 300 s grace, four markets). The comparison is the one fixed above,
+with the model rows now the reconstruction's (all five weeks, version retro) instead of the single-week retro run, pooled by market, plus the all-market hit rate by week; same reading rule (an interval of (MAE line - MAE model) that includes 0 is
+"no difference detected"; nothing here is an edge or a failure). The week-5-only result above stays as it is; the new output is a new file (prop_import_weeks1_5_comparison.parquet).
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
