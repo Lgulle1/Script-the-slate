@@ -732,6 +732,19 @@ data/processed/weeks_review_side.parquet; the rows with their bars to weeks_revi
 **Result of the addendum (2026-10-14; byte-identical on two runs).** Right side of the line, weeks 1-5, 1,755 lines: 51.3% [48.7, 53.8]; leaning over 50.1% (n=753), under 52.2% (n=1,002); by market pass_yds 50.9, rush_yds 47.9, rec 52.1, rec_yds 51.1, qb_rush_yds 54.1 (n=37);
 by week 51.1, 49.8, 49.4, 49.4, 56.5. A coin flip, below the 52.4% needed at -110. The page "Bars and Lines" now carries this, a plain-language account of bars with two real week-1 examples chosen by a stated rule, and a table of the four tests.
 
+**Follow-up, 2026-10-14 (asked for: "how do we improve the model from this, and is there a combination where we have a well higher than 50% chance"; fixed BEFORE it is computed).** Two checks on the same 1,755 weeks 1-5 rows; neither sets a weight, a threshold or a bet.
+A. **Do the bars hold once discreteness is removed?** A bar of 0 yards is always reached, and whole-number outcomes tie at the cut, so the observed hit rate sits above the nominal level by construction. Compare instead each bar's observed hit rate with the model's own exact stated chance of reaching that bar
+   (the share of its width-scaled pool sample at or above the bar), per level and market; and report the share of rows whose 80% bar is 0 and the hit rate on rows whose 80% bar is above 0.
+B. **Pockets above 50%, found and verified on different weeks.** Pockets are market x lean (over or under at the main line) x third of |model - line| / the market's mean absolute miss, the thirds' cut points taken from weeks 1-3 only (5 x 2 x 3 = 30 pockets).
+   "Find": right-side rate in weeks 1-3 (pockets with at least 30 lines and at least 55% are listed). "Verify": the same pockets' right-side rate in weeks 4-5, with the number of lines. The honest out-of-sample number is the pooled verify rate of the pockets the find step selected;
+   the number of pockets expected to reach 55% by chance alone is reported next to the number that did. Reading rule: a pocket is a lead only if its verify rate is above 52.4% (break-even at -110) with a game-cluster 95% interval that excludes 50%; otherwise it is noise from searching.
+   Alternate-line prices do not exist in the file, so no bar is priced or scanned for edge.
+
+**Result of the follow-up (2026-10-14; byte-identical on two runs; weeks_review_calibration.parquet, weeks_review_pockets.parquet).**
+A. Against the model's own exact stated chance the bars are calibrated: all markets, stated -> observed at the 90/80/70/60/50 bars: 95.0 -> 94.6, 86.7 -> 86.0, 76.6 -> 78.8, 66.5 -> 69.5, 56.6 -> 59.1. The nominal labels understate the real chance because many bars are 0 (40.5% of the 90% bars, 18.3% of the 80% bars,
+   24.9% of the 80% bars in rec_yds) and whole-number outcomes tie at the cut. With bars of 0 left out, the 80% bar: 83.5% observed against 83.9% stated (1,404 lines). The earlier statement "never over-confident" stands, but "reached more often than stated" was largely this artifact.
+B. Pockets (12 had at least 30 lines in weeks 1-3; 3 reached 55%, about what chance alone gives): rec_yds over/small gap 58.1% -> 47.2% (n=36), rec_yds over/middle 55.6% -> 50.0% (42), rec_yds under/middle 56.3% -> 33.3% (27). Pooled on weeks 4-5: 44.8% on 105 lines. No lead.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming

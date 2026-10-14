@@ -108,7 +108,8 @@ def main():
         p_model = float((s > r["line"]).mean())
         y = float(r["actual"] > r["line"])
         fl = {f"f{int(l * 100)}": float(np.floor(np.quantile(s, 1 - l, method="lower"))) for l in LEVELS}
-        rows.append(dict(game_id=r["game_id"], player_id=r["player_id"], market=r["market"], week=r["week"], line=r["line"], model=r["model"], actual=r["actual"], p_model=p_model, p_book=p_book, y=y, **fl))
+        ex = {f"e{int(l * 100)}": float((s >= fl[f"f{int(l * 100)}"]).mean()) for l in LEVELS}           # the model's own exact chance of reaching each bar
+        rows.append(dict(game_id=r["game_id"], player_id=r["player_id"], market=r["market"], week=r["week"], line=r["line"], model=r["model"], actual=r["actual"], p_model=p_model, p_book=p_book, y=y, **fl, **ex))
     P = pl.DataFrame(rows).with_columns(
         bs_model=(pl.col("p_model") - pl.col("y")) ** 2, bs_book=(pl.col("p_book") - pl.col("y")) ** 2,
         ll_model=-(pl.col("y") * pl.col("p_model").clip(0.01, 0.99).log() + (1 - pl.col("y")) * (1 - pl.col("p_model")).clip(0.01, 0.99).log()),
@@ -148,6 +149,36 @@ def main():
         side.append(dict(market="ALL", scope=f"week {w}", n=s_.height, right=mu[0], lo=mu[1], hi=mu[2], n_over=None, right_over=None, n_under=None, right_under=None))
     side = pl.DataFrame(side)
     side.write_parquet(OUTD / "weeks_review_side.parquet")
+    # A. exact-probability calibration of the bars
+    calib = []
+    for m in [*sorted(P["market"].unique().to_list()), "ALL"]:
+        s_ = P if m == "ALL" else P.filter(pl.col("market") == m)
+        for l in LEVELS:
+            k = int(l * 100)
+            hit = (s_["actual"].to_numpy() >= s_[f"f{k}"].to_numpy()).astype(float)
+            pos = s_[f"f{k}"].to_numpy() > 0
+            calib.append(dict(market=m, level=l, n=s_.height, nominal=l, exact_stated=float(np.mean(s_[f"e{k}"].to_numpy())), hit=float(np.mean(hit)), share_bar_zero=float(np.mean(~pos)),
+                              n_bar_above_zero=int(pos.sum()), hit_bar_above_zero=float(np.mean(hit[pos])) if pos.any() else None, exact_bar_above_zero=float(np.mean(s_[f"e{k}"].to_numpy()[pos])) if pos.any() else None))
+    calib = pl.DataFrame(calib)
+    calib.write_parquet(OUTD / "weeks_review_calibration.parquet")
+    # B. pockets found on weeks 1-3, verified on weeks 4-5
+    Lp = L.with_columns(gap=(pl.col("model") - pl.col("line")).abs() / pl.col("sc"))
+    cuts = {m: np.quantile(Lp.filter((pl.col("market") == m) & (pl.col("week") <= 3))["gap"].to_numpy(), [1 / 3, 2 / 3]) for m in sorted(Lp["market"].unique().to_list())}
+    Lp = Lp.with_columns(third=pl.struct("market", "gap").map_elements(lambda r: int(np.searchsorted(cuts[r["market"]], r["gap"])), return_dtype=pl.Int64))
+    pk = []
+    for m in sorted(Lp["market"].unique().to_list()):
+        for lean in (True, False):
+            for th in (0, 1, 2):
+                q = Lp.filter((pl.col("market") == m) & (pl.col("lean_over") == lean) & (pl.col("third") == th))
+                f_, v_ = q.filter(pl.col("week") <= 3), q.filter(pl.col("week") >= 4)
+                pk.append(dict(market=m, lean="over" if lean else "under", third=["small gap", "middle", "large gap"][th], n_find=f_.height, find=mean_of(f_, "right") if f_.height else None,
+                               n_verify=v_.height, verify=mean_of(v_, "right") if v_.height else None))
+    pk = pl.DataFrame(pk).with_columns(selected=(pl.col("n_find") >= 30) & (pl.col("find") >= 0.55))
+    pk.write_parquet(OUTD / "weeks_review_pockets.parquet")
+    sel = pk.filter(pl.col("selected"))
+    pooled_n = int(sel["n_verify"].sum()) if sel.height else 0
+    pooled_verify = float((sel["verify"] * sel["n_verify"]).sum() / pooled_n) if pooled_n else None
+    base_find = Lp.filter(pl.col("week") <= 3)
     wrong = P.with_columns(lean_over=pl.col("model") > pl.col("line"), went_over=pl.col("y") > 0.5).filter(pl.col("lean_over") != pl.col("went_over"))
     save = wrong.with_columns(hit=(pl.col("actual") >= pl.col("f80")).cast(pl.Float64))
     wrong_share = mean_of(save, "hit")
@@ -204,6 +235,8 @@ def main():
         print("3. bars:"); print(bars.pivot(on="stated", index="market", values="hit"))
         print(bars.filter(pl.col("stated") == 0.8)); print("wrong lean but 80% bar reached:", wrong_share, "of", save.height)
         print("right side:"); print(side)
+        print("A. calibration:"); print(calib.filter(pl.col("market") == "ALL")); print(calib.filter(pl.col("level") == 0.8))
+        print("B. pockets selected:"); print(sel); print("pooled verify rate of selected pockets:", pooled_verify, "on", pooled_n, "lines; pockets scanned", pk.filter(pl.col("n_find") >= 30).height, "selected", sel.height)
         print("4. thirds:"); print(thirds)
         print("5. icc:"); print(iccdf); print("corr(model normalized miss, |total surprise|)", corr, " line:", corr_l, "games", pc.height)
     return dict(per=per)
