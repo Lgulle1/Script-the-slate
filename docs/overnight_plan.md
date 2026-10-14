@@ -830,6 +830,9 @@ the only positive bucket (chance below 50%, 77 lines, +13.9% [-15.4, +44.2]) cha
 (B) **The book's confidence.** Hit rate against the quoted price's implied chance: 50-55% (2,146 selections, the ordinary over/under) 50.5 vs 52.9; 60% and above 59.7 vs 63.7 (355); 45-50% 46.7 vs 47.5; 40-45% 40.3 vs 42.9; below 40% 46.7 vs 37.6 (45, noisy); the 55-60% bucket 45.9 vs 57.7 (362 selections, return -20.7% [-30.3, -11.6]), a bucket I did not expect and did not pursue (the shaded side of a line; the other side of such lines returns about the margin).
 (C) The 12 largest positive gaps (stated +31 to +41 points, model chances 74-91%, mostly unders on low-volume players) won 6 of 12. Nothing here is a lead.
 
+**Lean ledger (asked for by the project manager, 2026-10-14: "if I took the model's pick on every line, each market's percentage and the running total at the old lines"; fixed before it is run).** On the same 1,816 weeks 1-5 FanDuel main lines matched to a prediction (latest line per player-market): the pick is over when the model's number is above the line, under when below (ties dropped); flat 1-unit stake at the quoted price of the picked side; pushes and players who did not play dropped.
+Per market and overall: bets, wins, hit rate, units won, return per unit; beside it the hit rate of blindly taking every over and every under; and the running total by week. A tally of what already exists, no test, no threshold.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
