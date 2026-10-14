@@ -756,6 +756,12 @@ Caveats stated up front: the proxy is not the book's alternate price (it is the 
 By the reading rule fixed above no level is a lead (no interval at a 10% margin is above 0). The fair-price gain at the 70% and 60% bars is probably the 2020-2024 pool running about two points behind 2026 levels, which the proxy and the model's own chances share (model 76.6 vs line-centred 76.1 at the 70% bar):
 the model adds almost nothing over the line. Stated as a stand-in, not as the book's alternate prices.
 
+**Addendum, 2026-10-14 (asked for: "parlay three 70% bars, surely that is profitable"; fixed BEFORE it is computed).** Same rows and same proxy prices as the ladder section. Three-leg parlays of 70% bars are drawn at random from the weeks 1-5 lines, 20,000 per type with seed 7: (i) three different players in three different games of the same week;
+(ii) three different players of the same game. A parlay returns the product of its legs' proxy payouts (each leg at 1/(b(1+m)), m = 0 and 10%); profit = hit/(product of b(1+m)) - 1. Reported: the hit rate against the product of the legs' own exact chances, and the ROI at each m. Descriptive only; a parlay of legs that each lose at a realistic margin is expected to lose more.
+
+**Result of the parlay addendum (2026-10-14; byte-identical on two runs; weeks_review_parlays.parquet).** Three-leg parlays of 70% bars, 20,000 each: different games 48.8% hit against 44.9% (model chances multiplied) and 44.1% (line-centred); same game 48.8%; ROI at the proxy price 0% margin +13.3% and +13.2%, at 10% margin per leg -14.9% in both.
+The parlay multiplies the per-leg result (1.041^3 = 1.13; 0.947^3 = 0.85): the same small fair-price gain, probably the 2020-2024 pool running behind 2026, becomes larger, and so does the loss at a realistic margin. No same-game correlation shows at this level. Not a lead.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
