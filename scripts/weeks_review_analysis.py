@@ -109,6 +109,8 @@ def main():
         y = float(r["actual"] > r["line"])
         fl = {f"f{int(l * 100)}": float(np.floor(np.quantile(s, 1 - l, method="lower"))) for l in LEVELS}
         ex = {f"e{int(l * 100)}": float((s >= fl[f"f{int(l * 100)}"]).mean()) for l in LEVELS}           # the model's own exact chance of reaching each bar
+        sl = sample_for(cal, r["market"], r["line"])                                                       # the same past cases, centred on the book's line
+        ex |= {f"b{int(l * 100)}": float(min(0.995, max(0.005, (sl >= fl[f"f{int(l * 100)}"]).mean()))) for l in LEVELS}
         rows.append(dict(game_id=r["game_id"], player_id=r["player_id"], market=r["market"], week=r["week"], line=r["line"], model=r["model"], actual=r["actual"], p_model=p_model, p_book=p_book, y=y, **fl, **ex))
     P = pl.DataFrame(rows).with_columns(
         bs_model=(pl.col("p_model") - pl.col("y")) ** 2, bs_book=(pl.col("p_book") - pl.col("y")) ** 2,
@@ -161,6 +163,23 @@ def main():
                               n_bar_above_zero=int(pos.sum()), hit_bar_above_zero=float(np.mean(hit[pos])) if pos.any() else None, exact_bar_above_zero=float(np.mean(s_[f"e{k}"].to_numpy()[pos])) if pos.any() else None))
     calib = pl.DataFrame(calib)
     calib.write_parquet(OUTD / "weeks_review_calibration.parquet")
+    # ladder pricing proxy: bet that the real number reaches the model's bar, at a price implied by the line-centred distribution plus a margin
+    roi = []
+    for m in [*sorted(P["market"].unique().to_list()), "ALL"]:
+        s_ = P if m == "ALL" else P.filter(pl.col("market") == m)
+        for l in LEVELS:
+            k = int(l * 100)
+            hit = (s_["actual"].to_numpy() >= s_[f"f{k}"].to_numpy()).astype(float)
+            b = s_[f"b{k}"].to_numpy()
+            row = dict(market=m, level=l, n=s_.height, hit=float(np.mean(hit)), mean_b=float(np.mean(b)), mean_model_chance=float(np.mean(s_[f"e{k}"].to_numpy())))
+            tmp = s_.select("game_id").with_columns(hit=pl.Series(hit), b=pl.Series(b))
+            for mg in (0.0, 0.05, 0.10, 0.15):
+                t_ = tmp.with_columns(pr=pl.col("hit") / (pl.col("b") * (1 + mg)) - 1)
+                mu = cluster_mean(t_, "pr")
+                row[f"roi_{int(mg * 100)}"], row[f"roi_{int(mg * 100)}_lo"], row[f"roi_{int(mg * 100)}_hi"] = mu
+            roi.append(row)
+    roi = pl.DataFrame(roi)
+    roi.write_parquet(OUTD / "weeks_review_ladder_roi.parquet")
     # B. pockets found on weeks 1-3, verified on weeks 4-5
     Lp = L.with_columns(gap=(pl.col("model") - pl.col("line")).abs() / pl.col("sc"))
     cuts = {m: np.quantile(Lp.filter((pl.col("market") == m) & (pl.col("week") <= 3))["gap"].to_numpy(), [1 / 3, 2 / 3]) for m in sorted(Lp["market"].unique().to_list())}
@@ -236,6 +255,8 @@ def main():
         print(bars.filter(pl.col("stated") == 0.8)); print("wrong lean but 80% bar reached:", wrong_share, "of", save.height)
         print("right side:"); print(side)
         print("A. calibration:"); print(calib.filter(pl.col("market") == "ALL")); print(calib.filter(pl.col("level") == 0.8))
+        print("ladder proxy:"); print(roi.filter(pl.col("market") == "ALL").select("level", "n", "hit", "mean_b", "mean_model_chance", "roi_0", "roi_0_lo", "roi_0_hi", "roi_10", "roi_10_lo", "roi_10_hi"))
+        print(roi.filter(pl.col("market") != "ALL").select("market", "level", "hit", "mean_b", "roi_0", "roi_10", "roi_10_lo", "roi_10_hi"))
         print("B. pockets selected:"); print(sel); print("pooled verify rate of selected pockets:", pooled_verify, "on", pooled_n, "lines; pockets scanned", pk.filter(pl.col("n_find") >= 30).height, "selected", sel.height)
         print("4. thirds:"); print(thirds)
         print("5. icc:"); print(iccdf); print("corr(model normalized miss, |total surprise|)", corr, " line:", corr_l, "games", pc.height)

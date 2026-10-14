@@ -745,6 +745,17 @@ A. Against the model's own exact stated chance the bars are calibrated: all mark
    24.9% of the 80% bars in rec_yds) and whole-number outcomes tie at the cut. With bars of 0 left out, the 80% bar: 83.5% observed against 83.9% stated (1,404 lines). The earlier statement "never over-confident" stands, but "reached more often than stated" was largely this artifact.
 B. Pockets (12 had at least 30 lines in weeks 1-3; 3 reached 55%, about what chance alone gives): rec_yds over/small gap 58.1% -> 47.2% (n=36), rec_yds over/middle 55.6% -> 50.0% (42), rec_yds under/middle 56.3% -> 33.3% (27). Pooled on weeks 4-5: 44.8% on 105 lines. No lead.
 
+**Ladder pricing proxy (asked for by the project manager, 2026-10-14: "what if I took the 70% bar every time; the book would price a ladder off the line with worse odds"; fixed BEFORE it is computed).** The file has no alternate-line prices, so the book's price of a bar is proxied from the one thing the book
+did publish for the player, the main line. For each weeks 1-5 row and each bar level (90, 80, 70, 60, 50): the bar is the model's, as above (a bet that the real number reaches it); the book-equivalent chance b is the share of the calibrator pool sample, drawn
+at prediction = the main line (width scale applied, the same sample code), that is at or above the bar, capped at 0.995. A bet at the proxy price risks 1 to return 1/(b(1+m)) in total, with a margin m of 0, 5, 10 and 15% on the implied chance (alternate lines usually carry more margin than the main line); profit = hit/(b(1+m)) - 1 per unit.
+Reported per level and market and overall: hit rate, mean b, and the ROI at each m, with a game-cluster 95% interval (2,000 draws, seed 7). Reading rule, fixed now: a level is a lead only if its ROI at m = 10% has an interval above 0; the ROI at m = 0 is the raw information advantage over the line and is reported as that.
+Caveats stated up front: the proxy is not the book's alternate price (it is the line-centred distribution of the same past cases); nothing here is a bet recommendation, a weight or a threshold.
+
+**Result of the ladder pricing proxy (2026-10-14; byte-identical on two runs; weeks_review_ladder_roi.parquet).** All markets, 1,718 lines, bet that the real number reaches the model's bar at the line-centred proxy price: hit rate vs proxy chance (ROI at 0% margin; at 10% margin):
+90% bar 94.6 vs 94.8 (-0.1%; -9.1% [-10.3, -8.0]); 80% 86.0 vs 86.1 (-0.0%; -9.1% [-11.0, -7.1]); 70% 78.8 vs 76.1 (+4.1% [1.0, 7.3]; -5.3% [-8.2, -2.5]); 60% 69.5 vs 66.4 (+5.3% [1.1, 9.4]; -4.2% [-8.1, -0.5]); 50% 59.1 vs 56.9 (+4.3% [-1.5, 9.8]; -5.2% [-10.5, -0.2]).
+By the reading rule fixed above no level is a lead (no interval at a 10% margin is above 0). The fair-price gain at the 70% and 60% bars is probably the 2020-2024 pool running about two points behind 2026 levels, which the proxy and the model's own chances share (model 76.6 vs line-centred 76.1 at the 70% bar):
+the model adds almost nothing over the line. Stated as a stand-in, not as the book's alternate prices.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
