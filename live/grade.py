@@ -8,9 +8,26 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import json
+
 import polars as pl
 
 GAME_MARKETS = ("spread", "moneyline", "total")
+QCOLS = ("q05", "q10", "q25", "q50", "q75", "q90", "q95")
+
+
+def _ladder_hits(ladder, actual):
+    """{rung: 1 if the actual reached it} for a stored JSON ladder, None without one."""
+    if ladder is None:
+        return None
+    return json.dumps({t: int(actual >= float(t)) for t in json.loads(ladder)}, sort_keys=True)
+
+
+def _ladder_brier(ladder, actual):
+    if ladder is None:
+        return None
+    lad = json.loads(ladder)
+    return sum((p - float(actual >= float(t))) ** 2 for t, p in lad.items()) / len(lad) if lad else None
 
 
 def grade(gradable: pl.DataFrame, actuals: pl.DataFrame, path, graded_at) -> pl.DataFrame:
@@ -28,7 +45,13 @@ def grade(gradable: pl.DataFrame, actuals: pl.DataFrame, path, graded_at) -> pl.
         "prediction_id", "game_id", "player_id", "market", "version", "model_version", "stack", "mean", "actual", "did_not_play", track=pl.lit("pure"),
         error=pl.col("mean") - pl.col("actual"), abs_error=(pl.col("mean") - pl.col("actual")).abs(),
         brier=pl.when(pl.col("market") == "moneyline").then((pl.col("mean") - pl.col("actual")) ** 2).otherwise(None),
-        quantile_band=pl.lit(None, dtype=pl.Int32), graded_at=pl.lit(graded_at).cast(pl.Datetime("us", "UTC"))).sort("game_id", "market", "player_id")
+        quantile_band=pl.when(pl.col("q05").is_not_null()).then(pl.sum_horizontal([(pl.col("actual") > pl.col(q)).cast(pl.Int32) for q in QCOLS])).otherwise(None).cast(pl.Int32),
+        in_50=pl.when(pl.col("q25").is_not_null()).then((pl.col("actual") >= pl.col("q25")) & (pl.col("actual") <= pl.col("q75"))),
+        in_80=pl.when(pl.col("q10").is_not_null()).then((pl.col("actual") >= pl.col("q10")) & (pl.col("actual") <= pl.col("q90"))),
+        in_90=pl.when(pl.col("q05").is_not_null()).then((pl.col("actual") >= pl.col("q05")) & (pl.col("actual") <= pl.col("q95"))),
+        ladder_hits=pl.struct("ladder", "actual").map_elements(lambda r: _ladder_hits(r["ladder"], r["actual"]), return_dtype=pl.String),
+        ladder_brier=pl.struct("ladder", "actual").map_elements(lambda r: _ladder_brier(r["ladder"], r["actual"]), return_dtype=pl.Float64),
+        graded_at=pl.lit(graded_at).cast(pl.Datetime("us", "UTC"))).sort("game_id", "market", "player_id")
     out = pl.concat([done, new]) if done is not None else new
     if new.height:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -42,4 +65,5 @@ def summary(graded: pl.DataFrame) -> pl.DataFrame:
     return (graded.group_by("stack", "market").agg(
         n_played=played.sum(), n_did_not_play=dnp.sum(),
         mae_played=pl.col("abs_error").filter(played).mean(), mae_did_not_play=pl.col("abs_error").filter(dnp).mean(),
-        brier=pl.col("brier").mean()).sort("stack", "market"))
+        brier=pl.col("brier").mean(), ladder_brier=pl.col("ladder_brier").mean(), n_with_distribution=pl.col("in_80").is_not_null().sum(),
+        cov_50=pl.col("in_50").filter(played).mean(), cov_80=pl.col("in_80").filter(played).mean(), cov_90=pl.col("in_90").filter(played).mean()).sort("stack", "market"))

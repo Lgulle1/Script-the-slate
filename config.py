@@ -325,3 +325,8 @@ MIN_SEASONS_WON = 2  # the phase-3 gate: the model must beat the best baseline i
 # One weight rule for every Phase 4 layer (decision of 2026-10-09; before, 4a / 4b kept a layer on "gain > 0 and >= 2 seasons won" while 4c used
 # CLEARS): a layer keeps weight 1 in a market only on CLEARS, otherwise 0 and flagged (the market is never dropped). eval.compare.layer_weight.
 LAYER_WEIGHT_RULE = "1.0 on CLEARS (gain > 0, 95% season-week interval excluding 0, wins >= MIN_SEASONS_WON seasons) else 0.0"
+
+# Lines log screen (display only): flag a typed line when the model probability differs from the odds' break-even probability by at least this many points.
+LINES_FLAG_GAP_PP = 5.0
+# Phase 6.2: a market runs the stage-2 stacking model only with at least this many graded player-games in the 2020-2024 walk-forward.
+STAGE2_MIN_GAMES = 3000

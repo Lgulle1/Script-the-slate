@@ -30,6 +30,11 @@ def test_a_run_before_the_week_stores_every_game_and_a_manifest(models, tmp_path
     m = json.loads(next((tmp_path / "s").glob("manifest_*.json")).read_text())
     assert m["history"]["newest_game"] < m["cutoff"] and m["chart"]["teams"] == 2 * m["n_games"] and m["written"] == out["written"]
     assert pl.read_csv(tmp_path / "lines.csv").height == 15                                                 # the lines went to their own log
+    # the calibrated distribution is attached to every market the calibrator covers, and only there
+    has = t.filter(pl.col("q50").is_not_null())
+    assert set(has["market"]) >= {"targets", "rec", "rec_yds", "rush_att", "rush_yds", "pass_yds", "spread", "total"} and not (set(has["market"]) & {"qb_rush_att", "qb_rush_yds", "moneyline"})
+    assert (has["q05"] <= has["q50"]).all() and (has["q50"] <= has["q95"]).all() and (has["median"] == has["q50"]).all()
+    assert json.loads(has.filter(pl.col("market") == "targets")["ladder"][0]).keys() >= {"2", "4", "6"} and m["calibration"]["hash"] and m["calibration"]["with_distribution"] == has.height
 
 
 @needs_db

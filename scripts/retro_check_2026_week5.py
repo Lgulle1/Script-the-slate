@@ -21,9 +21,8 @@ OUT = config.ROOT / "retro_check_2026_week5.parquet"
 
 def actuals(season: int, week: int) -> pl.DataFrame:
     """(game_id, player_id, market, actual) for eligible-or-not players who played, and game markets, from the data pulled after the games."""
-    with config.input_history(season):
-        plog = bl.build_player_game_log(config.RAW_DUCKDB_PATH, max_season=season).filter((pl.col("season") == season) & (pl.col("week") == week))
-        tlog = bl.build_team_game_log(config.RAW_DUCKDB_PATH, max_season=season).filter((pl.col("season") == season) & (pl.col("week") == week))
+    plog, tlog = H.read_played_logs(season)
+    plog, tlog = plog.filter((pl.col("season") == season) & (pl.col("week") == week)), tlog.filter((pl.col("season") == season) & (pl.col("week") == week))
     rows = []
     for m, col in bl.PLAYER_MARKETS.items():
         rows.append(plog.select("game_id", "player_id", market=pl.lit(m), actual=pl.col(col).cast(pl.Float64)))
@@ -37,8 +36,7 @@ def actuals(season: int, week: int) -> pl.DataFrame:
 
 def baseline_trailing(preds: pl.DataFrame, season: int, cutoff) -> pl.DataFrame:
     """A transparent yardstick: each player's mean of his last 4 games played (any season) for the market's stat; games: the league's mean margin 0 / mean total."""
-    with config.input_history(season):
-        plog = bl.build_player_game_log(config.RAW_DUCKDB_PATH, max_season=season).filter(pl.col("gameday") < cutoff)
+    plog = H.read_played_logs(season)[0].filter(pl.col("gameday") < cutoff)
     out = []
     for m, col in bl.PLAYER_MARKETS.items():
         t = (plog.sort("player_id", "gameday").group_by("player_id", maintain_order=True).agg(pl.col(col).cast(pl.Float64).tail(4).mean().alias("trail4")))
