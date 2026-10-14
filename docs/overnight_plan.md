@@ -793,6 +793,11 @@ Walk-forward 2020-2024 exactly as Phase 3. **Gate:** the usual rule per market (
 
 **F. Late information.** Check that the Sunday run follows the official inactives (about 90 minutes before kickoff) and, if not, move it; no new feature.
 
+**B. Result (2026-10-14; run_player_ranges.py, tests/test_player_ranges.py, data/processed/player_ranges_eval.parquet; byte-identical on two runs): FAILS in every market.** Gain in mean pinball loss of the player-specific range over the current one (negative = the player-specific range is worse), 2022-2024 folds, k = 8:
+rush_att -0.0145 [-0.0198, -0.0093]; rush_yds -0.0874 [-0.1162, -0.0554]; targets -0.0112 [-0.0122, -0.0102]; rec -0.0105 [-0.0112, -0.0097]; rec_yds -0.0629 [-0.0778, -0.0485]; better in 0 of 3 folds in all five. Robustness (not a choice): k = 4 is worse, k = 16 is less bad, which is the direction of "no player signal": more shrinkage toward the pool, the better.
+pass_att, pass_cmp, pass_yds have too few rows for the fold check (the calibrator's burn-in) and are not tested. The 80% coverage of the player-specific ranges stays in 80-83%. Fixed reading: weight 0 and flagged; ranges unchanged; calibrator_v2 is not built. A player's own record of misses is too noisy to tell a steady player from a boom-or-bust one better than the size of the prediction already does.
+A different route to a player-specific spread (a model of the size of the miss from role and game features) would be a new test with its own gate; it is not run here.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
