@@ -16,7 +16,10 @@ import config
 
 LOG = config.ROOT / "records" / "lines" / "prop_lines_log.csv"
 RETRO = config.ROOT / "retro_check_2026_week5.parquet"
+RECON = config.ROOT / "data" / "processed" / "reconstruct_2026_graded.parquet"
 OUT = config.ROOT / "data" / "processed" / "prop_import_week5_comparison.parquet"
+OUT_RECON = config.ROOT / "data" / "processed" / "prop_import_weeks1_5_comparison.parquet"
+OUT_RECON_WEEKS = config.ROOT / "data" / "processed" / "prop_import_weeks1_5_by_week.parquet"
 MARKETS = ["pass_yds", "qb_rush_yds", "rush_yds", "rec", "rec_yds"]
 KEY = ["game_id", "player_id", "market"]
 DRAWS, SEED = 2000, 7
@@ -80,15 +83,27 @@ def summarize(x: pl.DataFrame) -> pl.DataFrame:
     return pl.DataFrame(rows)
 
 
-def main():
-    lines, retro = lines_table(), pl.read_parquet(RETRO)
+def main(argv=None):
+    """Default: the single-week retro run (week 5). `--reconstruction`: the weeks 1-5 reconstruction rows, pooled by market, and the all-market hit rate by week."""
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--reconstruction", action="store_true")
+    a = ap.parse_args(argv)
+    lines, retro = lines_table(), pl.read_parquet(RECON if a.reconstruction else RETRO)
     x = joined(lines, retro)
     print(f"line rows {lines.height}; with a model prediction, played and an actual: {x.height}")
     out = summarize(x)
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    out.write_parquet(OUT)
+    OUT_FILE = OUT_RECON if a.reconstruction else OUT
+    OUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    out.write_parquet(OUT_FILE)
     with pl.Config(tbl_rows=40, tbl_cols=20, float_precision=3):
         print(out)
+    if a.reconstruction:
+        wk = x.join(retro.select(*KEY, "week").unique(), on=KEY, how="left")
+        byw = pl.concat([summarize(wk.filter(pl.col("week") == w)).filter(pl.col("market") == "ALL").with_columns(week=pl.lit(w)) for w in sorted(wk["week"].unique().to_list())])
+        byw.write_parquet(OUT_RECON_WEEKS)
+        with pl.Config(tbl_rows=40, tbl_cols=20, float_precision=3):
+            print(byw.select("week", "line", "n", "hit_all", "hit_lo", "hit_hi", "lean_over_share", "always_over"))
     return out, x
 
 

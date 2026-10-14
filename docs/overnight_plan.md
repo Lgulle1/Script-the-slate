@@ -687,6 +687,16 @@ had not been played. Code and models are frozen at the current commit; nothing i
 with the model rows now the reconstruction's (all five weeks, version retro) instead of the single-week retro run, pooled by market, plus the all-market hit rate by week; same reading rule (an interval of (MAE line - MAE model) that includes 0 is
 "no difference detected"; nothing here is an edge or a failure). The week-5-only result above stays as it is; the new output is a new file (prop_import_weeks1_5_comparison.parquet).
 
+**Weeks 1-5 against the lines (2026-10-14; two runs byte-identical, prop_import_weeks1_5_comparison.parquet 0cb3fcf4655d65de).** Import of the weeks 1-4 file: 3,304 selections, 4,991 log rows written, 331 identical to their open row,
+1,286 refused (1,236 have no opening data in the file; 82 are players not matched or ambiguous by name, not guessed), none for lateness. Published to data-snapshots (1218a231). Last line, players who played, interval of (MAE line - MAE model), game-cluster bootstrap:
+pass_yds n=114 -2.23 yds [-4.73, +0.28]; qb_rush_yds n=37 -0.45 [-1.96, +0.98]; rush_yds n=192 -1.82 [-2.97, -0.64]; rec n=833 -0.044 [-0.087, -0.001]; rec_yds n=579 -0.88 [-1.52, -0.20].
+- **Reading:** a negative value means the line was closer to the real number. In rush_yds, rec and rec_yds the interval lies below 0, so with this sample the book's line was closer than the model in those markets (intervals are per market, not corrected for the four looks;
+  the reconstruction's known leniency, stated above, can only favour the model). The rule fixed earlier named only the "includes 0" case; this reading follows from it and is not a tuned threshold. It is not a weight change and not a gate.
+- **Hit rate of the model's lean** (last line): 51.3% [48.7, 53.8] on 1,755 lean rows (opening line: 50.0% [46.9, 53.3]); by week 51.1, 49.8, 49.4, 49.4, 56.5%. Break-even at -110 is 52.4%. The week-5-only 55.7% and its 61.0% in receptions did not hold up
+  as the other four weeks were added: they were a single-week effect. The model leans under on 57% of rows (43% over) while the real number went over 48.8% of the time; its predictions run below the real means (bias table above), the lines do not.
+- **Observation, not tested here:** the downward bias is a plausible reason the lines are closer, and a level shift in 2025-2026 volume relative to the 2020-2024 fit would produce it. Whether that is the cause is a question for the one-time 2025 holdout report and a
+  walk-forward bias check, each with its own gate written first; nothing is adjusted from this.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
