@@ -84,12 +84,16 @@ def _append(path: Path, columns: list, rows: list) -> None:
         w.writerows(rows)
 
 
-def log_prop_lines(rows: pl.DataFrame, captured_at: datetime, path, schedule: pl.DataFrame, players: pl.DataFrame, source: str = "manual", rejects_path=None) -> Result:
+def log_prop_lines(rows: pl.DataFrame, captured_at: datetime, path, schedule: pl.DataFrame, players: pl.DataFrame, source: str = "manual", rejects_path=None,
+                   grace_seconds: int = 0) -> Result:
     """Append the lines of `rows` to the log at `path`.
 
     rows      book, player_name, book_market, side, line; optional price, note; and the game by `game_id`, or by `team` + `gameday` (resolved on `schedule`)
     schedule  game_id, home_team, away_team, gameday (date), kickoff_time (UTC datetime): live.targets.schedule_frame output
     players   gsis_id, display_name, latest_team, position (the player master table)
+
+    A row may carry its own `captured_at` (ISO UTC) that replaces the call's. With `grace_seconds` > 0 (a bulk import of an archive whose last-update stamps land just after the
+    lock at kickoff), a stamp up to that many seconds after kickoff is accepted and noted `stamp N s after kickoff`; anything later is refused. The default 0 refuses every stamp at or after kickoff.
     """
     path = Path(path)
     rejects_path = Path(rejects_path) if rejects_path else path.with_name("prop_lines_rejects.csv")
@@ -103,9 +107,17 @@ def log_prop_lines(rows: pl.DataFrame, captured_at: datetime, path, schedule: pl
     last = _last_logged(path)
     out, rej = [], []
     unchanged = 0
-    stamp = captured_at.isoformat()
+    if "captured_at" in rows.columns:                                           # time order, so a later price change is a later row
+        rows = rows.sort("captured_at", nulls_last=True)
     for r in rows.iter_rows(named=True):
+        has_stamp_column = "captured_at" in rows.columns
+        ts = datetime.fromisoformat(str(r["captured_at"]).replace("Z", "+00:00")).astimezone(timezone.utc) if r.get("captured_at") else captured_at
+        stamp = ts.isoformat()
+        late = None
         reject = lambda why: rej.append([stamp, r.get("book") or "", r.get("game_id") or "", r.get("player_name") or "", r.get("book_market") or "", r.get("side") or "", r.get("line") if r.get("line") is not None else "", why])
+        if has_stamp_column and not r.get("captured_at"):                       # a per-row stamp column with a hole: never fall back to "now"
+            reject("no capture time for this row")
+            continue
         gid = r.get("game_id")
         if not gid:
             hit = [g for g in games.values() if r.get("team") in (g["home_team"], g["away_team"]) and str(g["gameday"]) == str(r.get("gameday"))]
@@ -117,9 +129,11 @@ def log_prop_lines(rows: pl.DataFrame, captured_at: datetime, path, schedule: pl
         if g is None:
             reject("game_id not in the schedule")
             continue
-        if captured_at >= g["kickoff_time"]:
-            reject(f"captured at or after kickoff ({g['kickoff_time'].isoformat()})")
-            continue
+        if ts >= g["kickoff_time"]:
+            late = int((ts - g["kickoff_time"]).total_seconds())
+            if grace_seconds <= 0 or late > grace_seconds:
+                reject(f"captured at or after kickoff ({g['kickoff_time'].isoformat()})")
+                continue
         if r.get("player_id"):                                              # already resolved by the caller (the app picks a stored player): no name matching
             cand = [p for p in by_id.get(r["player_id"], [])]
         else:
@@ -141,7 +155,8 @@ def log_prop_lines(rows: pl.DataFrame, captured_at: datetime, path, schedule: pl
             continue
         price = _num(r.get("price"))
         row = [stamp, r.get("book") or "", gid, p["gsis_id"], r.get("player_name"), p["latest_team"], market, r.get("book_market"), side, _fmt(line),
-               _fmt(price), str(bool(r.get("is_alt")) or is_alt).lower(), source, r.get("note") or ""]
+               _fmt(price), str(bool(r.get("is_alt")) or is_alt).lower(), source,
+               "; ".join(x for x in (r.get("note") or "", f"stamp {late} s after kickoff" if late is not None else "") if x)]
         key = (row[1], gid, p["gsis_id"], market, side, _fmt(line), row[11])
         if last.get(key) == _fmt(price):
             unchanged += 1

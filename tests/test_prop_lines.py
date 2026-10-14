@@ -124,3 +124,28 @@ def test_a_row_with_a_resolved_player_id_skips_name_matching(tmp_path):
     assert r.written == 1 and _read(tmp_path)["player_id"].to_list() == ["p_nacua"]
     r2 = _log(tmp_path, _rows({"player_id": "no_such_id"}), at=T0 + timedelta(hours=1))
     assert r2.refused == 1
+
+
+def test_a_row_carries_its_own_stamp_and_a_grace_accepts_a_just_after_kickoff_stamp_with_a_note(tmp_path):
+    late = (KICK + timedelta(seconds=90)).isoformat()
+    rows = _rows({"captured_at": (T0).isoformat(), "line": 70.5}, {"captured_at": late, "line": 75.5}, {"captured_at": (KICK + timedelta(seconds=900)).isoformat(), "line": 80.5})
+    r = PL.log_prop_lines(rows, KICK + timedelta(hours=5), tmp_path / "prop_lines_log.csv", SCHED, PLAYERS, grace_seconds=300)
+    assert (r.written, r.refused) == (2, 1)
+    d = _read(tmp_path)
+    assert d["captured_at"].to_list() == [T0.isoformat(), (KICK + timedelta(seconds=90)).isoformat()]
+    assert d["note"].fill_null("").to_list() == ["", "stamp 90 s after kickoff"]
+    assert _read(tmp_path, "prop_lines_rejects.csv").height == 1
+
+
+def test_grace_default_refuses_and_the_grace_notes_the_late_stamp(tmp_path):
+    late = (KICK + timedelta(seconds=90)).isoformat()
+    PL.log_prop_lines(_rows({"captured_at": late}), T0, tmp_path / "a.csv", SCHED, PLAYERS)
+    assert not (tmp_path / "a.csv").exists()
+    r = PL.log_prop_lines(_rows({"captured_at": late}), T0, tmp_path / "b.csv", SCHED, PLAYERS, grace_seconds=300)
+    assert r.written == 1 and "stamp 90 s after kickoff" in _read(tmp_path, "b.csv")["note"][0]
+
+
+def test_a_row_without_its_stamp_in_a_stamped_batch_is_rejected_not_stamped_now(tmp_path):
+    rows = _rows({"captured_at": T0.isoformat()}, {"captured_at": None, "line": 80.5})
+    r = _log(tmp_path, rows)
+    assert (r.written, r.refused) == (1, 1) and "no capture time" in _read(tmp_path, "prop_lines_rejects.csv")["reason"][0]

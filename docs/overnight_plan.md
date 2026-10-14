@@ -646,6 +646,17 @@ Every line from this file is labeled `source = bettingpros_import`.
 4. **Nothing in the prediction path reads the prop log** (the existing guard test stays). Older results are never overwritten; outputs are new files
    (data/processed/prop_import_week5_comparison.parquet).
 
+**Built and run (2026-10-14).** scripts/import_bettingpros.py, scripts/prop_import_comparison.py, tests (logger: per-row stamp, grace, a hole in a stamped batch is rejected, never stamped "now"; comparison arithmetic).
+- Import: 1,771 file rows; 959 skipped (touchdown, "most yards", first/last scorer, DST); 812 selections of the four markets; 1,473 log rows written (open and last; 99 last rows identical to the open row, so not repeated);
+  36 refused for having no capture time (the file has no opening data for four games: PHI@JAX, HOU@TEN, CHI@GB, CIN@MIA; their last lines were still logged); 0 refused for being later than 300 s after kickoff.
+  Raw file kept once at records/lines/imports/. Published to data-snapshots (0fdc3fb9).
+- Comparison, last line, played players only (data/processed/prop_import_week5_comparison.parquet, byte-identical on a second run, 680a1f39687175f3). Interval of (MAE line - MAE model), game-cluster bootstrap:
+  pass_yds n=21 -1.41 [-7.10, +4.68]; rush_yds n=36 -1.38 [-4.89, +1.71]; rec n=141 +0.068 [-0.042, +0.163]; rec_yds n=107 -0.81 [-2.00, +0.65]; qb_rush_yds n=4 (too few). **Every interval includes 0: by the rule fixed above,
+  "no difference detected in one week".** The point estimates have the line closer in three markets and the model closer in receptions.
+- Hit rate of the model's lean (all rows, 95% interval): all markets 55.7% [49.8, 61.9] (n=309); rec 61.0% [51.4, 69.5] (n=141); rec_yds 48.6% [41.5, 56.1]; rush_yds 50.0%; pass_yds 57.1% (n=21). In receptions the model leans UNDER the line on 60% of players
+  and the real number went over in 48% of them. One week of one book; the open-line numbers tell the same story (rec 59.6%).
+  This is not a result and not an edge: it is a thing to look at again as weeks accumulate, with prospective predictions stored before kickoff (those start Thursday 15 Oct).
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
