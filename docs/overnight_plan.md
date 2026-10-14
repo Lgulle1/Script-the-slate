@@ -674,6 +674,14 @@ had not been played. Code and models are frozen at the current commit; nothing i
 4. **Reading:** descriptive. MAE of the point predictions against the actual and against the best naive baseline per market, and later (when the lines come) against the lines, exactly as in the week-5 comparison above.
    No verdict, no weight change, no threshold, from this.
 
+**Run and published (2026-10-14).** scripts/reconstruct_2026.py wrote weeks 1-5 (16, 16, 16, 16, 15 games; 1,320 / 1,326 / ... rows, no refusals) to records/retro_2026/predictions and published them to data-snapshots at
+6b514e8 (2026-10-14 14:19 UTC), before any week 1-4 line was imported. A second run of week 5 changed nothing (0 written, 1,180 unchanged). Week 1 has no simulated spread: the 4b layer needs earlier 2026 games.
+- Cross-check against the live-clock run of 2026-10-07 (week 5, 1,108 shared rows): the Phase 3-only rows are identical in 96% of cases; every difference is in the injury (4a) and simulation (4b) layers, which here read the
+  injury reports through game day instead of through 2026-10-07 (median |difference| 0.1-0.4, maximum 25 rush yards for one back whose role changed). Same labels; error against the actuals 9.554 vs 9.593 on 768 shared played rows.
+- Against the actuals (scripts/reconstruct_2026_eval.py; players who played; vs the mean of each player's last 4 games): pass_att -10.6%, pass_cmp -8.8%, pass_yds -9.5%, qb_rush_att -14.4%, qb_rush_yds -12.3%, rec -6.0%, rec_yds -6.3%,
+  rush_att -11.0%, rush_yds -12.0%, targets -6.5% (mean absolute error lower than the baseline's by that much). By week: 4.7%, 13.3%, 7.0%, -0.1%, 9.4%. Every market's mean prediction is below the real mean (bias, mean prediction minus actual: rec_yds -4.9, pass_yds -6.0,
+  rush_yds -3.7), and totals were under-predicted in 4 of 5 weeks (mean predicted 44-46 vs actual 40-49). The 10-90 band held 78-90% by market (80% nominal). Game winners 57.7% of 78. Descriptive only.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
