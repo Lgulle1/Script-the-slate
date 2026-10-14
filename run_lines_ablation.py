@@ -86,7 +86,7 @@ def run(tag=None, save=True):
             b"line_columns": json.dumps(LF.LN_COLUMNS).encode(), b"counts": json.dumps(counts).encode(), b"layer_weight_rule": config.LAYER_WEIGHT_RULE.encode()})
         pq.write_table(arrow, config.ROOT / f"{results_name(tag)}.parquet")
         pl.concat([w.with_columns(variant=pl.lit(k)) for k, w in withs.items()]).sort("variant", "market", "season", "week", "entity").write_parquet(
-            config.PROCESSED_DIR / f"lines_ablation_predictions_{config.ELIGIBLE_PLAYER_RULE['version']}" + (f"_{tag}" if tag else "") + ".parquet")
+            config.PROCESSED_DIR / (f"lines_ablation_predictions_{config.ELIGIBLE_PLAYER_RULE['version']}" + (f"_{tag}" if tag else "") + ".parquet"))
     return t, fp, counts
 
 
