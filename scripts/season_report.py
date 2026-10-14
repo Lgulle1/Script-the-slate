@@ -56,8 +56,9 @@ def trail4(j: pl.DataFrame, plog_all: pl.DataFrame, season: int) -> pl.DataFrame
 def markets_table(j: pl.DataFrame, plog: pl.DataFrame) -> pl.DataFrame:
     played = j.filter(~pl.col("did_not_play") & pl.col("actual").is_not_null() & ~IS_GAME & pl.col("trail4").is_not_null())
     rows = []
-    bm = RS.baseline_mae(j.filter(~IS_GAME), plog).group_by("market").agg(n_best=pl.col("n_compared").sum(), model_best=(pl.col("model_mae") * pl.col("n_compared")).sum() / pl.col("n_compared").sum(),
-                                                                             best_baseline=(pl.col("baseline_mae") * pl.col("n_compared")).sum() / pl.col("n_compared").sum())
+    b_ = RS.baseline_mae(j.filter(~IS_GAME), plog).sort("stack", "market")                                       # numpy sums in a fixed order: byte-stable
+    bm = pl.DataFrame([dict(market=m, n_best=int(sub["n_compared"].sum()), model_best=float(np.sum(sub["model_mae"].to_numpy() * sub["n_compared"].to_numpy()) / sub["n_compared"].sum()),
+                            best_baseline=float(np.sum(sub["baseline_mae"].to_numpy() * sub["n_compared"].to_numpy()) / sub["n_compared"].sum())) for (m,), sub in sorted(b_.partition_by("market", as_dict=True).items())])
     for m, t in sorted(played.partition_by("market", as_dict=True).items()):
         m = m[0]
         e, b = np.abs(t["mean"].to_numpy() - t["actual"].to_numpy()), np.abs(t["trail4"].to_numpy() - t["actual"].to_numpy())
