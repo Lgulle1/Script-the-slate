@@ -657,6 +657,23 @@ Every line from this file is labeled `source = bettingpros_import`.
   and the real number went over in 48% of them. One week of one book; the open-line numbers tell the same story (rec 59.6%).
   This is not a result and not an edge: it is a thing to look at again as weeks accumulate, with prospective predictions stored before kickoff (those start Thursday 15 Oct).
 
+## 2026 weeks 1-5 reconstruction (asked for by the project manager, 2026-10-14; fixed BEFORE it runs and before any week 1-4 line is seen)
+
+What: the live path (live/weekly.py, full stack as wired: phase3 + 4a injuries + 4b simulated spread, distributions from calibrator_v1) run for every game of 2026 weeks 1, 2, 3, 4 and 5, each as if its week
+had not been played. Code and models are frozen at the current commit; nothing is tuned, and nothing is re-run after a line or a result is looked at. The predictions are written to their own store
+(records/retro_2026/predictions, version "retro") and published to data-snapshots BEFORE any week 1-4 line is imported, so the commit time is an outside timestamp that they existed before the lines were seen.
+1. **What each week may use as input** (the point of the exercise): every game played before that week's first kickoff, including 2025 and the earlier weeks of 2026 (week 3 sees weeks 1 and 2; week 5 sees weeks 1-4),
+   read only through live/history.py. The target week and everything after it is hidden from the run (replay: hide_outcomes_from = the week's first gameday).
+2. **What stays frozen:** the models are fit on 2020-2024 rows only and the width/isotonic calibration pool is 2020-2024 (the locked-2025-holdout rule: no fit or calibration touches 2025 until the Phase 6 benchmark has run once and is recorded).
+   The simulated-spread scaling terms use 2020-2024 as well. The replay path in weekly.py used `season*100+week` for that floor, which would let 2025 and earlier 2026 games into the scaling fit; a `floor_key` option is added that the reconstruction sets to
+   2025*100+1, the live value. Nothing else in the live path changes.
+3. **What is NOT faithful (stated, not hidden):** the raw pulls only began 2026-10-07, so for weeks 1-4 there is no "as the data stood on that day". Depth charts, rosters, injury reports and the schedule come from today's pull
+   (injury statuses by the usual main-run clock of the game's day, the same replay mechanism as the 2024 week-10 test). A late scratch the depth chart already reflects is therefore known to the run; this can only make the reconstruction look
+   slightly better than a true live run, never worse, and is the reason these rows can never count toward a gate or the prospective record. Week 5 is cross-checked against the earlier live-clock retro run of 2026-10-07
+   (retro_check_2026_week5.parquet): the two must agree on the markets both produce, and any difference is reported.
+4. **Reading:** descriptive. MAE of the point predictions against the actual and against the best naive baseline per market, and later (when the lines come) against the lines, exactly as in the week-5 comparison above.
+   No verdict, no weight change, no threshold, from this.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming

@@ -134,7 +134,7 @@ def _score(models: LP.LiveModels, vt, et, elig_of, games) -> pl.DataFrame:
 
 def run(now: datetime, raw_db=config.RAW_DUCKDB_PATH, store_dir=None, models: Trained | None = None, run_id: str | None = None,
         lines_path=None, version: str | None = None, work_dir=None, layer_weights_csv=None, replay: dict | None = None, calibrator="auto") -> dict:
-    """One run at the clock `now`. `replay` (tests only): {"hide_outcomes_from": date, "status_clock": fn, "fit_cutoff": date} scores a past week as if unplayed."""
+    """One run at the clock `now`. `replay` (tests, and the 2026 reconstruction): {"hide_outcomes_from": date, "status_clock": fn, "fit_cutoff": date, "floor_key": int} scores a past week as if unplayed."""
     now = now.astimezone(timezone.utc)
     replay = replay or {}
     store_dir = Path(store_dir or config.ROOT / "records" / "predictions")
@@ -184,7 +184,7 @@ def run(now: datetime, raw_db=config.RAW_DUCKDB_PATH, store_dir=None, models: Tr
         scored["4a_injuries"] = _score(models.injury, vt_i, et_i, elig_of, games)
         explained.append(EX.explain_stack(models.injury, vt_i, et_i, elig_of, LY.stack_label("4a_injuries")))
     if "4b_simulation" in active:
-        floor_key = season * 100 + week if replay else min(season * 100 + week, config.HOLDOUT_SEASON * 100 + 1)       # scaling terms fit on 2020-2024 games only
+        floor_key = replay.get("floor_key") or (season * 100 + week if replay else min(season * 100 + week, config.HOLDOUT_SEASON * 100 + 1))       # scaling terms fit on 2020-2024 games only
         gsin = H.read_input_game_state(cutoff, live_db, fit_floor=replay.get("fit_cutoff") or min(cutoff, FIT_FLOOR))
         ge = LS.game_expectations_live(gsin.features, gsin.games, gids, season, week, floor_key)
         hh = ge.with_columns(input_hash=pl.struct("margin_mean", "margin_sd").hash(seed=0).cast(pl.String).str.slice(0, 16))
