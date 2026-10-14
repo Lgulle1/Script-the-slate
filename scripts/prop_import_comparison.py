@@ -28,7 +28,7 @@ DRAWS, SEED = 2000, 7
 def lines_table() -> pl.DataFrame:
     """One row per (game, player, market): the OPENING line and the LAST line (over side), from the imported FanDuel rows."""
     d = pl.read_csv(LOG, infer_schema_length=0).filter((pl.col("source") == "bettingpros_import") & (pl.col("side") == "over") & pl.col("market").is_in(MARKETS))
-    d = d.with_columns(line=pl.col("line").cast(pl.Float64), is_open=pl.col("note").str.starts_with("open")).sort("captured_at")
+    d = d.with_row_index("_i").with_columns(line=pl.col("line").cast(pl.Float64), is_open=pl.col("note").str.starts_with("open")).sort("captured_at", "_i")      # file order breaks ties
     last = d.group_by(KEY, maintain_order=True).last().select(*KEY, last_line=pl.col("line"), last_at=pl.col("captured_at"))
     opn = d.filter(pl.col("is_open")).group_by(KEY, maintain_order=True).first().select(*KEY, open_line=pl.col("line"))
     return last.join(opn, on=KEY, how="left")
