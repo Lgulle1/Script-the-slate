@@ -165,7 +165,7 @@ def main_build():
     cal = C.Calibrator.load(config.PROCESSED_DIR / "calibrator_v1")
     wf = pl.read_parquet(BASE_2024).filter(pl.col("kind") == "player") if BASE_2024.exists() else None
     parts = []
-    for season in (2023, 2024, 2025, 2026):
+    for season in (2022, 2023, 2024, 2025, 2026):
         if season <= 2024 and wf is None:
             print("2024: no regenerated base predictions; skipped")
             continue
