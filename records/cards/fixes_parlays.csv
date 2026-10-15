@@ -1,0 +1,101 @@
+leg1,leg2,price,chance,hit,profit,profit_no_boost,week,variant
+#1 Noah Gray rec u1.5,#3 Mack Hollins rec u1.5,118,0.5670268699751733,false,-10.0,-10.0,1,as is
+#2 Marvin Mims Jr. rec u1.5,#4 Denzel Boston rec_yds u25.5,186,0.5503856629147502,false,-10.0,-10.0,1,as is
+#5 KC Concepcion Jr. rec_yds u33.5,#6 Jacory Croskey-Merritt rec u1.5,174,0.5308955539545286,false,-10.0,-10.0,1,as is
+#7 KC Concepcion Jr. rec u3.5,#8 D'Andre Swift rec u2.5,161,0.5223979411803574,false,-10.0,-10.0,1,as is
+#9 Jeremiyah Love rush_yds u31.5,#10 Hunter Henry rec u3.5,183,0.5034808742499556,false,-10.0,-10.0,1,as is
+#1 Quinshon Judkins rec u2.5,#2 De'Von Achane rec u4.5,148,0.4667044312876917,false,-10.0,-10.0,2,as is
+#3 Malik Washington rec u3.5,#5 Jordan Love pass_yds u254.5,233,0.40466819668049725,false,-10.0,-10.0,2,as is
+#4 Chris Bell rec u1.5,#6 Chuba Hubbard rush_yds u56.5,277,0.3789164394010801,true,36.008849557522126,27.69911504424779,2,as is
+#7 De'Von Achane rush_yds u58.5,#8 Harold Fannin Jr. rec_yds u33.5,255,0.3456289325328692,false,-10.0,-10.0,2,as is
+#9 David Montgomery rush_yds u63.5,#10 DK Metcalf rec_yds u59.5,255,0.3429563570731108,true,33.189756441381476,25.53058187798575,2,as is
+#1 Drew Sample rec u1.5,#2 Kendrick Bourne rec u2.5,180,0.42358259653327807,true,23.396819849729166,17.997553730560895,3,as is
+#3 Tyler Allgeier rush_yds u33.5,#5 Tre' Harris rec u2.5,292,0.319628008932896,false,-10.0,-10.0,3,as is
+#4 Jeremiyah Love rec u2.5,#6 Jaylen Warren rec u3.5,309,0.3118385538860133,false,-10.0,-10.0,3,as is
+#7 Terrance Ferguson rec u3.5,#8 Jordan Addison rec u2.5,452,0.23017970337662613,false,-10.0,-10.0,3,as is
+#1 Tyjae Spears rec_yds u12.5,#4 Ladd McConkey rec u3.5,330,0.3071533201754363,true,42.87008849557523,32.97699115044249,4,as is
+#2 Tony Pollard rec_yds u8,#6 Quentin Johnston rec u2.5,337,0.2923613629355417,true,43.850265486725675,33.73097345132744,4,as is
+#3 Gunnar Helm rec u2.5,#7 Tory Horton rec u0.5,498,0.23429980122142158,false,-10.0,-10.0,4,as is
+#1 Will Shipley rec u2.5,#7 George Holani rec u1.5,292,0.30115689890611025,false,-10.0,-10.0,5,as is
+#2 Will Shipley rush_yds u31.5,#8 Kenny Gainwell rec u1.5,330,0.2920484375152617,false,-10.0,-10.0,5,as is
+#3 Dontayvion Wicks rec u3.5,#9 Emeka Egbuka rec u2.5,374,0.2920484375152617,false,-10.0,-10.0,5,as is
+#4 Dontayvion Wicks rec_yds u46.5,#10 RJ Harvey rec u3.5,318,0.28955270959128826,false,-10.0,-10.0,5,as is
+#1 Noah Gray rec u1.5,#3 Mack Hollins rec u1.5,118,0.5670268699751733,false,-10.0,-10.0,1,"A: one per player, two per game"
+#2 Marvin Mims Jr. rec u1.5,#4 Denzel Boston rec_yds u25.5,186,0.5503856629147502,false,-10.0,-10.0,1,"A: one per player, two per game"
+#5 KC Concepcion Jr. rec_yds u33.5,#6 Jacory Croskey-Merritt rec u1.5,174,0.5308955539545286,false,-10.0,-10.0,1,"A: one per player, two per game"
+#7 D'Andre Swift rec u2.5,#8 Jeremiyah Love rush_yds u31.5,184,0.5115305359552322,false,-10.0,-10.0,1,"A: one per player, two per game"
+#9 Hunter Henry rec u3.5,#10 Kendrick Bourne rec u2.5,127,0.4997011291770539,false,-10.0,-10.0,1,"A: one per player, two per game"
+#1 Quinshon Judkins rec u2.5,#2 De'Von Achane rec u4.5,148,0.4667044312876917,false,-10.0,-10.0,2,"A: one per player, two per game"
+#3 Malik Washington rec u3.5,#4 Jordan Love pass_yds u254.5,233,0.40466819668049725,false,-10.0,-10.0,2,"A: one per player, two per game"
+#5 Chuba Hubbard rush_yds u56.5,#6 Harold Fannin Jr. rec_yds u33.5,255,0.3483606272529257,false,-10.0,-10.0,2,"A: one per player, two per game"
+#7 David Montgomery rush_yds u63.5,#8 DK Metcalf rec_yds u59.5,255,0.3429563570731108,true,33.189756441381476,25.53058187798575,2,"A: one per player, two per game"
+#1 Drew Sample rec u1.5,#2 Kendrick Bourne rec u2.5,180,0.42358259653327807,true,23.396819849729166,17.997553730560895,3,"A: one per player, two per game"
+#3 Tyler Allgeier rush_yds u33.5,#4 Tre' Harris rec u2.5,292,0.319628008932896,false,-10.0,-10.0,3,"A: one per player, two per game"
+#5 Jaylen Warren rec u3.5,#6 Terrance Ferguson rec u3.5,397,0.2670561803318002,true,51.615199999999994,39.70399999999999,3,"A: one per player, two per game"
+#1 Tyjae Spears rec_yds u12.5,#3 Ladd McConkey rec u3.5,330,0.3071533201754363,true,42.87008849557523,32.97699115044249,4,"A: one per player, two per game"
+#2 Tony Pollard rec_yds u8,#4 Quentin Johnston rec u2.5,337,0.2923613629355417,true,43.850265486725675,33.73097345132744,4,"A: one per player, two per game"
+#1 Will Shipley rec u2.5,#3 George Holani rec u1.5,292,0.30115689890611025,false,-10.0,-10.0,5,"A: one per player, two per game"
+#2 Dontayvion Wicks rec u3.5,#4 Kenny Gainwell rec u1.5,339,0.2920484375152617,false,-10.0,-10.0,5,"A: one per player, two per game"
+#5 Emeka Egbuka rec u2.5,#6 RJ Harvey rec u3.5,446,0.25304765560876824,false,-10.0,-10.0,5,"A: one per player, two per game"
+#7 Cody White rec u1.5,#8 Emanuel Wilson rec u1.5,434,0.24513328268125062,false,-10.0,-10.0,5,"A: one per player, two per game"
+#9 Efton Chism III rec u1.5,#10 Keon Coleman rec u2.5,434,0.24148364217752527,false,-10.0,-10.0,5,"A: one per player, two per game"
+#1 Noah Gray rec u1.5,#3 Mack Hollins rec u1.5,118,0.5670268699751733,false,-10.0,-10.0,1,B: skip players with < 3 games for team
+#2 Marvin Mims Jr. rec u1.5,#4 Jacory Croskey-Merritt rec u1.5,120,0.5471549375448778,true,15.656044985941895,12.04311152764761,1,B: skip players with < 3 games for team
+#5 D'Andre Swift rec u2.5,#6 Hunter Henry rec u3.5,126,0.5095581087590455,true,16.34848484848485,12.575757575757578,1,B: skip players with < 3 games for team
+#7 CeeDee Lamb rec u6.5,#8 Rashee Rice rec u5.5,160,0.48878676029985224,true,20.850903614457827,16.03915662650602,1,B: skip players with < 3 games for team
+#9 Quinshon Judkins rush_yds u56.5,#10 Luther Burden III rec u4.5,296,0.46939772972533794,false,-10.0,-10.0,1,B: skip players with < 3 games for team
+#1 Quinshon Judkins rec u2.5,#2 De'Von Achane rec u4.5,148,0.4667044312876917,false,-10.0,-10.0,2,B: skip players with < 3 games for team
+#3 Malik Washington rec u3.5,#4 Jordan Love pass_yds u254.5,233,0.40466819668049725,false,-10.0,-10.0,2,B: skip players with < 3 games for team
+#5 Chuba Hubbard rush_yds u56.5,#6 De'Von Achane rush_yds u58.5,255,0.3492071204607495,false,-10.0,-10.0,2,B: skip players with < 3 games for team
+#7 Harold Fannin Jr. rec_yds u33.5,#8 DK Metcalf rec_yds u59.5,255,0.34356232417509375,false,-10.0,-10.0,2,B: skip players with < 3 games for team
+#9 Tyler Shough pass_yds u231.5,#10 Terrance Ferguson rec_yds u33.5,255,0.3378405015367552,false,-10.0,-10.0,2,B: skip players with < 3 games for team
+#1 Drew Sample rec u1.5,#2 Tre' Harris rec u2.5,215,0.3804513625007644,false,-10.0,-10.0,3,B: skip players with < 3 games for team
+#3 Jaylen Warren rec u3.5,#4 Terrance Ferguson rec u3.5,397,0.2670561803318002,true,51.615199999999994,39.70399999999999,3,B: skip players with < 3 games for team
+#1 Tyjae Spears rec_yds u12.5,#4 Ladd McConkey rec u3.5,330,0.3071533201754363,true,42.87008849557523,32.97699115044249,4,B: skip players with < 3 games for team
+#2 Tony Pollard rec_yds u8,#6 Quentin Johnston rec u2.5,337,0.2923613629355417,true,43.850265486725675,33.73097345132744,4,B: skip players with < 3 games for team
+#3 Gunnar Helm rec u2.5,#7 Tory Horton rec u0.5,498,0.23429980122142158,false,-10.0,-10.0,4,B: skip players with < 3 games for team
+#1 Will Shipley rec u2.5,#7 George Holani rec u1.5,292,0.30115689890611025,false,-10.0,-10.0,5,B: skip players with < 3 games for team
+#2 Will Shipley rush_yds u31.5,#8 Kenny Gainwell rec u1.5,330,0.2920484375152617,false,-10.0,-10.0,5,B: skip players with < 3 games for team
+#3 Dontayvion Wicks rec u3.5,#9 Emeka Egbuka rec u2.5,374,0.2920484375152617,false,-10.0,-10.0,5,B: skip players with < 3 games for team
+#4 Dontayvion Wicks rec_yds u46.5,#10 RJ Harvey rec u3.5,318,0.28955270959128826,false,-10.0,-10.0,5,B: skip players with < 3 games for team
+#1 Marvin Mims Jr. rec u1.5,#3 Kendrick Bourne rec u2.5,130,0.5155140389452028,false,-10.0,-10.0,1,C: average 6 picker versions
+#2 Noah Gray rec u1.5,#4 KC Concepcion Jr. rec_yds u33.5,183,0.507110770629815,false,-10.0,-10.0,1,C: average 6 picker versions
+#5 KC Concepcion Jr. rec u3.5,#8 Jeremiyah Love rush_yds u31.5,227,0.4711058398312231,false,-10.0,-10.0,1,C: average 6 picker versions
+#6 Quinshon Judkins rush_yds u56.5,#9 CeeDee Lamb rec u6.5,202,0.45663626112786726,true,26.26612645271351,20.20471265593347,1,C: average 6 picker versions
+#7 Denzel Boston rec_yds u25.5,#10 Rashee Rice rec u5.5,206,0.44829988970790546,false,-10.0,-10.0,1,C: average 6 picker versions
+#1 De'Von Achane rec u4.5,#4 Jordan Love pass_yds u254.5,201,0.42084651452356037,true,26.090391908975985,20.069532237673833,2,C: average 6 picker versions
+#2 Malik Washington rec u3.5,#5 Tyler Shough pass_yds u231.5,233,0.3897508736260054,false,-10.0,-10.0,2,C: average 6 picker versions
+#3 Chris Bell rec u1.5,#7 Harold Fannin Jr. rec_yds u33.5,277,0.37967575546466065,false,-10.0,-10.0,2,C: average 6 picker versions
+#6 De'Von Achane rush_yds u58.5,#8 David Montgomery rush_yds u63.5,255,0.35673515917665244,false,-10.0,-10.0,2,C: average 6 picker versions
+#9 Travis Etienne Jr. rush_yds u40.5,#10 Malik Willis pass_yds u183.5,255,0.34843186506089097,false,-10.0,-10.0,2,C: average 6 picker versions
+#1 Drew Sample rec u1.5,#2 Kendrick Bourne rec u2.5,180,0.41518075056414566,true,23.396819849729166,17.997553730560895,3,C: average 6 picker versions
+#3 Jeremiyah Love rec u2.5,#5 Tre' Harris rec u2.5,290,0.3136529845660952,false,-10.0,-10.0,3,C: average 6 picker versions
+#4 Tyler Allgeier rush_yds u33.5,#6 Jaylen Warren rec u3.5,311,0.30093893701451213,true,40.41964601769911,31.092035398230085,3,C: average 6 picker versions
+#1 Tony Pollard rec_yds u8,#4 Ladd McConkey rec u3.5,330,0.3004398014123622,true,42.87008849557523,32.97699115044249,4,C: average 6 picker versions
+#2 Tyjae Spears rec_yds u12.5,#6 Quentin Johnston rec u2.5,337,0.2845214646210979,true,43.850265486725675,33.73097345132744,4,C: average 6 picker versions
+#3 Gunnar Helm rec u2.5,#7 Tory Horton rec u0.5,498,0.23751471753103262,false,-10.0,-10.0,4,C: average 6 picker versions
+#5 Wan'Dale Robinson rec u3.5,#8 Jaylen Wright rec u0.5,543,0.20512449149518905,true,70.58480000000002,54.296000000000014,4,C: average 6 picker versions
+#1 Dontayvion Wicks rec u3.5,#4 Kenny Gainwell rec u1.5,339,0.2878376315944432,false,-10.0,-10.0,5,C: average 6 picker versions
+#2 Dontayvion Wicks rec_yds u46.5,#5 Emeka Egbuka rec u2.5,364,0.28557073298002794,false,-10.0,-10.0,5,C: average 6 picker versions
+#3 Makai Lemon rec_yds u28.5,#6 RJ Harvey rec u3.5,318,0.2854363478543719,false,-10.0,-10.0,5,C: average 6 picker versions
+#7 Cody White rec u1.5,#9 Chig Okonkwo rec u2.5,466,0.2301804810069099,false,-10.0,-10.0,5,C: average 6 picker versions
+#8 Efton Chism III rec u1.5,#10 Keon Coleman rec u2.5,434,0.22771700344451917,false,-10.0,-10.0,5,C: average 6 picker versions
+#1 Marvin Mims Jr. rec u1.5,#3 Quinshon Judkins rush_yds u56.5,186,0.49422535372894016,true,24.135571571936868,18.565824286105283,1,A + B + C
+#2 Noah Gray rec u1.5,#4 CeeDee Lamb rec u6.5,140,0.4845649390537145,true,18.246987951807224,14.03614457831325,1,A + B + C
+#5 Nico Collins rec u5.5,#6 Luther Burden III rec u4.5,252,0.4203455858499094,false,-10.0,-10.0,1,A + B + C
+#7 Chris Godwin Jr. rec u4.5,#8 Marvin Harrison Jr. rec u3.5,268,0.40012198567890395,true,34.82470588235295,26.78823529411765,1,A + B + C
+#9 Dak Prescott pass_yds u263.5,#10 Michael Mayer rec u4.5,263,0.39447590681190786,false,-10.0,-10.0,1,A + B + C
+#1 De'Von Achane rec u4.5,#3 Jordan Love pass_yds u254.5,201,0.42084651452356037,true,26.090391908975985,20.069532237673833,2,A + B + C
+#2 Malik Washington rec u3.5,#4 Tyler Shough pass_yds u231.5,233,0.3897508736260054,false,-10.0,-10.0,2,A + B + C
+#5 Harold Fannin Jr. rec_yds u33.5,#6 Chuba Hubbard rush_yds u56.5,255,0.3485148259028831,false,-10.0,-10.0,2,A + B + C
+#7 Quinshon Judkins rush_yds u49.5,#8 Jared Goff pass_yds u257.5,255,0.3416721194303769,false,-10.0,-10.0,2,A + B + C
+#9 Terrance Ferguson rec_yds u33.5,#10 Joe Burrow pass_yds u249.5,255,0.340929553756397,false,-10.0,-10.0,2,A + B + C
+#1 Drew Sample rec u1.5,#2 Tre' Harris rec u2.5,215,0.3729178951526403,false,-10.0,-10.0,3,A + B + C
+#3 Jaylen Warren rec u3.5,#4 Terrance Ferguson rec u3.5,397,0.2533315119690081,true,51.615199999999994,39.70399999999999,3,A + B + C
+#1 Tony Pollard rec_yds u8,#3 Ladd McConkey rec u3.5,330,0.3004398014123622,true,42.87008849557523,32.97699115044249,4,A + B + C
+#2 Tyjae Spears rec_yds u12.5,#4 Quentin Johnston rec u2.5,337,0.2845214646210979,true,43.850265486725675,33.73097345132744,4,A + B + C
+#1 Dontayvion Wicks rec u3.5,#3 Kenny Gainwell rec u1.5,339,0.2878376315944432,false,-10.0,-10.0,5,A + B + C
+#2 Makai Lemon rec_yds u28.5,#4 Emeka Egbuka rec u2.5,364,0.28557073298002794,false,-10.0,-10.0,5,A + B + C
+#5 RJ Harvey rec u3.5,#6 Cody White rec u1.5,419,0.23897101757038663,false,-10.0,-10.0,5,A + B + C
+#7 Efton Chism III rec u1.5,#8 Keon Coleman rec u2.5,434,0.22771700344451917,false,-10.0,-10.0,5,A + B + C
+#9 Mike Evans rec u3.5,#10 Olamide Zaccheaus rec u0.5,518,0.2214115931403169,false,-10.0,-10.0,5,A + B + C
