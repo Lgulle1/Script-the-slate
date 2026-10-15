@@ -1,0 +1,358 @@
+leg1,leg2,price,chance,hit,profit,profit_no_boost,season,week,variant
+#1 Amon-Ra St. Brown rec u7.5,#2 Kyren Williams rush_att u19.5,218,0.6436831995731866,true,28.348187759952467,21.806298276886512,2024,4,A + B + C
+#3 Jordan Whittington rec_yds u22.5,#4 Sam LaPorta rec u4.5,222,0.5861183938478159,false,-10.0,-10.0,2024,4,A + B + C
+#5 Tank Bigsby rush_att u6.5,#6 Hayden Hurst rec u2.5,151,0.5533851502900052,false,-10.0,-10.0,2024,4,A + B + C
+#7 Ja'Marr Chase rec u6.5,#8 Ray-Ray McCloud III rec u3.5,172,0.538800625314893,false,-10.0,-10.0,2024,4,A + B + C
+#9 Deshaun Watson pass_yds u199.5,#10 Dawson Knox rec u1.5,187,0.525937681977405,true,24.35261707988981,18.73278236914601,2024,4,A + B + C
+#1 Erick All Jr. rec u2.5,#2 Jayden Reed rec u5.5,184,0.5483546953624101,true,23.947368421052637,18.421052631578952,2024,5,A + B + C
+#3 Kendrick Bourne rec u2.5,#4 James Conner rush_yds u58.5,198,0.5293710427986408,false,-10.0,-10.0,2024,5,A + B + C
+#5 Lamar Jackson pass_yds u208.5,#6 Kyren Williams rush_att u19.5,240,0.5277048942104402,false,-10.0,-10.0,2024,5,A + B + C
+#7 Jaylen Waddle rec u3.5,#8 Caleb Williams pass_yds u211.5,250,0.5086269270269765,false,-10.0,-10.0,2024,5,A + B + C
+#1 Zach Charbonnet rec u2.5,#2 Jahmyr Gibbs rec u3.5,149,0.5629082127287769,true,19.361702127659576,14.893617021276597,2024,6,A + B + C
+#3 Garrett Wilson rec u6.5,#4 Ladd McConkey rec u4.5,163,0.5514938693677509,false,-10.0,-10.0,2024,6,A + B + C
+#5 Wan'Dale Robinson rec u6.5,#6 Sam LaPorta rec u4.5,175,0.5395847142906659,true,22.792207792207794,17.532467532467532,2024,6,A + B + C
+#7 DeMario Douglas rec u3.5,#8 Javonte Williams rush_att u12.5,208,0.5138135272921852,false,-10.0,-10.0,2024,6,A + B + C
+#9 Ray Davis rush_att u12.5,#10 Kenneth Walker III rec u3.5,178,0.4983474023924898,false,-10.0,-10.0,2024,6,A + B + C
+#1 Ray-Ray McCloud III rec u4.5,#2 Tim Patrick rec u2.5,124,0.6353588948169053,true,16.17763483424047,12.444334487877287,2024,7,A + B + C
+#3 Alvin Kamara rush_att u17.5,#4 Derrick Henry rec u1.5,165,0.5865102593479056,true,21.45198170731707,16.5015243902439,2024,7,A + B + C
+#5 Saquon Barkley rush_att u17.5,#6 Andy Dalton pass_att u34.5,244,0.5655282731288575,true,31.739766081871352,24.415204678362578,2024,7,A + B + C
+#7 Johnny Mundt rec u2.5,#8 Ja'Tavion Sanders rec u3.5,142,0.541852468255135,false,-10.0,-10.0,2024,7,A + B + C
+#9 Tony Pollard rush_att u16.5,#10 Deebo Samuel Sr. rec u4.5,197,0.517625407534559,true,25.60102301790281,19.693094629156008,2024,7,A + B + C
+#1 Jerry Jeudy rec_yds u48.5,#2 Joe Mixon rush_att u18.5,258,0.6286696569373809,false,-10.0,-10.0,2024,8,A + B + C
+#3 Tyler Johnson rec u1.5,#4 Cedric Tillman rec_yds u40.5,169,0.5931400663185713,false,-10.0,-10.0,2024,8,A + B + C
+#5 Chase Brown rec u2.5,#6 Tucker Kraft rec u3.5,179,0.5800606880668161,true,23.288770053475936,17.914438502673796,2024,8,A + B + C
+#7 Kareem Hunt rush_att u17.5,#9 Jalen Nailor rec u2.5,188,0.569010329021984,false,-10.0,-10.0,2024,8,A + B + C
+#8 Brock Bowers rec_yds u63.5,#10 Zach Ertz rec u3.5,210,0.5559873051258577,false,-10.0,-10.0,2024,8,A + B + C
+#1 CeeDee Lamb rec u7.5,#2 Kyren Williams rush_att u19.5,198,0.6507611207169338,false,-10.0,-10.0,2024,9,A + B + C
+#3 Amon-Ra St. Brown rec u6.5,#4 James Cook III rec u2.5,152,0.5892606363468941,false,-10.0,-10.0,2024,9,A + B + C
+#5 Puka Nacua rec u5.5,#6 Tyreek Hill rec u6.5,198,0.5233408727686766,true,25.75342465753425,19.81032665964173,2024,9,A + B + C
+#7 Derrick Henry rush_att u18.5,#8 Jake Ferguson rec u5.5,180,0.5082688673555696,false,-10.0,-10.0,2024,9,A + B + C
+#9 Jahmyr Gibbs rush_att u13.5,#10 Grant Calcaterra rec u2.5,227,0.49194531482359277,false,-10.0,-10.0,2024,9,A + B + C
+#1 Amon-Ra St. Brown rec u6.5,#2 Nelson Agholor rec u1.5,133,0.5685711872727044,true,17.34962406015038,13.345864661654137,2024,10,A + B + C
+#3 Courtland Sutton rec_yds u44.5,#4 Jalen Tolbert rec u2.5,293,0.5650423218452343,false,-10.0,-10.0,2024,10,A + B + C
+#5 Lil'Jordan Humphrey rec_yds u20.5,#6 Demarcus Robinson rec u2.5,227,0.541894144785419,false,-10.0,-10.0,2024,10,A + B + C
+#7 Najee Harris rec u1.5,#9 Jameson Williams rec u2.5,227,0.4930920047653719,false,-10.0,-10.0,2024,10,A + B + C
+#8 Noah Brown rec u3.5,#10 Rico Dowdle rec_yds u17.5,198,0.49016215838209853,true,25.760980592441268,19.816138917262514,2024,10,A + B + C
+#1 Van Jefferson rec u1.5,#2 Michael Mayer rec u1.5,136,0.597236972366264,true,17.744360902255636,13.649508386350488,2024,11,A + B + C
+#3 Adonai Mitchell rec u1.5,#4 Gardner Minshew II pass_yds u182.5,188,0.5686410188447705,false,-10.0,-10.0,2024,11,A + B + C
+#5 Saquon Barkley rec u2.5,#7 Nelson Agholor rec_yds u7.5,192,0.5415211059501359,true,25.019342359767894,19.245647969052225,2024,11,A + B + C
+#6 Dallas Goedert rec_yds u32.5,#8 Nick Chubb rec u1.5,191,0.533636640309492,false,-10.0,-10.0,2024,11,A + B + C
+#9 Chase Brown rush_att u15.5,#10 Joe Mixon rush_yds u91.5,227,0.5212751461651047,false,-10.0,-10.0,2024,11,A + B + C
+#1 Rashod Bateman rec u3.5,#2 Johnny Mundt rec u1.5,133,0.5757901165587896,true,17.285318559556785,13.296398891966756,2024,12,A + B + C
+#3 Tony Pollard rec_yds u17.5,#4 Hunter Henry rec_yds u45.5,264,0.523800397897737,true,34.380165289256205,26.44628099173554,2024,12,A + B + C
+#5 Rico Dowdle rush_att u13.5,#7 Rhamondre Stevenson rec_yds u15.5,227,0.4928938249630863,false,-10.0,-10.0,2024,12,A + B + C
+#6 KaVontae Turpin rec_yds u12.5,#8 Najee Harris rush_att u18.5,240,0.4847899861022218,true,31.207386363636367,24.00568181818182,2024,12,A + B + C
+#1 Brenton Strange rec u1.5,#2 Andrei Iosivas rec_yds u14.5,207,0.6468764281067999,false,-10.0,-10.0,2024,13,A + B + C
+#3 Kareem Hunt rec u1.5,#4 Raheem Mostert rush_yds u9.5,198,0.5381154537115658,false,-10.0,-10.0,2024,13,A + B + C
+#5 Kyren Williams rec u2.5,#6 Nelson Agholor rec_yds u7.5,184,0.5050948637429653,true,23.924611973392462,18.403547671840354,2024,13,A + B + C
+#7 Travis Etienne Jr. rush_yds u36.5,#8 Saquon Barkley rush_att u19.5,240,0.46124265983953755,false,-10.0,-10.0,2024,13,A + B + C
+#9 Jonathan Taylor rush_att u20.5,#10 Chase Brown rec u4.5,187,0.45398037160403837,false,-10.0,-10.0,2024,13,A + B + C
+#1 Dawson Knox rec u3.5,#2 Greg Dortch rec u1.5,122,0.6348929728929412,true,15.861244019138757,12.200956937799043,2024,14,A + B + C
+#3 Tutu Atwell rec u1.5,#4 Chris Brooks rec u1.5,169,0.5599816842192618,false,-10.0,-10.0,2024,14,A + B + C
+#5 Tim Patrick rec u2.5,#6 Odell Beckham Jr. rec u1.5,139,0.5187933198807944,false,-10.0,-10.0,2024,14,A + B + C
+#7 Kareem Hunt rec u1.5,#8 Tommy Tremble rec_yds u13.5,227,0.48892885037035505,true,29.54545454545455,22.72727272727273,2024,14,A + B + C
+#9 Mike Gesicki rec u2.5,#10 Ja'Tavion Sanders rec u1.5,300,0.45068775573982006,false,-10.0,-10.0,2024,14,A + B + C
+#1 Kyren Williams rec u2.5,#2 Jordan Addison rec u4.5,117,0.5940416983063256,false,-10.0,-10.0,2024,15,A + B + C
+#3 Ray-Ray McCloud III rec u3.5,#4 Mark Andrews rec u3.5,138,0.5488729902106525,true,17.98935541099941,13.837965700768775,2024,15,A + B + C
+#5 Dontayvion Wicks rec u2.5,#6 Jake Ferguson rec u4.5,138,0.4936161169093401,true,17.98935541099941,13.837965700768775,2024,15,A + B + C
+#7 Josh Oliver rec_yds u11.5,#8 Demarcus Robinson rec u1.5,240,0.47420006521990077,true,31.207386363636367,24.00568181818182,2024,15,A + B + C
+#9 Rico Dowdle rush_att u18.5,#10 Keon Coleman rec u2.5,195,0.43422401950476325,false,-10.0,-10.0,2024,15,A + B + C
+#1 Kareem Hunt rec u1.5,#2 Darius Slayton rec u2.5,125,0.7198326755072071,false,-10.0,-10.0,2024,16,A + B + C
+#3 Kendrick Bourne rec u2.5,#5 Jaylen Warren rec u3.5,142,0.6670295591186065,false,-10.0,-10.0,2024,16,A + B + C
+#4 DeMario Douglas rec u4.5,#6 Saquon Barkley rec u2.5,120,0.6238055882233078,true,15.556586270871987,11.966604823747682,2024,16,A + B + C
+#7 Kendre Miller rush_att u12.5,#8 Jerry Jeudy rec u5.5,209,0.597385704007574,true,27.228085106382977,20.94468085106383,2024,16,A + B + C
+#9 Keenan Allen rec u5.5,#10 Jerome Ford rush_att u12.5,176,0.5874073742321747,false,-10.0,-10.0,2024,16,A + B + C
+#1 Mike Williams rec u1.5,#2 Cole Kmet rec u2.5,134,0.5855233327787467,true,17.39641657334826,13.381858902575585,2024,17,A + B + C
+#3 Keon Coleman rec u2.5,#4 Alec Pierce rec u2.5,110,0.5494800549222555,false,-10.0,-10.0,2024,17,A + B + C
+#5 Amari Cooper rec u2.5,#6 Kyle Pitts Sr. rec u2.5,148,0.5173805871271105,false,-10.0,-10.0,2024,17,A + B + C
+#7 Stone Smartt rec_yds u8.5,#8 Aaron Jones Sr. rec u3.5,217,0.5033194632630738,false,-10.0,-10.0,2024,17,A + B + C
+#9 Jonathan Taylor rush_att u21.5,#10 Olamide Zaccheaus rec u3.5,196,0.46120945917486517,false,-10.0,-10.0,2024,17,A + B + C
+#1 David Moore rec u1.5,#2 Rome Odunze rec u3.5,162,0.5219561024078512,true,21.015037593984964,16.165413533834588,2024,18,A + B + C
+#3 Jamaal Williams rush_yds u18.5,#4 D'Onta Foreman rec_yds u14.5,264,0.44615108393288294,true,34.380165289256205,26.44628099173554,2024,18,A + B + C
+#5 Blake Corum rush_yds u63.5,#6 Elijah Moore rec u2.5,400,0.4106371374659414,false,-10.0,-10.0,2024,18,A + B + C
+#7 Michael Carter rush_yds u63.5,#8 Rico Dowdle rush_yds u60.5,264,0.3781156786019881,false,-10.0,-10.0,2024,18,A + B + C
+#9 Baker Mayfield pass_att u32.5,#10 Olamide Zaccheaus rec_yds u33.5,258,0.3608939859934877,false,-10.0,-10.0,2024,18,A + B + C
+#1 Dak Prescott pass_att u36.5,#2 Isiah Pacheco rush_yds u52.5,232,0.6630748283417374,true,30.17543859649123,23.21187584345479,2025,1,A + B + C
+#3 Rome Odunze rec u4.5,#4 Alec Pierce rec u2.5,116,0.6115961578635816,false,-10.0,-10.0,2025,1,A + B + C
+#5 Jaylen Warren rush_att u11.5,#6 Jake Ferguson rec_yds u33.5,262,0.5821229524483696,true,33.999350227420415,26.15334632878493,2025,1,A + B + C
+#7 Derrick Henry rec u1.5,#8 Dontayvion Wicks rec u2.5,115,0.574573094134044,true,14.984946236559136,11.526881720430104,2025,1,A + B + C
+#9 Keenan Allen rec_yds u33.5,#10 Tucker Kraft rec u3.5,191,0.5354508680519938,false,-10.0,-10.0,2025,1,A + B + C
+#1 Noah Brown rec u2.5,#2 Nico Collins rec_yds u76.5,185,0.6268686778208553,true,24.113669590643283,18.54897660818714,2025,2,A + B + C
+#3 Aaron Jones Sr. rush_yds u35.5,#4 Jahan Dotson rec u1.5,192,0.5215429371804402,true,24.96101364522417,19.200779727095515,2025,2,A + B + C
+#5 Jordan Love pass_att u31.5,#6 Adam Thielen rec_yds u15.5,242,0.45216366188445967,false,-10.0,-10.0,2025,2,A + B + C
+#7 Jalen Hurts pass_att u26.5,#8 Kyler Murray pass_yds u211.5,265,0.4214308691336953,false,-10.0,-10.0,2025,2,A + B + C
+#9 Troy Franklin rec_yds u32.5,#10 James Cook III rush_att u13.5,216,0.40549930533003836,false,-10.0,-10.0,2025,2,A + B + C
+#1 Darnell Mooney rec u3.5,#2 Alec Pierce rec_yds u20.5,185,0.5661668089495999,false,-10.0,-10.0,2025,3,A + B + C
+#3 Troy Franklin rec u4.5,#4 Jalen Tolbert rec_yds u11.5,217,0.4519922603620687,false,-10.0,-10.0,2025,3,A + B + C
+#5 Michael Penix Jr. pass_yds u214.5,#6 Jaylen Waddle rec u4.5,230,0.4332037291758049,false,-10.0,-10.0,2025,3,A + B + C
+#7 Cedric Tillman rec_yds u39.5,#8 Jonathan Taylor rush_att u20.5,252,0.4197764426707853,true,32.810095413973535,25.238534933825797,2025,3,A + B + C
+#9 Tanner Conner rec_yds u9.5,#10 Ricky Pearsall rec u5.5,237,0.40348072917872974,false,-10.0,-10.0,2025,3,A + B + C
+#1 Andrei Iosivas rec u1.5,#2 Kayshon Boutte rec u2.5,125,0.7311487311275621,true,16.31128991702288,12.5471460900176,2025,4,A + B + C
+#3 Justice Hill rec u2.5,#4 Zach Charbonnet rec u1.5,126,0.57803644581439,false,-10.0,-10.0,2025,4,A + B + C
+#5 Ja'Marr Chase rec u4.5,#6 Elic Ayomanor rec u3.5,298,0.4872180016038543,false,-10.0,-10.0,2025,4,A + B + C
+#7 Lamar Jackson pass_att u28.5,#8 Keenan Allen rec u4.5,214,0.47622602011985987,false,-10.0,-10.0,2025,4,A + B + C
+#9 Jalen Hurts pass_att u26.5,#10 Cam Ward pass_att u33.5,244,0.45820410995105515,true,31.739766081871352,24.415204678362578,2025,4,A + B + C
+#1 DeMario Douglas rec u1.5,#2 Tyquan Thornton rec u1.5,129,0.6847486905302774,false,-10.0,-10.0,2025,5,A + B + C
+#3 Kayshon Boutte rec u2.5,#4 Mason Taylor rec u3.5,133,0.553529793082617,false,-10.0,-10.0,2025,5,A + B + C
+#5 Andrei Iosivas rec u1.5,#6 Calvin Ridley rec u3.5,137,0.5419025645213994,false,-10.0,-10.0,2025,5,A + B + C
+#7 AJ Barner rec u2.5,#8 Isaiah Bond rec_yds u28.5,179,0.4886405195314464,false,-10.0,-10.0,2025,5,A + B + C
+#1 Andrei Iosivas rec u1.5,#2 Justice Hill rush_yds u14.5,177,0.4470430590751914,false,-10.0,-10.0,2025,6,A + B + C
+#3 Chase Brown rec u3.5,#4 Breece Hall rush_yds u67.5,252,0.3524220986415207,true,32.810095413973535,25.238534933825797,2025,6,A + B + C
+#5 Michael Wilson rec_yds u23.5,#6 Hassan Haskins rush_yds u31.5,252,0.33399064113873017,false,-10.0,-10.0,2025,6,A + B + C
+#7 Keenan Allen rec u4.5,#8 Luke Farrell rec u0.5,402,0.27986446856002684,true,52.20800000000001,40.16000000000001,2025,6,A + B + C
+#1 Cam Skattebo rush_att u14.5,#2 Ashton Jeanty rec u3.5,285,0.3475221207435497,false,-10.0,-10.0,2025,7,A + B + C
+#3 Theo Johnson rec u3.5,#4 Jack Bech rec_yds u20.5,279,0.34450102437871716,true,36.21428571428571,27.857142857142854,2025,7,A + B + C
+#5 Hassan Haskins rush_yds u17.5,#7 Woody Marks rush_att u8.5,275,0.31682563558606164,false,-10.0,-10.0,2025,7,A + B + C
+#6 Kimani Vidal rush_att u12.5,#8 Cade Otton rec u2.5,336,0.30684563820862326,false,-10.0,-10.0,2025,7,A + B + C
+#9 Andrei Iosivas rec u1.5,#10 Marvin Harrison Jr. rec u3.5,362,0.28030645676103916,false,-10.0,-10.0,2025,7,A + B + C
+#1 Chig Okonkwo rec u3.5,#2 Jeremy McNichols rec u1.5,246,0.4105464978946227,false,-10.0,-10.0,2025,8,A + B + C
+#3 Chimere Dike rec u2.5,#4 Theo Johnson rec u3.5,308,0.31388717021223533,false,-10.0,-10.0,2025,8,A + B + C
+#5 Darius Slayton rec u2.5,#6 Breece Hall rec u2.5,362,0.2690981568451178,true,47.0808,36.216,2025,8,A + B + C
+#7 Tyler Johnson rec u1.5,#8 Tre' Harris rec u0.5,481,0.24862127003450823,false,-10.0,-10.0,2025,8,A + B + C
+#9 Keon Coleman rec u3.5,#10 Luther Burden III rec u1.5,402,0.24601526910470145,true,52.20800000000001,40.16000000000001,2025,8,A + B + C
+#1 Rico Dowdle rec u2.5,#2 Cam Ward pass_att u34.5,324,0.3212159768795247,true,42.12000000000001,32.400000000000006,2025,9,A + B + C
+#3 Jalen Coker rec u2.5,#4 Kyle Monangai rec u2.5,349,0.2891928530986628,false,-10.0,-10.0,2025,9,A + B + C
+#5 Rashee Rice rec u6.5,#6 Pat Bryant rec u1.5,349,0.27540895760545775,false,-10.0,-10.0,2025,9,A + B + C
+#7 Ja'Marr Chase rec u8.5,#8 Mack Hollins rec u1.5,392,0.25387783754016224,false,-10.0,-10.0,2025,9,A + B + C
+#9 Kimani Vidal rush_att u16.5,#10 Tanner Conner rec u1.5,411,0.2498617871095779,true,53.393600000000006,41.072,2025,9,A + B + C
+#1 Parker Washington rec u4.5,#2 Jack Bech rec u1.5,228,0.3819391306508412,true,29.70063025210084,22.846638655462183,2025,10,A + B + C
+#3 Chris Rodriguez Jr. rush_yds u23.5,#5 Matthew Stafford pass_yds u261.5,252,0.34087691723891256,false,-10.0,-10.0,2025,10,A + B + C
+#4 Deebo Samuel Sr. rec u5.5,#6 Nick Westbrook-Ikhine rec u2.5,292,0.33612315558964834,true,37.98539023452519,29.21953094963476,2025,10,A + B + C
+#7 TreVeyon Henderson rec_yds u25.5,#8 Malik Washington rec u3.5,261,0.324125978634433,true,33.97727272727273,26.136363636363637,2025,10,A + B + C
+#9 Jalen Coker rec u2.5,#10 Tre Tucker rec u3.5,312,0.3126619076398268,false,-10.0,-10.0,2025,10,A + B + C
+#1 Kalif Raymond rec u2.5,#2 Mason Taylor rec u4.5,145,0.5060711422681682,true,18.90085524231866,14.539119417168198,2025,11,A + B + C
+#3 Isaiah Bond rec u2.5,#5 Daniel Bellinger rec_yds u15.5,189,0.4375221245698521,true,24.52367477834371,18.864365214110546,2025,11,A + B + C
+#4 David Njoku rec u3.5,#6 Rico Dowdle rush_yds u93.5,188,0.4242212450644811,true,24.384098544232927,18.756998880179175,2025,11,A + B + C
+#7 Patrick Mahomes II pass_yds u260.5,#8 Justin Fields pass_yds u134.5,255,0.3613308314073859,false,-10.0,-10.0,2025,11,A + B + C
+#9 Jordan Mason rush_yds u29.5,#10 Jalen Hurts pass_att u26.5,251,0.3528814256885985,false,-10.0,-10.0,2025,11,A + B + C
+#1 Theo Johnson rec u4.5,#2 Isaiah Williams rec u1.5,177,0.5416003933765566,true,22.97643442622951,17.674180327868854,2025,12,A + B + C
+#3 Mason Taylor rec u4.5,#4 Wan'Dale Robinson rec u5.5,220,0.4785080402029915,false,-10.0,-10.0,2025,12,A + B + C
+#5 Chimere Dike rec_yds u37.5,#6 Rico Dowdle rush_att u18.5,238,0.4260872650545206,false,-10.0,-10.0,2025,12,A + B + C
+#7 Mike Gesicki rec u3.5,#9 Travis Etienne Jr. rush_att u12.5,194,0.4036583757064088,false,-10.0,-10.0,2025,12,A + B + C
+#8 Andrei Iosivas rec u3.5,#10 Cole Kmet rec u1.5,232,0.35680023932591326,false,-10.0,-10.0,2025,12,A + B + C
+#1 Devaughn Vele rec u3.5,#2 Geno Smith pass_att u32.5,183,0.4361909082580345,false,-10.0,-10.0,2025,13,A + B + C
+#3 Rico Dowdle rush_att u18.5,#5 Xavier Worthy rec u3.5,230,0.35607204113026975,false,-10.0,-10.0,2025,13,A + B + C
+#4 Jalen Coker rec u2.5,#6 Tyler Lockett rec_yds u28.5,258,0.34942881715338614,false,-10.0,-10.0,2025,13,A + B + C
+#7 Patrick Mahomes II pass_yds u267.5,#8 Devin Neal rush_att u11.5,279,0.32659962651159674,false,-10.0,-10.0,2025,13,A + B + C
+#1 Romeo Doubs rec u3.5,#2 Jalen Nailor rec u1.5,164,0.43533017109801275,false,-10.0,-10.0,2025,14,A + B + C
+#3 Quinshon Judkins rec u1.5,#4 Ashton Jeanty rush_att u16.5,183,0.40866104688643795,true,23.7569573283859,18.274582560296846,2025,14,A + B + C
+#5 Mason Tipton rec_yds u15.5,#6 J.J. McCarthy pass_att u28.5,224,0.38720090294915754,true,29.087210780574633,22.374777523518947,2025,14,A + B + C
+#7 Chris Olave rec_yds u63.5,#8 Brock Bowers rec u5.5,232,0.3738258214707901,true,30.17543859649123,23.21187584345479,2025,14,A + B + C
+#9 Darren Waller rec u2.5,#10 Cole Kmet rec u1.5,384,0.2665959731487726,false,-10.0,-10.0,2025,14,A + B + C
+#1 Tyjae Spears rec u4.5,#2 Quinshon Judkins rush_att u19.5,154,0.4770354087978428,true,20.01253831150738,15.394260239621062,2025,15,A + B + C
+#3 Breece Hall rush_att u17.5,#4 Michael Wilson rec u5.5,216,0.4372884154384843,true,28.12727272727273,21.636363636363637,2025,15,A + B + C
+#5 Jonathan Taylor rush_att u20.5,#6 Jeremy Ruckert rec_yds u20.5,232,0.4261407274633341,false,-10.0,-10.0,2025,15,A + B + C
+#7 Gunnar Helm rec u3.5,#8 Michael Mayer rec u2.5,212,0.4139602323543094,false,-10.0,-10.0,2025,15,A + B + C
+#9 Emari Demercado rec_yds u10.5,#10 Jack Bech rec_yds u20.5,252,0.3776183957530795,true,32.810095413973535,25.238534933825797,2025,15,A + B + C
+#1 Jaylen Warren rec u2.5,#3 Brock Bowers rec u5.5,148,0.4918782194741054,true,19.27325581395349,14.825581395348838,2025,16,A + B + C
+#2 Pat Freiermuth rec u2.5,#4 Tyler Lockett rec u2.5,161,0.47214445843000147,false,-10.0,-10.0,2025,16,A + B + C
+#5 Quinshon Judkins rec u2.5,#6 Jalen McMillan rec u1.5,316,0.3146738690407647,false,-10.0,-10.0,2025,16,A + B + C
+#1 Breece Hall rec u2.5,#3 Dawson Knox rec u2.5,169,0.45054508072504595,false,-10.0,-10.0,2025,17,A + B + C
+#2 John Metchie III rec u3.5,#4 Jacory Croskey-Merritt rush_att u14.5,213,0.39164466454923075,true,27.69230769230769,21.301775147928993,2025,17,A + B + C
+#5 JuJu Smith-Schuster rec u1.5,#6 Bijan Robinson rush_yds u73.5,316,0.3605789212022619,false,-10.0,-10.0,2025,17,A + B + C
+#7 Isiah Pacheco rec u2.5,#8 Gunnar Helm rec u2.5,303,0.30320411887754306,true,39.35694915254236,30.274576271186433,2025,17,A + B + C
+#9 Terry McLaurin rec u3.5,#10 Kenneth Walker III rec u1.5,380,0.2541843815725307,false,-10.0,-10.0,2025,17,A + B + C
+#1 Quinn Ewers pass_att u29.5,#3 Dylan Sampson rush_yds u39.5,234,0.41166237199720807,true,30.46875,23.4375,2025,18,A + B + C
+#2 Jaylen Wright rush_yds u69.5,#4 Tony Pollard rush_yds u66.5,252,0.4031178542248599,true,32.810095413973535,25.238534933825797,2025,18,A + B + C
+#5 Cedric Tillman rec u2.5,#6 Chimere Dike rec_yds u33.5,252,0.3845258917495216,true,32.810095413973535,25.238534933825797,2025,18,A + B + C
+#7 Michael Wilson rec u5.5,#9 Chuba Hubbard rec u1.5,353,0.32122592596669775,false,-10.0,-10.0,2025,18,A + B + C
+#8 Jacoby Brissett pass_att u38.5,#10 Zay Flowers rec u4.5,302,0.29824170473065903,true,39.223508771929836,30.17192982456141,2025,18,A + B + C
+#1 Marvin Mims Jr. rec u1.5,#3 Quinshon Judkins rush_yds u56.5,186,0.49422535372894016,true,24.135571571936868,18.565824286105283,2026,1,A + B + C
+#2 Noah Gray rec u1.5,#4 CeeDee Lamb rec u6.5,140,0.4845649390537145,true,18.246987951807224,14.03614457831325,2026,1,A + B + C
+#5 Nico Collins rec u5.5,#6 Luther Burden III rec u4.5,252,0.4203455858499094,false,-10.0,-10.0,2026,1,A + B + C
+#7 Chris Godwin Jr. rec u4.5,#8 Marvin Harrison Jr. rec u3.5,268,0.40012198567890395,true,34.82470588235295,26.78823529411765,2026,1,A + B + C
+#9 Dak Prescott pass_yds u263.5,#10 Michael Mayer rec u4.5,263,0.39447590681190786,false,-10.0,-10.0,2026,1,A + B + C
+#1 De'Von Achane rec u4.5,#3 Jordan Love pass_yds u254.5,201,0.42084651452356037,true,26.090391908975985,20.069532237673833,2026,2,A + B + C
+#2 Malik Washington rec u3.5,#4 Tyler Shough pass_yds u231.5,233,0.3897508736260054,false,-10.0,-10.0,2026,2,A + B + C
+#5 Harold Fannin Jr. rec_yds u33.5,#6 Chuba Hubbard rush_yds u56.5,255,0.3485148259028831,false,-10.0,-10.0,2026,2,A + B + C
+#7 Quinshon Judkins rush_yds u49.5,#8 Jared Goff pass_yds u257.5,255,0.3416721194303769,false,-10.0,-10.0,2026,2,A + B + C
+#9 Terrance Ferguson rec_yds u33.5,#10 Joe Burrow pass_yds u249.5,255,0.340929553756397,false,-10.0,-10.0,2026,2,A + B + C
+#1 Drew Sample rec u1.5,#2 Tre' Harris rec u2.5,215,0.3729178951526403,false,-10.0,-10.0,2026,3,A + B + C
+#3 Jaylen Warren rec u3.5,#4 Terrance Ferguson rec u3.5,397,0.2533315119690081,true,51.615199999999994,39.70399999999999,2026,3,A + B + C
+#1 Tony Pollard rec_yds u8,#3 Ladd McConkey rec u3.5,330,0.3004398014123622,true,42.87008849557523,32.97699115044249,2026,4,A + B + C
+#2 Tyjae Spears rec_yds u12.5,#4 Quentin Johnston rec u2.5,337,0.2845214646210979,true,43.850265486725675,33.73097345132744,2026,4,A + B + C
+#1 Dontayvion Wicks rec u3.5,#3 Kenny Gainwell rec u1.5,339,0.2878376315944432,false,-10.0,-10.0,2026,5,A + B + C
+#2 Makai Lemon rec_yds u28.5,#4 Emeka Egbuka rec u2.5,364,0.28557073298002794,false,-10.0,-10.0,2026,5,A + B + C
+#5 RJ Harvey rec u3.5,#6 Cody White rec u1.5,419,0.23897101757038663,false,-10.0,-10.0,2026,5,A + B + C
+#7 Efton Chism III rec u1.5,#8 Keon Coleman rec u2.5,434,0.22771700344451917,false,-10.0,-10.0,2026,5,A + B + C
+#9 Mike Evans rec u3.5,#10 Olamide Zaccheaus rec u0.5,518,0.2214115931403169,false,-10.0,-10.0,2026,5,A + B + C
+#1 Sam LaPorta rec u4.5,#2 Ray-Ray McCloud III rec u3.5,174,0.5555188858719725,false,-10.0,-10.0,2024,4,as is
+#3 Deshaun Watson pass_yds u199.5,#4 Jordan Whittington rec_yds u22.5,264,0.5411033905086458,false,-10.0,-10.0,2024,4,as is
+#5 Marvin Harrison Jr. rec u5.5,#6 Amon-Ra St. Brown rec u7.5,175,0.5361794589840001,true,22.792207792207794,17.532467532467532,2024,4,as is
+#7 Dyami Brown rec_yds u9.5,#8 Xavier Legette rec u3.5,192,0.5304117993062525,false,-10.0,-10.0,2024,4,as is
+#9 Tutu Atwell rec u3.5,#10 Keon Coleman rec u2.5,174,0.5219694532250647,false,-10.0,-10.0,2024,4,as is
+#1 Lamar Jackson pass_yds u208.5,#3 Caleb Williams pass_yds u211.5,264,0.5756235307611108,false,-10.0,-10.0,2024,5,as is
+#2 Erick All Jr. rec u2.5,#4 Bo Nix pass_yds u188.5,217,0.5621736810564433,false,-10.0,-10.0,2024,5,as is
+#5 Zack Moss rush_att u11.5,#7 Jaylen Waddle rec u3.5,209,0.544598060124683,false,-10.0,-10.0,2024,5,as is
+#6 Mark Andrews rec u2.5,#8 Jaylen Waddle rec_yds u37.5,222,0.5327291007565702,false,-10.0,-10.0,2024,5,as is
+#9 Jauan Jennings rec u3.5,#10 Matthew Stafford pass_yds u236.5,227,0.5224497460821463,false,-10.0,-10.0,2024,5,as is
+#1 Jahmyr Gibbs rec u3.5,#2 Zach Charbonnet rec u2.5,149,0.6024634403866428,true,19.361702127659576,14.893617021276597,2024,6,as is
+#3 DeMario Douglas rec u3.5,#4 Javonte Williams rush_att u12.5,208,0.5603671322575465,false,-10.0,-10.0,2024,6,as is
+#5 Sam LaPorta rec u4.5,#6 Garrett Wilson rec u6.5,146,0.5315308336469856,false,-10.0,-10.0,2024,6,as is
+#7 KaVontae Turpin rec u2.5,#8 Kenneth Walker III rec u3.5,187,0.4972631567161653,false,-10.0,-10.0,2024,6,as is
+#1 Ray-Ray McCloud III rec u4.5,#2 Alvin Kamara rush_att u17.5,173,0.6280767352031028,true,22.47340425531915,17.28723404255319,2024,7,as is
+#3 Tim Patrick rec u2.5,#4 Saquon Barkley rec u2.5,169,0.5895388298429676,true,21.91860465116279,16.86046511627907,2024,7,as is
+#5 Saquon Barkley rush_att u17.5,#6 Andy Dalton pass_att u34.5,244,0.579139034910328,true,31.739766081871352,24.415204678362578,2024,7,as is
+#7 Deebo Samuel Sr. rec u4.5,#8 Johnny Mundt rec u2.5,142,0.554209994686563,false,-10.0,-10.0,2024,7,as is
+#9 George Kittle rec u4.5,#10 Tucker Kraft rec u3.5,243,0.5320821363366411,false,-10.0,-10.0,2024,7,as is
+#1 Joe Mixon rush_att u18.5,#2 Miles Sanders rush_yds u16.5,258,0.6078355861670854,false,-10.0,-10.0,2024,8,as is
+#3 Mason Rudolph pass_yds u200.5,#4 Chuba Hubbard rec_yds u16.5,273,0.5772617415670083,false,-10.0,-10.0,2024,8,as is
+#5 Jakobi Meyers rec_yds u41.5,#7 Jerry Jeudy rec_yds u48.5,264,0.566659282790177,false,-10.0,-10.0,2024,8,as is
+#6 Kareem Hunt rush_att u17.5,#8 David Njoku rec u5.5,234,0.5633998199721074,false,-10.0,-10.0,2024,8,as is
+#9 Zach Ertz rec u3.5,#10 Josh Whyle rec u1.5,205,0.5485937459302173,false,-10.0,-10.0,2024,8,as is
+#1 Amon-Ra St. Brown rec u6.5,#2 James Cook III rec u2.5,152,0.6607453256249983,false,-10.0,-10.0,2024,9,as is
+#3 Kyren Williams rush_att u19.5,#4 CeeDee Lamb rec u7.5,198,0.6128226482325172,false,-10.0,-10.0,2024,9,as is
+#5 Kyren Williams rush_yds u90.5,#6 Josh Jacobs rec u2.5,205,0.5606390128131858,true,26.5909090909091,20.45454545454546,2024,9,as is
+#7 Isaiah Likely rec u2.5,#8 Jahmyr Gibbs rush_att u13.5,191,0.5352447065426204,true,24.852941176470594,19.117647058823533,2024,9,as is
+#9 Derrick Henry rush_att u18.5,#10 Tyreek Hill rec u6.5,193,0.5210256979323287,false,-10.0,-10.0,2024,9,as is
+#1 Lil'Jordan Humphrey rec_yds u20.5,#2 Amon-Ra St. Brown rec u6.5,217,0.6006909689151492,false,-10.0,-10.0,2024,10,as is
+#3 Jameson Williams rec u2.5,#4 Javonte Williams rush_att u9.5,253,0.5776206040211115,false,-10.0,-10.0,2024,10,as is
+#5 Jalen Tolbert rec u2.5,#6 Courtland Sutton rec_yds u44.5,293,0.5710960803022743,false,-10.0,-10.0,2024,10,as is
+#7 Noah Brown rec u3.5,#8 Demarcus Robinson rec u2.5,168,0.5506234777281097,true,21.80577849117175,16.773675762439808,2024,10,as is
+#9 Courtland Sutton rec u4.5,#10 Ray-Ray McCloud III rec u3.5,158,0.5284502331072725,false,-10.0,-10.0,2024,10,as is
+#1 Chase Brown rush_att u15.5,#2 Van Jefferson rec u1.5,166,0.5661807947678704,false,-10.0,-10.0,2024,11,as is
+#3 Gardner Minshew II pass_yds u182.5,#5 Nick Chubb rec u1.5,191,0.5384515473433359,false,-10.0,-10.0,2024,11,as is
+#4 Michael Mayer rec u1.5,#6 Kyren Williams rush_att u20.5,178,0.5328244132123079,true,23.106125970664365,17.773943054357204,2024,11,as is
+#7 Joe Mixon rush_yds u91.5,#8 Diontae Johnson rec u1.5,222,0.5190979191423334,false,-10.0,-10.0,2024,11,as is
+#9 Adonai Mitchell rec u1.5,#10 Ray-Ray McCloud III rec u3.5,131,0.498444391488253,false,-10.0,-10.0,2024,11,as is
+#1 Najee Harris rush_att u18.5,#2 Tony Pollard rec_yds u17.5,240,0.5430132860216271,true,31.207386363636367,24.00568181818182,2024,12,as is
+#3 A.J. Brown rec u6.5,#4 Rashod Bateman rec u3.5,157,0.538129259441512,true,20.432588320115354,15.717375630857964,2024,12,as is
+#5 Saquon Barkley rush_att u20.5,#6 KaVontae Turpin rec_yds u12.5,260,0.49436137934864816,false,-10.0,-10.0,2024,12,as is
+#7 Rico Dowdle rec u2.5,#8 Saquon Barkley rush_yds u95.5,203,0.47714159146328095,false,-10.0,-10.0,2024,12,as is
+#9 Austin Hooper rec u2.5,#10 Rico Dowdle rush_att u13.5,168,0.47228484781806923,false,-10.0,-10.0,2024,12,as is
+#1 Brenton Strange rec u1.5,#3 Raheem Mostert rush_yds u9.5,207,0.6366967593900977,false,-10.0,-10.0,2024,13,as is
+#2 Brenton Strange rec_yds u10.5,#4 Andrei Iosivas rec_yds u14.5,261,0.5873829330907074,false,-10.0,-10.0,2024,13,as is
+#5 Travis Etienne Jr. rush_yds u36.5,#6 Kareem Hunt rec u1.5,198,0.5177873414220102,false,-10.0,-10.0,2024,13,as is
+#7 Kyler Murray pass_yds u224.5,#8 Jonathan Taylor rush_att u20.5,240,0.4916962916993202,false,-10.0,-10.0,2024,13,as is
+#1 Dawson Knox rec u3.5,#3 Greg Dortch rec u1.5,122,0.588693620791902,true,15.861244019138757,12.200956937799043,2024,14,as is
+#2 Tutu Atwell rec u1.5,#4 Kareem Hunt rec u1.5,205,0.5349917110877113,false,-10.0,-10.0,2024,14,as is
+#5 Odell Beckham Jr. rec u1.5,#6 Mike Gesicki rec u2.5,169,0.5132084400535416,false,-10.0,-10.0,2024,14,as is
+#7 Tim Patrick rec u2.5,#8 Tutu Atwell rec_yds u14.5,192,0.4772047444229502,false,-10.0,-10.0,2024,14,as is
+#9 Tommy Tremble rec_yds u13.5,#10 Tee Higgins rec u6.5,207,0.4474754135170974,true,26.859504132231404,20.661157024793386,2024,14,as is
+#1 Jordan Addison rec u4.5,#2 Ray-Ray McCloud III rec u3.5,142,0.6057955724640459,false,-10.0,-10.0,2024,15,as is
+#3 Kyren Williams rec u2.5,#4 Josh Oliver rec_yds u11.5,167,0.5801008928100129,true,21.745454545454546,16.727272727272727,2024,15,as is
+#5 Jalen Nailor rec_yds u9.5,#6 Jake Ferguson rec u4.5,205,0.5146808004418635,true,26.63991439272338,20.492241840556446,2024,15,as is
+#7 Demarcus Robinson rec u1.5,#9 Mark Andrews rec u3.5,172,0.5014087273906463,true,22.343749999999996,17.187499999999996,2024,15,as is
+#8 Isaac Guerendo rec_yds u12.5,#10 Allen Lazard rec u2.5,198,0.4850994085040198,false,-10.0,-10.0,2024,15,as is
+#1 Kendrick Bourne rec u2.5,#2 Darius Slayton rec u2.5,133,0.6902867738549919,true,17.285318559556785,13.296398891966756,2024,16,as is
+#3 Jerry Jeudy rec u5.5,#4 Kareem Hunt rec u1.5,126,0.6564483753641085,false,-10.0,-10.0,2024,16,as is
+#5 DeMario Douglas rec u4.5,#6 Jerome Ford rush_att u12.5,159,0.6251700452107892,true,20.65597667638484,15.889212827988338,2024,16,as is
+#7 Keenan Allen rec u5.5,#8 Jaylen Warren rec u3.5,156,0.5808505724923415,false,-10.0,-10.0,2024,16,as is
+#9 Cole Kmet rec u2.5,#10 Saquon Barkley rush_yds u97.5,215,0.5659859427643501,false,-10.0,-10.0,2024,16,as is
+#1 Mike Williams rec u1.5,#2 Kyle Pitts Sr. rec u2.5,139,0.584245239685302,false,-10.0,-10.0,2024,17,as is
+#3 Amari Cooper rec u2.5,#4 Cole Kmet rec u2.5,142,0.5267346007471486,false,-10.0,-10.0,2024,17,as is
+#5 Stone Smartt rec_yds u8.5,#6 Josh Downs rec u6.5,227,0.4982675078133586,false,-10.0,-10.0,2024,17,as is
+#7 Aaron Jones Sr. rec u3.5,#8 James Conner rec u3.5,159,0.4675996964031987,false,-10.0,-10.0,2024,17,as is
+#1 David Moore rec u1.5,#3 Jamaal Williams rush_yds u18.5,227,0.5193183111487554,true,29.54545454545455,22.72727272727273,2024,18,as is
+#2 David Moore rec_yds u13.5,#4 Rashod Bateman rec u2.5,217,0.48426558312883944,false,-10.0,-10.0,2024,18,as is
+#5 D'Onta Foreman rec_yds u14.5,#6 Clyde Edwards-Helaire rush_att u10.5,250,0.44659232930104475,true,32.50000000000001,25.000000000000004,2024,18,as is
+#7 Blake Corum rush_yds u63.5,#8 Rico Dowdle rush_yds u60.5,264,0.43766331595282415,false,-10.0,-10.0,2024,18,as is
+#9 Tre Tucker rec_yds u26.5,#10 Baker Mayfield pass_att u32.5,258,0.4012321267844897,true,33.588516746411486,25.837320574162682,2024,18,as is
+#1 Dak Prescott pass_att u36.5,#3 Isiah Pacheco rush_yds u52.5,232,0.6850823796166124,true,30.17543859649123,23.21187584345479,2025,1,as is
+#2 Javonte Williams rush_yds u32.5,#8 Rome Odunze rec u4.5,193,0.6420147849016155,false,-10.0,-10.0,2025,1,as is
+#4 Javonte Williams rush_att u12.5,#9 TreVeyon Henderson rush_att u10.5,200,0.6166088095665194,false,-10.0,-10.0,2025,1,as is
+#5 Dak Prescott pass_yds u240.5,#10 Kaleb Johnson rush_yds u34.5,252,0.6002265856704329,true,32.810095413973535,25.238534933825797,2025,1,as is
+#1 Noah Brown rec u2.5,#2 Nico Collins rec_yds u76.5,185,0.6367231099631109,true,24.113669590643283,18.54897660818714,2025,2,as is
+#3 Dont'e Thornton Jr. rec u2.5,#5 Jahan Dotson rec u1.5,138,0.5440951875301635,true,17.97872340425532,13.829787234042552,2025,2,as is
+#4 Will Dissly rec u2.5,#7 Aaron Jones Sr. rush_yds u35.5,192,0.5231817874976399,true,24.96101364522417,19.200779727095515,2025,2,as is
+#6 Ashton Jeanty rush_att u17.5,#8 Jordan Love pass_att u31.5,222,0.49667498256253645,true,28.852459016393443,22.194199243379572,2025,2,as is
+#1 Darnell Mooney rec u3.5,#3 TreVeyon Henderson rush_att u6.5,185,0.529143470855133,false,-10.0,-10.0,2025,3,as is
+#2 Michael Penix Jr. pass_yds u214.5,#4 Najee Harris rush_att u7.5,238,0.4818227582410239,true,30.926315789473687,23.789473684210527,2025,3,as is
+#5 Jalen Tolbert rec_yds u11.5,#6 Alec Pierce rec_yds u20.5,255,0.45900518814178193,false,-10.0,-10.0,2025,3,as is
+#7 Cedric Tillman rec_yds u39.5,#8 Jonathan Taylor rush_att u20.5,252,0.42912022410397027,true,32.810095413973535,25.238534933825797,2025,3,as is
+#9 Adonai Mitchell rec_yds u10.5,#10 Tanner Conner rec_yds u9.5,255,0.40263974033386785,false,-10.0,-10.0,2025,3,as is
+#1 Andrei Iosivas rec u1.5,#2 Darren Waller rec u1.5,133,0.7399401936131526,false,-10.0,-10.0,2025,4,as is
+#3 Kayshon Boutte rec u2.5,#4 Justice Hill rec u2.5,125,0.6206845473896714,false,-10.0,-10.0,2025,4,as is
+#5 James Cook III rec u2.5,#6 JuJu Smith-Schuster rec u2.5,137,0.5542190294192688,false,-10.0,-10.0,2025,4,as is
+#7 Elic Ayomanor rec u3.5,#8 Lamar Jackson pass_att u28.5,224,0.49810391550181615,true,29.087210780574633,22.374777523518947,2025,4,as is
+#9 Keenan Allen rec u4.5,#10 Samaje Perine rec_yds u6.5,244,0.48939346641195114,false,-10.0,-10.0,2025,4,as is
+#1 DeMario Douglas rec u1.5,#2 Tyquan Thornton rec u1.5,129,0.6618584703131184,false,-10.0,-10.0,2025,5,as is
+#3 Andrei Iosivas rec u1.5,#4 Mason Taylor rec u3.5,133,0.5571393311508623,false,-10.0,-10.0,2025,5,as is
+#5 Kayshon Boutte rec u2.5,#6 DeVonta Smith rec u4.5,138,0.5333288375360611,false,-10.0,-10.0,2025,5,as is
+#7 Isaiah Bond rec_yds u28.5,#8 Malik Washington rec u3.5,244,0.46951376283185986,false,-10.0,-10.0,2025,5,as is
+#9 TreVeyon Henderson rec u2.5,#10 Demarcus Robinson rec_yds u27.5,242,0.45962381668681945,false,-10.0,-10.0,2025,5,as is
+#1 Andrei Iosivas rec u1.5,#2 Justice Hill rush_yds u14.5,177,0.46046387059623406,false,-10.0,-10.0,2025,6,as is
+#3 Breece Hall rush_att u15.5,#4 Chase Brown rec u3.5,232,0.3622287882793597,false,-10.0,-10.0,2025,6,as is
+#5 Breece Hall rush_yds u67.5,#7 Hassan Haskins rush_att u9.5,262,0.33881894171933064,true,33.999350227420415,26.15334632878493,2025,6,as is
+#6 Breece Hall rec_yds u30.5,#8 Michael Wilson rec_yds u23.5,252,0.33181687219108913,false,-10.0,-10.0,2025,6,as is
+#9 Trey McBride rec u6.5,#10 Tee Higgins rec u3.5,293,0.306452138535206,false,-10.0,-10.0,2025,6,as is
+#1 Ashton Jeanty rec u3.5,#2 Hassan Haskins rush_yds u17.5,265,0.3434426988030209,true,34.42568685865608,26.481297583581597,2025,7,as is
+#3 Kimani Vidal rush_att u12.5,#4 Cam Skattebo rush_att u14.5,292,0.337358920556641,false,-10.0,-10.0,2025,7,as is
+#5 Theo Johnson rec u3.5,#7 Ashton Jeanty rec_yds u19.5,275,0.33353688168433415,true,35.80701754385965,27.54385964912281,2025,7,as is
+#6 Theo Johnson rec_yds u30.5,#9 Tre Tucker rec_yds u56.5,255,0.32764851213965906,false,-10.0,-10.0,2025,7,as is
+#8 Lil'Jordan Humphrey rec u2.5,#10 Hunter Long rec u2.5,409,0.31940641373718937,true,53.1752,40.903999999999996,2025,7,as is
+#1 Jeremy McNichols rec_yds u10.5,#3 Chimere Dike rec u2.5,282,0.33313162395234197,false,-10.0,-10.0,2025,8,as is
+#2 Jeremy McNichols rec u1.5,#4 Chimere Dike rec_yds u28.5,332,0.3285390250256696,false,-10.0,-10.0,2025,8,as is
+#5 Gunnar Helm rec u2.5,#6 Kimani Vidal rec u2.5,332,0.3072453150008231,true,43.22240000000001,33.248000000000005,2025,8,as is
+#7 Theo Johnson rec u3.5,#9 Andrei Iosivas rec u1.5,413,0.27932994445025555,true,53.7004,41.308,2025,8,as is
+#8 Darius Slayton rec u2.5,#10 Tre' Harris rec u0.5,428,0.26846283413117716,false,-10.0,-10.0,2025,8,as is
+#1 Ryan Flournoy rec u1.5,#2 Rico Dowdle rec u2.5,230,0.414930168163871,false,-10.0,-10.0,2025,9,as is
+#3 Rashee Rice rec u6.5,#4 Courtland Sutton rec u4.5,316,0.3007354824874792,true,41.095600000000005,31.612000000000002,2025,9,as is
+#5 Kyle Monangai rec u2.5,#6 Cam Ward pass_att u34.5,324,0.2928485884627364,false,-10.0,-10.0,2025,9,as is
+#7 Jalen Coker rec u2.5,#8 Gunnar Helm rec u1.5,422,0.28866505106537055,true,54.7976,42.152,2025,9,as is
+#9 Trey McBride rec u6.5,#10 Pat Bryant rec u1.5,353,0.27179022763780863,false,-10.0,-10.0,2025,9,as is
+#1 Cole Kmet rec u1.5,#2 Jack Bech rec_yds u11.5,183,0.46450176289278083,true,23.854278553526672,18.349445041174363,2025,10,as is
+#3 Jack Bech rec u1.5,#5 Olamide Zaccheaus rec u3.5,241,0.39060652349839275,true,31.29285714285714,24.07142857142857,2025,10,as is
+#4 Tyler Lockett rec u1.5,#6 Devin Singletary rush_yds u33.5,279,0.3689860045668058,false,-10.0,-10.0,2025,10,as is
+#7 Saquon Barkley rush_att u18.5,#8 Chris Rodriguez Jr. rush_yds u23.5,279,0.35316711955949526,false,-10.0,-10.0,2025,10,as is
+#9 Ashton Jeanty rush_yds u55.5,#10 Matthew Stafford pass_yds u261.5,255,0.34915693406280335,false,-10.0,-10.0,2025,10,as is
+#1 David Njoku rec u3.5,#3 Mason Taylor rec u4.5,153,0.49000460279123875,true,19.846642718983144,15.26664824537165,2025,11,as is
+#2 Isaiah Bond rec u2.5,#4 Javonte Williams rec u2.5,154,0.4544720369001042,true,19.96927803379416,15.360983102918585,2025,11,as is
+#5 Dillon Gabriel pass_att u33.5,#6 Jordan Mason rush_yds u29.5,222,0.4039656865034539,false,-10.0,-10.0,2025,11,as is
+#7 Jalen Hurts pass_att u26.5,#8 Justin Fields pass_yds u134.5,254,0.38685023578366984,false,-10.0,-10.0,2025,11,as is
+#9 Daniel Bellinger rec_yds u15.5,#10 DJ Moore rec u3.5,262,0.37453471833054464,true,33.999350227420415,26.15334632878493,2025,11,as is
+#1 Theo Johnson rec u4.5,#2 Isaiah Williams rec u1.5,177,0.5446742491498914,true,22.97643442622951,17.674180327868854,2025,12,as is
+#3 Mason Taylor rec u4.5,#5 Chimere Dike rec_yds u37.5,230,0.5049350315959332,false,-10.0,-10.0,2025,12,as is
+#4 Adonai Mitchell rec_yds u30.5,#6 Wan'Dale Robinson rec u5.5,242,0.5004591691994285,false,-10.0,-10.0,2025,12,as is
+#7 Adonai Mitchell rec u2.5,#8 Rico Dowdle rush_att u18.5,260,0.4533254678311711,true,33.800000000000004,26.0,2025,12,as is
+#1 Geno Smith pass_att u32.5,#2 Jalen Coker rec u2.5,258,0.4130515841799563,false,-10.0,-10.0,2025,13,as is
+#3 Xavier Worthy rec u3.5,#4 Tyler Lockett rec_yds u28.5,244,0.3447914748479103,false,-10.0,-10.0,2025,13,as is
+#5 Devin Neal rush_att u11.5,#6 Aaron Jones Sr. rec u2.5,344,0.29802507593999544,false,-10.0,-10.0,2025,13,as is
+#7 Mason Taylor rec u3.5,#8 Alec Pierce rec u2.5,353,0.2838011116073617,false,-10.0,-10.0,2025,13,as is
+#9 Jordan Addison rec u2.5,#10 Colston Loveland rec u2.5,374,0.27941429068382,false,-10.0,-10.0,2025,13,as is
+#1 Jordan Addison rec u3.5,#2 Romeo Doubs rec u3.5,144,0.5138004246775234,false,-10.0,-10.0,2025,14,as is
+#3 Quinshon Judkins rec u1.5,#4 Ashton Jeanty rush_att u16.5,183,0.4455444271886393,true,23.7569573283859,18.274582560296846,2025,14,as is
+#5 Jalen Nailor rec u1.5,#6 Mason Tipton rec_yds u15.5,210,0.4307456246715648,false,-10.0,-10.0,2025,14,as is
+#7 Ashton Jeanty rec u4.5,#8 J.J. McCarthy pass_att u28.5,214,0.4144199787672895,true,27.797576621525305,21.382751247327157,2025,14,as is
+#9 Jonathan Taylor rush_att u22.5,#10 Chris Olave rec_yds u63.5,218,0.40009595840700585,true,28.35038986354776,21.807992202729046,2025,14,as is
+#1 Isaiah Bond rec u1.5,#3 Breece Hall rush_att u17.5,168,0.49314654233253447,false,-10.0,-10.0,2025,15,as is
+#2 Quinshon Judkins rush_att u19.5,#4 Jeremy Ruckert rec_yds u20.5,215,0.4651378967110212,true,27.892366050260787,21.455666192508296,2025,15,as is
+#5 Jonathan Taylor rush_att u20.5,#6 Chig Okonkwo rec_yds u27.5,235,0.4433819411878107,false,-10.0,-10.0,2025,15,as is
+#7 Michael Wilson rec u5.5,#8 Breece Hall rush_yds u66.5,230,0.4347166707480755,true,29.891015417331207,22.993088782562467,2025,15,as is
+#9 Emari Demercado rec_yds u10.5,#10 Jeremy Ruckert rec u2.5,351,0.42127138417102955,true,45.56842105263159,35.05263157894738,2025,15,as is
+#1 Pat Freiermuth rec u2.5,#3 Brock Bowers rec u5.5,157,0.5247204022342508,false,-10.0,-10.0,2025,16,as is
+#2 Jaylen Warren rec u2.5,#4 Quinshon Judkins rec u2.5,154,0.5103883536728155,false,-10.0,-10.0,2025,16,as is
+#5 Aaron Rodgers pass_yds u225.5,#6 Colby Parkinson rec u4.5,215,0.4348842438949225,false,-10.0,-10.0,2025,16,as is
+#7 Tyler Lockett rec u2.5,#8 Gardner Minshew II pass_att u31.5,224,0.4005448777862675,true,29.087210780574633,22.374777523518947,2025,16,as is
+#9 Shedeur Sanders pass_att u30.5,#10 Marquez Valdes-Scantling rec_yds u13.5,252,0.3803121269809443,true,32.810095413973535,25.238534933825797,2025,16,as is
+#1 Xavier Worthy rec u3.5,#2 Breece Hall rec u2.5,131,0.5496247139841419,true,16.968641114982578,13.052800857678907,2025,17,as is
+#3 Dylan Sampson rush_att u13.5,#4 Kareem Hunt rush_att u6.5,174,0.45290468589722965,false,-10.0,-10.0,2025,17,as is
+#5 JuJu Smith-Schuster rec u1.5,#6 Dawson Knox rec u2.5,282,0.4256490932206712,false,-10.0,-10.0,2025,17,as is
+#7 Jacory Croskey-Merritt rush_att u14.5,#8 John Metchie III rec u3.5,213,0.4093780729129282,true,27.69230769230769,21.301775147928993,2025,17,as is
+#9 John Metchie III rec_yds u29.5,#10 Sam Darnold pass_att u28.5,224,0.39014531947720466,false,-10.0,-10.0,2025,17,as is
+#1 Cedric Tillman rec u2.5,#3 Quinn Ewers pass_yds u209.5,252,0.38875808117359967,true,32.810095413973535,25.238534933825797,2025,18,as is
+#2 Dylan Sampson rush_yds u39.5,#4 Quinn Ewers pass_att u29.5,234,0.3837130271092296,true,30.46875,23.4375,2025,18,as is
+#5 Tony Pollard rush_yds u66.5,#6 Jaylen Wright rush_yds u69.5,252,0.3813382926440685,true,32.810095413973535,25.238534933825797,2025,18,as is
+#7 Chimere Dike rec_yds u33.5,#8 Dylan Sampson rush_att u11.5,262,0.37711133790093915,true,33.999350227420415,26.15334632878493,2025,18,as is
+#9 Jaylen Wright rush_att u17.5,#10 Michael Wilson rec u5.5,336,0.36915408933812244,true,43.67999999999999,33.599999999999994,2025,18,as is
+#1 Noah Gray rec u1.5,#3 Mack Hollins rec u1.5,118,0.5670268699751733,false,-10.0,-10.0,2026,1,as is
+#2 Marvin Mims Jr. rec u1.5,#4 Denzel Boston rec_yds u25.5,186,0.5503856629147502,false,-10.0,-10.0,2026,1,as is
+#5 KC Concepcion Jr. rec_yds u33.5,#6 Jacory Croskey-Merritt rec u1.5,174,0.5308955539545286,false,-10.0,-10.0,2026,1,as is
+#7 KC Concepcion Jr. rec u3.5,#8 D'Andre Swift rec u2.5,161,0.5223979411803574,false,-10.0,-10.0,2026,1,as is
+#9 Jeremiyah Love rush_yds u31.5,#10 Hunter Henry rec u3.5,183,0.5034808742499556,false,-10.0,-10.0,2026,1,as is
+#1 Quinshon Judkins rec u2.5,#2 De'Von Achane rec u4.5,148,0.4667044312876917,false,-10.0,-10.0,2026,2,as is
+#3 Malik Washington rec u3.5,#5 Jordan Love pass_yds u254.5,233,0.40466819668049725,false,-10.0,-10.0,2026,2,as is
+#4 Chris Bell rec u1.5,#6 Chuba Hubbard rush_yds u56.5,277,0.3789164394010801,true,36.008849557522126,27.69911504424779,2026,2,as is
+#7 De'Von Achane rush_yds u58.5,#8 Harold Fannin Jr. rec_yds u33.5,255,0.3456289325328692,false,-10.0,-10.0,2026,2,as is
+#9 David Montgomery rush_yds u63.5,#10 DK Metcalf rec_yds u59.5,255,0.3429563570731108,true,33.189756441381476,25.53058187798575,2026,2,as is
+#1 Drew Sample rec u1.5,#2 Kendrick Bourne rec u2.5,180,0.42358259653327807,true,23.396819849729166,17.997553730560895,2026,3,as is
+#3 Tyler Allgeier rush_yds u33.5,#5 Tre' Harris rec u2.5,292,0.319628008932896,false,-10.0,-10.0,2026,3,as is
+#4 Jeremiyah Love rec u2.5,#6 Jaylen Warren rec u3.5,309,0.3118385538860133,false,-10.0,-10.0,2026,3,as is
+#7 Terrance Ferguson rec u3.5,#8 Jordan Addison rec u2.5,452,0.23017970337662613,false,-10.0,-10.0,2026,3,as is
+#1 Tyjae Spears rec_yds u12.5,#4 Ladd McConkey rec u3.5,330,0.3071533201754363,true,42.87008849557523,32.97699115044249,2026,4,as is
+#2 Tony Pollard rec_yds u8,#6 Quentin Johnston rec u2.5,337,0.2923613629355417,true,43.850265486725675,33.73097345132744,2026,4,as is
+#3 Gunnar Helm rec u2.5,#7 Tory Horton rec u0.5,498,0.23429980122142158,false,-10.0,-10.0,2026,4,as is
+#1 Will Shipley rec u2.5,#7 George Holani rec u1.5,292,0.30115689890611025,false,-10.0,-10.0,2026,5,as is
+#2 Will Shipley rush_yds u31.5,#8 Kenny Gainwell rec u1.5,330,0.2920484375152617,false,-10.0,-10.0,2026,5,as is
+#3 Dontayvion Wicks rec u3.5,#9 Emeka Egbuka rec u2.5,374,0.2920484375152617,false,-10.0,-10.0,2026,5,as is
+#4 Dontayvion Wicks rec_yds u46.5,#10 RJ Harvey rec u3.5,318,0.28955270959128826,false,-10.0,-10.0,2026,5,as is

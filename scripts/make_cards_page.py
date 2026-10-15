@@ -17,10 +17,14 @@ MARKET = {"rec": "Receptions", "rec_yds": "Receiving yds", "rush_yds": "Rush yds
 
 def main():
     s = pl.read_csv(D / "fixes_summary.csv")
-    c = pl.read_csv(D / "fixes_cards.csv").with_columns(market_label=pl.col("market").replace_strict(MARKET, default=pl.col("market")))
-    p = pl.read_csv(D / "fixes_parlays.csv")
-    data = dict(summary=s.to_dicts(), cards=c.select("variant", "week", "rank", "tier", "player_name", "team", "market_label", "line", "price", "mean", "picker_under_chance",
-                                                     "actual", "won", "profit", "game_id").to_dicts(), parlays=p.to_dicts())
+    r = pl.read_csv(D / "replay_summary.csv")
+    c = pl.read_csv(D / "replay_cards.csv").with_columns(market_label=pl.col("market").replace_strict(MARKET, default=pl.col("market")))
+    p = pl.read_csv(D / "replay_parlays.csv")
+    data = dict(summary=s.to_dicts(), replay=r.to_dicts(),
+                cards=c.filter(pl.col("tier") != "Rest").select("variant", "season", "week", "rank", "tier", "player_name", "team", "market_label", "line", "price", "mean",
+                                                                 "picker_under_chance", "actual", "won", "profit", "game_id").to_dicts(),
+                rest=c.filter(pl.col("tier") == "Rest").group_by("variant", "season", "week").agg(n=pl.len(), w=pl.col("won").sum(), u=pl.col("profit").sum()).to_dicts(),
+                parlays=p.to_dicts())
     html = TEMPLATE.replace("__DATA__", json.dumps(data, default=str))
     (D / "slate_cards.html").write_text(html)
     print("wrote", D / "slate_cards.html", len(html), "bytes")
@@ -83,11 +87,17 @@ ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);max-width:75ch;display:
 <div class="wrap">
 <header>
   <h1>Slate Cards</h1>
-  <p>2026 weeks 1&ndash;5, replayed. Each week the picker was retrained on every line before that week, ranked every under it liked across all markets, and graded against what happened. 1 unit = one flat bet. Parlays are $10 two-leg tickets with a 30% profit boost.</p>
+  <p>2024 week 4 through 2026 week 5, replayed week by week. Before each week the picker was retrained on every line before it, ranked every under it liked across all markets, and was graded against what happened. 1 unit = one flat bet. Parlays are $10 two-leg tickets with a 30% profit boost.</p>
 </header>
 
 <section class="panel">
-  <h2>Which version of the card</h2>
+  <h2>Season records</h2>
+  <p class="lede">The card we would bet (all three fixes) next to the original card. 2024 starts at week 4 because the line history starts in 2024.</p>
+  <div class="scroll"><table id="replay"></table></div>
+</section>
+
+<section class="panel">
+  <h2>How we chose the fixes (2026 weeks 1&ndash;5)</h2>
   <p class="lede">The same five weeks, run five ways. A caps picks at one per player and two per game. B skips players with fewer than 3 games for their current team. C averages six picker versions instead of trusting one.</p>
   <div class="scroll"><table id="summary"></table></div>
 </section>
@@ -97,6 +107,8 @@ ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);max-width:75ch;display:
   <div class="controls">
     <label for="variant">Version</label>
     <select id="variant"></select>
+    <label for="season">Season</label>
+    <select id="season"></select>
     <div class="weeks" id="weeks" role="group" aria-label="Week"></div>
   </div>
   <div class="stats" id="weekstats"></div>
@@ -112,9 +124,9 @@ ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);max-width:75ch;display:
 <section class="panel">
   <h2>Read this before betting</h2>
   <ul class="notes">
-    <li>Five weeks is a small sample: about 40 Top-10 picks per version. One or two results change the order of the versions.</li>
-    <li>The 2026 files only carry receptions, receiving yards, rush yards and pass yards, so rush and pass attempts (the model&rsquo;s best markets) never appear here.</li>
-    <li>The picker setup itself was chosen with 2026 weeks 1&ndash;5 in view, so these weeks are not a fully clean test. Week 6 on is.</li>
+    <li>Each week only learned from earlier weeks, but the picker setup and the three fixes were chosen after looking at these same seasons. Treat the records as the best case. Week 6 on is the clean test.</li>
+    <li>Parlay payouts assume FanDuel pays the two prices multiplied, which it does for legs from different games. Real boosts are capped in stake and count.</li>
+    <li>The 2026 files only carry receptions, receiving yards, rush yards and pass yards.</li>
     <li>Heavy-favourite unders (&minus;180 and worse) win often but pay little; units show the money, the record shows the hit rate.</li>
   </ul>
 </section>
@@ -127,10 +139,19 @@ const $ = s => document.querySelector(s);
 const fmtU = v => (v > 0 ? "+" : "") + v.toFixed(2);
 const fmtP = v => v > 0 ? "+" + Math.round(v) : String(Math.round(v));
 const cls = v => v > 0 ? "pos" : (v < 0 ? "neg" : "");
-const variants = DATA.summary.map(r => r.variant);
-let state = {variant: REC, week: 1};
-try { const s = JSON.parse(localStorage.getItem("slatecards") || "{}"); if (variants.includes(s.variant)) state.variant = s.variant; if (s.week >= 1 && s.week <= 5) state.week = s.week; } catch (e) {}
-const save = () => { try { localStorage.setItem("slatecards", JSON.stringify(state)); } catch (e) {} };
+const variants = ["A + B + C", "as is"];
+const WEEKS = {2024: [...Array(15)].map((_, i) => i + 4), 2025: [...Array(18)].map((_, i) => i + 1), 2026: [1, 2, 3, 4, 5]};
+let state = {variant: REC, season: 2026, week: 5};
+try { const s = JSON.parse(localStorage.getItem("slatecards2") || "{}"); if (variants.includes(s.variant)) state.variant = s.variant; if (WEEKS[s.season]) { state.season = s.season; if (WEEKS[s.season].includes(s.week)) state.week = s.week; } } catch (e) {}
+const save = () => { try { localStorage.setItem("slatecards2", JSON.stringify(state)); } catch (e) {} };
+
+function replay() {
+  const h = `<thead><tr><th>Card</th><th>Season</th><th class="num">Weeks</th><th>Top 10</th><th class="num">Hit</th><th class="num">Top 10 units</th><th class="num">Weeks up</th><th>Next 10</th><th class="num">Parlays hit</th><th class="num">Parlay profit (boost)</th><th class="num">Without boost</th></tr></thead>`;
+  const money = v => `<span class="${cls(v)}">${v >= 0 ? "+" : "−"}$${Math.abs(v).toFixed(0)}</span>`;
+  const b = DATA.replay.map(r => { const n = r["Top 10 W"] + r["Top 10 L"]; const all = r.season === "all";
+    return `<tr class="${r.variant === REC && all ? "rec" : ""}"><td>${r.variant === REC ? "With fixes" : "Original"}</td><td>${all ? "<b>All</b>" : r.season}</td><td class="num">${r.weeks}</td><td>${r["Top 10 W"]}–${r["Top 10 L"]}</td><td class="num">${(100 * r["Top 10 W"] / n).toFixed(1)}%</td><td class="num ${cls(r["Top 10 units"])}">${fmtU(r["Top 10 units"])}</td><td class="num">${r.top10_weeks_up} of ${r.top10_weeks}</td><td>${r["Next 10 W"]}–${r["Next 10 L"]}, ${fmtU(r["Next 10 units"])}u</td><td class="num">${r.parlays_hit} of ${r.parlays}</td><td class="num">${money(r.parlay_profit)}</td><td class="num">${money(r.parlay_profit_no_boost)}</td></tr>`; }).join("");
+  $("#replay").innerHTML = h + "<tbody>" + b + "</tbody>";
+}
 
 function summary() {
   const h = `<thead><tr><th>Version</th><th>Picks per week</th><th>Top 10</th><th>Next 10</th><th>Rest</th><th class="num">Top-10 weeks up</th><th>Parlays hit</th><th class="num">Parlay profit</th><th class="num">Most picks from one game</th></tr></thead>`;
@@ -147,34 +168,41 @@ function rows(list) {
 const record = l => { const w = l.filter(r => r.won == 1).length; const u = l.reduce((a, r) => a + (+r.profit), 0); return {w, l: l.length - w, u}; };
 
 function card() {
-  const c = DATA.cards.filter(r => r.variant === state.variant && +r.week === state.week);
-  const tiers = ["Top 10", "Next 10", "Rest", "Skipped (cap)"];
+  const c = DATA.cards.filter(r => r.variant === state.variant && +r.season === state.season && +r.week === state.week);
+  const rest = DATA.rest.find(r => r.variant === state.variant && +r.season === state.season && +r.week === state.week);
+  const tiers = ["Top 10", "Next 10", "Skipped (cap)"];
   let html = "";
   const top = record(c.filter(r => r.tier === "Top 10"));
-  const all = record(c.filter(r => r.tier !== "Skipped (cap)"));
+  const tw = record(c.filter(r => r.tier !== "Skipped (cap)"));
+  const all = {w: tw.w + (rest ? +rest.w : 0), l: tw.l + (rest ? +rest.n - +rest.w : 0), u: tw.u + (rest ? +rest.u : 0)};
   $("#weekstats").innerHTML = [["Top 10 record", `${top.w}–${top.l}`], ["Top 10 units", `<span class="${cls(top.u)}">${fmtU(top.u)}</span>`], ["All picks", `${all.w}–${all.l}`], ["All units", `<span class="${cls(all.u)}">${fmtU(all.u)}</span>`]]
     .map(([k, v]) => `<div class="stat"><span>${k}</span><b>${v}</b></div>`).join("");
   for (const t of tiers) {
     const l = c.filter(r => r.tier === t).sort((a, b) => (a.rank ?? 999) - (b.rank ?? 999));
     if (!l.length && t !== "Top 10") continue;
     const r = record(l);
-    const shown = t === "Rest" ? l.slice(0, 15) : l;
-    html += `<div class="tierhead"><h3>${t}</h3><span class="rec">${r.w}–${r.l}, ${fmtU(r.u)} units${t === "Rest" && l.length > 15 ? ` · showing 15 of ${l.length}` : ""}</span></div>` + rows(shown);
+    html += `<div class="tierhead"><h3>${t}</h3><span class="rec">${r.w}–${r.l}, ${fmtU(r.u)} units</span></div>` + rows(l);
   }
+  if (rest) html += `<div class="tierhead"><h3>Rest</h3><span class="rec">${rest.w}–${rest.n - rest.w}, ${fmtU(+rest.u)} units · not bet</span></div>`;
   $("#tiers").innerHTML = html;
-  const p = DATA.parlays.filter(r => r.variant === state.variant && +r.week === state.week);
+  const p = DATA.parlays.filter(r => r.variant === state.variant && +r.season === state.season && +r.week === state.week);
   $("#parlays").innerHTML = p.length ? `<thead><tr><th>Leg 1</th><th>Leg 2</th><th class="num">Price</th><th class="num">Picker chance</th><th>Result</th><th class="num">Profit ($10, boosted)</th></tr></thead><tbody>` +
     p.map(r => `<tr><td>${r.leg1}</td><td>${r.leg2}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(100 * r.chance).toFixed(0)}%</td><td><span class="chip ${r.hit === "true" || r.hit === true ? "w" : "l"}">${r.hit === "true" || r.hit === true ? "HIT" : "MISS"}</span></td><td class="num ${cls(r.profit)}">${r.profit >= 0 ? "+" : "−"}$${Math.abs(+r.profit).toFixed(2)}</td></tr>`).join("") + "</tbody>"
     : `<tbody><tr><td class="muted">Not enough Top-10 picks from different games for a parlay this week.</td></tr></tbody>`;
 }
 
 function controls() {
-  $("#variant").innerHTML = variants.map(v => `<option ${v === state.variant ? "selected" : ""}>${v}</option>`).join("");
+  $("#variant").innerHTML = variants.map(v => `<option value="${v}" ${v === state.variant ? "selected" : ""}>${v === REC ? "With fixes (A + B + C)" : "Original"}</option>`).join("");
   $("#variant").onchange = e => { state.variant = e.target.value; save(); card(); };
-  $("#weeks").innerHTML = [1, 2, 3, 4, 5].map(w => `<button type="button" data-w="${w}" aria-pressed="${w === state.week}">Week ${w}</button>`).join("");
+  $("#season").innerHTML = [2024, 2025, 2026].map(y => `<option ${y === state.season ? "selected" : ""}>${y}</option>`).join("");
+  $("#season").onchange = e => { state.season = +e.target.value; if (!WEEKS[state.season].includes(state.week)) state.week = WEEKS[state.season][0]; save(); weekButtons(); card(); };
+  weekButtons();
+}
+function weekButtons() {
+  $("#weeks").innerHTML = WEEKS[state.season].map(w => `<button type="button" data-w="${w}" aria-pressed="${w === state.week}">${w}</button>`).join("");
   $("#weeks").onclick = e => { const b = e.target.closest("button"); if (!b) return; state.week = +b.dataset.w; save(); document.querySelectorAll("#weeks button").forEach(x => x.setAttribute("aria-pressed", String(+x.dataset.w === state.week))); card(); };
 }
-summary(); controls(); card();
+replay(); summary(); controls(); card();
 </script>
 """
 
