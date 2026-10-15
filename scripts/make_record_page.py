@@ -57,7 +57,9 @@ def main(argv=None):
         c = pl.read_csv(f).with_columns(dec_u=pl.when(pl.col("price") > 0).then(1 + pl.col("price") / 100).otherwise(1 + 100 / -pl.col("price")),
                                         market=pl.col("market").replace({v: k for k, v in LABEL.items()}), won=pl.lit(None), actual=pl.lit(None))
         live = dict(season=a.season, week=a.live_week, made_at=json.loads(f.with_name(f.stem + "_meta.json").read_text())["made_at_utc"], **ledger(c.to_dicts(), player="player_name"))
-    data = dict(weeks=weeks, live=live, strategies={k: v["name"] for k, v in ST.STRATEGIES.items()})
+    blind = D / "blind_2023.json"
+    data = dict(weeks=weeks, live=live, strategies={k: v["name"] for k, v in ST.STRATEGIES.items()},
+                blind=json.loads(blind.read_text())["four"] if blind.exists() else None)
     (D / "track_record.json").write_text(json.dumps(data, default=str))
     (D / "track_record.html").write_text(TEMPLATE.replace("__DATA__", json.dumps(data, default=str)))
     # console summary
@@ -146,6 +148,8 @@ ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);display:grid;gap:.35rem
 </header>
 
 <section class="panel bet" id="live" hidden></section>
+
+<section class="panel" id="blind" hidden></section>
 
 <section class="panel strat" id="stratA"></section>
 <section class="panel strat" id="stratB"></section>
@@ -251,8 +255,10 @@ function block(k, w) {
 }
 let season = 2026;
 function ledger() {
-  $("#seasons").innerHTML = [2024, 2025, 2026].map(y => `<button type="button" aria-pressed="${y === season}" data-y="${y}">${y}</button>`).join("");
-  const ws = DATA.weeks.filter(w => w.season === season).slice().reverse();
+  const ys = DATA.blind ? [2023, 2024, 2025, 2026] : [2024, 2025, 2026];
+  $("#seasons").innerHTML = ys.map(y => `<button type="button" aria-pressed="${y === season}" data-y="${y}">${y === 2023 ? "2023 (blind)" : y}</button>`).join("");
+  const src = season === 2023 ? DATA.blind : DATA.weeks;
+  const ws = src.filter(w => w.season === season).slice().reverse();
   const tot = (w, k) => w[k].singles.reduce((a, x) => a + x.profit, 0) + w[k].parlays.reduce((a, x) => a + x.profit, 0);
   $("#ledger").innerHTML = ws.map(w => { const a = tot(w, "A"), b = tot(w, "B");
     return `<details><summary><span class="wk">Week ${w.week}</span><span class="res">A <span class="${cls(a)}">${fmtU(a)}u</span> · ${w.A.singles.filter(x => x.won === 1).length}/${w.A.singles.length} singles${w.A.parlays.length ? `, parlay ${w.A.parlays[0].profit > 0 ? "hit" : "missed"}` : ""}</span><span class="res">B <span class="${cls(b)}">${fmtU(b)}u</span> · ${w.B.singles.filter(x => x.won === 1).length}/${w.B.singles.length} singles, ${w.B.parlays.filter(x => x.profit > 0).length}/${w.B.parlays.length} parlays</span></summary><div class="weekbody">${block("A", w)}${block("B", w)}</div></details>`; }).join("");
@@ -267,7 +273,17 @@ function live() {
   <div class="weekbody">${block("A", L)}${block("B", L)}</div>`;
 }
 
-live(); strat("A", $("#stratA"), true); strat("B", $("#stratB"), false);
+function blind() {
+  if (!DATA.blind) return;
+  const el = $("#blind"); el.hidden = false;
+  const a = stats("A", DATA.blind), b = stats("B", DATA.blind);
+  const row = (k, t) => `<tr><td>${DATA.strategies[k]}</td><td>${t.sw}–${t.n - t.sw}</td><td class="num ${cls(t.su)}">${fmtPct(t.su / t.n)}</td><td>${t.pw}–${t.pn - t.pw}</td><td class="num ${cls(t.pu)}">${fmtPct(t.pu / t.pn)}</td><td class="num ${cls(t.all)}">${fmtU(t.all)}u (${fmtPct(t.all / t.staked)})</td><td class="num">${t.up} of ${t.weeks}</td></tr>`;
+  el.innerHTML = `<div class="strat-head"><h2>Blind test: 2023</h2><span class="badge">Never used to choose anything</span></div>
+  <p class="lede">The rules were locked first. The picker learned only from 2024&ndash;2026 lines, then was applied unchanged to every 2023 week at FanDuel, in the four markets we bet now. This is the cleanest test we have until live weeks build up.</p>
+  <div class="scroll"><table><thead><tr><th>Strategy</th><th>Singles</th><th class="num">Singles return</th><th>Parlays</th><th class="num">Parlay return</th><th class="num">All bets</th><th class="num">Weeks up</th></tr></thead><tbody>${row("A", a)}${row("B", b)}</tbody></table></div>
+  <p class="lede">A stayed profitable but far below the replay's +48.5%, and the range is wide: 18 weeks of 2 singles and a parlay is a small sample. B lost slightly. Open "2023 (blind)" in Every week below for each pick.</p>`;
+}
+live(); blind(); strat("A", $("#stratA"), true); strat("B", $("#stratB"), false);
 const cs = ["A", "B"].map(chart); $("#charts").innerHTML = cs.map(c => c.html).join(""); cs.forEach(c => c.wire());
 ledger();
 </script>

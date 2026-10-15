@@ -6478,3 +6478,625 @@ captured_at,book,game_id,player_name,book_market,side,line,reason
 2026-10-07T19:15:56+00:00,Caesars,2026_05_CHI_GB,Kyle Monangai,Rushing Attempts,under,11.5,player not matched in the game's teams
 2026-10-08T19:39:20+00:00,Caesars,2026_05_CHI_GB,Kyle Monangai,Rushing Attempts,over,11.5,player not matched in the game's teams
 2026-10-08T19:39:20+00:00,Caesars,2026_05_CHI_GB,Kyle Monangai,Rushing Attempts,under,11.5,player not matched in the game's teams
+2023-08-31T17:51:26+00:00,FanDuel,2023_01_DET_KC,Travis Kelce,Receiving Yards,over,79.5,player not matched in the game's teams
+2023-08-31T17:51:26+00:00,FanDuel,2023_01_DET_KC,Travis Kelce,Receiving Yards,under,79.5,player not matched in the game's teams
+2023-09-05T05:46:47+00:00,FanDuel,2023_01_DET_KC,Travis Kelce,Receiving Yards,over,79.5,player not matched in the game's teams
+2023-09-05T05:46:47+00:00,FanDuel,2023_01_DET_KC,Travis Kelce,Receiving Yards,under,79.5,player not matched in the game's teams
+2023-09-05T05:46:55+00:00,FanDuel,2023_01_DET_KC,Travis Kelce,Receptions,over,6.5,player not matched in the game's teams
+2023-09-05T05:46:55+00:00,FanDuel,2023_01_DET_KC,Travis Kelce,Receptions,under,6.5,player not matched in the game's teams
+2023-09-07T20:51:35+00:00,FanDuel,2023_01_HOU_BAL,Mark Andrews,Receptions,over,4.5,player not matched in the game's teams
+2023-09-07T20:51:35+00:00,FanDuel,2023_01_HOU_BAL,Mark Andrews,Receptions,under,4.5,player not matched in the game's teams
+2023-09-07T23:39:00+00:00,FanDuel,2023_01_DET_KC,,Receptions,over,2.5,player not matched in the game's teams
+2023-09-07T23:39:00+00:00,FanDuel,2023_01_DET_KC,,Receptions,under,2.5,player not matched in the game's teams
+2023-09-08T00:07:34+00:00,FanDuel,2023_01_DET_KC,,Receiving Yards,over,26.5,player not matched in the game's teams
+2023-09-08T00:07:34+00:00,FanDuel,2023_01_DET_KC,,Receiving Yards,under,26.5,player not matched in the game's teams
+2023-09-09T17:11:27+00:00,FanDuel,2023_01_HOU_BAL,Mark Andrews,Receptions,over,4.5,player not matched in the game's teams
+2023-09-09T17:11:27+00:00,FanDuel,2023_01_HOU_BAL,Mark Andrews,Receptions,under,4.5,player not matched in the game's teams
+2023-09-09T17:12:09+00:00,FanDuel,2023_01_HOU_BAL,Mark Andrews,Receiving Yards,over,48.5,player not matched in the game's teams
+2023-09-09T17:12:09+00:00,FanDuel,2023_01_HOU_BAL,Mark Andrews,Receiving Yards,under,48.5,player not matched in the game's teams
+2023-09-10T16:33:47+00:00,FanDuel,2023_01_LA_SEA,Noah Fant,Receiving Yards,over,24.5,player not matched in the game's teams
+2023-09-10T16:33:47+00:00,FanDuel,2023_01_LA_SEA,Noah Fant,Receiving Yards,under,24.5,player not matched in the game's teams
+2023-09-10T16:33:52+00:00,FanDuel,2023_01_MIA_LAC,Joshua Palmer,Receptions,over,2.5,player not matched in the game's teams
+2023-09-10T16:33:52+00:00,FanDuel,2023_01_MIA_LAC,Joshua Palmer,Receptions,under,2.5,player not matched in the game's teams
+2023-09-10T16:34:43+00:00,FanDuel,2023_01_MIA_LAC,Joshua Palmer,Receiving Yards,over,29.5,player not matched in the game's teams
+2023-09-10T16:34:43+00:00,FanDuel,2023_01_MIA_LAC,Joshua Palmer,Receiving Yards,under,29.5,player not matched in the game's teams
+2023-09-10T16:35:22+00:00,FanDuel,2023_01_ARI_WAS,,Receiving Yards,over,27.5,player not matched in the game's teams
+2023-09-10T16:35:22+00:00,FanDuel,2023_01_ARI_WAS,,Receiving Yards,under,27.5,player not matched in the game's teams
+2023-09-10T16:35:51+00:00,FanDuel,2023_01_LV_DEN,Hunter Renfrow,Receptions,over,2.5,player not matched in the game's teams
+2023-09-10T16:35:51+00:00,FanDuel,2023_01_LV_DEN,Hunter Renfrow,Receptions,under,2.5,player not matched in the game's teams
+2023-09-10T16:35:53+00:00,FanDuel,2023_01_LV_DEN,Hunter Renfrow,Receiving Yards,over,29.5,player not matched in the game's teams
+2023-09-10T16:35:53+00:00,FanDuel,2023_01_LV_DEN,Hunter Renfrow,Receiving Yards,under,29.5,player not matched in the game's teams
+2023-09-10T16:51:36+00:00,FanDuel,2023_01_ARI_WAS,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2023-09-10T16:51:36+00:00,FanDuel,2023_01_ARI_WAS,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2023-09-10T16:53:30+00:00,FanDuel,2023_01_ARI_WAS,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2023-09-10T16:53:30+00:00,FanDuel,2023_01_ARI_WAS,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2023-09-10T16:53:42+00:00,FanDuel,2023_01_ARI_WAS,Hollywood Brown,Receiving Yards,over,46.5,player not matched in the game's teams
+2023-09-10T16:53:42+00:00,FanDuel,2023_01_ARI_WAS,Hollywood Brown,Receiving Yards,under,46.5,player not matched in the game's teams
+2023-09-11T16:33:20+00:00,FanDuel,2023_01_BUF_NYJ,Mecole Hardman Jr.,Receiving Yards,over,17.5,player not matched in the game's teams
+2023-09-11T16:33:20+00:00,FanDuel,2023_01_BUF_NYJ,Mecole Hardman Jr.,Receiving Yards,under,17.5,player not matched in the game's teams
+2023-09-14T20:33:55+00:00,FanDuel,2023_02_MIN_PHI,Quez Watkins,Receiving Yards,over,15.5,player not matched in the game's teams
+2023-09-14T20:33:55+00:00,FanDuel,2023_02_MIN_PHI,Quez Watkins,Receiving Yards,under,15.5,player not matched in the game's teams
+2023-09-17T16:33:33+00:00,FanDuel,2023_02_LAC_TEN,Joshua Palmer,Receiving Yards,over,23.5,player not matched in the game's teams
+2023-09-17T16:33:33+00:00,FanDuel,2023_02_LAC_TEN,Joshua Palmer,Receiving Yards,under,23.5,player not matched in the game's teams
+2023-09-17T16:33:39+00:00,FanDuel,2023_02_CHI_TB,Darnell Mooney,Receptions,over,2.5,player not matched in the game's teams
+2023-09-17T16:33:39+00:00,FanDuel,2023_02_CHI_TB,Darnell Mooney,Receptions,under,2.5,player not matched in the game's teams
+2023-09-17T16:33:40+00:00,FanDuel,2023_02_SEA_DET,,Receiving Yards,over,28.5,player not matched in the game's teams
+2023-09-17T16:33:40+00:00,FanDuel,2023_02_SEA_DET,,Receiving Yards,under,28.5,player not matched in the game's teams
+2023-09-17T16:33:46+00:00,FanDuel,2023_02_NYG_ARI,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2023-09-17T16:33:46+00:00,FanDuel,2023_02_NYG_ARI,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2023-09-17T16:34:11+00:00,FanDuel,2023_02_NYG_ARI,,Receiving Yards,over,27.5,player not matched in the game's teams
+2023-09-17T16:34:11+00:00,FanDuel,2023_02_NYG_ARI,,Receiving Yards,under,27.5,player not matched in the game's teams
+2023-09-17T16:34:22+00:00,FanDuel,2023_02_SEA_DET,,Receptions,over,2.5,player not matched in the game's teams
+2023-09-17T16:34:22+00:00,FanDuel,2023_02_SEA_DET,,Receptions,under,2.5,player not matched in the game's teams
+2023-09-17T16:34:36+00:00,FanDuel,2023_02_NYG_ARI,,Receptions,over,3.5,player not matched in the game's teams
+2023-09-17T16:34:36+00:00,FanDuel,2023_02_NYG_ARI,,Receptions,under,3.5,player not matched in the game's teams
+2023-09-17T16:34:49+00:00,FanDuel,2023_02_NYJ_DAL,C.J. Uzomah,Receiving Yards,over,8.5,player not matched in the game's teams
+2023-09-17T16:34:49+00:00,FanDuel,2023_02_NYJ_DAL,C.J. Uzomah,Receiving Yards,under,8.5,player not matched in the game's teams
+2023-09-17T16:34:54+00:00,FanDuel,2023_02_CHI_TB,Darnell Mooney,Receiving Yards,over,31.5,player not matched in the game's teams
+2023-09-17T16:34:54+00:00,FanDuel,2023_02_CHI_TB,Darnell Mooney,Receiving Yards,under,31.5,player not matched in the game's teams
+2023-09-17T16:35:46+00:00,FanDuel,2023_02_SF_LA,Elijah Mitchell,Rushing Yards,over,23.5,player not matched in the game's teams
+2023-09-17T16:35:46+00:00,FanDuel,2023_02_SF_LA,Elijah Mitchell,Rushing Yards,under,23.5,player not matched in the game's teams
+2023-09-17T16:35:56+00:00,FanDuel,2023_02_SF_LA,Cam Akers,Rushing Yards,over,30.5,player not matched in the game's teams
+2023-09-17T16:35:56+00:00,FanDuel,2023_02_SF_LA,Cam Akers,Rushing Yards,under,30.5,player not matched in the game's teams
+2023-09-17T19:39:18+00:00,FanDuel,2023_02_NYG_ARI,Hollywood Brown,Receiving Yards,over,42.5,player not matched in the game's teams
+2023-09-17T19:39:18+00:00,FanDuel,2023_02_NYG_ARI,Hollywood Brown,Receiving Yards,under,42.5,player not matched in the game's teams
+2023-09-18T20:34:06+00:00,FanDuel,2023_02_NO_CAR,Terrace Marshall Jr.,Receiving Yards,over,12.5,player not matched in the game's teams
+2023-09-18T20:34:06+00:00,FanDuel,2023_02_NO_CAR,Terrace Marshall Jr.,Receiving Yards,under,12.5,player not matched in the game's teams
+2023-09-21T19:51:40+00:00,FanDuel,2023_03_TEN_CLE,Nick Westbrook-Ikhine,Receiving Yards,over,24.5,player not matched in the game's teams
+2023-09-21T19:51:40+00:00,FanDuel,2023_03_TEN_CLE,Nick Westbrook-Ikhine,Receiving Yards,under,24.5,player not matched in the game's teams
+2023-09-21T22:51:26+00:00,FanDuel,2023_03_NYG_SF,Jalin Hyatt,Receiving Yards,over,14.5,player not matched in the game's teams
+2023-09-21T22:51:26+00:00,FanDuel,2023_03_NYG_SF,Jalin Hyatt,Receiving Yards,under,14.5,player not matched in the game's teams
+2023-09-21T23:23:49+00:00,FanDuel,2023_03_NYG_SF,Jalin Hyatt,Receiving Yards,over,11.5,player not matched in the game's teams
+2023-09-21T23:23:49+00:00,FanDuel,2023_03_NYG_SF,Jalin Hyatt,Receiving Yards,under,11.5,player not matched in the game's teams
+2023-09-23T20:35:27+00:00,FanDuel,2023_03_ATL_DET,,Receptions,over,1.5,player not matched in the game's teams
+2023-09-23T20:35:27+00:00,FanDuel,2023_03_ATL_DET,,Receptions,under,1.5,player not matched in the game's teams
+2023-09-24T16:33:24+00:00,FanDuel,2023_03_DAL_ARI,,Receiving Yards,over,23.5,player not matched in the game's teams
+2023-09-24T16:33:24+00:00,FanDuel,2023_03_DAL_ARI,,Receiving Yards,under,23.5,player not matched in the game's teams
+2023-09-24T16:33:27+00:00,FanDuel,2023_03_DAL_ARI,Hollywood Brown,Receiving Yards,over,43.5,player not matched in the game's teams
+2023-09-24T16:33:27+00:00,FanDuel,2023_03_DAL_ARI,Hollywood Brown,Receiving Yards,under,43.5,player not matched in the game's teams
+2023-09-24T16:33:40+00:00,FanDuel,2023_03_ATL_DET,Josh Reynolds,Receiving Yards,over,41.5,player not matched in the game's teams
+2023-09-24T16:33:41+00:00,FanDuel,2023_03_ATL_DET,Josh Reynolds,Receiving Yards,under,41.5,player not matched in the game's teams
+2023-09-24T16:33:42+00:00,FanDuel,2023_03_LAC_MIN,Joshua Palmer,Receiving Yards,over,26.5,player not matched in the game's teams
+2023-09-24T16:33:42+00:00,FanDuel,2023_03_LAC_MIN,Joshua Palmer,Receiving Yards,under,26.5,player not matched in the game's teams
+2023-09-24T16:34:03+00:00,FanDuel,2023_03_TEN_CLE,Nick Westbrook-Ikhine,Receiving Yards,over,26.5,player not matched in the game's teams
+2023-09-24T16:34:03+00:00,FanDuel,2023_03_TEN_CLE,Nick Westbrook-Ikhine,Receiving Yards,under,26.5,player not matched in the game's teams
+2023-09-24T16:34:45+00:00,FanDuel,2023_03_ATL_DET,,Receiving Yards,over,19.5,player not matched in the game's teams
+2023-09-24T16:34:45+00:00,FanDuel,2023_03_ATL_DET,,Receiving Yards,under,19.5,player not matched in the game's teams
+2023-09-24T16:34:47+00:00,FanDuel,2023_03_TEN_CLE,Nick Westbrook-Ikhine,Receptions,over,2.5,player not matched in the game's teams
+2023-09-24T16:34:47+00:00,FanDuel,2023_03_TEN_CLE,Nick Westbrook-Ikhine,Receptions,under,2.5,player not matched in the game's teams
+2023-09-24T16:35:26+00:00,FanDuel,2023_03_DAL_ARI,Hollywood Brown,Receptions,over,3.5,player not matched in the game's teams
+2023-09-24T16:35:26+00:00,FanDuel,2023_03_DAL_ARI,Hollywood Brown,Receptions,under,3.5,player not matched in the game's teams
+2023-09-24T16:35:42+00:00,FanDuel,2023_03_LAC_MIN,Joshua Palmer,Receptions,over,2.5,player not matched in the game's teams
+2023-09-24T16:35:42+00:00,FanDuel,2023_03_LAC_MIN,Joshua Palmer,Receptions,under,2.5,player not matched in the game's teams
+2023-09-24T16:35:43+00:00,FanDuel,2023_03_ATL_DET,Josh Reynolds,Receptions,over,3.5,player not matched in the game's teams
+2023-09-24T16:35:43+00:00,FanDuel,2023_03_ATL_DET,Josh Reynolds,Receptions,under,3.5,player not matched in the game's teams
+2023-09-24T17:48:20+00:00,FanDuel,2023_03_DAL_ARI,,Receptions,over,2.5,player not matched in the game's teams
+2023-09-24T17:48:20+00:00,FanDuel,2023_03_DAL_ARI,,Receptions,under,2.5,player not matched in the game's teams
+2023-09-24T22:03:13+00:00,FanDuel,2023_03_PIT_LV,Austin Hooper,Receiving Yards,over,17.5,player not matched in the game's teams
+2023-09-24T22:03:13+00:00,FanDuel,2023_03_PIT_LV,Austin Hooper,Receiving Yards,under,17.5,player not matched in the game's teams
+2023-09-28T21:52:06+00:00,FanDuel,2023_04_ARI_SF,,Receptions,over,3.5,player not matched in the game's teams
+2023-09-28T21:52:06+00:00,FanDuel,2023_04_ARI_SF,,Receptions,under,3.5,player not matched in the game's teams
+2023-09-28T21:52:06+00:00,FanDuel,2023_04_ARI_SF,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2023-09-28T21:52:06+00:00,FanDuel,2023_04_ARI_SF,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2023-09-28T22:53:23+00:00,FanDuel,2023_04_DET_GB,,Receiving Yards,over,10.5,player not matched in the game's teams
+2023-09-28T22:53:23+00:00,FanDuel,2023_04_DET_GB,,Receiving Yards,under,10.5,player not matched in the game's teams
+2023-09-29T12:34:45+00:00,FanDuel,2023_04_BAL_CLE,Deshaun Watson,Passing Yards,over,226.5,player not matched in the game's teams
+2023-09-29T12:34:45+00:00,FanDuel,2023_04_BAL_CLE,Deshaun Watson,Passing Yards,under,226.5,player not matched in the game's teams
+2023-09-29T18:52:02+00:00,FanDuel,2023_04_LV_LAC,Joshua Palmer,Receptions,over,3.5,player not matched in the game's teams
+2023-09-29T18:52:02+00:00,FanDuel,2023_04_LV_LAC,Joshua Palmer,Receptions,under,3.5,player not matched in the game's teams
+2023-10-01T07:01:59+00:00,FanDuel,2023_04_DEN_CHI,Chase Claypool,Receiving Yards,over,18.5,player not matched in the game's teams
+2023-10-01T07:01:59+00:00,FanDuel,2023_04_DEN_CHI,Chase Claypool,Receiving Yards,under,18.5,player not matched in the game's teams
+2023-10-01T16:33:17+00:00,FanDuel,2023_04_TB_NO,Juwan Johnson,Receptions,over,2.5,player not matched in the game's teams
+2023-10-01T16:33:17+00:00,FanDuel,2023_04_TB_NO,Juwan Johnson,Receptions,under,2.5,player not matched in the game's teams
+2023-10-01T16:33:29+00:00,FanDuel,2023_04_TB_NO,Juwan Johnson,Receiving Yards,over,25.5,player not matched in the game's teams
+2023-10-01T16:33:29+00:00,FanDuel,2023_04_TB_NO,Juwan Johnson,Receiving Yards,under,25.5,player not matched in the game's teams
+2023-10-01T16:33:48+00:00,FanDuel,2023_04_ARI_SF,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2023-10-01T16:33:48+00:00,FanDuel,2023_04_ARI_SF,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2023-10-01T16:33:58+00:00,FanDuel,2023_04_ARI_SF,Hollywood Brown,Receiving Yards,over,45.5,player not matched in the game's teams
+2023-10-01T16:33:58+00:00,FanDuel,2023_04_ARI_SF,Hollywood Brown,Receiving Yards,under,45.5,player not matched in the game's teams
+2023-10-01T16:34:57+00:00,FanDuel,2023_04_LV_LAC,Joshua Palmer,Receptions,over,3.5,player not matched in the game's teams
+2023-10-01T16:34:57+00:00,FanDuel,2023_04_LV_LAC,Joshua Palmer,Receptions,under,3.5,player not matched in the game's teams
+2023-10-01T18:40:45+00:00,FanDuel,2023_04_LV_LAC,Joshua Palmer,Receiving Yards,over,48.5,player not matched in the game's teams
+2023-10-01T18:40:45+00:00,FanDuel,2023_04_LV_LAC,Joshua Palmer,Receiving Yards,under,48.5,player not matched in the game's teams
+2023-10-01T20:08:48+00:00,FanDuel,2023_04_ARI_SF,,Receiving Yards,over,24.5,player not matched in the game's teams
+2023-10-01T20:08:48+00:00,FanDuel,2023_04_ARI_SF,,Receiving Yards,under,24.5,player not matched in the game's teams
+2023-10-01T20:09:31+00:00,FanDuel,2023_04_ARI_SF,,Receptions,over,2.5,player not matched in the game's teams
+2023-10-01T20:09:31+00:00,FanDuel,2023_04_ARI_SF,,Receptions,under,2.5,player not matched in the game's teams
+2023-10-02T20:51:23+00:00,FanDuel,2023_04_SEA_NYG,Will Dissly,Receiving Yards,over,21.5,player not matched in the game's teams
+2023-10-02T20:51:23+00:00,FanDuel,2023_04_SEA_NYG,Will Dissly,Receiving Yards,under,21.5,player not matched in the game's teams
+2023-10-02T23:33:33+00:00,FanDuel,2023_04_SEA_NYG,Will Dissly,Receiving Yards,over,14.5,player not matched in the game's teams
+2023-10-02T23:33:33+00:00,FanDuel,2023_04_SEA_NYG,Will Dissly,Receiving Yards,under,14.5,player not matched in the game's teams
+2023-10-05T09:51:39+00:00,FanDuel,2023_05_CAR_DET,Jahmyr Gibbs,Rushing Yards,over,32.5,player not matched in the game's teams
+2023-10-05T09:51:39+00:00,FanDuel,2023_05_CAR_DET,Jahmyr Gibbs,Rushing Yards,under,32.5,player not matched in the game's teams
+2023-10-06T16:34:43+00:00,FanDuel,2023_05_CAR_DET,Jahmyr Gibbs,Rushing Yards,over,35.5,player not matched in the game's teams
+2023-10-06T16:34:43+00:00,FanDuel,2023_05_CAR_DET,Jahmyr Gibbs,Rushing Yards,under,35.5,player not matched in the game's teams
+2023-10-06T23:52:09+00:00,FanDuel,2023_05_GB_LV,Aaron Jones Sr.,Rushing Attempts,over,10.5,player not matched in the game's teams
+2023-10-06T23:52:09+00:00,FanDuel,2023_05_GB_LV,Aaron Jones Sr.,Rushing Attempts,under,10.5,player not matched in the game's teams
+2023-10-07T15:51:55+00:00,FanDuel,2023_05_CIN_ARI,,Receptions,over,2.5,player not matched in the game's teams
+2023-10-07T15:51:55+00:00,FanDuel,2023_05_CIN_ARI,,Receptions,under,2.5,player not matched in the game's teams
+2023-10-08T16:32:52+00:00,FanDuel,2023_05_CIN_ARI,,Receiving Yards,over,22.5,player not matched in the game's teams
+2023-10-08T16:32:52+00:00,FanDuel,2023_05_CIN_ARI,,Receiving Yards,under,22.5,player not matched in the game's teams
+2023-10-08T16:33:09+00:00,FanDuel,2023_05_CIN_ARI,,Receptions,over,2.5,player not matched in the game's teams
+2023-10-08T16:33:09+00:00,FanDuel,2023_05_CIN_ARI,,Receptions,under,2.5,player not matched in the game's teams
+2023-10-08T16:33:19+00:00,FanDuel,2023_05_NYG_MIA,Durham Smythe,Receiving Yards,over,21.5,player not matched in the game's teams
+2023-10-08T16:33:19+00:00,FanDuel,2023_05_NYG_MIA,Durham Smythe,Receiving Yards,under,21.5,player not matched in the game's teams
+2023-10-08T16:33:54+00:00,FanDuel,2023_05_CIN_ARI,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2023-10-08T16:33:54+00:00,FanDuel,2023_05_CIN_ARI,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2023-10-08T16:33:55+00:00,FanDuel,2023_05_NYG_MIA,Durham Smythe,Receptions,over,2.5,player not matched in the game's teams
+2023-10-08T16:33:55+00:00,FanDuel,2023_05_NYG_MIA,Durham Smythe,Receptions,under,2.5,player not matched in the game's teams
+2023-10-08T16:34:38+00:00,FanDuel,2023_05_CIN_ARI,Hollywood Brown,Receiving Yards,over,53.5,player not matched in the game's teams
+2023-10-08T16:34:38+00:00,FanDuel,2023_05_CIN_ARI,Hollywood Brown,Receiving Yards,under,53.5,player not matched in the game's teams
+2023-10-08T16:52:49+00:00,FanDuel,2023_05_NYG_MIA,Jalin Hyatt,Receiving Yards,over,17.5,player not matched in the game's teams
+2023-10-08T16:52:49+00:00,FanDuel,2023_05_NYG_MIA,Jalin Hyatt,Receiving Yards,under,17.5,player not matched in the game's teams
+2023-10-08T19:52:41+00:00,FanDuel,2023_05_CIN_ARI,Irv Smith Jr.,Receiving Yards,over,24.5,player not matched in the game's teams
+2023-10-08T19:52:41+00:00,FanDuel,2023_05_CIN_ARI,Irv Smith Jr.,Receiving Yards,under,24.5,player not matched in the game's teams
+2023-10-08T19:53:01+00:00,FanDuel,2023_05_CIN_ARI,Irv Smith Jr.,Receptions,over,2.5,player not matched in the game's teams
+2023-10-08T19:53:01+00:00,FanDuel,2023_05_CIN_ARI,Irv Smith Jr.,Receptions,under,2.5,player not matched in the game's teams
+2023-10-09T16:33:06+00:00,FanDuel,2023_05_GB_LV,Aaron Jones Sr.,Receiving Yards,over,16.5,player not matched in the game's teams
+2023-10-09T16:33:06+00:00,FanDuel,2023_05_GB_LV,Aaron Jones Sr.,Receiving Yards,under,16.5,player not matched in the game's teams
+2023-10-09T16:33:31+00:00,FanDuel,2023_05_GB_LV,Aaron Jones Sr.,Rushing Yards,over,47.5,player not matched in the game's teams
+2023-10-09T16:33:31+00:00,FanDuel,2023_05_GB_LV,Aaron Jones Sr.,Rushing Yards,under,47.5,player not matched in the game's teams
+2023-10-09T16:37:23+00:00,FanDuel,2023_05_GB_LV,Aaron Jones Sr.,Receptions,over,2.5,player not matched in the game's teams
+2023-10-09T16:37:23+00:00,FanDuel,2023_05_GB_LV,Aaron Jones Sr.,Receptions,under,2.5,player not matched in the game's teams
+2023-10-09T17:20:15+00:00,FanDuel,2023_05_GB_LV,Aaron Jones Sr.,Rushing Attempts,over,10.5,player not matched in the game's teams
+2023-10-09T17:20:15+00:00,FanDuel,2023_05_GB_LV,Aaron Jones Sr.,Rushing Attempts,under,10.5,player not matched in the game's teams
+2023-10-15T16:33:24+00:00,FanDuel,2023_06_MIN_CHI,Josh Oliver,Receiving Yards,over,9.5,player not matched in the game's teams
+2023-10-15T16:33:24+00:00,FanDuel,2023_06_MIN_CHI,Josh Oliver,Receiving Yards,under,9.5,player not matched in the game's teams
+2023-10-15T18:21:02+00:00,FanDuel,2023_06_ARI_LA,Hollywood Brown,Receiving Yards,over,61.5,player not matched in the game's teams
+2023-10-15T18:21:02+00:00,FanDuel,2023_06_ARI_LA,Hollywood Brown,Receiving Yards,under,61.5,player not matched in the game's teams
+2023-10-15T18:23:07+00:00,FanDuel,2023_06_ARI_LA,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2023-10-15T18:23:07+00:00,FanDuel,2023_06_ARI_LA,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2023-10-16T16:33:15+00:00,FanDuel,2023_06_DAL_LAC,Joshua Palmer,Receptions,over,3.5,player not matched in the game's teams
+2023-10-16T16:34:26+00:00,FanDuel,2023_06_DAL_LAC,Joshua Palmer,Receiving Yards,over,44.5,player not matched in the game's teams
+2023-10-16T16:34:26+00:00,FanDuel,2023_06_DAL_LAC,Joshua Palmer,Receiving Yards,under,44.5,player not matched in the game's teams
+2023-10-16T16:55:57+00:00,FanDuel,2023_06_DAL_LAC,Joshua Palmer,Receptions,under,3.5,player not matched in the game's teams
+2023-10-18T23:52:00+00:00,FanDuel,2023_07_LAC_KC,Joshua Palmer,Receptions,over,4.5,player not matched in the game's teams
+2023-10-18T23:52:00+00:00,FanDuel,2023_07_LAC_KC,Joshua Palmer,Receptions,under,4.5,player not matched in the game's teams
+2023-10-20T15:27:03+00:00,FanDuel,2023_07_PIT_LA,Pat Freiermuth,Receiving Yards,over,23.5,player not matched in the game's teams
+2023-10-20T15:27:03+00:00,FanDuel,2023_07_PIT_LA,Pat Freiermuth,Receiving Yards,under,23.5,player not matched in the game's teams
+2023-10-22T00:33:56+00:00,FanDuel,2023_07_BUF_NE,JuJu Smith-Schuster,Receptions,over,2.5,player not matched in the game's teams
+2023-10-22T00:33:56+00:00,FanDuel,2023_07_BUF_NE,JuJu Smith-Schuster,Receptions,under,2.5,player not matched in the game's teams
+2023-10-22T07:01:26+00:00,FanDuel,2023_07_BUF_NE,JuJu Smith-Schuster,Receiving Yards,over,18.5,player not matched in the game's teams
+2023-10-22T07:01:27+00:00,FanDuel,2023_07_BUF_NE,JuJu Smith-Schuster,Receiving Yards,under,18.5,player not matched in the game's teams
+2023-10-22T10:51:52+00:00,FanDuel,2023_07_PIT_LA,,Rushing Yards,over,35.5,player not matched in the game's teams
+2023-10-22T10:51:52+00:00,FanDuel,2023_07_PIT_LA,,Rushing Yards,under,35.5,player not matched in the game's teams
+2023-10-22T16:32:52+00:00,FanDuel,2023_07_LAC_KC,Joshua Palmer,Receptions,over,4.5,player not matched in the game's teams
+2023-10-22T16:32:52+00:00,FanDuel,2023_07_LAC_KC,Joshua Palmer,Receptions,under,4.5,player not matched in the game's teams
+2023-10-22T16:33:02+00:00,FanDuel,2023_07_LAC_KC,Joshua Palmer,Receiving Yards,over,46.5,player not matched in the game's teams
+2023-10-22T16:33:02+00:00,FanDuel,2023_07_LAC_KC,Joshua Palmer,Receiving Yards,under,46.5,player not matched in the game's teams
+2023-10-22T16:33:03+00:00,FanDuel,2023_07_ARI_SEA,DK Metcalf,Receptions,over,4.5,player not matched in the game's teams
+2023-10-22T16:33:03+00:00,FanDuel,2023_07_ARI_SEA,DK Metcalf,Receptions,under,4.5,player not matched in the game's teams
+2023-10-22T16:33:46+00:00,FanDuel,2023_07_CLE_IND,Drew Ogletree,Receiving Yards,over,15.5,player not matched in the game's teams
+2023-10-22T16:33:46+00:00,FanDuel,2023_07_CLE_IND,Drew Ogletree,Receiving Yards,under,15.5,player not matched in the game's teams
+2023-10-22T19:14:02+00:00,FanDuel,2023_07_ARI_SEA,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2023-10-22T19:14:02+00:00,FanDuel,2023_07_ARI_SEA,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2023-10-22T19:14:26+00:00,FanDuel,2023_07_ARI_SEA,,Receiving Yards,over,22.5,player not matched in the game's teams
+2023-10-22T19:14:26+00:00,FanDuel,2023_07_ARI_SEA,,Receiving Yards,under,22.5,player not matched in the game's teams
+2023-10-22T19:14:31+00:00,FanDuel,2023_07_ARI_SEA,,Receptions,over,2.5,player not matched in the game's teams
+2023-10-22T19:14:31+00:00,FanDuel,2023_07_ARI_SEA,,Receptions,under,2.5,player not matched in the game's teams
+2023-10-22T19:14:32+00:00,FanDuel,2023_07_ARI_SEA,Keaontay Ingram,Rushing Attempts,over,9.5,player not matched in the game's teams
+2023-10-22T19:14:32+00:00,FanDuel,2023_07_ARI_SEA,Keaontay Ingram,Rushing Attempts,under,9.5,player not matched in the game's teams
+2023-10-22T19:14:34+00:00,FanDuel,2023_07_ARI_SEA,DK Metcalf,Receiving Yards,over,52.5,player not matched in the game's teams
+2023-10-22T19:14:34+00:00,FanDuel,2023_07_ARI_SEA,DK Metcalf,Receiving Yards,under,52.5,player not matched in the game's teams
+2023-10-22T19:14:39+00:00,FanDuel,2023_07_ARI_SEA,Hollywood Brown,Receiving Yards,over,56.5,player not matched in the game's teams
+2023-10-22T19:14:39+00:00,FanDuel,2023_07_ARI_SEA,Hollywood Brown,Receiving Yards,under,56.5,player not matched in the game's teams
+2023-10-22T19:19:50+00:00,FanDuel,2023_07_ARI_SEA,Keaontay Ingram,Rushing Yards,over,32.5,player not matched in the game's teams
+2023-10-22T19:19:50+00:00,FanDuel,2023_07_ARI_SEA,Keaontay Ingram,Rushing Yards,under,32.5,player not matched in the game's teams
+2023-10-22T20:01:01+00:00,FanDuel,2023_07_PIT_LA,,Rushing Yards,over,37.5,player not matched in the game's teams
+2023-10-22T20:01:01+00:00,FanDuel,2023_07_PIT_LA,,Rushing Yards,under,37.5,player not matched in the game's teams
+2023-10-22T20:32:20+00:00,FanDuel,2023_07_MIA_PHI,Durham Smythe,Receiving Yards,over,15.5,player not matched in the game's teams
+2023-10-22T20:32:20+00:00,FanDuel,2023_07_MIA_PHI,Durham Smythe,Receiving Yards,under,15.5,player not matched in the game's teams
+2023-10-22T20:51:39+00:00,FanDuel,2023_07_MIA_PHI,Durham Smythe,Receptions,over,1.5,player not matched in the game's teams
+2023-10-22T20:51:39+00:00,FanDuel,2023_07_MIA_PHI,Durham Smythe,Receptions,under,1.5,player not matched in the game's teams
+2023-10-26T12:51:38+00:00,FanDuel,2023_08_LA_DAL,,Rushing Yards,over,42.5,player not matched in the game's teams
+2023-10-26T12:51:38+00:00,FanDuel,2023_08_LA_DAL,,Rushing Yards,under,42.5,player not matched in the game's teams
+2023-10-27T19:51:56+00:00,FanDuel,2023_08_BAL_ARI,,Receptions,over,2.5,player not matched in the game's teams
+2023-10-27T19:51:56+00:00,FanDuel,2023_08_BAL_ARI,,Receptions,under,2.5,player not matched in the game's teams
+2023-10-27T19:52:00+00:00,FanDuel,2023_08_BAL_ARI,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2023-10-27T19:52:00+00:00,FanDuel,2023_08_BAL_ARI,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2023-10-28T15:51:38+00:00,FanDuel,2023_08_LA_DAL,,Rushing Attempts,over,12.5,player not matched in the game's teams
+2023-10-28T15:51:38+00:00,FanDuel,2023_08_LA_DAL,,Rushing Attempts,under,12.5,player not matched in the game's teams
+2023-10-28T22:52:18+00:00,FanDuel,2023_08_CHI_LAC,Gerald Everett,Receiving Yards,over,26.5,player not matched in the game's teams
+2023-10-28T22:52:18+00:00,FanDuel,2023_08_CHI_LAC,Gerald Everett,Receiving Yards,under,26.5,player not matched in the game's teams
+2023-10-28T22:52:20+00:00,FanDuel,2023_08_CHI_LAC,Gerald Everett,Receptions,over,2.5,player not matched in the game's teams
+2023-10-28T22:52:20+00:00,FanDuel,2023_08_CHI_LAC,Gerald Everett,Receptions,under,2.5,player not matched in the game's teams
+2023-10-29T08:34:33+00:00,FanDuel,2023_08_CHI_LAC,Gerald Everett,Receptions,over,2.5,player not matched in the game's teams
+2023-10-29T08:34:33+00:00,FanDuel,2023_08_CHI_LAC,Gerald Everett,Receptions,under,2.5,player not matched in the game's teams
+2023-10-29T08:34:56+00:00,FanDuel,2023_08_CHI_LAC,Gerald Everett,Receiving Yards,over,26.5,player not matched in the game's teams
+2023-10-29T08:34:56+00:00,FanDuel,2023_08_CHI_LAC,Gerald Everett,Receiving Yards,under,26.5,player not matched in the game's teams
+2023-10-29T16:33:33+00:00,FanDuel,2023_08_NYJ_NYG,Jalin Hyatt,Receiving Yards,over,21.5,player not matched in the game's teams
+2023-10-29T16:33:33+00:00,FanDuel,2023_08_NYJ_NYG,Jalin Hyatt,Receiving Yards,under,21.5,player not matched in the game's teams
+2023-10-29T16:33:46+00:00,FanDuel,2023_08_BAL_ARI,,Receiving Yards,over,23.5,player not matched in the game's teams
+2023-10-29T16:33:46+00:00,FanDuel,2023_08_BAL_ARI,,Receiving Yards,under,23.5,player not matched in the game's teams
+2023-10-29T16:33:48+00:00,FanDuel,2023_08_BAL_ARI,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2023-10-29T16:33:48+00:00,FanDuel,2023_08_BAL_ARI,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2023-10-29T16:34:20+00:00,FanDuel,2023_08_BAL_ARI,,Receptions,over,2.5,player not matched in the game's teams
+2023-10-29T16:34:20+00:00,FanDuel,2023_08_BAL_ARI,,Receptions,under,2.5,player not matched in the game's teams
+2023-10-29T16:34:32+00:00,FanDuel,2023_08_LA_DAL,,Rushing Yards,over,45.5,player not matched in the game's teams
+2023-10-29T16:34:32+00:00,FanDuel,2023_08_LA_DAL,,Rushing Yards,under,45.5,player not matched in the game's teams
+2023-10-29T16:34:44+00:00,FanDuel,2023_08_LA_DAL,,Rushing Attempts,over,12.5,player not matched in the game's teams
+2023-10-29T16:34:44+00:00,FanDuel,2023_08_LA_DAL,,Rushing Attempts,under,12.5,player not matched in the game's teams
+2023-10-29T16:34:54+00:00,FanDuel,2023_08_CLE_SEA,Colby Parkinson,Receiving Yards,over,11.5,player not matched in the game's teams
+2023-10-29T16:34:54+00:00,FanDuel,2023_08_CLE_SEA,Colby Parkinson,Receiving Yards,under,11.5,player not matched in the game's teams
+2023-10-29T16:35:16+00:00,FanDuel,2023_08_BAL_ARI,Hollywood Brown,Receiving Yards,over,50.5,player not matched in the game's teams
+2023-10-29T16:35:16+00:00,FanDuel,2023_08_BAL_ARI,Hollywood Brown,Receiving Yards,under,50.5,player not matched in the game's teams
+2023-10-29T16:35:26+00:00,FanDuel,2023_08_LA_DAL,,Receiving Yards,over,9.5,player not matched in the game's teams
+2023-10-29T16:35:27+00:00,FanDuel,2023_08_LA_DAL,,Receiving Yards,under,9.5,player not matched in the game's teams
+2023-10-29T16:35:31+00:00,FanDuel,2023_08_KC_DEN,Adam Trautman,Receiving Yards,over,11.5,player not matched in the game's teams
+2023-10-29T16:35:31+00:00,FanDuel,2023_08_KC_DEN,Adam Trautman,Receiving Yards,under,11.5,player not matched in the game's teams
+2023-10-29T23:51:30+00:00,FanDuel,2023_08_CHI_LAC,Joshua Palmer,Receiving Yards,over,42.5,player not matched in the game's teams
+2023-10-29T23:51:30+00:00,FanDuel,2023_08_CHI_LAC,Joshua Palmer,Receiving Yards,under,42.5,player not matched in the game's teams
+2023-10-29T23:51:34+00:00,FanDuel,2023_08_CHI_LAC,Joshua Palmer,Receptions,over,3.5,player not matched in the game's teams
+2023-10-29T23:51:34+00:00,FanDuel,2023_08_CHI_LAC,Joshua Palmer,Receptions,under,3.5,player not matched in the game's teams
+2023-10-29T23:52:28+00:00,FanDuel,2023_08_CHI_LAC,Joshua Palmer,Receptions,over,3.5,player not matched in the game's teams
+2023-10-29T23:52:28+00:00,FanDuel,2023_08_CHI_LAC,Joshua Palmer,Receptions,under,3.5,player not matched in the game's teams
+2023-10-29T23:52:30+00:00,FanDuel,2023_08_CHI_LAC,Joshua Palmer,Receiving Yards,over,42.5,player not matched in the game's teams
+2023-10-29T23:52:30+00:00,FanDuel,2023_08_CHI_LAC,Joshua Palmer,Receiving Yards,under,42.5,player not matched in the game's teams
+2023-11-05T09:32:46+00:00,FanDuel,2023_09_ARI_CLE,,Receptions,over,2.5,player not matched in the game's teams
+2023-11-05T09:32:46+00:00,FanDuel,2023_09_ARI_CLE,,Receptions,under,2.5,player not matched in the game's teams
+2023-11-05T09:33:05+00:00,FanDuel,2023_09_LA_GB,,Rushing Yards,over,47.5,player not matched in the game's teams
+2023-11-05T09:33:05+00:00,FanDuel,2023_09_LA_GB,,Rushing Yards,under,47.5,player not matched in the game's teams
+2023-11-05T09:33:32+00:00,FanDuel,2023_09_ARI_CLE,,Receiving Yards,over,18.5,player not matched in the game's teams
+2023-11-05T09:33:32+00:00,FanDuel,2023_09_ARI_CLE,,Receiving Yards,under,18.5,player not matched in the game's teams
+2023-11-05T09:34:07+00:00,FanDuel,2023_09_ARI_CLE,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2023-11-05T09:34:07+00:00,FanDuel,2023_09_ARI_CLE,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2023-11-05T11:53:30+00:00,FanDuel,2023_09_MIN_ATL,Scotty Miller,Receiving Yards,over,10.5,player not matched in the game's teams
+2023-11-05T11:53:30+00:00,FanDuel,2023_09_MIN_ATL,Scotty Miller,Receiving Yards,under,10.5,player not matched in the game's teams
+2023-11-05T13:51:59+00:00,FanDuel,2023_09_LA_GB,,Receiving Yards,over,9.5,player not matched in the game's teams
+2023-11-05T13:51:59+00:00,FanDuel,2023_09_LA_GB,,Receiving Yards,under,9.5,player not matched in the game's teams
+2023-11-05T13:58:42+00:00,FanDuel,2023_09_ARI_CLE,Hollywood Brown,Receiving Yards,over,45.5,player not matched in the game's teams
+2023-11-05T13:58:42+00:00,FanDuel,2023_09_ARI_CLE,Hollywood Brown,Receiving Yards,under,45.5,player not matched in the game's teams
+2023-11-05T17:24:41+00:00,FanDuel,2023_09_LA_GB,,Rushing Attempts,over,12.5,player not matched in the game's teams
+2023-11-05T17:24:41+00:00,FanDuel,2023_09_LA_GB,,Rushing Attempts,under,12.5,player not matched in the game's teams
+2023-11-09T08:51:24+00:00,FanDuel,2023_10_CAR_CHI,Khalil Herbert,Rushing Yards,over,43.5,player not matched in the game's teams
+2023-11-09T08:51:24+00:00,FanDuel,2023_10_CAR_CHI,Khalil Herbert,Rushing Yards,under,43.5,player not matched in the game's teams
+2023-11-09T09:33:15+00:00,FanDuel,2023_10_CAR_CHI,Khalil Herbert,Rushing Yards,over,43.5,player not matched in the game's teams
+2023-11-09T09:33:15+00:00,FanDuel,2023_10_CAR_CHI,Khalil Herbert,Rushing Yards,under,43.5,player not matched in the game's teams
+2023-11-12T08:01:31+00:00,FanDuel,2023_10_NO_MIN,Josh Oliver,Receiving Yards,over,5.5,player not matched in the game's teams
+2023-11-12T08:01:31+00:00,FanDuel,2023_10_NO_MIN,Josh Oliver,Receiving Yards,under,5.5,player not matched in the game's teams
+2023-11-12T13:19:53+00:00,FanDuel,2023_10_IND_NE,Jalen Reagor,Receiving Yards,over,16.5,player not matched in the game's teams
+2023-11-12T13:19:53+00:00,FanDuel,2023_10_IND_NE,Jalen Reagor,Receiving Yards,under,16.5,player not matched in the game's teams
+2023-11-12T17:34:17+00:00,FanDuel,2023_10_ATL_ARI,,Receiving Yards,over,22.5,player not matched in the game's teams
+2023-11-12T17:34:17+00:00,FanDuel,2023_10_ATL_ARI,,Receiving Yards,under,22.5,player not matched in the game's teams
+2023-11-12T17:34:30+00:00,FanDuel,2023_10_ATL_ARI,,Receptions,over,2.5,player not matched in the game's teams
+2023-11-12T17:34:30+00:00,FanDuel,2023_10_ATL_ARI,,Receptions,under,2.5,player not matched in the game's teams
+2023-11-12T17:34:33+00:00,FanDuel,2023_10_ATL_ARI,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2023-11-12T17:34:33+00:00,FanDuel,2023_10_ATL_ARI,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2023-11-12T17:35:07+00:00,FanDuel,2023_10_ATL_ARI,Hollywood Brown,Receiving Yards,over,56.5,player not matched in the game's teams
+2023-11-12T17:35:07+00:00,FanDuel,2023_10_ATL_ARI,Hollywood Brown,Receiving Yards,under,56.5,player not matched in the game's teams
+2023-11-17T18:51:36+00:00,FanDuel,2023_11_ARI_HOU,Hollywood Brown,Receptions,over,5.5,player not matched in the game's teams
+2023-11-17T18:51:36+00:00,FanDuel,2023_11_ARI_HOU,Hollywood Brown,Receptions,under,5.5,player not matched in the game's teams
+2023-11-17T18:51:51+00:00,FanDuel,2023_11_ARI_HOU,Michael Wilson,Receptions,over,2.5,player not matched in the game's teams
+2023-11-17T18:51:51+00:00,FanDuel,2023_11_ARI_HOU,Michael Wilson,Receptions,under,2.5,player not matched in the game's teams
+2023-11-17T18:51:52+00:00,FanDuel,2023_11_ARI_HOU,Michael Wilson,Receiving Yards,over,32.5,player not matched in the game's teams
+2023-11-17T18:51:52+00:00,FanDuel,2023_11_ARI_HOU,Michael Wilson,Receiving Yards,under,32.5,player not matched in the game's teams
+2023-11-18T01:35:46+00:00,FanDuel,2023_11_ARI_HOU,Hollywood Brown,Receiving Yards,over,56.5,player not matched in the game's teams
+2023-11-18T01:35:46+00:00,FanDuel,2023_11_ARI_HOU,Hollywood Brown,Receiving Yards,under,56.5,player not matched in the game's teams
+2023-11-18T13:32:55+00:00,FanDuel,2023_11_ARI_HOU,Michael Wilson,Receptions,over,2.5,player not matched in the game's teams
+2023-11-18T13:32:55+00:00,FanDuel,2023_11_ARI_HOU,Michael Wilson,Receptions,under,2.5,player not matched in the game's teams
+2023-11-18T17:32:19+00:00,FanDuel,2023_11_ARI_HOU,Michael Wilson,Receiving Yards,over,32.5,player not matched in the game's teams
+2023-11-18T17:32:19+00:00,FanDuel,2023_11_ARI_HOU,Michael Wilson,Receiving Yards,under,32.5,player not matched in the game's teams
+2023-11-19T13:31:40+00:00,FanDuel,2023_11_NYJ_BUF,Gabe Davis,Receptions,over,2.5,player not matched in the game's teams
+2023-11-19T13:31:40+00:00,FanDuel,2023_11_NYJ_BUF,Gabe Davis,Receptions,under,2.5,player not matched in the game's teams
+2023-11-19T13:31:41+00:00,FanDuel,2023_11_SEA_LA,,Receiving Yards,over,13.5,player not matched in the game's teams
+2023-11-19T13:31:41+00:00,FanDuel,2023_11_SEA_LA,,Receiving Yards,under,13.5,player not matched in the game's teams
+2023-11-19T13:31:44+00:00,FanDuel,2023_11_DAL_CAR,DJ Chark Jr.,Receptions,over,2.5,player not matched in the game's teams
+2023-11-19T13:31:44+00:00,FanDuel,2023_11_DAL_CAR,DJ Chark Jr.,Receptions,under,2.5,player not matched in the game's teams
+2023-11-19T13:31:59+00:00,FanDuel,2023_11_SEA_LA,,Rushing Yards,over,41.5,player not matched in the game's teams
+2023-11-19T13:32:00+00:00,FanDuel,2023_11_SEA_LA,,Rushing Yards,under,41.5,player not matched in the game's teams
+2023-11-19T13:32:09+00:00,FanDuel,2023_11_DAL_CAR,DJ Chark Jr.,Receiving Yards,over,24.5,player not matched in the game's teams
+2023-11-19T13:32:09+00:00,FanDuel,2023_11_DAL_CAR,DJ Chark Jr.,Receiving Yards,under,24.5,player not matched in the game's teams
+2023-11-19T13:32:14+00:00,FanDuel,2023_11_ARI_HOU,Hollywood Brown,Receptions,over,5.5,player not matched in the game's teams
+2023-11-19T13:32:14+00:00,FanDuel,2023_11_ARI_HOU,Hollywood Brown,Receptions,under,5.5,player not matched in the game's teams
+2023-11-19T14:52:17+00:00,FanDuel,2023_11_SEA_LA,,Receptions,over,2.5,player not matched in the game's teams
+2023-11-19T14:52:17+00:00,FanDuel,2023_11_SEA_LA,,Receptions,under,2.5,player not matched in the game's teams
+2023-11-19T17:35:49+00:00,FanDuel,2023_11_ARI_HOU,,Receiving Yards,over,34.5,player not matched in the game's teams
+2023-11-19T17:35:49+00:00,FanDuel,2023_11_ARI_HOU,,Receiving Yards,under,34.5,player not matched in the game's teams
+2023-11-19T17:37:39+00:00,FanDuel,2023_11_ARI_HOU,,Receptions,over,3.5,player not matched in the game's teams
+2023-11-19T17:37:40+00:00,FanDuel,2023_11_ARI_HOU,,Receptions,under,3.5,player not matched in the game's teams
+2023-11-19T19:08:36+00:00,FanDuel,2023_11_SEA_LA,,Rushing Attempts,over,10.5,player not matched in the game's teams
+2023-11-19T19:08:36+00:00,FanDuel,2023_11_SEA_LA,,Rushing Attempts,under,10.5,player not matched in the game's teams
+2023-11-19T21:01:19+00:00,FanDuel,2023_11_NYJ_BUF,Gabe Davis,Receiving Yards,over,34.5,player not matched in the game's teams
+2023-11-19T21:01:19+00:00,FanDuel,2023_11_NYJ_BUF,Gabe Davis,Receiving Yards,under,34.5,player not matched in the game's teams
+2023-11-21T19:51:50+00:00,FanDuel,2023_12_MIA_NYJ,Cedrick Wilson Jr.,Receiving Yards,over,19.5,player not matched in the game's teams
+2023-11-21T19:51:50+00:00,FanDuel,2023_12_MIA_NYJ,Cedrick Wilson Jr.,Receiving Yards,under,19.5,player not matched in the game's teams
+2023-11-21T21:51:39+00:00,FanDuel,2023_12_MIA_NYJ,Allen Lazard,Receiving Yards,over,20.5,player not matched in the game's teams
+2023-11-21T21:51:39+00:00,FanDuel,2023_12_MIA_NYJ,Allen Lazard,Receiving Yards,under,20.5,player not matched in the game's teams
+2023-11-21T22:51:40+00:00,FanDuel,2023_12_MIA_NYJ,Cedrick Wilson Jr.,Receptions,over,1.5,player not matched in the game's teams
+2023-11-21T22:51:40+00:00,FanDuel,2023_12_MIA_NYJ,Cedrick Wilson Jr.,Receptions,under,1.5,player not matched in the game's teams
+2023-11-24T05:34:17+00:00,FanDuel,2023_12_MIA_NYJ,Allen Lazard,Receptions,over,1.5,player not matched in the game's teams
+2023-11-24T05:34:17+00:00,FanDuel,2023_12_MIA_NYJ,Allen Lazard,Receptions,under,1.5,player not matched in the game's teams
+2023-11-24T05:34:46+00:00,FanDuel,2023_12_MIA_NYJ,Allen Lazard,Receiving Yards,over,16.5,player not matched in the game's teams
+2023-11-24T05:34:46+00:00,FanDuel,2023_12_MIA_NYJ,Allen Lazard,Receiving Yards,under,16.5,player not matched in the game's teams
+2023-11-24T18:56:22+00:00,FanDuel,2023_12_MIA_NYJ,Cedrick Wilson Jr.,Receptions,over,1.5,player not matched in the game's teams
+2023-11-24T18:56:22+00:00,FanDuel,2023_12_MIA_NYJ,Cedrick Wilson Jr.,Receptions,under,1.5,player not matched in the game's teams
+2023-11-24T19:13:52+00:00,FanDuel,2023_12_MIA_NYJ,Cedrick Wilson Jr.,Receiving Yards,over,13.5,player not matched in the game's teams
+2023-11-24T19:13:52+00:00,FanDuel,2023_12_MIA_NYJ,Cedrick Wilson Jr.,Receiving Yards,under,13.5,player not matched in the game's teams
+2023-11-26T17:44:55+00:00,FanDuel,2023_12_NE_NYG,Hunter Henry,Receptions,over,2.5,player not matched in the game's teams
+2023-11-26T17:44:55+00:00,FanDuel,2023_12_NE_NYG,Hunter Henry,Receptions,under,2.5,player not matched in the game's teams
+2023-11-26T17:58:15+00:00,FanDuel,2023_12_NE_NYG,Hunter Henry,Receiving Yards,over,26.5,player not matched in the game's teams
+2023-11-26T17:58:15+00:00,FanDuel,2023_12_NE_NYG,Hunter Henry,Receiving Yards,under,26.5,player not matched in the game's teams
+2023-11-27T22:39:35+00:00,FanDuel,2023_12_CHI_MIN,Equanimeous St. Brown,Receiving Yards,over,7.5,player not matched in the game's teams
+2023-11-27T22:39:35+00:00,FanDuel,2023_12_CHI_MIN,Equanimeous St. Brown,Receiving Yards,under,7.5,player not matched in the game's teams
+2023-11-29T15:51:35+00:00,FanDuel,2023_13_ARI_PIT,Hollywood Brown,Receiving Yards,over,41.5,player not matched in the game's teams
+2023-11-29T15:51:35+00:00,FanDuel,2023_13_ARI_PIT,Hollywood Brown,Receiving Yards,under,41.5,player not matched in the game's teams
+2023-11-30T04:52:00+00:00,FanDuel,2023_13_LAC_NE,Mike Gesicki,Receiving Yards,over,16.5,player not matched in the game's teams
+2023-11-30T04:52:00+00:00,FanDuel,2023_13_LAC_NE,Mike Gesicki,Receiving Yards,under,16.5,player not matched in the game's teams
+2023-12-03T03:51:37+00:00,FanDuel,2023_13_IND_TEN,Treylon Burks,Receiving Yards,over,22.5,player not matched in the game's teams
+2023-12-03T03:51:37+00:00,FanDuel,2023_13_IND_TEN,Treylon Burks,Receiving Yards,under,22.5,player not matched in the game's teams
+2023-12-03T08:01:17+00:00,FanDuel,2023_13_LAC_NE,Mike Gesicki,Receiving Yards,over,16.5,player not matched in the game's teams
+2023-12-03T08:01:17+00:00,FanDuel,2023_13_LAC_NE,Mike Gesicki,Receiving Yards,under,16.5,player not matched in the game's teams
+2023-12-03T08:01:22+00:00,FanDuel,2023_13_ATL_NYJ,Van Jefferson,Receiving Yards,over,10.5,player not matched in the game's teams
+2023-12-03T08:01:22+00:00,FanDuel,2023_13_ATL_NYJ,Van Jefferson,Receiving Yards,under,10.5,player not matched in the game's teams
+2023-12-03T08:01:22+00:00,FanDuel,2023_13_MIA_WAS,Durham Smythe,Receiving Yards,over,14.5,player not matched in the game's teams
+2023-12-03T08:01:22+00:00,FanDuel,2023_13_MIA_WAS,Durham Smythe,Receiving Yards,under,14.5,player not matched in the game's teams
+2023-12-03T08:01:28+00:00,FanDuel,2023_13_ARI_PIT,Hollywood Brown,Receiving Yards,over,43.5,player not matched in the game's teams
+2023-12-03T08:01:28+00:00,FanDuel,2023_13_ARI_PIT,Hollywood Brown,Receiving Yards,under,43.5,player not matched in the game's teams
+2023-12-03T08:01:31+00:00,FanDuel,2023_13_DEN_HOU,Tank Dell,Receiving Yards,over,62.5,player not matched in the game's teams
+2023-12-03T08:01:31+00:00,FanDuel,2023_13_DEN_HOU,Tank Dell,Receiving Yards,under,62.5,player not matched in the game's teams
+2023-12-03T15:21:51+00:00,FanDuel,2023_13_KC_GB,Justin Watson,Receiving Yards,over,29.5,player not matched in the game's teams
+2023-12-03T15:21:51+00:00,FanDuel,2023_13_KC_GB,Justin Watson,Receiving Yards,under,29.5,player not matched in the game's teams
+2023-12-03T17:31:48+00:00,FanDuel,2023_13_ARI_PIT,Hollywood Brown,Receptions,over,3.5,player not matched in the game's teams
+2023-12-03T17:31:48+00:00,FanDuel,2023_13_ARI_PIT,Hollywood Brown,Receptions,under,3.5,player not matched in the game's teams
+2023-12-03T17:31:50+00:00,FanDuel,2023_13_ARI_PIT,,Receptions,over,2.5,player not matched in the game's teams
+2023-12-03T17:31:50+00:00,FanDuel,2023_13_ARI_PIT,,Receptions,under,2.5,player not matched in the game's teams
+2023-12-03T17:31:51+00:00,FanDuel,2023_13_DEN_HOU,Tank Dell,Receptions,over,4.5,player not matched in the game's teams
+2023-12-03T17:31:51+00:00,FanDuel,2023_13_DEN_HOU,Tank Dell,Receptions,under,4.5,player not matched in the game's teams
+2023-12-03T17:31:56+00:00,FanDuel,2023_13_ARI_PIT,,Receiving Yards,over,20.5,player not matched in the game's teams
+2023-12-03T17:31:56+00:00,FanDuel,2023_13_ARI_PIT,,Receiving Yards,under,20.5,player not matched in the game's teams
+2023-12-03T17:32:05+00:00,FanDuel,2023_13_IND_TEN,Treylon Burks,Receiving Yards,over,22.5,player not matched in the game's teams
+2023-12-03T17:32:05+00:00,FanDuel,2023_13_IND_TEN,Treylon Burks,Receiving Yards,under,22.5,player not matched in the game's teams
+2023-12-06T14:52:03+00:00,FanDuel,2023_14_SEA_SF,Geno Smith,Passing Yards,over,247.5,player not matched in the game's teams
+2023-12-06T14:52:03+00:00,FanDuel,2023_14_SEA_SF,Geno Smith,Passing Yards,under,247.5,player not matched in the game's teams
+2023-12-06T14:52:08+00:00,FanDuel,2023_14_SEA_SF,Geno Smith,Passing Attempts,over,34.5,player not matched in the game's teams
+2023-12-06T14:52:08+00:00,FanDuel,2023_14_SEA_SF,Geno Smith,Passing Attempts,under,34.5,player not matched in the game's teams
+2023-12-06T14:52:08+00:00,FanDuel,2023_14_SEA_SF,Geno Smith,Passing Completions,over,22.5,player not matched in the game's teams
+2023-12-06T14:52:08+00:00,FanDuel,2023_14_SEA_SF,Geno Smith,Passing Completions,under,22.5,player not matched in the game's teams
+2023-12-07T01:52:06+00:00,FanDuel,2023_14_BUF_KC,Isiah Pacheco,Rushing Attempts,over,14.5,player not matched in the game's teams
+2023-12-07T01:52:06+00:00,FanDuel,2023_14_BUF_KC,Isiah Pacheco,Rushing Attempts,under,14.5,player not matched in the game's teams
+2023-12-07T01:52:08+00:00,FanDuel,2023_14_BUF_KC,Isiah Pacheco,Rushing Yards,over,58.5,player not matched in the game's teams
+2023-12-07T01:52:08+00:00,FanDuel,2023_14_BUF_KC,Isiah Pacheco,Rushing Yards,under,58.5,player not matched in the game's teams
+2023-12-07T04:52:04+00:00,FanDuel,2023_14_BUF_KC,Noah Gray,Receptions,over,1.5,player not matched in the game's teams
+2023-12-07T04:52:04+00:00,FanDuel,2023_14_BUF_KC,Noah Gray,Receptions,under,1.5,player not matched in the game's teams
+2023-12-07T11:14:38+00:00,FanDuel,2023_14_BUF_KC,Isiah Pacheco,Rushing Yards,over,61.5,player not matched in the game's teams
+2023-12-07T11:14:38+00:00,FanDuel,2023_14_BUF_KC,Isiah Pacheco,Rushing Yards,under,61.5,player not matched in the game's teams
+2023-12-07T17:32:24+00:00,FanDuel,2023_14_BUF_KC,Isiah Pacheco,Rushing Attempts,over,14.5,player not matched in the game's teams
+2023-12-07T17:32:24+00:00,FanDuel,2023_14_BUF_KC,Isiah Pacheco,Rushing Attempts,under,14.5,player not matched in the game's teams
+2023-12-07T17:52:20+00:00,FanDuel,2023_14_PHI_DAL,Quez Watkins,Receiving Yards,over,18.5,player not matched in the game's teams
+2023-12-07T17:52:20+00:00,FanDuel,2023_14_PHI_DAL,Quez Watkins,Receiving Yards,under,18.5,player not matched in the game's teams
+2023-12-07T21:34:33+00:00,FanDuel,2023_14_NE_PIT,DeVante Parker,Receptions,over,3.5,player not matched in the game's teams
+2023-12-07T21:34:33+00:00,FanDuel,2023_14_NE_PIT,DeVante Parker,Receptions,under,3.5,player not matched in the game's teams
+2023-12-07T22:56:06+00:00,FanDuel,2023_14_NE_PIT,DeVante Parker,Receiving Yards,over,39.5,player not matched in the game's teams
+2023-12-07T22:56:06+00:00,FanDuel,2023_14_NE_PIT,DeVante Parker,Receiving Yards,under,39.5,player not matched in the game's teams
+2023-12-08T23:58:46+00:00,FanDuel,2023_14_SEA_SF,Geno Smith,Passing Yards,over,236.5,player not matched in the game's teams
+2023-12-08T23:58:46+00:00,FanDuel,2023_14_SEA_SF,Geno Smith,Passing Yards,under,236.5,player not matched in the game's teams
+2023-12-09T09:32:18+00:00,FanDuel,2023_14_SEA_SF,Geno Smith,Passing Attempts,over,33.5,player not matched in the game's teams
+2023-12-09T09:32:18+00:00,FanDuel,2023_14_SEA_SF,Geno Smith,Passing Attempts,under,33.5,player not matched in the game's teams
+2023-12-09T09:33:12+00:00,FanDuel,2023_14_SEA_SF,Geno Smith,Passing Completions,over,21.5,player not matched in the game's teams
+2023-12-09T09:33:12+00:00,FanDuel,2023_14_SEA_SF,Geno Smith,Passing Completions,under,21.5,player not matched in the game's teams
+2023-12-09T18:01:51+00:00,FanDuel,2023_14_DET_CHI,Equanimeous St. Brown,Receiving Yards,over,10.5,player not matched in the game's teams
+2023-12-09T18:01:51+00:00,FanDuel,2023_14_DET_CHI,Equanimeous St. Brown,Receiving Yards,under,10.5,player not matched in the game's teams
+2023-12-09T21:27:10+00:00,FanDuel,2023_14_BUF_KC,Noah Gray,Receptions,over,1.5,player not matched in the game's teams
+2023-12-09T21:27:10+00:00,FanDuel,2023_14_BUF_KC,Noah Gray,Receptions,under,1.5,player not matched in the game's teams
+2023-12-10T08:01:22+00:00,FanDuel,2023_14_TB_ATL,Van Jefferson,Receiving Yards,over,12.5,player not matched in the game's teams
+2023-12-10T08:01:22+00:00,FanDuel,2023_14_TB_ATL,Van Jefferson,Receiving Yards,under,12.5,player not matched in the game's teams
+2023-12-10T11:26:34+00:00,FanDuel,2023_14_BUF_KC,Noah Gray,Receiving Yards,over,12.5,player not matched in the game's teams
+2023-12-10T11:26:34+00:00,FanDuel,2023_14_BUF_KC,Noah Gray,Receiving Yards,under,12.5,player not matched in the game's teams
+2023-12-10T15:21:29+00:00,FanDuel,2023_14_PHI_DAL,Quez Watkins,Receiving Yards,over,13.5,player not matched in the game's teams
+2023-12-10T15:21:29+00:00,FanDuel,2023_14_PHI_DAL,Quez Watkins,Receiving Yards,under,13.5,player not matched in the game's teams
+2023-12-11T21:51:30+00:00,FanDuel,2023_14_TEN_MIA,Kyle Philips,Receiving Yards,over,16.5,player not matched in the game's teams
+2023-12-11T21:51:30+00:00,FanDuel,2023_14_TEN_MIA,Kyle Philips,Receiving Yards,under,16.5,player not matched in the game's teams
+2023-12-11T21:51:30+00:00,FanDuel,2023_14_TEN_MIA,Kyle Philips,Receiving Yards,over,16.5,player not matched in the game's teams
+2023-12-11T21:51:30+00:00,FanDuel,2023_14_TEN_MIA,Kyle Philips,Receiving Yards,under,16.5,player not matched in the game's teams
+2023-12-12T00:51:45+00:00,FanDuel,2023_14_GB_NYG,Sterling Shepard,Receiving Yards,over,10.5,player not matched in the game's teams
+2023-12-12T00:51:45+00:00,FanDuel,2023_14_GB_NYG,Sterling Shepard,Receiving Yards,under,10.5,player not matched in the game's teams
+2023-12-14T05:51:47+00:00,FanDuel,2023_15_KC_NE,JuJu Smith-Schuster,Receiving Yards,over,20.5,player not matched in the game's teams
+2023-12-14T05:51:47+00:00,FanDuel,2023_15_KC_NE,JuJu Smith-Schuster,Receiving Yards,under,20.5,player not matched in the game's teams
+2023-12-14T05:51:47+00:00,FanDuel,2023_15_KC_NE,JuJu Smith-Schuster,Receptions,over,2.5,player not matched in the game's teams
+2023-12-14T05:51:47+00:00,FanDuel,2023_15_KC_NE,JuJu Smith-Schuster,Receptions,under,2.5,player not matched in the game's teams
+2023-12-14T23:26:20+00:00,FanDuel,2023_15_LAC_LV,Joshua Palmer,Receiving Yards,over,36.5,player not matched in the game's teams
+2023-12-14T23:26:20+00:00,FanDuel,2023_15_LAC_LV,Joshua Palmer,Receiving Yards,under,36.5,player not matched in the game's teams
+2023-12-14T23:26:43+00:00,FanDuel,2023_15_LAC_LV,Joshua Palmer,Receptions,over,3.5,player not matched in the game's teams
+2023-12-14T23:26:43+00:00,FanDuel,2023_15_LAC_LV,Joshua Palmer,Receptions,under,3.5,player not matched in the game's teams
+2023-12-15T16:52:32+00:00,FanDuel,2023_15_PHI_SEA,Geno Smith,Passing Yards,over,240.5,player not matched in the game's teams
+2023-12-15T16:52:32+00:00,FanDuel,2023_15_PHI_SEA,Geno Smith,Passing Yards,under,240.5,player not matched in the game's teams
+2023-12-16T20:15:43+00:00,FanDuel,2023_15_PIT_IND,Will Mallory,Receiving Yards,over,11.5,player not matched in the game's teams
+2023-12-16T20:15:43+00:00,FanDuel,2023_15_PIT_IND,Will Mallory,Receiving Yards,under,11.5,player not matched in the game's teams
+2023-12-16T20:51:34+00:00,FanDuel,2023_15_PIT_IND,Will Mallory,Receptions,over,1.5,player not matched in the game's teams
+2023-12-16T20:51:34+00:00,FanDuel,2023_15_PIT_IND,Will Mallory,Receptions,under,1.5,player not matched in the game's teams
+2023-12-17T09:32:11+00:00,FanDuel,2023_15_KC_NE,JuJu Smith-Schuster,Receptions,over,2.5,player not matched in the game's teams
+2023-12-17T09:32:11+00:00,FanDuel,2023_15_KC_NE,JuJu Smith-Schuster,Receptions,under,2.5,player not matched in the game's teams
+2023-12-17T09:32:29+00:00,FanDuel,2023_15_KC_NE,JuJu Smith-Schuster,Receiving Yards,over,19.5,player not matched in the game's teams
+2023-12-17T09:32:29+00:00,FanDuel,2023_15_KC_NE,JuJu Smith-Schuster,Receiving Yards,under,19.5,player not matched in the game's teams
+2023-12-17T13:32:55+00:00,FanDuel,2023_15_PHI_SEA,Geno Smith,Passing Yards,over,243.5,player not matched in the game's teams
+2023-12-17T13:32:55+00:00,FanDuel,2023_15_PHI_SEA,Geno Smith,Passing Yards,under,243.5,player not matched in the game's teams
+2023-12-17T15:51:45+00:00,FanDuel,2023_15_NYJ_MIA,Tyreek Hill,Receiving Yards,over,76.5,player not matched in the game's teams
+2023-12-17T15:51:45+00:00,FanDuel,2023_15_NYJ_MIA,Tyreek Hill,Receiving Yards,under,76.5,player not matched in the game's teams
+2023-12-17T15:51:45+00:00,FanDuel,2023_15_NYJ_MIA,Tyreek Hill,Receiving Yards,over,76.5,player not matched in the game's teams
+2023-12-17T15:51:45+00:00,FanDuel,2023_15_NYJ_MIA,Tyreek Hill,Receiving Yards,under,76.5,player not matched in the game's teams
+2023-12-17T17:33:20+00:00,FanDuel,2023_15_DAL_BUF,Dawson Knox,Receptions,over,1.5,player not matched in the game's teams
+2023-12-17T17:33:20+00:00,FanDuel,2023_15_DAL_BUF,Dawson Knox,Receptions,under,1.5,player not matched in the game's teams
+2023-12-17T17:33:55+00:00,FanDuel,2023_15_DAL_BUF,Jalen Tolbert,Receiving Yards,over,11.5,player not matched in the game's teams
+2023-12-17T17:33:55+00:00,FanDuel,2023_15_DAL_BUF,Jalen Tolbert,Receiving Yards,under,11.5,player not matched in the game's teams
+2023-12-17T19:51:49+00:00,FanDuel,2023_15_SF_ARI,,Receiving Yards,over,16.5,player not matched in the game's teams
+2023-12-17T19:51:49+00:00,FanDuel,2023_15_SF_ARI,,Receiving Yards,under,16.5,player not matched in the game's teams
+2023-12-17T19:51:50+00:00,FanDuel,2023_15_SF_ARI,,Receptions,over,1.5,player not matched in the game's teams
+2023-12-17T19:51:50+00:00,FanDuel,2023_15_SF_ARI,,Receptions,under,1.5,player not matched in the game's teams
+2023-12-17T19:51:51+00:00,FanDuel,2023_15_SF_ARI,Hollywood Brown,Receptions,over,3.5,player not matched in the game's teams
+2023-12-17T19:51:51+00:00,FanDuel,2023_15_SF_ARI,Hollywood Brown,Receptions,under,3.5,player not matched in the game's teams
+2023-12-17T21:08:49+00:00,FanDuel,2023_15_DAL_BUF,Dawson Knox,Receiving Yards,over,16.5,player not matched in the game's teams
+2023-12-17T21:08:49+00:00,FanDuel,2023_15_DAL_BUF,Dawson Knox,Receiving Yards,under,16.5,player not matched in the game's teams
+2023-12-20T00:51:33+00:00,FanDuel,2023_16_BUF_LAC,Joshua Palmer,Receptions,over,3.5,player not matched in the game's teams
+2023-12-20T00:51:33+00:00,FanDuel,2023_16_BUF_LAC,Joshua Palmer,Receptions,under,3.5,player not matched in the game's teams
+2023-12-20T00:51:34+00:00,FanDuel,2023_16_BUF_LAC,Joshua Palmer,Receiving Yards,over,61.5,player not matched in the game's teams
+2023-12-20T00:51:34+00:00,FanDuel,2023_16_BUF_LAC,Joshua Palmer,Receiving Yards,under,61.5,player not matched in the game's teams
+2023-12-20T19:52:07+00:00,FanDuel,2023_16_NE_DEN,Lil'Jordan Humphrey,Receiving Yards,over,10.5,player not matched in the game's teams
+2023-12-20T19:52:07+00:00,FanDuel,2023_16_NE_DEN,Lil'Jordan Humphrey,Receiving Yards,under,10.5,player not matched in the game's teams
+2023-12-21T01:51:35+00:00,FanDuel,2023_16_CIN_PIT,Pat Freiermuth,Receiving Yards,over,24.5,player not matched in the game's teams
+2023-12-21T01:51:35+00:00,FanDuel,2023_16_CIN_PIT,Pat Freiermuth,Receiving Yards,under,24.5,player not matched in the game's teams
+2023-12-21T13:52:13+00:00,FanDuel,2023_16_ARI_CHI,D'Onta Foreman,Rushing Attempts,over,8.5,player not matched in the game's teams
+2023-12-21T13:52:13+00:00,FanDuel,2023_16_ARI_CHI,D'Onta Foreman,Rushing Attempts,under,8.5,player not matched in the game's teams
+2023-12-21T20:51:35+00:00,FanDuel,2023_16_NO_LA,Tutu Atwell,Receiving Yards,over,15.5,player not matched in the game's teams
+2023-12-21T20:51:35+00:00,FanDuel,2023_16_NO_LA,Tutu Atwell,Receiving Yards,under,15.5,player not matched in the game's teams
+2023-12-21T20:51:36+00:00,FanDuel,2023_16_NO_LA,Tutu Atwell,Receptions,over,1.5,player not matched in the game's teams
+2023-12-21T20:51:36+00:00,FanDuel,2023_16_NO_LA,Tutu Atwell,Receptions,under,1.5,player not matched in the game's teams
+2023-12-21T22:52:25+00:00,FanDuel,2023_16_LV_KC,Michael Mayer,Receptions,over,2.5,player not matched in the game's teams
+2023-12-21T22:52:25+00:00,FanDuel,2023_16_LV_KC,Michael Mayer,Receptions,under,2.5,player not matched in the game's teams
+2023-12-22T00:51:39+00:00,FanDuel,2023_16_NO_LA,Lynn Bowden Jr.,Receiving Yards,over,9.5,player not matched in the game's teams
+2023-12-22T00:51:39+00:00,FanDuel,2023_16_NO_LA,Lynn Bowden Jr.,Receiving Yards,under,9.5,player not matched in the game's teams
+2023-12-22T00:51:39+00:00,FanDuel,2023_16_NO_LA,Royce Freeman,Rushing Yards,over,12.5,player not matched in the game's teams
+2023-12-22T00:51:39+00:00,FanDuel,2023_16_NO_LA,Royce Freeman,Rushing Yards,under,12.5,player not matched in the game's teams
+2023-12-22T01:10:55+00:00,FanDuel,2023_16_NO_LA,Tutu Atwell,Receptions,over,1.5,player not matched in the game's teams
+2023-12-22T01:10:55+00:00,FanDuel,2023_16_NO_LA,Tutu Atwell,Receptions,under,1.5,player not matched in the game's teams
+2023-12-22T01:11:23+00:00,FanDuel,2023_16_NO_LA,Tutu Atwell,Receiving Yards,over,13.5,player not matched in the game's teams
+2023-12-22T01:11:23+00:00,FanDuel,2023_16_NO_LA,Tutu Atwell,Receiving Yards,under,13.5,player not matched in the game's teams
+2023-12-22T17:51:34+00:00,FanDuel,2023_16_BUF_LAC,Ty Johnson,Rushing Yards,over,18.5,player not matched in the game's teams
+2023-12-22T17:51:34+00:00,FanDuel,2023_16_BUF_LAC,Ty Johnson,Rushing Yards,under,18.5,player not matched in the game's teams
+2023-12-22T21:51:39+00:00,FanDuel,2023_16_WAS_NYJ,Dalvin Cook,Rushing Yards,over,13.5,player not matched in the game's teams
+2023-12-22T21:51:39+00:00,FanDuel,2023_16_WAS_NYJ,Dalvin Cook,Rushing Yards,under,13.5,player not matched in the game's teams
+2023-12-23T11:00:43+00:00,FanDuel,2023_16_BUF_LAC,Joshua Palmer,Receptions,over,4.5,player not matched in the game's teams
+2023-12-23T11:00:43+00:00,FanDuel,2023_16_BUF_LAC,Joshua Palmer,Receptions,under,4.5,player not matched in the game's teams
+2023-12-23T13:32:59+00:00,FanDuel,2023_16_LV_KC,Michael Mayer,Receptions,over,2.5,player not matched in the game's teams
+2023-12-23T13:32:59+00:00,FanDuel,2023_16_LV_KC,Michael Mayer,Receptions,under,2.5,player not matched in the game's teams
+2023-12-23T13:34:04+00:00,FanDuel,2023_16_LV_KC,Michael Mayer,Receiving Yards,over,24.5,player not matched in the game's teams
+2023-12-23T13:34:04+00:00,FanDuel,2023_16_LV_KC,Michael Mayer,Receiving Yards,under,24.5,player not matched in the game's teams
+2023-12-23T13:34:41+00:00,FanDuel,2023_16_ARI_CHI,D'Onta Foreman,Rushing Attempts,over,8.5,player not matched in the game's teams
+2023-12-23T13:34:41+00:00,FanDuel,2023_16_ARI_CHI,D'Onta Foreman,Rushing Attempts,under,8.5,player not matched in the game's teams
+2023-12-23T15:01:26+00:00,FanDuel,2023_16_BUF_LAC,Ty Johnson,Rushing Yards,over,18.5,player not matched in the game's teams
+2023-12-23T15:01:36+00:00,FanDuel,2023_16_BUF_LAC,Joshua Palmer,Receiving Yards,over,44.5,player not matched in the game's teams
+2023-12-23T15:01:36+00:00,FanDuel,2023_16_BUF_LAC,Joshua Palmer,Receiving Yards,under,44.5,player not matched in the game's teams
+2023-12-23T18:01:25+00:00,FanDuel,2023_16_IND_ATL,Michael Pittman Jr.,Receiving Yards,over,69.5,player not matched in the game's teams
+2023-12-23T18:01:25+00:00,FanDuel,2023_16_IND_ATL,Michael Pittman Jr.,Receiving Yards,under,69.5,player not matched in the game's teams
+2023-12-23T18:01:44+00:00,FanDuel,2023_16_IND_ATL,Michael Pittman Jr.,Receptions,over,6.5,player not matched in the game's teams
+2023-12-23T18:01:44+00:00,FanDuel,2023_16_IND_ATL,Michael Pittman Jr.,Receptions,under,6.5,player not matched in the game's teams
+2023-12-23T20:16:15+00:00,FanDuel,2023_16_CIN_PIT,Pat Freiermuth,Receptions,over,2.5,player not matched in the game's teams
+2023-12-23T20:16:15+00:00,FanDuel,2023_16_CIN_PIT,Pat Freiermuth,Receptions,under,2.5,player not matched in the game's teams
+2023-12-23T20:16:37+00:00,FanDuel,2023_16_CIN_PIT,Pat Freiermuth,Receiving Yards,over,30.5,player not matched in the game's teams
+2023-12-23T20:16:37+00:00,FanDuel,2023_16_CIN_PIT,Pat Freiermuth,Receiving Yards,under,30.5,player not matched in the game's teams
+2023-12-23T21:09:15+00:00,FanDuel,2023_16_BUF_LAC,Ty Johnson,Rushing Yards,under,18.5,player not matched in the game's teams
+2023-12-23T21:26:15+00:00,FanDuel,2023_16_ARI_CHI,D'Onta Foreman,Rushing Yards,over,37.5,player not matched in the game's teams
+2023-12-23T21:26:15+00:00,FanDuel,2023_16_ARI_CHI,D'Onta Foreman,Rushing Yards,under,37.5,player not matched in the game's teams
+2023-12-24T17:31:49+00:00,FanDuel,2023_16_WAS_NYJ,Dalvin Cook,Rushing Yards,over,16.5,player not matched in the game's teams
+2023-12-24T17:31:49+00:00,FanDuel,2023_16_WAS_NYJ,Dalvin Cook,Rushing Yards,under,16.5,player not matched in the game's teams
+2023-12-24T17:32:34+00:00,FanDuel,2023_16_WAS_NYJ,Jeremy Ruckert,Receiving Yards,over,12.5,player not matched in the game's teams
+2023-12-24T17:32:34+00:00,FanDuel,2023_16_WAS_NYJ,Jeremy Ruckert,Receiving Yards,under,12.5,player not matched in the game's teams
+2023-12-24T19:50:39+00:00,FanDuel,2023_16_ARI_CHI,Tyler Scott,Receiving Yards,over,13.5,player not matched in the game's teams
+2023-12-24T19:50:39+00:00,FanDuel,2023_16_ARI_CHI,Tyler Scott,Receiving Yards,under,13.5,player not matched in the game's teams
+2023-12-24T20:09:03+00:00,FanDuel,2023_16_ARI_CHI,,Receiving Yards,over,19.5,player not matched in the game's teams
+2023-12-24T20:09:03+00:00,FanDuel,2023_16_ARI_CHI,,Receiving Yards,under,19.5,player not matched in the game's teams
+2023-12-24T20:51:04+00:00,FanDuel,2023_16_ARI_CHI,,Receptions,over,2.5,player not matched in the game's teams
+2023-12-24T20:51:04+00:00,FanDuel,2023_16_ARI_CHI,,Receptions,under,2.5,player not matched in the game's teams
+2023-12-24T20:51:53+00:00,FanDuel,2023_16_ARI_CHI,Tyler Scott,Receptions,over,1.5,player not matched in the game's teams
+2023-12-24T20:51:53+00:00,FanDuel,2023_16_ARI_CHI,Tyler Scott,Receptions,under,1.5,player not matched in the game's teams
+2023-12-24T21:32:32+00:00,FanDuel,2023_16_NE_DEN,Lil'Jordan Humphrey,Receiving Yards,over,11.5,player not matched in the game's teams
+2023-12-24T21:32:32+00:00,FanDuel,2023_16_NE_DEN,Lil'Jordan Humphrey,Receiving Yards,under,11.5,player not matched in the game's teams
+2023-12-25T11:31:22+00:00,FanDuel,2023_16_NYG_PHI,Jalin Hyatt,Receiving Yards,over,18.5,player not matched in the game's teams
+2023-12-25T11:31:22+00:00,FanDuel,2023_16_NYG_PHI,Jalin Hyatt,Receiving Yards,under,18.5,player not matched in the game's teams
+2023-12-25T12:51:21+00:00,FanDuel,2023_16_LV_KC,Josh Jacobs,Receiving Yards,over,14.5,player not matched in the game's teams
+2023-12-25T12:51:21+00:00,FanDuel,2023_16_LV_KC,Josh Jacobs,Receiving Yards,under,14.5,player not matched in the game's teams
+2023-12-27T05:51:28+00:00,FanDuel,2023_17_DET_DAL,Michael Gallup,Receiving Yards,over,15.5,player not matched in the game's teams
+2023-12-27T05:51:28+00:00,FanDuel,2023_17_DET_DAL,Michael Gallup,Receiving Yards,under,15.5,player not matched in the game's teams
+2023-12-27T08:51:35+00:00,FanDuel,2023_17_NYJ_CLE,Amari Cooper,Receptions,over,4.5,player not matched in the game's teams
+2023-12-27T08:51:35+00:00,FanDuel,2023_17_NYJ_CLE,Amari Cooper,Receptions,under,4.5,player not matched in the game's teams
+2023-12-28T11:51:41+00:00,FanDuel,2023_17_SF_WAS,Jacoby Brissett,Passing Attempts,over,37.5,player not matched in the game's teams
+2023-12-28T11:51:41+00:00,FanDuel,2023_17_SF_WAS,Jacoby Brissett,Passing Attempts,under,37.5,player not matched in the game's teams
+2023-12-28T11:51:41+00:00,FanDuel,2023_17_SF_WAS,Jacoby Brissett,Passing Completions,over,23.5,player not matched in the game's teams
+2023-12-28T11:51:41+00:00,FanDuel,2023_17_SF_WAS,Jacoby Brissett,Passing Completions,under,23.5,player not matched in the game's teams
+2023-12-28T19:21:00+00:00,FanDuel,2023_17_NYJ_CLE,Amari Cooper,Receptions,over,4.5,player not matched in the game's teams
+2023-12-28T19:21:01+00:00,FanDuel,2023_17_NYJ_CLE,Amari Cooper,Receptions,under,4.5,player not matched in the game's teams
+2023-12-28T22:52:20+00:00,FanDuel,2023_17_PIT_SEA,Allen Robinson II,Receiving Yards,over,17.5,player not matched in the game's teams
+2023-12-28T22:52:20+00:00,FanDuel,2023_17_PIT_SEA,Allen Robinson II,Receiving Yards,under,17.5,player not matched in the game's teams
+2023-12-28T22:52:20+00:00,FanDuel,2023_17_PIT_SEA,Allen Robinson II,Receptions,over,2.5,player not matched in the game's teams
+2023-12-28T22:52:20+00:00,FanDuel,2023_17_PIT_SEA,Allen Robinson II,Receptions,under,2.5,player not matched in the game's teams
+2023-12-28T23:55:56+00:00,FanDuel,2023_17_NYJ_CLE,Amari Cooper,Receiving Yards,over,56.5,player not matched in the game's teams
+2023-12-28T23:55:56+00:00,FanDuel,2023_17_NYJ_CLE,Amari Cooper,Receiving Yards,under,56.5,player not matched in the game's teams
+2023-12-29T13:31:42+00:00,FanDuel,2023_17_SF_WAS,Jacoby Brissett,Passing Yards,over,235.5,player not matched in the game's teams
+2023-12-29T13:31:42+00:00,FanDuel,2023_17_SF_WAS,Jacoby Brissett,Passing Yards,under,235.5,player not matched in the game's teams
+2023-12-29T17:37:18+00:00,FanDuel,2023_17_SF_WAS,Jacoby Brissett,Passing Attempts,over,36.5,player not matched in the game's teams
+2023-12-29T17:37:18+00:00,FanDuel,2023_17_SF_WAS,Jacoby Brissett,Passing Attempts,under,36.5,player not matched in the game's teams
+2023-12-29T17:37:18+00:00,FanDuel,2023_17_SF_WAS,Jacoby Brissett,Passing Completions,over,22.5,player not matched in the game's teams
+2023-12-29T17:37:18+00:00,FanDuel,2023_17_SF_WAS,Jacoby Brissett,Passing Completions,under,22.5,player not matched in the game's teams
+2023-12-30T08:52:43+00:00,FanDuel,2023_17_LAC_DEN,Marvin Mims Jr.,Receiving Yards,over,21.5,player not matched in the game's teams
+2023-12-30T08:52:43+00:00,FanDuel,2023_17_LAC_DEN,Marvin Mims Jr.,Receiving Yards,under,21.5,player not matched in the game's teams
+2023-12-30T13:33:23+00:00,FanDuel,2023_17_LAC_DEN,Marvin Mims Jr.,Receiving Yards,over,21.5,player not matched in the game's teams
+2023-12-30T13:33:23+00:00,FanDuel,2023_17_LAC_DEN,Marvin Mims Jr.,Receiving Yards,under,21.5,player not matched in the game's teams
+2023-12-30T16:52:51+00:00,FanDuel,2023_17_LAC_DEN,Jalen Guyton,Receptions,over,1.5,player not matched in the game's teams
+2023-12-30T16:52:51+00:00,FanDuel,2023_17_LAC_DEN,Jalen Guyton,Receptions,under,1.5,player not matched in the game's teams
+2023-12-30T23:52:46+00:00,FanDuel,2023_17_DET_DAL,Michael Gallup,Receptions,over,1.5,player not matched in the game's teams
+2023-12-30T23:52:46+00:00,FanDuel,2023_17_DET_DAL,Michael Gallup,Receptions,under,1.5,player not matched in the game's teams
+2023-12-31T01:14:57+00:00,FanDuel,2023_17_DET_DAL,Michael Gallup,Receiving Yards,over,17.5,player not matched in the game's teams
+2023-12-31T01:14:58+00:00,FanDuel,2023_17_DET_DAL,Michael Gallup,Receiving Yards,under,17.5,player not matched in the game's teams
+2023-12-31T01:34:20+00:00,FanDuel,2023_17_MIA_BAL,Raheem Mostert,Rushing Yards,over,46.5,player not matched in the game's teams
+2023-12-31T01:34:20+00:00,FanDuel,2023_17_MIA_BAL,Raheem Mostert,Rushing Yards,under,46.5,player not matched in the game's teams
+2023-12-31T09:31:57+00:00,FanDuel,2023_17_NE_BUF,Hunter Henry,Receiving Yards,over,29.5,player not matched in the game's teams
+2023-12-31T09:31:57+00:00,FanDuel,2023_17_NE_BUF,Hunter Henry,Receiving Yards,under,29.5,player not matched in the game's teams
+2023-12-31T13:31:31+00:00,FanDuel,2023_17_NE_BUF,Hunter Henry,Receptions,over,3.5,player not matched in the game's teams
+2023-12-31T13:31:31+00:00,FanDuel,2023_17_NE_BUF,Hunter Henry,Receptions,under,3.5,player not matched in the game's teams
+2023-12-31T15:39:15+00:00,FanDuel,2023_17_ATL_CHI,D'Onta Foreman,Rushing Yards,over,31.5,player not matched in the game's teams
+2023-12-31T15:39:15+00:00,FanDuel,2023_17_ATL_CHI,D'Onta Foreman,Rushing Yards,under,31.5,player not matched in the game's teams
+2023-12-31T17:32:13+00:00,FanDuel,2023_17_NE_BUF,Dawson Knox,Receiving Yards,over,15.5,player not matched in the game's teams
+2023-12-31T17:32:13+00:00,FanDuel,2023_17_NE_BUF,Dawson Knox,Receiving Yards,under,15.5,player not matched in the game's teams
+2023-12-31T17:32:13+00:00,FanDuel,2023_17_NE_BUF,Dawson Knox,Receptions,over,1.5,player not matched in the game's teams
+2023-12-31T17:32:13+00:00,FanDuel,2023_17_NE_BUF,Dawson Knox,Receptions,under,1.5,player not matched in the game's teams
+2023-12-31T17:32:19+00:00,FanDuel,2023_17_ARI_PHI,,Receiving Yards,over,19.5,player not matched in the game's teams
+2023-12-31T17:32:19+00:00,FanDuel,2023_17_ARI_PHI,,Receiving Yards,under,19.5,player not matched in the game's teams
+2023-12-31T17:32:31+00:00,FanDuel,2023_17_PIT_SEA,Allen Robinson II,Receptions,over,2.5,player not matched in the game's teams
+2023-12-31T17:32:31+00:00,FanDuel,2023_17_PIT_SEA,Allen Robinson II,Receptions,under,2.5,player not matched in the game's teams
+2023-12-31T17:32:50+00:00,FanDuel,2023_17_PIT_SEA,Allen Robinson II,Receiving Yards,over,17.5,player not matched in the game's teams
+2023-12-31T17:32:50+00:00,FanDuel,2023_17_PIT_SEA,Allen Robinson II,Receiving Yards,under,17.5,player not matched in the game's teams
+2023-12-31T17:32:53+00:00,FanDuel,2023_17_ARI_PHI,,Receptions,over,2.5,player not matched in the game's teams
+2023-12-31T17:32:53+00:00,FanDuel,2023_17_ARI_PHI,,Receptions,under,2.5,player not matched in the game's teams
+2023-12-31T17:41:07+00:00,FanDuel,2023_17_LV_IND,Hunter Renfrow,Receiving Yards,over,15.5,player not matched in the game's teams
+2023-12-31T17:41:07+00:00,FanDuel,2023_17_LV_IND,Hunter Renfrow,Receiving Yards,under,15.5,player not matched in the game's teams
+2023-12-31T17:41:12+00:00,FanDuel,2023_17_LAC_DEN,Jalen Guyton,Receptions,over,1.5,player not matched in the game's teams
+2023-12-31T17:41:12+00:00,FanDuel,2023_17_LAC_DEN,Jalen Guyton,Receptions,under,1.5,player not matched in the game's teams
+2023-12-31T17:41:18+00:00,FanDuel,2023_17_LAC_DEN,Jalen Guyton,Receiving Yards,over,21.5,player not matched in the game's teams
+2023-12-31T17:41:18+00:00,FanDuel,2023_17_LAC_DEN,Jalen Guyton,Receiving Yards,under,21.5,player not matched in the game's teams
+2024-01-01T00:51:36+00:00,FanDuel,2023_17_GB_MIN,K.J. Osborn,Receptions,over,2.5,player not matched in the game's teams
+2024-01-01T00:51:36+00:00,FanDuel,2023_17_GB_MIN,K.J. Osborn,Receptions,under,2.5,player not matched in the game's teams
+2024-01-01T00:51:37+00:00,FanDuel,2023_17_GB_MIN,K.J. Osborn,Receiving Yards,over,25.5,player not matched in the game's teams
+2024-01-01T00:51:37+00:00,FanDuel,2023_17_GB_MIN,K.J. Osborn,Receiving Yards,under,25.5,player not matched in the game's teams
+2024-01-04T11:51:36+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Passing Yards,over,198.5,player not matched in the game's teams
+2024-01-04T11:51:36+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Passing Yards,under,198.5,player not matched in the game's teams
+2024-01-04T13:51:45+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Passing Completions,over,17.5,player not matched in the game's teams
+2024-01-04T13:51:45+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Passing Completions,under,17.5,player not matched in the game's teams
+2024-01-04T13:51:48+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Passing Attempts,over,30.5,player not matched in the game's teams
+2024-01-04T13:51:48+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Passing Attempts,under,30.5,player not matched in the game's teams
+2024-01-06T00:51:33+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Rushing Yards,over,20.5,player not matched in the game's teams
+2024-01-06T00:51:33+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Rushing Yards,under,20.5,player not matched in the game's teams
+2024-01-06T00:51:44+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Rushing Attempts,over,3.5,player not matched in the game's teams
+2024-01-06T00:51:44+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Rushing Attempts,under,3.5,player not matched in the game's teams
+2024-01-07T00:51:37+00:00,FanDuel,2023_18_HOU_IND,Brevin Jordan,Receptions,over,1.5,player not matched in the game's teams
+2024-01-07T00:51:37+00:00,FanDuel,2023_18_HOU_IND,Brevin Jordan,Receptions,under,1.5,player not matched in the game's teams
+2024-01-07T00:51:37+00:00,FanDuel,2023_18_HOU_IND,Brevin Jordan,Receiving Yards,over,15.5,player not matched in the game's teams
+2024-01-07T00:51:37+00:00,FanDuel,2023_18_HOU_IND,Brevin Jordan,Receiving Yards,under,15.5,player not matched in the game's teams
+2024-01-07T00:51:37+00:00,FanDuel,2023_18_HOU_IND,Brevin Jordan,Receptions,over,1.5,player not matched in the game's teams
+2024-01-07T00:51:37+00:00,FanDuel,2023_18_HOU_IND,Brevin Jordan,Receptions,under,1.5,player not matched in the game's teams
+2024-01-07T09:33:09+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Rushing Attempts,over,3.5,player not matched in the game's teams
+2024-01-07T09:33:09+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Rushing Attempts,under,3.5,player not matched in the game's teams
+2024-01-07T09:33:27+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Passing Yards,over,195.5,player not matched in the game's teams
+2024-01-07T09:33:27+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Passing Yards,under,195.5,player not matched in the game's teams
+2024-01-07T09:35:38+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Passing Completions,over,17.5,player not matched in the game's teams
+2024-01-07T09:35:39+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Passing Completions,under,17.5,player not matched in the game's teams
+2024-01-07T09:37:33+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Passing Attempts,over,29.5,player not matched in the game's teams
+2024-01-07T09:37:33+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Passing Attempts,under,29.5,player not matched in the game's teams
+2024-01-07T11:26:07+00:00,FanDuel,2023_18_SEA_ARI,,Receiving Yards,over,23.5,player not matched in the game's teams
+2024-01-07T11:26:07+00:00,FanDuel,2023_18_SEA_ARI,,Receiving Yards,under,23.5,player not matched in the game's teams
+2024-01-07T11:26:49+00:00,FanDuel,2023_18_CHI_GB,Christian Watson,Receiving Yards,over,32.5,player not matched in the game's teams
+2024-01-07T11:26:49+00:00,FanDuel,2023_18_CHI_GB,Christian Watson,Receiving Yards,under,32.5,player not matched in the game's teams
+2024-01-07T15:10:20+00:00,FanDuel,2023_18_CHI_GB,Christian Watson,Receptions,over,2.5,player not matched in the game's teams
+2024-01-07T15:10:20+00:00,FanDuel,2023_18_CHI_GB,Christian Watson,Receptions,under,2.5,player not matched in the game's teams
+2024-01-07T15:56:55+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Rushing Yards,over,15.5,player not matched in the game's teams
+2024-01-07T15:56:55+00:00,FanDuel,2023_18_ATL_NO,Taylor Heinicke,Rushing Yards,under,15.5,player not matched in the game's teams
+2024-01-07T17:51:45+00:00,FanDuel,2023_18_JAX_TEN,Treylon Burks,Receiving Yards,over,24.5,player not matched in the game's teams
+2024-01-07T17:51:45+00:00,FanDuel,2023_18_JAX_TEN,Treylon Burks,Receiving Yards,under,24.5,player not matched in the game's teams
+2024-01-07T17:51:54+00:00,FanDuel,2023_18_KC_LAC,Travis Kelce,Receiving Yards,over,21.5,player not matched in the game's teams
+2024-01-07T17:51:54+00:00,FanDuel,2023_18_KC_LAC,Travis Kelce,Receiving Yards,under,21.5,player not matched in the game's teams
+2024-01-07T17:51:54+00:00,FanDuel,2023_18_KC_LAC,Travis Kelce,Receiving Yards,over,21.5,player not matched in the game's teams
+2024-01-07T17:51:54+00:00,FanDuel,2023_18_KC_LAC,Travis Kelce,Receiving Yards,under,21.5,player not matched in the game's teams
+2024-01-07T18:01:52+00:00,FanDuel,2023_18_SEA_ARI,Noah Fant,Receiving Yards,over,24.5,player not matched in the game's teams
+2024-01-07T18:01:52+00:00,FanDuel,2023_18_SEA_ARI,Noah Fant,Receiving Yards,under,24.5,player not matched in the game's teams
+2024-01-07T18:02:27+00:00,FanDuel,2023_18_SEA_ARI,,Receptions,over,2.5,player not matched in the game's teams
+2024-01-07T18:02:28+00:00,FanDuel,2023_18_SEA_ARI,,Receptions,under,2.5,player not matched in the game's teams
+2024-01-07T19:26:47+00:00,FanDuel,2023_18_SEA_ARI,Noah Fant,Receptions,over,2.5,player not matched in the game's teams
+2024-01-07T19:26:47+00:00,FanDuel,2023_18_SEA_ARI,Noah Fant,Receptions,under,2.5,player not matched in the game's teams
