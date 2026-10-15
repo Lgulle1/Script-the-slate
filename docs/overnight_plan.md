@@ -890,6 +890,17 @@ Knobs tuned together on all clean 2024-2026 lines: weight on the model vs the bo
 - Parlays from those legs, averaged over every 2- or 3-leg combination in different games of a week, $10 with a 30% boost: 2-leg +$5.45, 3-leg +$6.80 (no boost +$2.69 / +$3.37; a coin-flipper with the boost +$0.70 / +$0.36). Same in-sample caveat. One parlay a week of the top two edges is too few (36 parlays) to read.
 Proposed, not done: freeze the agreed setup now and log its picks from the next run, so its record is prospective.
 
+## More tuning, every version judged on the season it was not tuned on (scripts/tune_more.py; records/tuning/tuning_summary.csv and test_bets.csv, every test bet listed)
+
+Test = tuned on 2024 and scored on 2025-26, plus tuned on 2025-26 and scored on 2024, pooled.
+- Free tune (model + book): test 674 bets, 56.2% hit, +6.3% [-1.4, +13.7].
+- 100% model (book weight forced to 0): in-sample 58.5%, test 644 bets, 54.5%, +3.2% [-4.5, +10.8]. Mixing in the book's price helps by about 3 points.
+- Per-market settings (each market its own weight, shift, cut-off, side): in-sample 62.5% hit +19.6%, test 1,134 bets 53.4% +2.1%: the clearest case of tuning that only fits the past.
+- Free tune + up to three extra filters (model-vs-line gap, price, game total, spread, home/away, dome, early/late season, line size): test 432 bets, 58.8%, +11.0% [+1.9, +20.1]; but the two halves chose different filters (weeks 1-8; model 10%+ below the line), so the filter step is not yet stable.
+- Gradient-boosted picker on 19 inputs: test -1.9% (edge >= 4) and +0.8% (edge >= 8): no.
+- Repeated in every test: rush-attempt unders hit 57-61%; rush-yard unders about 51%.
+Not tried yet: the model's own layer weights (needs the model re-run per setting), alternate lines, other books.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
