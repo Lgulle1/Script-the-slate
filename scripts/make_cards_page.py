@@ -25,6 +25,11 @@ def main():
                                                                  "picker_under_chance", "actual", "won", "profit", "game_id").to_dicts(),
                 rest=c.filter(pl.col("tier") == "Rest").group_by("variant", "season", "week").agg(n=pl.len(), w=pl.col("won").sum(), u=pl.col("profit").sum()).to_dicts(),
                 parlays=p.to_dicts())
+    live = sorted(D.glob("*_wk*_card.csv"))
+    if live:
+        f = live[-1]
+        data["live"] = dict(card=pl.read_csv(f).to_dicts(), parlays=pl.read_csv(f.with_name(f.stem + "_parlays.csv")).to_dicts(),
+                            meta=json.loads(f.with_name(f.stem + "_meta.json").read_text()))
     html = TEMPLATE.replace("__DATA__", json.dumps(data, default=str))
     (D / "slate_cards.html").write_text(html)
     print("wrote", D / "slate_cards.html", len(html), "bytes")
@@ -89,6 +94,17 @@ ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);max-width:75ch;display:
   <h1>Slate Cards</h1>
   <p>2024 week 4 through 2026 week 5, replayed week by week. Before each week the picker was retrained on every line before it, ranked every under it liked across all markets, and was graded against what happened. 1 unit = one flat bet. Parlays are $10 two-leg tickets with a 30% profit boost.</p>
 </header>
+
+<section class="panel" id="livepanel" hidden>
+  <h2 id="livetitle">This week</h2>
+  <p class="lede" id="livemeta"></p>
+  <div class="tierhead"><h3>Top 10 &mdash; bet these</h3></div>
+  <div class="scroll"><table id="livetop"></table></div>
+  <div class="tierhead"><h3>Boosted 2-leg parlays from the Top 10</h3></div>
+  <div class="scroll"><table id="liveparlays"></table></div>
+  <div class="tierhead"><h3>Next 10 &mdash; watch only</h3></div>
+  <div class="scroll"><table id="livenext"></table></div>
+</section>
 
 <section class="panel">
   <h2>Season records</h2>
@@ -202,7 +218,20 @@ function weekButtons() {
   $("#weeks").innerHTML = WEEKS[state.season].map(w => `<button type="button" data-w="${w}" aria-pressed="${w === state.week}">${w}</button>`).join("");
   $("#weeks").onclick = e => { const b = e.target.closest("button"); if (!b) return; state.week = +b.dataset.w; save(); document.querySelectorAll("#weeks button").forEach(x => x.setAttribute("aria-pressed", String(+x.dataset.w === state.week))); card(); };
 }
-replay(); summary(); controls(); card();
+function live() {
+  const L = DATA.live; if (!L) return;
+  $("#livepanel").hidden = false;
+  $("#livetitle").textContent = `Week ${L.meta.week} card`;
+  $("#livemeta").textContent = `Made ${L.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")}, before kickoff. Unders only. Book is where the line comes from: FanDuel, or Caesars for rush attempts, pass attempts and completions (FanDuel does not post them). Best price is the best under at the same line across regular sportsbooks.`;
+  const day = g => new Date(g + "T12:00:00Z").toLocaleDateString("en-US", {weekday: "short", month: "short", day: "numeric", timeZone: "UTC"});
+  const t = l => `<thead><tr><th class="num">#</th><th>Player</th><th>Team</th><th>Bet</th><th>Book</th><th class="num">Price</th><th>Best price</th><th class="num">Our prediction</th><th class="num">Picker chance</th><th>Game day</th></tr></thead><tbody>` +
+    l.map(r => `<tr><td class="num">${r.rank}</td><td>${r.player_name}</td><td>${r.team ?? ""}</td><td class="under">${r.market} under ${r.line}</td><td>${r.book}</td><td class="num">${fmtP(r.price)}</td><td>${r.best_book ? `${fmtP(r.best_price)} ${r.best_book}` : "–"}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${(100 * r.picker_under_chance).toFixed(0)}%</td><td>${day(r.gameday)}</td></tr>`).join("") + "</tbody>";
+  $("#livetop").innerHTML = t(L.card.filter(r => r.tier === "Top 10"));
+  $("#livenext").innerHTML = t(L.card.filter(r => r.tier === "Next 10"));
+  $("#liveparlays").innerHTML = `<thead><tr><th>Leg 1</th><th>Leg 2</th><th class="num">Price</th><th class="num">Picker chance both hit</th><th class="num">Win on $10 (boosted)</th></tr></thead><tbody>` +
+    L.parlays.map(r => `<tr><td>${r.leg1}</td><td>${r.leg2}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(100 * r.picker_chance).toFixed(0)}%</td><td class="num">$${(+r.payout_on_10_boosted).toFixed(2)}</td></tr>`).join("") + "</tbody>";
+}
+live(); replay(); summary(); controls(); card();
 </script>
 """
 
