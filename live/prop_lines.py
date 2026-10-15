@@ -85,12 +85,15 @@ def _append(path: Path, columns: list, rows: list) -> None:
 
 
 def log_prop_lines(rows: pl.DataFrame, captured_at: datetime, path, schedule: pl.DataFrame, players: pl.DataFrame, source: str = "manual", rejects_path=None,
-                   grace_seconds: int = 0) -> Result:
+                   grace_seconds: int = 0, roster: pl.DataFrame | None = None) -> Result:
     """Append the lines of `rows` to the log at `path`.
 
     rows      book, player_name, book_market, side, line; optional price, note; and the game by `game_id`, or by `team` + `gameday` (resolved on `schedule`)
     schedule  game_id, home_team, away_team, gameday (date), kickoff_time (UTC datetime): live.targets.schedule_frame output
     players   gsis_id, display_name, latest_team, position (the player master table)
+
+    `roster` (optional; game_id, gsis_id, display_name, team, position: who played in each game): names are matched inside the row's game only, by normalized name, instead of through the player master's current team
+    (for archives of past seasons, where a player's current team is not the team he played for). A name that is absent from the game's roster, or matches twice, is rejected.
 
     A row may carry its own `captured_at` (ISO UTC) that replaces the call's. With `grace_seconds` > 0 (a bulk import of an archive whose last-update stamps land just after the
     lock at kickoff), a stamp up to that many seconds after kickoff is accepted and noted `stamp N s after kickoff`; anything later is refused. The default 0 refuses every stamp at or after kickoff.
@@ -104,6 +107,10 @@ def log_prop_lines(rows: pl.DataFrame, captured_at: datetime, path, schedule: pl
     for r in players.iter_rows(named=True):
         by_name.setdefault(normalize_name(r["display_name"]), []).append(r)
         by_id.setdefault(r["gsis_id"], []).append(r)
+    by_game: dict = {}
+    if roster is not None:
+        for r in roster.iter_rows(named=True):
+            by_game.setdefault((r["game_id"], normalize_name(r["display_name"])), []).append(dict(gsis_id=r["gsis_id"], latest_team=r["team"], position=r["position"]))
     last = _last_logged(path)
     out, rej = [], []
     unchanged = 0
@@ -136,6 +143,8 @@ def log_prop_lines(rows: pl.DataFrame, captured_at: datetime, path, schedule: pl
                 continue
         if r.get("player_id"):                                              # already resolved by the caller (the app picks a stored player): no name matching
             cand = [p for p in by_id.get(r["player_id"], [])]
+        elif roster is not None:
+            cand = [dict(gsis_id=c["gsis_id"], latest_team=c["latest_team"], position=c["position"]) for c in by_game.get((gid, normalize_name(r.get("player_name") or "")), [])]
         else:
             cand = [p for p in by_name.get(normalize_name(r.get("player_name") or ""), []) if p["latest_team"] in (g["home_team"], g["away_team"])]
         if len(cand) != 1:
