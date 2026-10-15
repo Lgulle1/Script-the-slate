@@ -30,7 +30,11 @@ GRACE_SECONDS = 300
 
 def load(path: Path) -> pl.DataFrame:
     d = pl.read_csv(path, infer_schema_length=0, encoding="utf8-lossy")
-    return d.rename({c: c.lstrip("﻿") for c in d.columns})
+    d = d.rename({c: c.lstrip("﻿") for c in d.columns})
+    # all-books exports name the row's own book's opening quote book_opening_*; filtered to one book these are that book's openings
+    if "fanduel_opening_line" not in d.columns and "book_opening_line" in d.columns:
+        d = d.rename({c: c.replace("book_opening_", "fanduel_opening_") for c in d.columns if c.startswith("book_opening_")})
+    return d
 
 
 def to_rows(d: pl.DataFrame, sched: pl.DataFrame) -> tuple:

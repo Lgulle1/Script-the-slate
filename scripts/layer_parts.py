@@ -40,7 +40,14 @@ def parts() -> pl.DataFrame:
     """One row per (game, player, stack, quantity): the baseline and the summed contribution of each group."""
     fs = [f for f in sorted(glob.glob(str(config.ROOT / "records" / "*" / "predictions" / "explain" / "*.parquet")))
           if "margin" not in f and ("holdout_2025" in f or "retro_2026" in f)]
-    d = pl.concat([pl.read_parquet(f).select("game_id", "player_id", "stack", "quantity", "feature", "contribution", "run_id") for f in fs])
+    cols = ("game_id", "player_id", "stack", "quantity", "feature", "contribution", "run_id")
+    d = pl.concat([pl.read_parquet(f).select(*cols) for f in fs])
+    # live runs, only for 2026 week 6 on (the weeks the retro replay does not cover)
+    live = [f for f in sorted(glob.glob(str(config.ROOT / "records" / "predictions" / "explain" / "run_*.parquet"))) if "margin" not in f]
+    if live:
+        lv = pl.concat([pl.read_parquet(f).select(*cols) for f in live])
+        lv = lv.filter(pl.col("game_id").str.starts_with("2026_") & (pl.col("game_id").str.split("_").list.get(1).cast(pl.Int32) >= 6))
+        d = pl.concat([d, lv])
     d = d.filter(pl.col("player_id").is_not_null()).with_columns(group=pl.col("feature").map_elements(group_of, return_dtype=pl.String))
     # the latest run per game (one per week in these replays)
     last = d.group_by("game_id").agg(run_id=pl.col("run_id").max())
@@ -67,6 +74,10 @@ def stored_preds() -> pl.DataFrame:
     from app import data as D
     from live import store as ST
     ps = [D.latest(ST.PredictionStore(config.ROOT / "records" / s / "predictions").load()) for s in ("holdout_2025", "retro_2026")]
+    live = config.ROOT / "records" / "predictions"
+    if live.exists():
+        lv = D.latest(ST.PredictionStore(live).load())
+        ps.append(lv.filter(pl.col("game_id").str.starts_with("2026_") & (pl.col("game_id").str.split("_").list.get(1).cast(pl.Int32) >= 6)))
     return pl.concat([p.select("game_id", "player_id", "market", "stack", "mean") for p in ps]).filter(pl.col("player_id").is_not_null() & pl.col("market").is_in(list(QTY)))
 
 

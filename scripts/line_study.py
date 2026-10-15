@@ -26,6 +26,8 @@ OUT = config.PROCESSED_DIR / "line_study_sel.parquet"
 LOG = config.ROOT / "records" / "lines" / "prop_lines_log.csv"
 MARKETS = ["pass_att", "pass_cmp", "pass_yds", "qb_rush_att", "qb_rush_yds", "rush_att", "rush_yds", "rec", "rec_yds"]     # the two QB-rushing markets drop out of the study: the model has no distribution for them
 STORES = {2025: config.ROOT / "records" / "holdout_2025" / "predictions", 2026: config.ROOT / "records" / "retro_2026" / "predictions"}
+LIVE = config.ROOT / "records" / "predictions"          # live runs: used for 2026 weeks the retro replay does not cover (week 6 on), never for weeks it does
+LIVE_FROM = (2026, 6)
 BASE_2024 = config.PROCESSED_DIR / "vol_x_eff_2024_walkforward.parquet"      # regenerated base-model walk-forward predictions (2020-2024)
 GRACE = 300
 KS = (300, 600, 1200)                                                         # design weight: size of the neighbour pool
@@ -85,7 +87,12 @@ def predictions(season: int) -> pl.DataFrame:
     if season in STORES:
         from app import data as D
         p = D.latest(ST.PredictionStore(STORES[season]).load()).filter(pl.col("player_id").is_not_null()).select("game_id", "player_id", "market", "mean")
-        return p.with_columns(week=pl.col("game_id").str.split("_").list.get(1).cast(pl.Int64))
+        p = p.with_columns(week=pl.col("game_id").str.split("_").list.get(1).cast(pl.Int64))
+        if season == LIVE_FROM[0] and LIVE.exists():
+            lv = D.latest(ST.PredictionStore(LIVE).load()).filter(pl.col("player_id").is_not_null()).select("game_id", "player_id", "market", "mean")
+            lv = lv.with_columns(week=pl.col("game_id").str.split("_").list.get(1).cast(pl.Int64)).filter(pl.col("game_id").str.starts_with(f"{season}_") & (pl.col("week") >= LIVE_FROM[1]))
+            p = pl.concat([p.filter(pl.col("week") < LIVE_FROM[1]), lv])
+        return p
     wf = pl.read_parquet(BASE_2024).filter((pl.col("season") == season) & (pl.col("kind") == "player")).select("week", player_id="entity", market="market", mean="prediction")
     return wf.drop_nulls("mean")
 
@@ -119,7 +126,10 @@ def build(season: int, cal: C.Calibrator, wf_all: pl.DataFrame | None) -> pl.Dat
     # outcome
     act, _, _ = RS.played(season)
     act = act.filter(pl.col("player_id").is_not_null())
-    x = x.join(act, on=["game_id", "player_id", "market"], how="inner").filter(pl.col("actual") != pl.col("line"))
+    # a played game: a line whose player has no result is void and a push is void; a game not played yet stays in, ungraded (actual empty)
+    played = act.select("game_id").unique()
+    x = x.join(act, on=["game_id", "player_id", "market"], how="left").with_columns(game_played=pl.col("game_id").is_in(played["game_id"].implode()))
+    x = x.filter((~pl.col("game_played")) | (pl.col("actual").is_not_null() & (pl.col("actual") != pl.col("line")))).drop("game_played")
     return x
 
 
@@ -140,7 +150,7 @@ def long(x: pl.DataFrame) -> pl.DataFrame:
     dec = pl.when(pl.col("price") > 0).then(1 + pl.col("price") / 100.0).otherwise(1 + 100.0 / -pl.col("price"))
     won = pl.when(pl.col("side") == "over").then(pl.col("actual") > pl.col("line")).otherwise(pl.col("actual") < pl.col("line"))
     s = s.with_columns(dec=dec, won=won.cast(pl.Float64))
-    s = s.with_columns(profit=pl.when(pl.col("won") == 1.0).then(pl.col("dec") - 1.0).otherwise(-1.0))
+    s = s.with_columns(profit=pl.when(pl.col("won").is_null()).then(None).when(pl.col("won") == 1.0).then(pl.col("dec") - 1.0).otherwise(-1.0))
     for c in [c for c in s.columns if c.startswith("p_over")]:
         s = s.with_columns(pl.when(pl.col("side") == "over").then(pl.col(c)).otherwise(1 - pl.col(c)).alias(c.replace("p_over", "chance")))
     return s.with_columns(chance=pl.col("chance_k600_c100"), edge=pl.col("chance_k600_c100") - pl.col("be"))
