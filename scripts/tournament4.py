@@ -31,6 +31,7 @@ HERE = Path(__file__).resolve().parent
 def _load(name):
     spec = importlib.util.spec_from_file_location(name, HERE / f"{name}.py")
     m = importlib.util.module_from_spec(spec)
+    sys.modules[name] = m            # worker processes find run_job by module name
     spec.loader.exec_module(m)
     return m
 
