@@ -1,7 +1,9 @@
 """The locked betting strategies (records/cards/locked_setup.json), as code shared by the track record and the weekly page.
 
-A (bet):     singles = the top 2 unders; parlay = #1 + #2 (2 legs, different games; none that week if they share a game)
-B (tracked): singles = the top 8 unders; parlays = 2-leg in rank order from the top 8 (#1+#2, #3+#4, ...)
+P (bet, locked 2026-10-15): no straight bets; 2-leg boosted parlays in rank order from the top 8 unders (#1+#2, #3+#4, ...): up to 4 a week, one per boost
+             available, top pairs first; no boost, no parlay. Chosen on hidden-season tests (tournaments 3 and 4, blind 2021-2023).
+A (retired, tracked): singles = the top 2 unders; parlay = #1 + #2 (2 legs, different games; none that week if they share a game)
+B (tracked): singles = the top 8 unders; parlays = 2-leg in rank order from the top 8 (#1+#2, #3+#4, ...); its parlays are exactly P
 Ranking: the picker's chance the under hits, highest first, among qualifying picks (FanDuel market, edge >= 4 points, player with 3+ games for his team).
 Singles lists allow up to 3 picks per game and any number per player; parlay lists allow up to 3 per game and 1 per player (each the better rule by return per unit
 staked over the 38 replayed weeks). Stakes: 1 unit per single, 1 unit per parlay; parlays carry the 30% profit boost.
@@ -10,8 +12,9 @@ from __future__ import annotations
 
 BOOST = 0.30
 STRATEGIES = {
-    "A": dict(name="A: top 2 + 1 parlay", singles=2, parlay_from=2, role="bet"),
-    "B": dict(name="B: top 8 + 4 parlays", singles=8, parlay_from=8, role="tracked"),
+    "P": dict(name="Locked: 4 boosted parlays from the top 8", singles=0, parlay_from=8, role="bet"),
+    "A": dict(name="Old A: top 2 + 1 parlay", singles=2, parlay_from=2, role="tracked"),
+    "B": dict(name="Old B: top 8 + 4 parlays", singles=8, parlay_from=8, role="tracked"),
 }
 SINGLES_CAPS = dict(per_game=3, per_player=None)
 PARLAY_CAPS = dict(per_game=3, per_player=1)
@@ -50,7 +53,7 @@ def pairs(legs: list) -> list:
 def card(rows: list, key: str, player="player_id") -> dict:
     """Singles and parlays of strategy `key` for one week's qualifying picks."""
     s = STRATEGIES[key]
-    singles = top(rows, s["singles"], SINGLES_CAPS["per_game"], SINGLES_CAPS["per_player"], player=player)
+    singles = top(rows, s["singles"], SINGLES_CAPS["per_game"], SINGLES_CAPS["per_player"], player=player) if s["singles"] else []
     plegs = top(rows, s["parlay_from"], PARLAY_CAPS["per_game"], PARLAY_CAPS["per_player"], player=player)
     return dict(singles=singles, parlays=pairs(plegs))
 

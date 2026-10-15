@@ -1,5 +1,6 @@
-"""The Track Record page (records/cards/track_record.html): strategies A (bet) and B (tracked) replayed week by week over 2024 week 4 - 2026 week 5,
-every pick and parlay graded, plus the current week's picks (pending). Ledger also written to records/cards/track_record.json.
+"""The Track Record page (records/cards/track_record.html): the locked strategy P (4 boosted parlays from the top 8, bet) and the old strategies A and B
+(tracked) replayed week by week over 2024 week 4 - 2026 week 5, every pick and parlay graded, the blind seasons, the hidden-season test of tournament 3,
+plus the current week's picks (pending). Ledger also written to records/cards/track_record.json.
 
   python scripts/make_record_page.py [--live-week 6]
 """
@@ -58,8 +59,12 @@ def main(argv=None):
                                         market=pl.col("market").replace({v: k for k, v in LABEL.items()}), won=pl.lit(None), actual=pl.lit(None))
         live = dict(season=a.season, week=a.live_week, made_at=json.loads(f.with_name(f.stem + "_meta.json").read_text())["made_at_utc"], **ledger(c.to_dicts(), player="player_name"))
     blind = [w for f in sorted(D.glob("blind_*.json")) for w in json.loads(f.read_text())["four"]]
-    data = dict(weeks=weeks, live=live, strategies={k: v["name"] for k, v in ST.STRATEGIES.items()}, blind=blind or None,
-                blind_seasons=sorted({w["season"] for w in blind}))
+    for w in blind:                                                    # files written before P existed: P's parlays are exactly B's
+        w.setdefault("P", dict(singles=[], parlays=w["B"]["parlays"]))
+    t3 = config.ROOT / "records" / "tuning" / "tournament3_summary.json"
+    hidden = json.loads(t3.read_text())["locked"] if t3.exists() else None
+    data = dict(weeks=weeks, live=live, strategies={k: v["name"] for k, v in ST.STRATEGIES.items()}, roles={k: v["role"] for k, v in ST.STRATEGIES.items()},
+                blind=blind or None, blind_seasons=sorted({w["season"] for w in blind}), hidden=hidden)
     (D / "track_record.json").write_text(json.dumps(data, default=str))
     (D / "track_record.html").write_text(TEMPLATE.replace("__DATA__", json.dumps(data, default=str)))
     # console summary
@@ -67,17 +72,18 @@ def main(argv=None):
         s = [x for w in weeks for x in w[k]["singles"]]
         pr = [x for w in weeks for x in w[k]["parlays"]]
         su, pu = sum(x["profit"] for x in s), sum(x["profit"] for x in pr)
-        print(f"{k}: singles {len(s)} bets, {sum(x['won'] for x in s):.0f} won, {su:+.1f}u ({su / len(s):+.1%}); parlays {len(pr)}, {sum(x['profit'] > 0 for x in pr)} hit, "
-              f"{pu:+.1f}u ({pu / len(pr):+.0%}); all {su + pu:+.1f}u on {len(s) + len(pr)} units ({(su + pu) / (len(s) + len(pr)):+.1%})")
+        print(f"{k}: singles {len(s)} bets, {sum(x['won'] for x in s):.0f} won, {su:+.1f}u ({su / max(len(s), 1):+.1%}); parlays {len(pr)}, {sum(x['profit'] > 0 for x in pr)} hit, "
+              f"{pu:+.1f}u ({pu / max(len(pr), 1):+.0%}); all {su + pu:+.1f}u on {len(s) + len(pr)} units ({(su + pu) / (len(s) + len(pr)):+.1%})")
     print("wrote", D / "track_record.html")
 
 
-TEMPLATE = r"""<title>Track Record</title>
+TEMPLATE = r"""<meta charset="utf-8">
+<title>Track Record</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: summary first (the bet strategy A, then B tracked), the running-units charts, then the week-by-week ledger you can open. */
+/* Layout: the pending week, the evidence for the locked strategy (hidden seasons, blind seasons), each strategy's replay summary, running-units charts, then the week-by-week ledger. */
 :root{
   --bg:#eef1f4; --panel:#ffffff; --ink:#141c24; --muted:#5a6672; --faint:#8a95a0; --rule:#d6dce2; --grid:#e6eaee;
   --turf:#17633f; --turf-ink:#ffffff; --turf-soft:#e2efe7; --win:#1b7a44; --win-bg:#e1f2e7; --loss:#b0392d; --loss-bg:#f8e3df; --chip:#eef3f8;
@@ -127,7 +133,7 @@ svg{display:block;width:100%;height:auto;overflow:visible}
 .tip b{font-family:var(--mono)}
 .chartbox{position:relative}
 details{border-bottom:1px solid var(--rule)}
-summary{cursor:pointer;list-style:none;display:grid;grid-template-columns:7.5em 1fr 1fr;gap:10px;padding:.55rem .2rem;align-items:center;font-variant-numeric:tabular-nums}
+summary{cursor:pointer;list-style:none;display:grid;grid-template-columns:7.5em repeat(auto-fit,minmax(200px,1fr));gap:4px 10px;padding:.55rem .2rem;align-items:center;font-variant-numeric:tabular-nums}
 summary::-webkit-details-marker{display:none}
 summary:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
 summary .wk{font:700 1rem/1 var(--display);letter-spacing:.03em;text-transform:uppercase}
@@ -144,15 +150,16 @@ ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);display:grid;gap:.35rem
 <div class="wrap">
 <header>
   <h1>Track Record</h1>
-  <p>Strategy A is what we bet. Strategy B is tracked alongside it. Both were replayed week by week from 2024 week 4 to 2026 week 5. Each week the picker was retrained only on earlier weeks, then graded against what happened. 1 unit = one bet; parlays include the 30% boost.</p>
+  <p>What we bet (locked 2026-10-15): no straight bets, up to 4 boosted 2-leg parlays a week from the picker's top 8 unders, paired in rank order. The old strategies A and B stay on the page for comparison. Every strategy was replayed week by week from 2024 week 4 to 2026 week 5, with the picker retrained only on earlier weeks. 1 unit = one bet; parlays include the 30% boost.</p>
 </header>
 
 <section class="panel bet" id="live" hidden></section>
 
+<section class="panel" id="hidden" hidden></section>
+
 <section class="panel" id="blind" hidden></section>
 
-<section class="panel strat" id="stratA"></section>
-<section class="panel strat" id="stratB"></section>
+<div id="strats" style="display:grid;gap:22px"></div>
 
 <section class="panel">
   <h2>Running units</h2>
@@ -162,7 +169,7 @@ ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);display:grid;gap:.35rem
 
 <section class="panel">
   <h2>Every week</h2>
-  <p class="lede">Open a week to see every pick and parlay, for both strategies.</p>
+  <p class="lede">Open a week to see every pick and parlay, for every strategy.</p>
   <div class="filters" id="seasons" role="group" aria-label="Season"></div>
   <div id="ledger"></div>
 </section>
@@ -171,7 +178,8 @@ ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);display:grid;gap:.35rem
   <h2>How to read this</h2>
   <ul class="notes">
     <li>38 weeks: 2024 weeks 4&ndash;18 (the line history starts in 2024), all 18 weeks of 2025, 2026 weeks 1&ndash;5. FanDuel markets only.</li>
-    <li>Each week only learned from earlier weeks. The rules themselves (unders, top 2 / top 8, the limits, the pairing) were chosen after looking at these weeks, so this is the best case. Live weeks from week 6 on are the clean test.</li>
+    <li>Each week only learned from earlier weeks. The rules themselves (unders, top 2 / top 8, the limits, the pairing) were chosen after looking at these weeks, so this is the best case. The hidden-season and blind tables above, and live weeks from week 6 on, are the clean tests.</li>
+    <li>The locked strategy's parlays are the same parlays old B made; it just drops the straight bets, which came out close to break-even on every clean test.</li>
     <li>A week with no parlay for A means its #1 and #2 picks were in the same game.</li>
   </ul>
 </section>
@@ -184,6 +192,8 @@ const fmtU = v => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(2);
 const fmtPct = v => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(100 * v).toFixed(1) + "%";
 const fmtP = v => v > 0 ? "+" + v : String(v);
 const cls = v => v > 0 ? "pos" : v < 0 ? "neg" : "";
+const KEYS = Object.keys(DATA.strategies);
+const ratio = (a, b, f = fmtPct) => b ? f(a / b) : "–";
 const chip = (won, p) => won == null ? `<span class="chip p">PENDING</span>` : (p ?? won) > 0 || won === 1 ? `<span class="chip w">WIN</span>` : `<span class="chip l">LOSS</span>`;
 
 function stats(k, weeks) {
@@ -193,18 +203,20 @@ function stats(k, weeks) {
   const up = weeks.filter(w => w[k].singles.reduce((a, x) => a + x.profit, 0) + w[k].parlays.reduce((a, x) => a + x.profit, 0) > 0).length;
   return {n: s.length, sw, su, pn: p.length, pw, pu, all: su + pu, staked: s.length + p.length, up, weeks: weeks.length};
 }
-function strat(k, el, bet) {
+function strat(k, el) {
+  const bet = DATA.roles[k] === "bet";
   const t = stats(k, DATA.weeks);
   const seasons = [2024, 2025, 2026].map(y => [y, stats(k, DATA.weeks.filter(w => w.season === y))]);
   el.innerHTML = `<div class="strat-head"><h2>${DATA.strategies[k]}</h2><span class="badge ${bet ? "bet" : ""}">${bet ? "What we bet" : "Tracked, not bet"}</span></div>
+  ${bet ? "" : `<p class="lede" style="margin:0">Replaced on 2026-10-15 by the locked strategy above; kept here for comparison.</p>`}
   <div class="tiles">
     <div class="tile"><span>Return per unit, all bets</span><b class="${cls(t.all)}">${fmtPct(t.all / t.staked)}</b><small>${fmtU(t.all)} units on ${t.staked} staked</small></div>
-    <div class="tile"><span>Singles</span><b>${t.sw}–${t.n - t.sw}</b><small>${(100 * t.sw / t.n).toFixed(1)}% hit · <span class="${cls(t.su)}">${fmtPct(t.su / t.n)}</span></small></div>
+    ${t.n ? `<div class="tile"><span>Singles</span><b>${t.sw}–${t.n - t.sw}</b><small>${(100 * t.sw / t.n).toFixed(1)}% hit · <span class="${cls(t.su)}">${fmtPct(t.su / t.n)}</span></small></div>` : `<div class="tile"><span>Singles</span><b>None</b><small>no straight bets</small></div>`}
     <div class="tile"><span>Parlays (boosted)</span><b>${t.pw}–${t.pn - t.pw}</b><small>${(100 * t.pw / t.pn).toFixed(0)}% hit · <span class="${cls(t.pu)}">${fmtPct(t.pu / t.pn)}</span></small></div>
     <div class="tile"><span>Weeks in profit</span><b>${t.up} of ${t.weeks}</b><small>singles + parlays together</small></div>
   </div>
   <div class="scroll"><table><thead><tr><th>Season</th><th class="num">Weeks</th><th>Singles</th><th class="num">Singles return</th><th>Parlays</th><th class="num">Parlay return</th><th class="num">All bets</th></tr></thead><tbody>` +
-  seasons.map(([y, s]) => `<tr><td>${y}</td><td class="num">${s.weeks}</td><td>${s.sw}–${s.n - s.sw}</td><td class="num ${cls(s.su)}">${fmtPct(s.su / s.n)}</td><td>${s.pw}–${s.pn - s.pw}</td><td class="num ${cls(s.pu)}">${s.pn ? fmtPct(s.pu / s.pn) : "–"}</td><td class="num ${cls(s.all)}">${fmtU(s.all)}u (${fmtPct(s.all / s.staked)})</td></tr>`).join("") +
+  seasons.map(([y, s]) => `<tr><td>${y}</td><td class="num">${s.weeks}</td><td>${s.n ? `${s.sw}–${s.n - s.sw}` : "–"}</td><td class="num ${cls(s.su)}">${ratio(s.su, s.n)}</td><td>${s.pw}–${s.pn - s.pw}</td><td class="num ${cls(s.pu)}">${s.pn ? fmtPct(s.pu / s.pn) : "–"}</td><td class="num ${cls(s.all)}">${fmtU(s.all)}u (${ratio(s.all, s.staked)})</td></tr>`).join("") +
   `</tbody></table></div>`;
 }
 
@@ -248,7 +260,7 @@ function chart(k) {
 function legRow(r) { return `<tr><td>${r.player} <small style="color:var(--muted)">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${r.actual ?? "–"}</td><td>${chip(r.won)}</td><td class="num ${cls(r.profit ?? 0)}">${r.profit == null ? "–" : fmtU(r.profit)}</td></tr>`; }
 function block(k, w) {
   const s = w[k].singles, p = w[k].parlays;
-  return `<div><h4>${DATA.strategies[k]}</h4><div class="scroll"><table><thead><tr><th>Single</th><th>Bet</th><th class="num">Price</th><th class="num">Actual</th><th>Result</th><th class="num">Units</th></tr></thead><tbody>${s.map(legRow).join("")}</tbody></table></div>` +
+  return `<div><h4>${DATA.strategies[k]}</h4>` + (s.length ? `<div class="scroll"><table><thead><tr><th>Single</th><th>Bet</th><th class="num">Price</th><th class="num">Actual</th><th>Result</th><th class="num">Units</th></tr></thead><tbody>${s.map(legRow).join("")}</tbody></table></div>` : "") +
     (p.length ? `<div class="scroll" style="margin-top:8px"><table><thead><tr><th>Parlay</th><th class="num">Price</th><th>Result</th><th class="num">Units</th></tr></thead><tbody>` +
       p.map(q => `<tr><td>${q.legs.map(l => `${l.player} u${l.line} ${l.market.toLowerCase()}`).join(" + ")}</td><td class="num">${fmtP(q.price)}</td><td>${q.profit == null ? chip(null) : chip(q.profit > 0 ? 1 : 0)}</td><td class="num ${cls(q.profit ?? 0)}">${q.profit == null ? "–" : fmtU(q.profit)}</td></tr>`).join("") + `</tbody></table></div>`
       : `<p style="color:var(--muted);font-size:.86rem;margin:.5rem 0 0">No parlay: the top picks shared a game.</p>`) + `</div>`;
@@ -261,8 +273,11 @@ function ledger() {
   const src = bs.includes(season) ? DATA.blind : DATA.weeks;
   const ws = src.filter(w => w.season === season).slice().reverse();
   const tot = (w, k) => w[k].singles.reduce((a, x) => a + x.profit, 0) + w[k].parlays.reduce((a, x) => a + x.profit, 0);
-  $("#ledger").innerHTML = ws.map(w => { const a = tot(w, "A"), b = tot(w, "B");
-    return `<details><summary><span class="wk">Week ${w.week}</span><span class="res">A <span class="${cls(a)}">${fmtU(a)}u</span> · ${w.A.singles.filter(x => x.won === 1).length}/${w.A.singles.length} singles${w.A.parlays.length ? `, parlay ${w.A.parlays[0].profit > 0 ? "hit" : "missed"}` : ""}</span><span class="res">B <span class="${cls(b)}">${fmtU(b)}u</span> · ${w.B.singles.filter(x => x.won === 1).length}/${w.B.singles.length} singles, ${w.B.parlays.filter(x => x.profit > 0).length}/${w.B.parlays.length} parlays</span></summary><div class="weekbody">${block("A", w)}${block("B", w)}</div></details>`; }).join("");
+  const res = (w, k) => { const v = tot(w, k), x = w[k]; const parts = [];
+    if (x.singles.length) parts.push(`${x.singles.filter(q => q.won === 1).length}/${x.singles.length} singles`);
+    parts.push(`${x.parlays.filter(q => q.profit > 0).length}/${x.parlays.length} parlays`);
+    return `<span class="res">${k === "P" ? "Locked" : k} <span class="${cls(v)}">${fmtU(v)}u</span> · ${parts.join(", ")}</span>`; };
+  $("#ledger").innerHTML = ws.map(w => `<details><summary><span class="wk">Week ${w.week}</span>${KEYS.map(k => res(w, k)).join("")}</summary><div class="weekbody">${KEYS.map(k => block(k, w)).join("")}</div></details>`).join("");
 }
 $("#seasons").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; season = +b.dataset.y; ledger(); });
 
@@ -271,22 +286,38 @@ function live() {
   const el = $("#live"); el.hidden = false;
   el.innerHTML = `<div class="strat-head"><h2>${L.season} week ${L.week}: pending</h2><span class="badge bet">Locked before kickoff</span></div>
   <p class="lede">Made ${L.made_at.replace("T", " ").replace("+00:00", " UTC")}. These grade into the record once the games are played.</p>
-  <div class="weekbody">${block("A", L)}${block("B", L)}</div>`;
+  <div class="weekbody">${KEYS.map(k => block(k, L)).join("")}</div>`;
 }
 
 function blind() {
   if (!DATA.blind) return;
   const el = $("#blind"); el.hidden = false;
   const bs = DATA.blind_seasons;
-  const row = (k, label, ws) => { const t = stats(k, ws); return `<tr><td>${label}</td><td>${DATA.strategies[k]}</td><td>${t.sw}–${t.n - t.sw}</td><td class="num ${cls(t.su)}">${fmtPct(t.su / t.n)}</td><td>${t.pw}–${t.pn - t.pw}</td><td class="num ${cls(t.pu)}">${fmtPct(t.pu / t.pn)}</td><td class="num ${cls(t.all)}">${fmtU(t.all)}u (${fmtPct(t.all / t.staked)})</td><td class="num">${t.up} of ${t.weeks}</td></tr>`; };
-  const body = [...bs.map(y => ["A", "B"].map(k => row(k, String(y), DATA.blind.filter(w => w.season === y))).join("")), ["A", "B"].map(k => row(k, "<b>Both</b>", DATA.blind)).join("")].join("");
+  const row = (k, label, ws) => { const t = stats(k, ws); return `<tr><td>${label}</td><td>${DATA.strategies[k]}</td><td>${t.n ? `${t.sw}–${t.n - t.sw}` : "–"}</td><td class="num ${cls(t.su)}">${ratio(t.su, t.n)}</td><td>${t.pw}–${t.pn - t.pw}</td><td class="num ${cls(t.pu)}">${ratio(t.pu, t.pn)}</td><td class="num ${cls(t.all)}">${fmtU(t.all)}u (${ratio(t.all, t.staked)})</td><td class="num">${t.up} of ${t.weeks}</td></tr>`; };
+  const body = [...bs.map(y => KEYS.map(k => row(k, String(y), DATA.blind.filter(w => w.season === y))).join("")), KEYS.map(k => row(k, "<b>All blind</b>", DATA.blind)).join("")].join("");
   el.innerHTML = `<div class="strat-head"><h2>Blind tests: ${bs.join(" and ")}</h2><span class="badge">Never used to choose anything</span></div>
   <p class="lede">The rules were locked first. For each blind season the picker learned only from later seasons (2023 from 2024&ndash;2026, 2022 from 2023&ndash;2026, 2021 from 2022&ndash;2026), then was applied unchanged to every week at FanDuel, in the four markets we bet now. These are the cleanest tests we have until live weeks build up.</p>
   <div class="scroll"><table><thead><tr><th>Season</th><th>Strategy</th><th>Singles</th><th class="num">Singles return</th><th>Parlays</th><th class="num">Parlay return</th><th class="num">All bets</th><th class="num">Weeks up</th></tr></thead><tbody>${body}</tbody></table></div>
-  <p class="lede">Across the blind seasons the straight bets came out close to break-even for both strategies; the profit came from the boosted parlays (without the boost they were also close to break-even). A lost in 2021 and won in 2022 and 2023; over the three seasons A and B ended up about level. Open a blind season under Every week below for each pick.</p>`;
+  <p class="lede">Across the blind seasons the straight bets came out close to break-even; the profit came from the boosted parlays (without the boost they were also close to break-even). That is why the locked strategy keeps only the four boosted parlays. Open a blind season under Every week below for each pick.</p>`;
 }
-live(); blind(); strat("A", $("#stratA"), true); strat("B", $("#stratB"), false);
-const cs = ["A", "B"].map(chart); $("#charts").innerHTML = cs.map(c => c.html).join(""); cs.forEach(c => c.wire());
+
+function hidden() {
+  const H = DATA.hidden; if (!H) return;
+  const el = $("#hidden"); el.hidden = false;
+  const rows = [["parlays top 8", "Locked: 4 boosted parlays from the top 8"], ["parlays top 2", "Old A's parlay (#1 + #2)"], ["singles top 2", "Old A's straight bets (top 2)"], ["singles top 8", "Old B's straight bets (top 8)"]];
+  const ys = Object.keys(H["parlays top 8"]);
+  const cell = x => x.bets ? `<td class="num ${cls(x.units)}">${fmtPct(x.units / x.bets)}<br><small style="color:var(--muted)">${x.bets} bets</small></td>` : `<td class="num">–</td>`;
+  const body = rows.map(([key, label]) => { const r = H[key]; const u = ys.reduce((a, y) => a + r[y].units, 0), b = ys.reduce((a, y) => a + r[y].bets, 0);
+    return `<tr><td>${label}</td>${ys.map(y => cell(r[y])).join("")}${cell({units: u, bets: b})}</tr>`; }).join("");
+  el.innerHTML = `<div class="strat-head"><h2>Hidden-season test, 2021&ndash;2026</h2><span class="badge">Tournament 3</span></div>
+  <p class="lede">Each season was hidden in turn: the picker was retrained on the other five seasons only, then the rules were applied to the hidden season. The locked parlays were positive in all six; the straight bets were not. Return per unit staked.</p>
+  <div class="scroll"><table><thead><tr><th>Rule</th>${ys.map(y => `<th class="num">${y}</th>`).join("")}<th class="num">All six</th></tr></thead><tbody>${body}</tbody></table></div>
+  <p class="lede">Also tested: re-tuning the best rule from scratch for each hidden season (126,000 setups) returned +8% on the hidden seasons, and retraining the projection model 14 ways (tournament 4) did not beat the current model. The locked parlays were positive on all 14 projection models.</p>`;
+}
+live(); hidden(); blind();
+$("#strats").innerHTML = KEYS.map(k => `<section class="panel strat${DATA.roles[k] === "bet" ? " bet" : ""}" id="strat${k}"></section>`).join("");
+KEYS.forEach(k => strat(k, $("#strat" + k)));
+const cs = KEYS.map(chart); $("#charts").innerHTML = cs.map(c => c.html).join(""); cs.forEach(c => c.wire());
 ledger();
 </script>
 """

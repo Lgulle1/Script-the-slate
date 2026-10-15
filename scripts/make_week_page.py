@@ -1,5 +1,6 @@
 """The week's picks page (records/cards/<season>_wkNN_picks.html) from the locked card (scripts/week_card.py output):
-the 8 bets and 4 parlays up top, then everything else the picker liked, by time slot, with the reason it was not taken.
+the locked strategy P (scripts/strategy.py): up to 4 boosted 2-leg parlays from the top 8 unders, no straight bets; then the 8 legs with the model's numbers,
+then everything else the picker liked, by time slot, with the reason it was not taken.
 
   python scripts/make_week_page.py --season 2026 --week 6
 """
@@ -46,7 +47,6 @@ def main(argv=None):
     a = ap.parse_args(argv)
     stem = f"{a.season}_wk{a.week:02d}_card"
     card = pl.read_csv(D / f"{stem}.csv")
-    parl = pl.read_csv(D / f"{stem}_parlays.csv")
     meta = json.loads((D / f"{stem}_meta.json").read_text())
     con = duckdb.connect(str(config.RAW_DUCKDB_PATH), read_only=True)
     sc = con.execute(f"SELECT DISTINCT ON (game_id) game_id, weekday, gametime, away_team, home_team FROM schedules WHERE season={a.season} AND week={a.week} ORDER BY game_id, pulled_at DESC").pl()
@@ -55,40 +55,47 @@ def main(argv=None):
     sc = sc.with_columns(slot_order=pl.col("s").list.get(0).cast(pl.Int32), slot=pl.col("s").list.get(1), kickoff=pl.col("s").list.get(2),
                          matchup=pl.col("away_team") + " @ " + pl.col("home_team")).drop("s")
     card = card.join(sc, on="game_id", how="left")
-    # the locked strategies (scripts/strategy.py): A is bet, B is tracked
+    # the locked strategy (scripts/strategy.py): P is bet (parlays only)
     card = card.with_columns(dec_u=pl.when(pl.col("price") > 0).then(1 + pl.col("price") / 100).otherwise(1 + 100 / -pl.col("price")))
     rows = card.to_dicts()
     for r in rows:
         r["needs"] = (-r["price"] / (-r["price"] + 100)) if r["price"] < 0 else 100 / (r["price"] + 100)
-    A = ST.card(rows, "A", player="player_name")
-    B = ST.card(rows, "B", player="player_name")
-    a_names = {(r["player_name"], r["market"]) for r in A["singles"]}
-    b_names = {(r["player_name"], r["market"]) for r in B["singles"]}
+    P = ST.card(rows, "P", player="player_name")
+    legs = [x for pr in P["parlays"] for x in pr]
+    leg_of = {(r["player_name"], r["market"]): (n, j) for n, pr in enumerate(P["parlays"], 1) for j, r in enumerate(pr)}
+    in_top8 = {(r["player_name"], r["market"]) for r in ST.top(rows, ST.STRATEGIES["P"]["parlay_from"], ST.PARLAY_CAPS["per_game"], ST.PARLAY_CAPS["per_player"], player="player_name")}
     ranked = sorted(rows, key=lambda r: -r["picker_under_chance"])
-    taken_game = {}
+    taken_game, taken_player = {}, {}
     for i, r in enumerate(ranked, 1):
         r["overall_rank"] = i
         key = (r["player_name"], r["market"])
-        if key in a_names:
-            r["status"], r["why_not"] = "Bet (A)", ""
-        elif key in b_names:
-            r["status"], r["why_not"] = "Tracked (B)", "Ranks 3-8: tracked in strategy B, not bet"
-        elif taken_game.get(r["game_id"], 0) >= ST.SINGLES_CAPS["per_game"]:
+        if key in leg_of:
+            r["status"], r["why_not"] = f"Parlay {leg_of[key][0]}", ""
+        elif key in in_top8:
+            r["status"], r["why_not"] = "Unpaired", "In the top 8 but no partner from a different game"
+        elif taken_player.get(r["player_name"], 0) >= ST.PARLAY_CAPS["per_player"]:
+            r["status"], r["why_not"] = "Cut", "Same player already in a parlay"
+        elif taken_game.get(r["game_id"], 0) >= ST.PARLAY_CAPS["per_game"]:
             r["status"], r["why_not"] = "Cut", "Three picks from this game already ranked above it"
         else:
             r["status"], r["why_not"] = "Watch", f"Rank {i}: below the top 8"
-        taken_game[r["game_id"]] = taken_game.get(r["game_id"], 0) + 1
+        if key in in_top8:
+            taken_game[r["game_id"]] = taken_game.get(r["game_id"], 0) + 1
+            taken_player[r["player_name"]] = taken_player.get(r["player_name"], 0) + 1
     def par(pairs):
         out = []
         for a_, b_ in pairs:
             dec = a_["dec_u"] * b_["dec_u"]
-            out.append(dict(leg1=f"{a_['player_name']} {a_['market']} under {a_['line']:g}", leg2=f"{b_['player_name']} {b_['market']} under {b_['line']:g}",
-                            price=round((dec - 1) * 100) if dec >= 2 else round(-100 / (dec - 1)), picker_chance=a_["picker_under_chance"] * b_["picker_under_chance"],
-                            payout_on_10_boosted=round(10 * (dec - 1) * (1 + ST.BOOST), 2)))
+            out.append(dict(legs=[a_, b_], price=round((dec - 1) * 100) if dec >= 2 else round(-100 / (dec - 1)), picker_chance=a_["picker_under_chance"] * b_["picker_under_chance"],
+                            payout_on_10_boosted=round(10 * (dec - 1) * (1 + ST.BOOST), 2), boosted_price=round((dec - 1) * (1 + ST.BOOST) * 100)))
         return out
-    for i, r in enumerate(A["singles"], 1):
-        r["rank"] = i
-    data = dict(meta=meta, picks=A["singles"], parlays=par(A["parlays"]), tracked=B["singles"], tracked_parlays=par(B["parlays"]), liked=ranked,
+    for i, r in enumerate(legs, 1):
+        r["rank"] = r["overall_rank"]
+    # the bet list as a file: the locked parlays, in order (replaces week_card.py's older parlay list)
+    pl.DataFrame([dict(parlay=n, leg1=f"#{x['rank']} {x['player_name']} {x['market']} under {x['line']:g} ({x['price']:+.0f})", leg2=f"#{y['rank']} {y['player_name']} {y['market']} under {y['line']:g} ({y['price']:+.0f})",
+                       price=p_["price"], boosted_price=p_["boosted_price"], picker_chance=round(p_["picker_chance"], 3), payout_on_10_boosted=p_["payout_on_10_boosted"])
+                  for n, (p_, (x, y)) in enumerate(zip(par(P["parlays"]), P["parlays"]), 1)]).write_csv(D / f"{stem}_parlays.csv")
+    data = dict(meta=meta, parlays=par(P["parlays"]), legs=legs, liked=ranked,
                 slots=sc.sort("slot_order", "kickoff").select("slot_order", "slot", "kickoff", "matchup", "game_id").to_dicts())
     html = TEMPLATE.replace("__DATA__", json.dumps(data, default=str)).replace("__WEEK__", str(a.week))
     out = D / f"{a.season}_wk{a.week:02d}_picks.html"
@@ -96,12 +103,13 @@ def main(argv=None):
     print("wrote", out)
 
 
-TEMPLATE = r"""<title>Week __WEEK__ Picks</title>
+TEMPLATE = r"""<meta charset="utf-8">
+<title>Week __WEEK__ Picks</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a bet slip. Big header, the eight bets as tickets, the parlays in order, then the rest of the slate by kickoff slot. */
+/* Layout: a bet slip. Big header, the four boosted parlays as tickets (the only bets), the eight legs with the model's numbers, then the rest of the slate by kickoff slot. */
 :root{
   --bg:#eef1f4; --panel:#ffffff; --ink:#141c24; --muted:#5a6672; --rule:#d6dce2;
   --turf:#17633f; --turf-ink:#ffffff; --turf-soft:#e2efe7; --warn:#9a5b00; --warn-soft:#fbefdc; --chip:#eef3f8;
@@ -123,6 +131,17 @@ h2{font:700 1.5rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.0
 .lede{color:var(--muted);margin:.3rem 0 0;max-width:72ch}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .ticket{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:16px;display:grid;grid-template-columns:auto 1fr auto;gap:4px 14px;align-items:start;min-width:0}
+.slip{background:var(--panel);border:2px solid var(--turf);border-radius:12px;padding:16px;display:grid;gap:10px;min-width:0}
+.slip-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.slip-head .n{font:800 1.6rem/1 var(--display);text-transform:uppercase;color:var(--turf);letter-spacing:.02em}
+.slip-head .odds{font:600 1.15rem/1 var(--mono)}
+.legrow{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:baseline;padding-top:8px;border-top:1px dashed var(--rule)}
+.legrow .r{font:800 1.3rem/1 var(--display);color:var(--turf);min-width:1.6em}
+.legrow .who{font-size:1.1rem}
+.legrow .bet{grid-column:2/4}
+.legrow .meta{grid-column:2/4}
+.slip-foot{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;color:var(--muted);padding-top:8px;border-top:1px solid var(--rule)}
+.slip-foot b{color:var(--ink);font-family:var(--mono);font-weight:600}
 .rank{grid-row:1/4;font:800 2.4rem/1 var(--display);color:var(--turf);min-width:1.4em}
 .who{font:700 1.25rem/1.15 var(--display);text-transform:uppercase;letter-spacing:.02em;min-width:0}
 .team{font:500 .8rem/1 var(--body);color:var(--muted);margin-left:.35rem;letter-spacing:.04em}
@@ -157,38 +176,31 @@ button:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
 
 <div class="wrap">
   <section class="hero">
-    <div class="eyebrow">Strategy A · FanDuel · made before kickoff</div>
+    <div class="eyebrow">Locked strategy · FanDuel · made before kickoff</div>
     <h1>Week __WEEK__ Picks</h1>
     <div class="sum" id="sum"></div>
-    <p>These are the bets: the two strongest unders of the week as straight bets, and the same two as one boosted parlay. Everything below that is for reference only.</p>
+    <p>These are the bets: up to four 2-leg parlays, each with a 30% FanDuel profit boost. No straight bets. Place them in order: if you only have one boost, bet Parlay 1; two boosts, Parlays 1 and 2; and so on. No boost, no bet.</p>
   </section>
 
   <section>
-    <h2>The straight bets</h2>
-    <p class="lede">The two unders the picker rates most likely this week. Same stake on each.</p>
-    <div class="grid" id="picks" style="margin-top:12px"></div>
+    <h2>The parlays</h2>
+    <p class="lede">The picker's top 8 unders, paired in rank order (#1 with #2, #3 with #4, ...), never two legs from the same game. Same stake on each.</p>
+    <div class="grid" id="slips" style="margin-top:12px"></div>
   </section>
 
   <section class="panel">
-    <h2>The parlay</h2>
-    <p class="lede">#1 and #2 together, with the 30% profit boost.</p>
-    <div class="scroll" style="margin-top:10px"><table id="parlays"></table></div>
+    <h2>The eight legs</h2>
+    <p class="lede">Each leg with our stat model's number, the line, and the picker's chance it goes under against what the FanDuel price needs.</p>
+    <div class="scroll" style="margin-top:10px"><table id="legs"></table></div>
   </section>
 
   <section class="panel">
-    <h2>Strategy B: tracked, not bet</h2>
-    <p class="lede">The broader version: the top 8 straight and four parlays in rank order. We record it every week to compare against A. Do not place these.</p>
-    <div class="scroll" style="margin-top:10px"><table id="tracked"></table></div>
-    <div class="scroll" style="margin-top:10px"><table id="trackedparlays"></table></div>
-  </section>
-
-  <section class="panel">
-    <h2>Why these and not others</h2>
+    <h2>Why this and not straight bets</h2>
     <div class="how">
-      <div><b>Unders only</b>Across every test, overs lost money. The edge is unders that FanDuel prices too cheaply.</div>
-      <div><b>The top 2 only</b>Over 38 replayed weeks the #1 and #2 picks returned +24.5% straight and +102% as a boosted parlay. The top 8 returned +12.2% and +69%.</div>
-      <div><b>Limits</b>Up to three picks per game. The parlay never uses the same player twice.</div>
-      <div><b>Proven role</b>Players need 3+ games with their current team. Rookies and new arrivals are where the model misses.</div>
+      <div><b>Parlays only</b>On every season we hid from the picker (2021&ndash;2026), these four parlays a week returned +50% per unit and were positive in all six. Straight bets on the same picks came out about break-even.</div>
+      <div><b>The boost is the edge</b>Without the 30% boost the same parlays return about +1&ndash;3%. With it, the picks' small edge over FanDuel's prices turns into profit. No boost, no bet.</div>
+      <div><b>Four, not one</b>One parlay a week (#1 + #2) returned +28% on hidden seasons and lost money on the fully blind 2021&ndash;2023; four a week returned +50% (+38% blind).</div>
+      <div><b>Unders, proven roles</b>Unders only (overs lost money in every test). Players need 3+ games with their current team. Up to 3 legs per game, each player once.</div>
     </div>
   </section>
 
@@ -208,31 +220,24 @@ const fmtP = v => v > 0 ? "+" + Math.round(v) : String(Math.round(v));
 const pct = v => Math.round(100 * v) + "%";
 const unit = {"Receptions": "rec", "Receiving yds": "rec yds", "Rush yds": "rush yds", "Pass yds": "pass yds"};
 
-$("#sum").innerHTML = [`${DATA.picks.length} straight unders`, `${DATA.parlays.length} boosted parlay`, "Flat stake", "Unders only"].map(s => `<span>${s}</span>`).join("");
+$("#sum").innerHTML = [`${DATA.parlays.length} boosted parlays`, "30% boost on each", "No straight bets", "Flat stake", "Unders only"].map(s => `<span>${s}</span>`).join("");
 
-$("#picks").innerHTML = DATA.picks.map(r => {
-  const gap = r.our_prediction - r.line;
-  const flag = gap >= 0 ? `<div class="flag">Our stat model has him at ${(+r.our_prediction).toFixed(1)}, above the line. The picker still takes the under on price and game setup. The least certain of the eight.</div>` : "";
-  return `<article class="ticket">
-    <div class="rank">${r.rank}</div>
+const legHtml = r => `<div class="legrow">
+    <div class="r">#${r.rank}</div>
     <div class="who">${r.player_name}<span class="team">${r.team ?? ""}</span></div>
     <div class="price">${fmtP(r.price)}</div>
     <div class="bet"><b>UNDER ${r.line}</b> ${r.market.toLowerCase()}</div>
     <div class="meta">${r.matchup} · ${r.slot}, ${r.kickoff}</div>
-    <div class="why">
-      <div>Our model: <span class="num">${(+r.our_prediction).toFixed(1)}</span> ${unit[r.market] ?? ""} vs line <span class="num">${r.line}</span></div>
-      <div>Picker: <span class="num">${pct(r.picker_under_chance)}</span> to go under; the price needs <span class="num">${pct(r.needs)}</span></div>
-    </div>${flag}
-  </article>`;
-}).join("");
+  </div>`;
+$("#slips").innerHTML = DATA.parlays.map((p, i) => `<article class="slip">
+    <div class="slip-head"><span class="n">Parlay ${i + 1}</span><span class="odds">${fmtP(p.price)} <small class="note">→ ${fmtP(p.boosted_price)} boosted</small></span></div>
+    ${p.legs.map(legHtml).join("")}
+    <div class="slip-foot"><span>Both hit (picker): <b>${pct(p.picker_chance)}</b></span><span>$10 wins <b>$${(+p.payout_on_10_boosted).toFixed(2)}</b> with boost</span></div>
+  </article>`).join("");
 
-const ptable = (list, label) => `<thead><tr><th>${label}</th><th>Leg 1</th><th>Leg 2</th><th class="num">Price</th><th class="num">Chance both hit</th><th class="num">Win on $10 with boost</th></tr></thead><tbody>` +
-  list.map((r, i) => `<tr><td><span class="boost">Parlay ${i + 1}</span></td><td>${r.leg1}</td><td>${r.leg2}</td><td class="num">${fmtP(r.price)}</td><td class="num">${pct(r.picker_chance)}</td><td class="num">$${(+r.payout_on_10_boosted).toFixed(2)}</td></tr>`).join("") + "</tbody>";
-$("#tracked").innerHTML = `<thead><tr><th class="num">#</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th>Kickoff</th></tr></thead><tbody>` +
-  DATA.tracked.map((r, i) => `<tr><td class="num">${i + 1}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${r.slot}</td></tr>`).join("") + "</tbody>";
-$("#trackedparlays").innerHTML = ptable(DATA.tracked_parlays, "B parlay");
-$("#parlays").innerHTML = `<thead><tr><th>Order</th><th>Leg 1</th><th>Leg 2</th><th class="num">Price</th><th class="num">Chance both hit</th><th class="num">Win on $10 with boost</th></tr></thead><tbody>` +
-  DATA.parlays.map((r, i) => `<tr><td><span class="boost">Parlay ${i + 1}</span></td><td>${r.leg1}</td><td>${r.leg2}</td><td class="num">${fmtP(r.price)}</td><td class="num">${pct(r.picker_chance)}</td><td class="num">$${(+r.payout_on_10_boosted).toFixed(2)}</td></tr>`).join("") + "</tbody>";
+$("#legs").innerHTML = `<thead><tr><th class="num">#</th><th>Parlay</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th class="num">Price needs</th><th>Kickoff</th></tr></thead><tbody>` +
+  DATA.legs.map(r => `<tr><td class="num">${r.rank}</td><td><span class="boost">${r.status}</span></td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}${r.our_prediction >= r.line ? " ⚠" : ""}</td><td class="num">${pct(r.picker_chance ?? r.picker_under_chance)}</td><td class="num">${pct(r.needs)}</td><td>${r.slot}</td></tr>`).join("") +
+  `</tbody>` + (DATA.legs.some(r => r.our_prediction >= r.line) ? `<caption style="caption-side:bottom;text-align:left;padding-top:8px;color:var(--muted);font-size:.85rem">⚠ Our stat model has this player above the line; the picker still takes the under on price and game setup.</caption>` : "");
 
 const all = DATA.liked;
 const order = [...new Map(DATA.slots.map(s => [s.slot, s])).values()];
@@ -242,11 +247,11 @@ $("#slots").innerHTML = order.map(s => {
   const head = `<div class="slothead"><h3>${s.slot}</h3><span class="games">${games.map(g => `${g.matchup} (${g.kickoff})`).join(" · ")}</span></div>`;
   if (!rows.length) return `<div class="slot">${head}<p class="none">Nothing in this slot rated as value.</p></div>`;
   return `<div class="slot">${head}<div class="scroll"><table><thead><tr><th>Status</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th>Why not taken</th></tr></thead><tbody>` +
-    rows.map(r => `<tr><td>${r.status === "Bet (A)" ? `<span class="tag bet">Bet (A)</span>` : `<span class="tag">${r.status}</span>`}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${r.why_not || "On the card"}</td></tr>`).join("") +
+    rows.map(r => `<tr><td>${r.status.startsWith("Parlay") ? `<span class="tag bet">${r.status}</span>` : `<span class="tag">${r.status}</span>`}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${r.why_not || "On the card"}</td></tr>`).join("") +
     `</tbody></table></div></div>`;
 }).join("");
 
-$("#foot").textContent = `Card made ${DATA.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")} from FanDuel prices at that time; lines may have moved since. The picker was retrained on every graded line before this week. Replay record (2024 wk 4 to 2026 wk 5, best case): strategy A singles +24.5% per unit, parlay +102%; strategy B singles +12.2%, parlays +69%.`;
+$("#foot").textContent = `Card made ${DATA.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")} from FanDuel prices at that time; lines may have moved since. The picker was retrained on every graded line before this week. Record of these parlays: hidden seasons 2021-2026 +50% per unit (positive all six); fully blind 2021-2023 +38%; replay 2024 wk 4 to 2026 wk 5 +69% (best case).`;
 </script>
 """
 

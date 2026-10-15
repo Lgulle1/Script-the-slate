@@ -93,16 +93,13 @@ def main(argv=None):
     card = x.select("rank", "tier", "player_name", "team", pl.col("market").replace_strict(LABEL).alias("market"), "line", "book", "price",
                     pl.col("mean").round(1).alias("our_prediction"), pl.col("picker_under_chance").round(3), pl.col("edge").round(3), "best_book", "best_price", "books_quoting",
                     "gameday", "game_id").sort("rank", nulls_last=True)
-    P = ungraded_parlays(x.filter(pl.col("tier") == "Bet"))
     OUTD.mkdir(parents=True, exist_ok=True)
     stem = f"{a.season}_wk{a.week:02d}_card"
-    card.write_csv(OUTD / f"{stem}.csv")
-    P.write_csv(OUTD / f"{stem}_parlays.csv")
+    card.write_csv(OUTD / f"{stem}.csv")            # every qualifying pick; the bets (the locked parlays) are made from it by scripts/make_week_page.py (scripts/strategy.py)
     (OUTD / f"{stem}_meta.json").write_text(json.dumps(dict(made_at_utc=made_at, season=a.season, week=a.week, version="A + B + C, locked setup (records/cards/locked_setup.json)", picks=card.height,
                                                             trained_on="every graded line before the week", comp_book_for_attempts="Caesars"), indent=1))
     with pl.Config(tbl_rows=40, tbl_cols=20, tbl_width_chars=250, fmt_str_lengths=40):
         print(card.filter(pl.col("tier").is_in(["Bet", "Watch"])))
-        print(P)
         print("picks:", card.height, card.group_by("tier").len().rows())
 
 

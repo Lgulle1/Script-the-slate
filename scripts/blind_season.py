@@ -52,8 +52,8 @@ def main(argv=None):
         sg = [r for wk in weeks for r in wk[k]["singles"]]
         pr = [r for wk in weeks for r in wk[k]["parlays"]]
         su, pu = sum(r["profit"] for r in sg), sum(r["profit"] for r in pr)
-        print(f"{a.season} {k}: singles {sum(r['won'] for r in sg):.0f}-{len(sg) - sum(r['won'] for r in sg):.0f} ({su / len(sg):+.1%}), parlays {sum(r['profit'] > 0 for r in pr)}-"
-              f"{sum(r['profit'] <= 0 for r in pr)} ({pu / len(pr):+.0%}), all {su + pu:+.1f}u on {len(sg) + len(pr)} ({(su + pu) / (len(sg) + len(pr)):+.1%})")
+        print(f"{a.season} {k}: singles {sum(r['won'] for r in sg):.0f}-{len(sg) - sum(r['won'] for r in sg):.0f} ({su / max(len(sg), 1):+.1%}), parlays {sum(r['profit'] > 0 for r in pr)}-"
+              f"{sum(r['profit'] <= 0 for r in pr)} ({pu / max(len(pr), 1):+.0%}), all {su + pu:+.1f}u on {len(sg) + len(pr)} ({(su + pu) / (len(sg) + len(pr)):+.1%})")
     (config.ROOT / "records" / "cards" / f"blind_{a.season}.json").write_text(json.dumps(dict(season=a.season, train=a.train, four=weeks), default=str))
 
 

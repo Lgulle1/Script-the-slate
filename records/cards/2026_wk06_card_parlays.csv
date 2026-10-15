@@ -1,5 +1,5 @@
-leg1,leg2,price,picker_chance,payout_on_10_boosted
-#1 Braelon Allen Rush yds under 67.5,#2 Kendrick Bourne Receptions under 3.5,210,0.43193595663499845,27.25
-#3 Trey McBride Receptions under 7.5,#4 James Cook III Rush yds under 92.5,222,0.4123857733642635,28.83
-#5 Xavier Worthy Receptions under 4.5,#6 Garrett Wilson Receiving yds under 72.5,252,0.3826820023581607,32.81
-#7 Rachaad White Receiving yds under 11.5,#8 Keaton Mitchell Rush yds under 19.5,252,0.36244010105767027,32.81
+parlay,leg1,leg2,price,boosted_price,picker_chance,payout_on_10_boosted
+1,#1 Braelon Allen Rush yds under 67.5 (-114),#2 Kendrick Bourne Receptions under 3.5 (-154),210,272,0.432,27.25
+2,#3 Trey McBride Receptions under 7.5 (-140),#4 James Cook III Rush yds under 92.5 (-114),222,288,0.412,28.83
+3,#5 Xavier Worthy Receptions under 4.5 (-114),#6 Garrett Wilson Receiving yds under 72.5 (-114),252,328,0.383,32.81
+4,#7 Elijah Higgins Receiving yds under 11.5 (-114),#8 Rhamondre Stevenson Rush yds under 70.5 (-114),252,328,0.376,32.81

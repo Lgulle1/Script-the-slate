@@ -1,5 +1,16 @@
 {
- "locked_at_utc": "2026-10-15 (revised: strategies A and B, judged on return per unit staked)",
+ "locked_at_utc": "2026-10-15 (revised again: parlays only, strategy P; replaces A as the bet)",
+ "bet": "strategy P: no straight bets; 2-leg parlays in rank order from the picker's top 8 unders (#1+#2, #3+#4, #5+#6, #7+#8), never two legs from one game, each player once, up to 3 legs per game; up to 4 parlays a week, one per 30% FanDuel profit boost available, top pairs first; no boost, no parlay; 1 unit each",
+ "why_P": {
+  "hidden seasons (tournament 3: picker retrained without the season, 2021-2026)": "+50.2% per unit on 249 parlays, positive in all 6 seasons (2021 +45%, 2022 +58%, 2023 +15%, 2024 +112%, 2025 +44%, 2026 +72%)",
+  "fully blind 2021-2023 (rule fixed before that data existed)": "+38% per unit on 179 parlays",
+  "one parlay a week (old A's #1+#2) on the same hidden seasons": "+28.4% on 73; -14% on blind 2021-2023",
+  "straight bets on the same hidden seasons": "old A top 2 -11.3% on 185; old B top 8 -1.6% on 556",
+  "re-tuning everything per hidden season (126,000 setups)": "+8.0% on the hidden seasons (tuned ~+100%): tuning finds luck, not edge",
+  "projection model retrained 14 ways (tournament 4, 2021-2024)": "locked parlays positive on all 14 (+21% to +53%; current model +49.9%); no variant reliably better; honest variant x rule pick +5.2%",
+  "without the boost": "the same parlays return about +1-3%: the edge needs the boost"
+ },
+ "tracked_not_bet": "straight unders from the 'min_leaf_10' projection variant (+7.1% on hidden 2021-2024, found after the fact; not proven); old strategies A and B stay on the Track Record for comparison",
  "book": "FanDuel only (markets FanDuel does not post are used for training, never bet)",
  "side": "unders only",
  "markets_bet": [
@@ -9,7 +20,7 @@
   "pass yards"
  ],
  "picker": "six gradient-boosted picker versions averaged (depth 2/3/4, rate 0.1, leaf 50/150), retrained every week on every graded line before that week; inputs: FanDuel prices, model chances (incl. tuned layers), model-vs-line gap, line, game total, spread, home/away, dome, week, market",
- "qualifies": "picker edge over the FanDuel break-even >= 4 points; player has 3+ games for his current team; at most 1 pick per player and 2 per game",
+ "qualifies": "picker edge over the FanDuel break-even >= 4 points; player has 3+ games for his current team (per-game and per-player limits: see 'limits')",
  "rank": "by the picker's chance the under hits",
  "boost": "30% profit boost on each parlay where available",
  "change_rule": "nothing here changes until at least 8 live weeks are graded; changes are written here with a date",
@@ -24,10 +35,10 @@
   "verdict": "1 per game is clearly worse; 2-3 per game is the good range; differences inside it are a few units over ~290 bets (noise). Kept 2 per game, 1 per player: the most weeks up. Only picks that make the bet list count toward the limits."
  },
  "objective": "return per unit staked (not total dollars, not weeks in profit)",
- "strategy_A_bet": "singles: the top 2 unders; parlay: #1 + #2 (2 legs, different games; none if they share a game); 1 unit each; 30% boost on the parlay",
- "strategy_B_tracked": "singles: the top 8 unders; parlays: 2-leg in rank order from the top 8 (#1+#2, #3+#4, ...); recorded every week, not bet",
+ "strategy_A_bet": "RETIRED 2026-10-15 (now tracked): singles: the top 2 unders; parlay: #1 + #2 (2 legs, different games; none if they share a game); 1 unit each; 30% boost on the parlay",
+ "strategy_B_tracked": "singles: the top 8 unders; parlays: 2-leg in rank order from the top 8 (#1+#2, #3+#4, ...); recorded every week, not bet (its parlays are exactly strategy P)",
  "limits": "singles lists: up to 3 picks per game, no per-player limit; parlay lists: up to 3 per game, 1 per player (only picks already taken count)",
- "code": "scripts/strategy.py",
+ "code": "scripts/strategy.py (P, A, B); week page scripts/make_week_page.py; evidence records/tuning/tournament3_summary.json, tournament4_summary.json",
  "replay_2024wk4_2026wk5": {
   "A singles": "76 bets, 57 won, +24.5% per unit",
   "A parlay": "34 parlays, 21 hit, +102% per unit (boosted)",
