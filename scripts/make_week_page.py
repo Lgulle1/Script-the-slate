@@ -15,6 +15,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import config
 
 D = config.ROOT / "records" / "cards"
+import importlib.util as _ilu
+_spec = _ilu.spec_from_file_location("strategy", Path(__file__).resolve().parent / "strategy.py")
+ST = _ilu.module_from_spec(_spec)
+_spec.loader.exec_module(ST)
 
 
 def slot(weekday: str, gametime: str) -> tuple:
@@ -51,23 +55,40 @@ def main(argv=None):
     sc = sc.with_columns(slot_order=pl.col("s").list.get(0).cast(pl.Int32), slot=pl.col("s").list.get(1), kickoff=pl.col("s").list.get(2),
                          matchup=pl.col("away_team") + " @ " + pl.col("home_team")).drop("s")
     card = card.join(sc, on="game_id", how="left")
-    # why a liked pick was not taken
-    kept = card.filter(pl.col("rank").is_not_null())
-    kept_players = set(kept["player_name"].to_list())
-    def reason(r):
-        if r["tier"] == "Watch":
-            return f"Rank {r['rank']}: outside the top 8 (watch only)"
-        if r["tier"] == "Rest":
-            return f"Rank {r['rank']}: too far down the card"
-        if r["player_name"] in kept_players:
-            return "Cut: one pick per player (his stronger bet is already on the card)"
-        return "Cut: two picks per game already taken"
+    # the locked strategies (scripts/strategy.py): A is bet, B is tracked
+    card = card.with_columns(dec_u=pl.when(pl.col("price") > 0).then(1 + pl.col("price") / 100).otherwise(1 + 100 / -pl.col("price")))
     rows = card.to_dicts()
     for r in rows:
-        be = (-r["price"] / (-r["price"] + 100)) if r["price"] < 0 else 100 / (r["price"] + 100)
-        r["needs"] = be
-        r["why_not"] = reason(r) if r["tier"] != "Bet" else ""
-    data = dict(meta=meta, picks=[r for r in rows if r["tier"] == "Bet"], liked=[r for r in rows if r["tier"] != "Bet"], parlays=parl.to_dicts(),
+        r["needs"] = (-r["price"] / (-r["price"] + 100)) if r["price"] < 0 else 100 / (r["price"] + 100)
+    A = ST.card(rows, "A", player="player_name")
+    B = ST.card(rows, "B", player="player_name")
+    a_names = {(r["player_name"], r["market"]) for r in A["singles"]}
+    b_names = {(r["player_name"], r["market"]) for r in B["singles"]}
+    ranked = sorted(rows, key=lambda r: -r["picker_under_chance"])
+    taken_game = {}
+    for i, r in enumerate(ranked, 1):
+        r["overall_rank"] = i
+        key = (r["player_name"], r["market"])
+        if key in a_names:
+            r["status"], r["why_not"] = "Bet (A)", ""
+        elif key in b_names:
+            r["status"], r["why_not"] = "Tracked (B)", "Ranks 3-8: tracked in strategy B, not bet"
+        elif taken_game.get(r["game_id"], 0) >= ST.SINGLES_CAPS["per_game"]:
+            r["status"], r["why_not"] = "Cut", "Three picks from this game already ranked above it"
+        else:
+            r["status"], r["why_not"] = "Watch", f"Rank {i}: below the top 8"
+        taken_game[r["game_id"]] = taken_game.get(r["game_id"], 0) + 1
+    def par(pairs):
+        out = []
+        for a_, b_ in pairs:
+            dec = a_["dec_u"] * b_["dec_u"]
+            out.append(dict(leg1=f"{a_['player_name']} {a_['market']} under {a_['line']:g}", leg2=f"{b_['player_name']} {b_['market']} under {b_['line']:g}",
+                            price=round((dec - 1) * 100) if dec >= 2 else round(-100 / (dec - 1)), picker_chance=a_["picker_under_chance"] * b_["picker_under_chance"],
+                            payout_on_10_boosted=round(10 * (dec - 1) * (1 + ST.BOOST), 2)))
+        return out
+    for i, r in enumerate(A["singles"], 1):
+        r["rank"] = i
+    data = dict(meta=meta, picks=A["singles"], parlays=par(A["parlays"]), tracked=B["singles"], tracked_parlays=par(B["parlays"]), liked=ranked,
                 slots=sc.sort("slot_order", "kickoff").select("slot_order", "slot", "kickoff", "matchup", "game_id").to_dicts())
     html = TEMPLATE.replace("__DATA__", json.dumps(data, default=str)).replace("__WEEK__", str(a.week))
     out = D / f"{a.season}_wk{a.week:02d}_picks.html"
@@ -136,30 +157,37 @@ button:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
 
 <div class="wrap">
   <section class="hero">
-    <div class="eyebrow">Locked card · FanDuel · made before kickoff</div>
+    <div class="eyebrow">Strategy A · FanDuel · made before kickoff</div>
     <h1>Week __WEEK__ Picks</h1>
     <div class="sum" id="sum"></div>
-    <p>These are the bets. Eight straight unders at a flat stake, and four 2-leg parlays built from them, in order. Everything below the parlays is for reference only.</p>
+    <p>These are the bets: the two strongest unders of the week as straight bets, and the same two as one boosted parlay. Everything below that is for reference only.</p>
   </section>
 
   <section>
-    <h2>The 8 bets</h2>
-    <p class="lede">Ranked by how likely the picker thinks the under is. Same stake on each.</p>
+    <h2>The straight bets</h2>
+    <p class="lede">The two unders the picker rates most likely this week. Same stake on each.</p>
     <div class="grid" id="picks" style="margin-top:12px"></div>
   </section>
 
   <section class="panel">
-    <h2>The 4 parlays</h2>
-    <p class="lede">Place them in this order. If you have fewer boosts than parlays, the boosts go on the top ones first.</p>
+    <h2>The parlay</h2>
+    <p class="lede">#1 and #2 together, with the 30% profit boost.</p>
     <div class="scroll" style="margin-top:10px"><table id="parlays"></table></div>
+  </section>
+
+  <section class="panel">
+    <h2>Strategy B: tracked, not bet</h2>
+    <p class="lede">The broader version: the top 8 straight and four parlays in rank order. We record it every week to compare against A. Do not place these.</p>
+    <div class="scroll" style="margin-top:10px"><table id="tracked"></table></div>
+    <div class="scroll" style="margin-top:10px"><table id="trackedparlays"></table></div>
   </section>
 
   <section class="panel">
     <h2>Why these and not others</h2>
     <div class="how">
       <div><b>Unders only</b>Across every test, overs lost money. The edge is unders that FanDuel prices too cheaply.</div>
-      <div><b>Top 8 only</b>Over 38 replayed weeks the top 8 hit 62.5%. Picks ranked lower hit less often.</div>
-      <div><b>Spread out</b>No more than one pick per player and two per game, so one game script cannot sink the card.</div>
+      <div><b>The top 2 only</b>Over 38 replayed weeks the #1 and #2 picks returned +24.5% straight and +102% as a boosted parlay. The top 8 returned +12.2% and +69%.</div>
+      <div><b>Limits</b>Up to three picks per game. The parlay never uses the same player twice.</div>
       <div><b>Proven role</b>Players need 3+ games with their current team. Rookies and new arrivals are where the model misses.</div>
     </div>
   </section>
@@ -180,7 +208,7 @@ const fmtP = v => v > 0 ? "+" + Math.round(v) : String(Math.round(v));
 const pct = v => Math.round(100 * v) + "%";
 const unit = {"Receptions": "rec", "Receiving yds": "rec yds", "Rush yds": "rush yds", "Pass yds": "pass yds"};
 
-$("#sum").innerHTML = [`${DATA.picks.length} straight unders`, `${DATA.parlays.length} boosted parlays`, "Flat stake", "Unders only"].map(s => `<span>${s}</span>`).join("");
+$("#sum").innerHTML = [`${DATA.picks.length} straight unders`, `${DATA.parlays.length} boosted parlay`, "Flat stake", "Unders only"].map(s => `<span>${s}</span>`).join("");
 
 $("#picks").innerHTML = DATA.picks.map(r => {
   const gap = r.our_prediction - r.line;
@@ -198,10 +226,15 @@ $("#picks").innerHTML = DATA.picks.map(r => {
   </article>`;
 }).join("");
 
+const ptable = (list, label) => `<thead><tr><th>${label}</th><th>Leg 1</th><th>Leg 2</th><th class="num">Price</th><th class="num">Chance both hit</th><th class="num">Win on $10 with boost</th></tr></thead><tbody>` +
+  list.map((r, i) => `<tr><td><span class="boost">Parlay ${i + 1}</span></td><td>${r.leg1}</td><td>${r.leg2}</td><td class="num">${fmtP(r.price)}</td><td class="num">${pct(r.picker_chance)}</td><td class="num">$${(+r.payout_on_10_boosted).toFixed(2)}</td></tr>`).join("") + "</tbody>";
+$("#tracked").innerHTML = `<thead><tr><th class="num">#</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th>Kickoff</th></tr></thead><tbody>` +
+  DATA.tracked.map((r, i) => `<tr><td class="num">${i + 1}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${r.slot}</td></tr>`).join("") + "</tbody>";
+$("#trackedparlays").innerHTML = ptable(DATA.tracked_parlays, "B parlay");
 $("#parlays").innerHTML = `<thead><tr><th>Order</th><th>Leg 1</th><th>Leg 2</th><th class="num">Price</th><th class="num">Chance both hit</th><th class="num">Win on $10 with boost</th></tr></thead><tbody>` +
   DATA.parlays.map((r, i) => `<tr><td><span class="boost">Parlay ${i + 1}</span></td><td>${r.leg1}</td><td>${r.leg2}</td><td class="num">${fmtP(r.price)}</td><td class="num">${pct(r.picker_chance)}</td><td class="num">$${(+r.payout_on_10_boosted).toFixed(2)}</td></tr>`).join("") + "</tbody>";
 
-const all = [...DATA.picks, ...DATA.liked];
+const all = DATA.liked;
 const order = [...new Map(DATA.slots.map(s => [s.slot, s])).values()];
 $("#slots").innerHTML = order.map(s => {
   const games = DATA.slots.filter(g => g.slot === s.slot);
@@ -209,11 +242,11 @@ $("#slots").innerHTML = order.map(s => {
   const head = `<div class="slothead"><h3>${s.slot}</h3><span class="games">${games.map(g => `${g.matchup} (${g.kickoff})`).join(" · ")}</span></div>`;
   if (!rows.length) return `<div class="slot">${head}<p class="none">Nothing in this slot rated as value.</p></div>`;
   return `<div class="slot">${head}<div class="scroll"><table><thead><tr><th>Status</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th>Why not taken</th></tr></thead><tbody>` +
-    rows.map(r => `<tr><td>${r.tier === "Bet" ? `<span class="tag bet">Bet #${r.rank}</span>` : `<span class="tag">${r.tier === "Watch" ? "Watch" : (r.tier === "Rest" ? "Pass" : "Cut")}</span>`}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${r.why_not || "On the card"}</td></tr>`).join("") +
+    rows.map(r => `<tr><td>${r.status === "Bet (A)" ? `<span class="tag bet">Bet (A)</span>` : `<span class="tag">${r.status}</span>`}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${r.why_not || "On the card"}</td></tr>`).join("") +
     `</tbody></table></div></div>`;
 }).join("");
 
-$("#foot").textContent = `Card made ${DATA.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")} from FanDuel prices at that time; lines may have moved since. The picker was retrained on every graded line before this week. Replay record (2024 wk 4 to 2026 wk 5, best case): top 8 singles 62.5% hit, +10.9%; parlays +66% per dollar with boost.`;
+$("#foot").textContent = `Card made ${DATA.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")} from FanDuel prices at that time; lines may have moved since. The picker was retrained on every graded line before this week. Replay record (2024 wk 4 to 2026 wk 5, best case): strategy A singles +24.5% per unit, parlay +102%; strategy B singles +12.2%, parlays +69%.`;
 </script>
 """
 
