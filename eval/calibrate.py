@@ -183,6 +183,16 @@ class Calibrator:
         out["ladder"] = lad
         return out
 
+    def sample(self, market: str, p: float):
+        """The width-scaled pool sample (actuals of the nearest past predictions, spread about their median scaled by c) for a prediction p; None below the burn-in. Same sample `distribution` describes."""
+        v = self.markets.get(market)
+        if v is None or len(v["pred"]) < self.cfg.min_pool[market]:
+            return None
+        s = v["act"][_window(v["pred"], np.array([p]), self.cfg.k[market])[0]].astype(float)
+        c = v["c"] if v["use_width"] else 1.0
+        med = float(np.quantile(s, 0.5))
+        return med + c * (s - med)
+
     def save(self, path) -> None:
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
