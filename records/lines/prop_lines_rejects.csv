@@ -7612,3 +7612,1087 @@ captured_at,book,game_id,player_name,book_market,side,line,reason
 2023-01-07T15:17:11+00:00,FanDuel,2022_18_TEN_JAX,,Receiving Yards,under,26.5,player not matched in the game's teams
 2023-01-08T08:01:24+00:00,FanDuel,2022_18_BAL_CIN,J.K. Dobbins,Rushing Yards,over,55.5,player not matched in the game's teams
 2023-01-08T08:01:24+00:00,FanDuel,2022_18_BAL_CIN,J.K. Dobbins,Rushing Yards,under,55.5,player not matched in the game's teams
+2021-09-08T22:23:17+00:00,FanDuel,2021_01_DAL_TB,,Rushing Attempts,over,10.5,player not matched in the game's teams
+2021-09-08T22:23:17+00:00,FanDuel,2021_01_DAL_TB,,Rushing Attempts,under,10.5,player not matched in the game's teams
+2021-09-08T22:23:17+00:00,FanDuel,2021_01_DAL_TB,,Rushing Attempts,over,10.5,player not matched in the game's teams
+2021-09-08T22:23:17+00:00,FanDuel,2021_01_DAL_TB,,Rushing Attempts,under,10.5,player not matched in the game's teams
+2021-09-09T14:35:45+00:00,FanDuel,2021_01_DAL_TB,,Receptions,over,1.5,player not matched in the game's teams
+2021-09-09T14:35:45+00:00,FanDuel,2021_01_DAL_TB,,Receptions,under,1.5,player not matched in the game's teams
+2021-09-09T14:35:46+00:00,FanDuel,2021_01_DAL_TB,O.J. Howard,Receptions,over,1.5,player not matched in the game's teams
+2021-09-09T14:35:46+00:00,FanDuel,2021_01_DAL_TB,O.J. Howard,Receptions,under,1.5,player not matched in the game's teams
+2021-09-09T14:35:46+00:00,FanDuel,2021_01_DAL_TB,,Receiving Yards,over,6.5,player not matched in the game's teams
+2021-09-09T14:35:46+00:00,FanDuel,2021_01_DAL_TB,,Receiving Yards,under,6.5,player not matched in the game's teams
+2021-09-09T14:35:46+00:00,FanDuel,2021_01_DAL_TB,O.J. Howard,Receptions,over,1.5,player not matched in the game's teams
+2021-09-09T14:35:46+00:00,FanDuel,2021_01_DAL_TB,O.J. Howard,Receptions,under,1.5,player not matched in the game's teams
+2021-09-09T14:35:47+00:00,FanDuel,2021_01_DAL_TB,,Rushing Yards,over,48.5,player not matched in the game's teams
+2021-09-09T14:35:47+00:00,FanDuel,2021_01_DAL_TB,,Rushing Yards,under,48.5,player not matched in the game's teams
+2021-09-09T14:35:47+00:00,FanDuel,2021_01_DAL_TB,,Rushing Yards,over,48.5,player not matched in the game's teams
+2021-09-09T14:35:47+00:00,FanDuel,2021_01_DAL_TB,,Rushing Yards,under,48.5,player not matched in the game's teams
+2021-09-09T19:35:56+00:00,FanDuel,2021_01_DAL_TB,Scotty Miller,Receiving Yards,over,8.5,player not matched in the game's teams
+2021-09-09T19:35:56+00:00,FanDuel,2021_01_DAL_TB,Scotty Miller,Receiving Yards,under,8.5,player not matched in the game's teams
+2021-09-09T19:35:56+00:00,FanDuel,2021_01_DAL_TB,Scotty Miller,Receiving Yards,over,8.5,player not matched in the game's teams
+2021-09-09T19:35:56+00:00,FanDuel,2021_01_DAL_TB,Scotty Miller,Receiving Yards,under,8.5,player not matched in the game's teams
+2021-09-09T23:35:43+00:00,FanDuel,2021_01_DAL_TB,O.J. Howard,Receiving Yards,over,18.5,player not matched in the game's teams
+2021-09-09T23:35:43+00:00,FanDuel,2021_01_DAL_TB,O.J. Howard,Receiving Yards,under,18.5,player not matched in the game's teams
+2021-09-11T20:58:20+00:00,FanDuel,2021_01_JAX_HOU,,Rushing Attempts,over,8.5,player not matched in the game's teams
+2021-09-11T20:58:20+00:00,FanDuel,2021_01_JAX_HOU,,Rushing Attempts,under,8.5,player not matched in the game's teams
+2021-09-11T20:58:20+00:00,FanDuel,2021_01_JAX_HOU,,Rushing Attempts,over,8.5,player not matched in the game's teams
+2021-09-11T20:58:20+00:00,FanDuel,2021_01_JAX_HOU,,Rushing Attempts,under,8.5,player not matched in the game's teams
+2021-09-11T21:01:35+00:00,FanDuel,2021_01_SF_DET,Trey Sermon,Receptions,over,1.5,player not matched in the game's teams
+2021-09-11T21:01:35+00:00,FanDuel,2021_01_SF_DET,Trey Sermon,Receptions,over,1.5,player not matched in the game's teams
+2021-09-11T21:02:36+00:00,FanDuel,2021_01_CLE_KC,Odell Beckham Jr.,Receptions,under,3.5,player not matched in the game's teams
+2021-09-11T21:02:36+00:00,FanDuel,2021_01_GB_NO,Lil'Jordan Humphrey,Receptions,over,2.5,player not matched in the game's teams
+2021-09-11T21:02:36+00:00,FanDuel,2021_01_CLE_KC,Odell Beckham Jr.,Receptions,under,3.5,player not matched in the game's teams
+2021-09-11T21:02:36+00:00,FanDuel,2021_01_GB_NO,Lil'Jordan Humphrey,Receptions,over,2.5,player not matched in the game's teams
+2021-09-11T23:01:38+00:00,FanDuel,2021_01_LAC_WAS,,Receptions,over,3.5,player not matched in the game's teams
+2021-09-11T23:01:38+00:00,FanDuel,2021_01_LAC_WAS,,Receptions,over,3.5,player not matched in the game's teams
+2021-09-12T05:13:38+00:00,FanDuel,2021_01_BAL_LV,Le'Veon Bell,Rushing Attempts,over,3.5,player not matched in the game's teams
+2021-09-12T05:13:38+00:00,FanDuel,2021_01_BAL_LV,Le'Veon Bell,Rushing Attempts,under,3.5,player not matched in the game's teams
+2021-09-12T05:13:38+00:00,FanDuel,2021_01_BAL_LV,Le'Veon Bell,Rushing Attempts,over,3.5,player not matched in the game's teams
+2021-09-12T05:13:38+00:00,FanDuel,2021_01_BAL_LV,Le'Veon Bell,Rushing Attempts,under,3.5,player not matched in the game's teams
+2021-09-12T07:02:05+00:00,FanDuel,2021_01_JAX_HOU,,Receiving Yards,over,4.5,player not matched in the game's teams
+2021-09-12T07:02:05+00:00,FanDuel,2021_01_JAX_HOU,,Receiving Yards,under,4.5,player not matched in the game's teams
+2021-09-12T07:02:05+00:00,FanDuel,2021_01_JAX_HOU,,Receiving Yards,over,4.5,player not matched in the game's teams
+2021-09-12T07:02:05+00:00,FanDuel,2021_01_JAX_HOU,,Receiving Yards,under,4.5,player not matched in the game's teams
+2021-09-12T07:02:06+00:00,FanDuel,2021_01_SF_DET,,Receiving Yards,over,19.5,player not matched in the game's teams
+2021-09-12T07:02:06+00:00,FanDuel,2021_01_SF_DET,,Receiving Yards,under,19.5,player not matched in the game's teams
+2021-09-12T07:02:06+00:00,FanDuel,2021_01_SF_DET,,Receiving Yards,over,19.5,player not matched in the game's teams
+2021-09-12T07:02:06+00:00,FanDuel,2021_01_SF_DET,,Receiving Yards,under,19.5,player not matched in the game's teams
+2021-09-12T07:02:07+00:00,FanDuel,2021_01_LAC_WAS,Joshua Palmer,Receiving Yards,over,27.5,player not matched in the game's teams
+2021-09-12T07:02:07+00:00,FanDuel,2021_01_LAC_WAS,Joshua Palmer,Receiving Yards,under,27.5,player not matched in the game's teams
+2021-09-12T07:02:07+00:00,FanDuel,2021_01_LAC_WAS,Joshua Palmer,Receiving Yards,over,27.5,player not matched in the game's teams
+2021-09-12T07:02:07+00:00,FanDuel,2021_01_LAC_WAS,Joshua Palmer,Receiving Yards,under,27.5,player not matched in the game's teams
+2021-09-12T07:02:08+00:00,FanDuel,2021_01_PIT_BUF,Zack Moss,Receiving Yards,over,5.5,player not matched in the game's teams
+2021-09-12T07:02:08+00:00,FanDuel,2021_01_PIT_BUF,Zack Moss,Receiving Yards,under,5.5,player not matched in the game's teams
+2021-09-12T07:02:08+00:00,FanDuel,2021_01_SF_DET,Trey Sermon,Receiving Yards,over,8.5,player not matched in the game's teams
+2021-09-12T07:02:08+00:00,FanDuel,2021_01_SF_DET,Trey Sermon,Receiving Yards,under,8.5,player not matched in the game's teams
+2021-09-12T07:02:09+00:00,FanDuel,2021_01_SF_DET,Trey Sermon,Receptions,under,1.5,player not matched in the game's teams
+2021-09-12T07:02:09+00:00,FanDuel,2021_01_SF_DET,Trey Sermon,Receptions,under,1.5,player not matched in the game's teams
+2021-09-12T07:02:10+00:00,FanDuel,2021_01_LAC_WAS,,Receiving Yards,over,34.5,player not matched in the game's teams
+2021-09-12T07:02:10+00:00,FanDuel,2021_01_LAC_WAS,,Receiving Yards,under,34.5,player not matched in the game's teams
+2021-09-12T07:02:10+00:00,FanDuel,2021_01_PIT_BUF,,Receiving Yards,over,50.5,player not matched in the game's teams
+2021-09-12T07:02:10+00:00,FanDuel,2021_01_PIT_BUF,,Receiving Yards,under,50.5,player not matched in the game's teams
+2021-09-12T07:02:10+00:00,FanDuel,2021_01_LAC_WAS,,Receiving Yards,over,34.5,player not matched in the game's teams
+2021-09-12T07:02:10+00:00,FanDuel,2021_01_LAC_WAS,,Receiving Yards,under,34.5,player not matched in the game's teams
+2021-09-12T07:02:10+00:00,FanDuel,2021_01_PIT_BUF,,Receiving Yards,over,50.5,player not matched in the game's teams
+2021-09-12T07:02:10+00:00,FanDuel,2021_01_PIT_BUF,,Receiving Yards,under,50.5,player not matched in the game's teams
+2021-09-12T07:02:11+00:00,FanDuel,2021_01_SEA_IND,Nyheim Miller-Hines,Receiving Yards,over,24.5,player not matched in the game's teams
+2021-09-12T07:02:11+00:00,FanDuel,2021_01_SEA_IND,Nyheim Miller-Hines,Receiving Yards,under,24.5,player not matched in the game's teams
+2021-09-12T07:02:12+00:00,FanDuel,2021_01_SEA_IND,Nyheim Miller-Hines,Receptions,over,3.5,player not matched in the game's teams
+2021-09-12T07:02:12+00:00,FanDuel,2021_01_SEA_IND,Nyheim Miller-Hines,Receptions,under,3.5,player not matched in the game's teams
+2021-09-12T07:02:12+00:00,FanDuel,2021_01_ARI_TEN,,Receiving Yards,over,32.5,player not matched in the game's teams
+2021-09-12T07:02:12+00:00,FanDuel,2021_01_ARI_TEN,,Receiving Yards,under,32.5,player not matched in the game's teams
+2021-09-12T07:02:12+00:00,FanDuel,2021_01_SEA_IND,Nyheim Miller-Hines,Receptions,over,3.5,player not matched in the game's teams
+2021-09-12T07:02:12+00:00,FanDuel,2021_01_SEA_IND,Nyheim Miller-Hines,Receptions,under,3.5,player not matched in the game's teams
+2021-09-12T07:02:14+00:00,FanDuel,2021_01_SF_DET,Trey Sermon,Rushing Yards,over,41.5,player not matched in the game's teams
+2021-09-12T07:02:14+00:00,FanDuel,2021_01_SF_DET,Trey Sermon,Rushing Yards,under,41.5,player not matched in the game's teams
+2021-09-12T07:02:20+00:00,FanDuel,2021_01_PIT_BUF,,Receptions,over,4.5,player not matched in the game's teams
+2021-09-12T07:02:20+00:00,FanDuel,2021_01_PIT_BUF,,Receptions,under,4.5,player not matched in the game's teams
+2021-09-12T07:02:20+00:00,FanDuel,2021_01_PIT_BUF,,Receptions,over,4.5,player not matched in the game's teams
+2021-09-12T07:02:20+00:00,FanDuel,2021_01_PIT_BUF,,Receptions,under,4.5,player not matched in the game's teams
+2021-09-12T07:02:36+00:00,FanDuel,2021_01_LAC_WAS,,Passing Completions,over,22.5,player not matched in the game's teams
+2021-09-12T07:02:36+00:00,FanDuel,2021_01_LAC_WAS,,Passing Completions,under,22.5,player not matched in the game's teams
+2021-09-12T07:02:36+00:00,FanDuel,2021_01_LAC_WAS,,Receptions,under,3.5,player not matched in the game's teams
+2021-09-12T07:02:36+00:00,FanDuel,2021_01_LAC_WAS,,Rushing Yards,over,11.5,player not matched in the game's teams
+2021-09-12T07:02:36+00:00,FanDuel,2021_01_LAC_WAS,,Rushing Yards,under,11.5,player not matched in the game's teams
+2021-09-12T07:02:36+00:00,FanDuel,2021_01_LAC_WAS,,Passing Completions,over,22.5,player not matched in the game's teams
+2021-09-12T07:02:36+00:00,FanDuel,2021_01_LAC_WAS,,Passing Completions,under,22.5,player not matched in the game's teams
+2021-09-12T07:02:36+00:00,FanDuel,2021_01_LAC_WAS,,Receptions,under,3.5,player not matched in the game's teams
+2021-09-12T07:02:36+00:00,FanDuel,2021_01_LAC_WAS,,Rushing Yards,over,11.5,player not matched in the game's teams
+2021-09-12T07:02:36+00:00,FanDuel,2021_01_LAC_WAS,,Rushing Yards,under,11.5,player not matched in the game's teams
+2021-09-12T10:27:32+00:00,FanDuel,2021_01_CLE_KC,Odell Beckham Jr.,Receiving Yards,over,52.5,player not matched in the game's teams
+2021-09-12T10:27:32+00:00,FanDuel,2021_01_CLE_KC,Odell Beckham Jr.,Receiving Yards,under,52.5,player not matched in the game's teams
+2021-09-12T10:27:32+00:00,FanDuel,2021_01_CLE_KC,Odell Beckham Jr.,Receiving Yards,over,52.5,player not matched in the game's teams
+2021-09-12T10:27:32+00:00,FanDuel,2021_01_CLE_KC,Odell Beckham Jr.,Receiving Yards,under,52.5,player not matched in the game's teams
+2021-09-12T10:27:33+00:00,FanDuel,2021_01_CLE_KC,Odell Beckham Jr.,Receptions,over,3.5,player not matched in the game's teams
+2021-09-12T10:27:33+00:00,FanDuel,2021_01_CLE_KC,Odell Beckham Jr.,Receptions,over,3.5,player not matched in the game's teams
+2021-09-12T10:28:33+00:00,FanDuel,2021_01_GB_NO,Lil'Jordan Humphrey,Receptions,under,2.5,player not matched in the game's teams
+2021-09-12T10:28:33+00:00,FanDuel,2021_01_GB_NO,Lil'Jordan Humphrey,Receptions,under,2.5,player not matched in the game's teams
+2021-09-12T10:28:34+00:00,FanDuel,2021_01_GB_NO,Lil'Jordan Humphrey,Receiving Yards,over,30.5,player not matched in the game's teams
+2021-09-12T10:28:34+00:00,FanDuel,2021_01_GB_NO,Lil'Jordan Humphrey,Receiving Yards,under,30.5,player not matched in the game's teams
+2021-09-12T14:03:13+00:00,FanDuel,2021_01_ARI_TEN,,Receptions,over,2.5,player not matched in the game's teams
+2021-09-12T14:03:13+00:00,FanDuel,2021_01_ARI_TEN,,Receptions,under,2.5,player not matched in the game's teams
+2021-09-12T14:03:13+00:00,FanDuel,2021_01_ARI_TEN,,Receptions,over,2.5,player not matched in the game's teams
+2021-09-12T14:03:13+00:00,FanDuel,2021_01_ARI_TEN,,Receptions,under,2.5,player not matched in the game's teams
+2021-09-12T14:22:37+00:00,FanDuel,2021_01_CHI_LA,,Receiving Yards,over,12.5,player not matched in the game's teams
+2021-09-12T14:22:37+00:00,FanDuel,2021_01_CHI_LA,,Receiving Yards,under,12.5,player not matched in the game's teams
+2021-09-12T14:22:37+00:00,FanDuel,2021_01_CHI_LA,,Receiving Yards,over,12.5,player not matched in the game's teams
+2021-09-12T14:22:37+00:00,FanDuel,2021_01_CHI_LA,,Receiving Yards,under,12.5,player not matched in the game's teams
+2021-09-12T14:22:37+00:00,FanDuel,2021_01_CHI_LA,,Receptions,over,2.5,player not matched in the game's teams
+2021-09-12T14:22:37+00:00,FanDuel,2021_01_CHI_LA,,Receptions,under,2.5,player not matched in the game's teams
+2021-09-12T14:22:39+00:00,FanDuel,2021_01_CHI_LA,,Rushing Yards,over,53.5,player not matched in the game's teams
+2021-09-12T14:22:39+00:00,FanDuel,2021_01_CHI_LA,,Rushing Yards,under,53.5,player not matched in the game's teams
+2021-09-12T14:22:39+00:00,FanDuel,2021_01_CHI_LA,,Rushing Yards,over,53.5,player not matched in the game's teams
+2021-09-12T14:22:39+00:00,FanDuel,2021_01_CHI_LA,,Rushing Yards,under,53.5,player not matched in the game's teams
+2021-09-12T15:06:08+00:00,FanDuel,2021_01_LAC_WAS,,Passing Yards,over,258.5,player not matched in the game's teams
+2021-09-12T15:06:08+00:00,FanDuel,2021_01_LAC_WAS,,Passing Yards,under,258.5,player not matched in the game's teams
+2021-09-12T15:32:22+00:00,FanDuel,2021_01_LAC_WAS,Joshua Palmer,Receptions,over,2.5,player not matched in the game's teams
+2021-09-12T15:32:22+00:00,FanDuel,2021_01_LAC_WAS,Joshua Palmer,Receptions,under,2.5,player not matched in the game's teams
+2021-09-12T15:32:22+00:00,FanDuel,2021_01_LAC_WAS,Joshua Palmer,Receptions,over,2.5,player not matched in the game's teams
+2021-09-12T15:32:22+00:00,FanDuel,2021_01_LAC_WAS,Joshua Palmer,Receptions,under,2.5,player not matched in the game's teams
+2021-09-12T15:38:17+00:00,FanDuel,2021_01_PIT_BUF,Zack Moss,Rushing Yards,over,29.5,player not matched in the game's teams
+2021-09-12T15:38:17+00:00,FanDuel,2021_01_PIT_BUF,Zack Moss,Rushing Yards,under,29.5,player not matched in the game's teams
+2021-09-12T15:41:11+00:00,FanDuel,2021_01_SEA_IND,Nyheim Miller-Hines,Rushing Yards,over,16.5,player not matched in the game's teams
+2021-09-12T15:41:11+00:00,FanDuel,2021_01_SEA_IND,Nyheim Miller-Hines,Rushing Yards,under,16.5,player not matched in the game's teams
+2021-09-12T16:34:17+00:00,FanDuel,2021_01_JAX_HOU,,Rushing Yards,over,35.5,player not matched in the game's teams
+2021-09-12T16:34:17+00:00,FanDuel,2021_01_JAX_HOU,,Rushing Yards,under,35.5,player not matched in the game's teams
+2021-09-13T14:17:02+00:00,FanDuel,2021_01_BAL_LV,Hollywood Brown,Receptions,over,3.5,player not matched in the game's teams
+2021-09-13T14:17:02+00:00,FanDuel,2021_01_BAL_LV,Hollywood Brown,Receptions,under,3.5,player not matched in the game's teams
+2021-09-13T14:17:03+00:00,FanDuel,2021_01_BAL_LV,,Receiving Yards,over,10.5,player not matched in the game's teams
+2021-09-13T14:17:03+00:00,FanDuel,2021_01_BAL_LV,,Receiving Yards,under,10.5,player not matched in the game's teams
+2021-09-13T14:17:03+00:00,FanDuel,2021_01_BAL_LV,Hollywood Brown,Receiving Yards,over,52.5,player not matched in the game's teams
+2021-09-13T14:17:03+00:00,FanDuel,2021_01_BAL_LV,Hollywood Brown,Receiving Yards,under,52.5,player not matched in the game's teams
+2021-09-13T14:17:03+00:00,FanDuel,2021_01_BAL_LV,,Receiving Yards,over,10.5,player not matched in the game's teams
+2021-09-13T14:17:03+00:00,FanDuel,2021_01_BAL_LV,,Receiving Yards,under,10.5,player not matched in the game's teams
+2021-09-13T14:17:03+00:00,FanDuel,2021_01_BAL_LV,Hollywood Brown,Receiving Yards,over,52.5,player not matched in the game's teams
+2021-09-13T14:17:03+00:00,FanDuel,2021_01_BAL_LV,Hollywood Brown,Receiving Yards,under,52.5,player not matched in the game's teams
+2021-09-13T18:21:03+00:00,FanDuel,2021_01_BAL_LV,,Receptions,over,1.5,player not matched in the game's teams
+2021-09-13T18:21:03+00:00,FanDuel,2021_01_BAL_LV,,Receptions,under,1.5,player not matched in the game's teams
+2021-09-13T18:21:03+00:00,FanDuel,2021_01_BAL_LV,,Receptions,over,1.5,player not matched in the game's teams
+2021-09-13T18:21:03+00:00,FanDuel,2021_01_BAL_LV,,Receptions,under,1.5,player not matched in the game's teams
+2021-09-13T20:25:04+00:00,FanDuel,2021_01_BAL_LV,,Rushing Attempts,over,14.5,player not matched in the game's teams
+2021-09-13T20:25:04+00:00,FanDuel,2021_01_BAL_LV,,Rushing Attempts,under,14.5,player not matched in the game's teams
+2021-09-13T20:25:04+00:00,FanDuel,2021_01_BAL_LV,,Rushing Attempts,over,14.5,player not matched in the game's teams
+2021-09-13T20:25:04+00:00,FanDuel,2021_01_BAL_LV,,Rushing Attempts,under,14.5,player not matched in the game's teams
+2021-09-13T20:32:04+00:00,FanDuel,2021_01_BAL_LV,Le'Veon Bell,Rushing Yards,over,13.5,player not matched in the game's teams
+2021-09-13T20:32:04+00:00,FanDuel,2021_01_BAL_LV,Le'Veon Bell,Rushing Yards,under,13.5,player not matched in the game's teams
+2021-09-13T20:32:04+00:00,FanDuel,2021_01_BAL_LV,Le'Veon Bell,Rushing Yards,over,13.5,player not matched in the game's teams
+2021-09-13T20:32:04+00:00,FanDuel,2021_01_BAL_LV,Le'Veon Bell,Rushing Yards,under,13.5,player not matched in the game's teams
+2021-09-13T23:12:04+00:00,FanDuel,2021_01_BAL_LV,,Rushing Yards,over,62.5,player not matched in the game's teams
+2021-09-13T23:12:04+00:00,FanDuel,2021_01_BAL_LV,,Rushing Yards,under,62.5,player not matched in the game's teams
+2021-09-16T14:22:12+00:00,FanDuel,2021_02_NYG_WAS,,Receiving Yards,over,25.5,player not matched in the game's teams
+2021-09-16T14:22:12+00:00,FanDuel,2021_02_NYG_WAS,,Receiving Yards,under,25.5,player not matched in the game's teams
+2021-09-16T14:22:12+00:00,FanDuel,2021_02_NYG_WAS,,Receptions,over,2.5,player not matched in the game's teams
+2021-09-16T14:22:12+00:00,FanDuel,2021_02_NYG_WAS,,Receptions,under,2.5,player not matched in the game's teams
+2021-09-17T19:06:29+00:00,FanDuel,2021_02_LA_IND,,Rushing Attempts,over,14.5,player not matched in the game's teams
+2021-09-17T19:06:29+00:00,FanDuel,2021_02_LA_IND,,Rushing Attempts,under,14.5,player not matched in the game's teams
+2021-09-17T19:06:29+00:00,FanDuel,2021_02_LA_IND,,Rushing Attempts,over,14.5,player not matched in the game's teams
+2021-09-17T19:06:29+00:00,FanDuel,2021_02_LA_IND,,Rushing Attempts,under,14.5,player not matched in the game's teams
+2021-09-19T07:01:39+00:00,FanDuel,2021_02_KC_BAL,,Rushing Attempts,over,10.5,player not matched in the game's teams
+2021-09-19T07:01:39+00:00,FanDuel,2021_02_KC_BAL,,Rushing Attempts,under,10.5,player not matched in the game's teams
+2021-09-19T07:02:15+00:00,FanDuel,2021_02_LA_IND,,Rushing Yards,over,60.5,player not matched in the game's teams
+2021-09-19T07:02:15+00:00,FanDuel,2021_02_LA_IND,,Rushing Yards,under,60.5,player not matched in the game's teams
+2021-09-19T07:02:15+00:00,FanDuel,2021_02_LA_IND,,Rushing Yards,over,60.5,player not matched in the game's teams
+2021-09-19T07:02:15+00:00,FanDuel,2021_02_LA_IND,,Rushing Yards,under,60.5,player not matched in the game's teams
+2021-09-19T07:02:17+00:00,FanDuel,2021_02_BUF_MIA,,Receiving Yards,over,51.5,player not matched in the game's teams
+2021-09-19T07:02:17+00:00,FanDuel,2021_02_BUF_MIA,,Receiving Yards,under,51.5,player not matched in the game's teams
+2021-09-19T07:02:27+00:00,FanDuel,2021_02_BUF_MIA,,Receptions,over,4.5,player not matched in the game's teams
+2021-09-19T07:02:27+00:00,FanDuel,2021_02_BUF_MIA,,Receptions,under,4.5,player not matched in the game's teams
+2021-09-19T07:02:31+00:00,FanDuel,2021_02_LA_IND,,Receptions,over,1.5,player not matched in the game's teams
+2021-09-19T07:02:31+00:00,FanDuel,2021_02_LA_IND,,Receptions,under,1.5,player not matched in the game's teams
+2021-09-19T07:02:31+00:00,FanDuel,2021_02_LA_IND,DeSean Jackson,Receptions,over,1.5,player not matched in the game's teams
+2021-09-19T07:02:31+00:00,FanDuel,2021_02_LA_IND,DeSean Jackson,Receptions,under,1.5,player not matched in the game's teams
+2021-09-19T07:02:31+00:00,FanDuel,2021_02_LA_IND,,Receptions,over,1.5,player not matched in the game's teams
+2021-09-19T07:02:31+00:00,FanDuel,2021_02_LA_IND,,Receptions,under,1.5,player not matched in the game's teams
+2021-09-19T07:02:31+00:00,FanDuel,2021_02_LA_IND,DeSean Jackson,Receiving Yards,over,19.5,player not matched in the game's teams
+2021-09-19T07:02:31+00:00,FanDuel,2021_02_LA_IND,DeSean Jackson,Receiving Yards,under,19.5,player not matched in the game's teams
+2021-09-19T07:02:31+00:00,FanDuel,2021_02_LA_IND,DeSean Jackson,Receptions,over,1.5,player not matched in the game's teams
+2021-09-19T07:02:31+00:00,FanDuel,2021_02_LA_IND,DeSean Jackson,Receptions,under,1.5,player not matched in the game's teams
+2021-09-19T07:02:31+00:00,FanDuel,2021_02_LA_IND,Nyheim Miller-Hines,Rushing Yards,over,22.5,player not matched in the game's teams
+2021-09-19T07:02:31+00:00,FanDuel,2021_02_LA_IND,Nyheim Miller-Hines,Rushing Yards,under,22.5,player not matched in the game's teams
+2021-09-19T07:02:32+00:00,FanDuel,2021_02_CIN_CHI,Damiere Byrd,Receiving Yards,over,19.5,player not matched in the game's teams
+2021-09-19T07:02:32+00:00,FanDuel,2021_02_CIN_CHI,Damiere Byrd,Receiving Yards,under,19.5,player not matched in the game's teams
+2021-09-19T07:02:32+00:00,FanDuel,2021_02_LA_IND,Nyheim Miller-Hines,Receiving Yards,over,27.5,player not matched in the game's teams
+2021-09-19T07:02:32+00:00,FanDuel,2021_02_LA_IND,Nyheim Miller-Hines,Receiving Yards,under,27.5,player not matched in the game's teams
+2021-09-19T07:02:32+00:00,FanDuel,2021_02_LA_IND,Parris Campbell,Receiving Yards,over,22.5,player not matched in the game's teams
+2021-09-19T07:02:32+00:00,FanDuel,2021_02_LA_IND,Parris Campbell,Receiving Yards,under,22.5,player not matched in the game's teams
+2021-09-19T07:02:32+00:00,FanDuel,2021_02_LA_IND,Parris Campbell,Receptions,over,2.5,player not matched in the game's teams
+2021-09-19T07:02:32+00:00,FanDuel,2021_02_LA_IND,Parris Campbell,Receptions,under,2.5,player not matched in the game's teams
+2021-09-19T07:02:33+00:00,FanDuel,2021_02_NO_CAR,Adam Trautman,Receptions,over,2.5,player not matched in the game's teams
+2021-09-19T07:02:33+00:00,FanDuel,2021_02_NO_CAR,Adam Trautman,Receptions,under,2.5,player not matched in the game's teams
+2021-09-19T07:02:33+00:00,FanDuel,2021_02_NO_CAR,Adam Trautman,Receiving Yards,over,26.5,player not matched in the game's teams
+2021-09-19T07:02:33+00:00,FanDuel,2021_02_NO_CAR,Adam Trautman,Receiving Yards,under,26.5,player not matched in the game's teams
+2021-09-19T07:02:33+00:00,FanDuel,2021_02_NO_CAR,Adam Trautman,Receptions,over,2.5,player not matched in the game's teams
+2021-09-19T07:02:33+00:00,FanDuel,2021_02_NO_CAR,Adam Trautman,Receptions,under,2.5,player not matched in the game's teams
+2021-09-19T07:02:39+00:00,FanDuel,2021_02_HOU_CLE,,Receiving Yards,over,3.5,player not matched in the game's teams
+2021-09-19T07:02:39+00:00,FanDuel,2021_02_HOU_CLE,,Receiving Yards,under,3.5,player not matched in the game's teams
+2021-09-19T07:02:39+00:00,FanDuel,2021_02_HOU_CLE,,Receiving Yards,over,3.5,player not matched in the game's teams
+2021-09-19T07:02:39+00:00,FanDuel,2021_02_HOU_CLE,,Receiving Yards,under,3.5,player not matched in the game's teams
+2021-09-19T10:07:32+00:00,FanDuel,2021_02_MIN_ARI,,Receptions,over,3.5,player not matched in the game's teams
+2021-09-19T10:07:32+00:00,FanDuel,2021_02_MIN_ARI,,Receptions,under,3.5,player not matched in the game's teams
+2021-09-19T10:07:32+00:00,FanDuel,2021_02_MIN_ARI,,Receiving Yards,over,37.5,player not matched in the game's teams
+2021-09-19T10:07:32+00:00,FanDuel,2021_02_MIN_ARI,,Receiving Yards,under,37.5,player not matched in the game's teams
+2021-09-19T10:07:32+00:00,FanDuel,2021_02_MIN_ARI,,Receptions,over,3.5,player not matched in the game's teams
+2021-09-19T10:07:32+00:00,FanDuel,2021_02_MIN_ARI,,Receptions,under,3.5,player not matched in the game's teams
+2021-09-19T10:07:35+00:00,FanDuel,2021_02_ATL_TB,,Rushing Yards,over,40.5,player not matched in the game's teams
+2021-09-19T10:07:35+00:00,FanDuel,2021_02_ATL_TB,,Rushing Yards,under,40.5,player not matched in the game's teams
+2021-09-19T10:27:35+00:00,FanDuel,2021_02_TEN_SEA,Will Dissly,Receiving Yards,over,16.5,player not matched in the game's teams
+2021-09-19T10:27:35+00:00,FanDuel,2021_02_TEN_SEA,Will Dissly,Receiving Yards,under,16.5,player not matched in the game's teams
+2021-09-19T10:27:36+00:00,FanDuel,2021_02_TEN_SEA,,Receptions,over,1.5,player not matched in the game's teams
+2021-09-19T10:27:36+00:00,FanDuel,2021_02_TEN_SEA,,Receptions,under,1.5,player not matched in the game's teams
+2021-09-19T10:27:36+00:00,FanDuel,2021_02_TEN_SEA,,Receptions,over,1.5,player not matched in the game's teams
+2021-09-19T10:27:36+00:00,FanDuel,2021_02_TEN_SEA,,Receptions,under,1.5,player not matched in the game's teams
+2021-09-19T14:22:41+00:00,FanDuel,2021_02_KC_BAL,Hollywood Brown,Receiving Yards,over,48.5,player not matched in the game's teams
+2021-09-19T14:22:41+00:00,FanDuel,2021_02_KC_BAL,Hollywood Brown,Receiving Yards,under,48.5,player not matched in the game's teams
+2021-09-19T14:22:41+00:00,FanDuel,2021_02_KC_BAL,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2021-09-19T14:22:41+00:00,FanDuel,2021_02_KC_BAL,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2021-09-19T14:33:31+00:00,FanDuel,2021_02_LA_IND,Nyheim Miller-Hines,Receptions,over,3.5,player not matched in the game's teams
+2021-09-19T14:33:31+00:00,FanDuel,2021_02_LA_IND,Nyheim Miller-Hines,Receptions,under,3.5,player not matched in the game's teams
+2021-09-19T15:49:30+00:00,FanDuel,2021_02_LA_IND,Nyheim Miller-Hines,Rushing Attempts,over,6.5,player not matched in the game's teams
+2021-09-19T15:49:30+00:00,FanDuel,2021_02_LA_IND,Nyheim Miller-Hines,Rushing Attempts,under,6.5,player not matched in the game's teams
+2021-09-19T15:49:31+00:00,FanDuel,2021_02_LA_IND,,Receiving Yards,over,12.5,player not matched in the game's teams
+2021-09-19T15:49:31+00:00,FanDuel,2021_02_LA_IND,,Receiving Yards,under,12.5,player not matched in the game's teams
+2021-09-19T16:48:41+00:00,FanDuel,2021_02_CIN_CHI,,Rushing Yards,over,21.5,player not matched in the game's teams
+2021-09-19T16:48:41+00:00,FanDuel,2021_02_CIN_CHI,,Rushing Yards,under,21.5,player not matched in the game's teams
+2021-09-19T19:14:14+00:00,FanDuel,2021_02_TEN_SEA,,Receiving Yards,over,21.5,player not matched in the game's teams
+2021-09-19T19:14:14+00:00,FanDuel,2021_02_TEN_SEA,,Receiving Yards,under,21.5,player not matched in the game's teams
+2021-09-19T21:48:05+00:00,FanDuel,2021_02_KC_BAL,,Receptions,over,1.5,player not matched in the game's teams
+2021-09-19T21:48:05+00:00,FanDuel,2021_02_KC_BAL,,Receptions,under,1.5,player not matched in the game's teams
+2021-09-19T21:48:05+00:00,FanDuel,2021_02_KC_BAL,,Receptions,over,1.5,player not matched in the game's teams
+2021-09-19T21:48:05+00:00,FanDuel,2021_02_KC_BAL,,Receptions,under,1.5,player not matched in the game's teams
+2021-09-19T22:18:04+00:00,FanDuel,2021_02_KC_BAL,,Rushing Yards,over,48.5,player not matched in the game's teams
+2021-09-19T22:18:04+00:00,FanDuel,2021_02_KC_BAL,,Rushing Yards,under,48.5,player not matched in the game's teams
+2021-09-19T22:18:04+00:00,FanDuel,2021_02_KC_BAL,,Rushing Yards,over,48.5,player not matched in the game's teams
+2021-09-19T22:18:04+00:00,FanDuel,2021_02_KC_BAL,,Rushing Yards,under,48.5,player not matched in the game's teams
+2021-09-19T23:41:05+00:00,FanDuel,2021_02_KC_BAL,,Receiving Yards,over,11.5,player not matched in the game's teams
+2021-09-19T23:41:05+00:00,FanDuel,2021_02_KC_BAL,,Receiving Yards,under,11.5,player not matched in the game's teams
+2021-09-20T14:17:03+00:00,FanDuel,2021_02_DET_GB,Allen Lazard,Receiving Yards,over,33.5,player not matched in the game's teams
+2021-09-20T14:17:03+00:00,FanDuel,2021_02_DET_GB,Allen Lazard,Receiving Yards,under,33.5,player not matched in the game's teams
+2021-09-20T14:17:03+00:00,FanDuel,2021_02_DET_GB,Allen Lazard,Receiving Yards,over,33.5,player not matched in the game's teams
+2021-09-20T14:17:03+00:00,FanDuel,2021_02_DET_GB,Allen Lazard,Receiving Yards,under,33.5,player not matched in the game's teams
+2021-09-20T21:52:03+00:00,FanDuel,2021_02_DET_GB,Allen Lazard,Receptions,over,2.5,player not matched in the game's teams
+2021-09-20T21:52:03+00:00,FanDuel,2021_02_DET_GB,Allen Lazard,Receptions,under,2.5,player not matched in the game's teams
+2021-09-25T03:20:32+00:00,FanDuel,2021_03_BAL_DET,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2021-09-26T07:20:21+00:00,FanDuel,2021_03_BAL_DET,Hollywood Brown,Receiving Yards,over,59.5,player not matched in the game's teams
+2021-09-26T07:20:21+00:00,FanDuel,2021_03_BAL_DET,Hollywood Brown,Receiving Yards,under,59.5,player not matched in the game's teams
+2021-09-26T07:20:23+00:00,FanDuel,2021_03_BAL_DET,,Receiving Yards,over,12.5,player not matched in the game's teams
+2021-09-26T07:20:23+00:00,FanDuel,2021_03_BAL_DET,,Receiving Yards,under,12.5,player not matched in the game's teams
+2021-09-26T07:20:28+00:00,FanDuel,2021_03_WAS_BUF,,Receiving Yards,over,30.5,player not matched in the game's teams
+2021-09-26T07:20:28+00:00,FanDuel,2021_03_WAS_BUF,,Receiving Yards,under,30.5,player not matched in the game's teams
+2021-09-26T07:20:31+00:00,FanDuel,2021_03_CHI_CLE,David Njoku,Receiving Yards,over,22.5,player not matched in the game's teams
+2021-09-26T07:20:31+00:00,FanDuel,2021_03_CHI_CLE,David Njoku,Receiving Yards,under,22.5,player not matched in the game's teams
+2021-09-26T07:20:32+00:00,FanDuel,2021_03_CHI_CLE,David Njoku,Receptions,over,2.5,player not matched in the game's teams
+2021-09-26T07:20:32+00:00,FanDuel,2021_03_CHI_CLE,David Njoku,Receptions,under,2.5,player not matched in the game's teams
+2021-09-26T07:20:33+00:00,FanDuel,2021_03_BAL_DET,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2021-09-26T07:20:36+00:00,FanDuel,2021_03_ATL_NYG,Kyle Rudolph,Receiving Yards,over,18.5,player not matched in the game's teams
+2021-09-26T07:20:36+00:00,FanDuel,2021_03_ATL_NYG,Kyle Rudolph,Receiving Yards,under,18.5,player not matched in the game's teams
+2021-09-26T07:20:36+00:00,FanDuel,2021_03_ATL_NYG,Kyle Rudolph,Receptions,over,2.5,player not matched in the game's teams
+2021-09-26T07:20:36+00:00,FanDuel,2021_03_ATL_NYG,Kyle Rudolph,Receptions,under,2.5,player not matched in the game's teams
+2021-09-26T07:20:36+00:00,FanDuel,2021_03_ATL_NYG,Kyle Rudolph,Receiving Yards,over,18.5,player not matched in the game's teams
+2021-09-26T07:20:36+00:00,FanDuel,2021_03_ATL_NYG,Kyle Rudolph,Receiving Yards,under,18.5,player not matched in the game's teams
+2021-09-26T07:20:36+00:00,FanDuel,2021_03_ATL_NYG,Kyle Rudolph,Receptions,over,2.5,player not matched in the game's teams
+2021-09-26T07:20:36+00:00,FanDuel,2021_03_ATL_NYG,Kyle Rudolph,Receptions,under,2.5,player not matched in the game's teams
+2021-09-26T10:40:31+00:00,FanDuel,2021_03_TB_LA,Scotty Miller,Receptions,over,1.5,player not matched in the game's teams
+2021-09-26T10:40:31+00:00,FanDuel,2021_03_TB_LA,Scotty Miller,Receptions,under,1.5,player not matched in the game's teams
+2021-09-26T10:40:31+00:00,FanDuel,2021_03_TB_LA,,Rushing Yards,over,40.5,player not matched in the game's teams
+2021-09-26T10:40:31+00:00,FanDuel,2021_03_TB_LA,,Rushing Yards,under,40.5,player not matched in the game's teams
+2021-09-26T10:40:31+00:00,FanDuel,2021_03_TB_LA,Scotty Miller,Receiving Yards,over,27.5,player not matched in the game's teams
+2021-09-26T10:40:31+00:00,FanDuel,2021_03_TB_LA,Scotty Miller,Receiving Yards,under,27.5,player not matched in the game's teams
+2021-09-26T10:40:31+00:00,FanDuel,2021_03_TB_LA,Scotty Miller,Receptions,over,1.5,player not matched in the game's teams
+2021-09-26T10:40:31+00:00,FanDuel,2021_03_TB_LA,Scotty Miller,Receptions,under,1.5,player not matched in the game's teams
+2021-09-26T15:40:29+00:00,FanDuel,2021_03_WAS_BUF,,Receptions,over,3.5,player not matched in the game's teams
+2021-09-26T15:40:29+00:00,FanDuel,2021_03_WAS_BUF,,Receptions,under,3.5,player not matched in the game's teams
+2021-09-26T15:40:33+00:00,FanDuel,2021_03_BAL_DET,,Receptions,over,1.5,player not matched in the game's teams
+2021-09-26T15:40:33+00:00,FanDuel,2021_03_BAL_DET,,Receptions,under,1.5,player not matched in the game's teams
+2021-09-26T16:00:23+00:00,FanDuel,2021_03_WAS_BUF,,Receiving Yards,over,48.5,player not matched in the game's teams
+2021-09-26T16:00:23+00:00,FanDuel,2021_03_WAS_BUF,,Receiving Yards,under,48.5,player not matched in the game's teams
+2021-09-26T16:00:36+00:00,FanDuel,2021_03_IND_TEN,Nyheim Miller-Hines,Receptions,over,3.5,player not matched in the game's teams
+2021-09-26T16:00:36+00:00,FanDuel,2021_03_IND_TEN,Nyheim Miller-Hines,Receptions,under,3.5,player not matched in the game's teams
+2021-09-26T16:00:36+00:00,FanDuel,2021_03_IND_TEN,Nyheim Miller-Hines,Receptions,over,3.5,player not matched in the game's teams
+2021-09-26T16:00:36+00:00,FanDuel,2021_03_IND_TEN,Nyheim Miller-Hines,Receptions,under,3.5,player not matched in the game's teams
+2021-09-26T16:20:21+00:00,FanDuel,2021_03_BAL_DET,,Rushing Yards,over,55.5,player not matched in the game's teams
+2021-09-26T16:20:21+00:00,FanDuel,2021_03_BAL_DET,,Rushing Yards,under,55.5,player not matched in the game's teams
+2021-09-26T16:20:31+00:00,FanDuel,2021_03_IND_TEN,Nyheim Miller-Hines,Receiving Yards,over,23.5,player not matched in the game's teams
+2021-09-26T16:20:31+00:00,FanDuel,2021_03_IND_TEN,Nyheim Miller-Hines,Receiving Yards,under,23.5,player not matched in the game's teams
+2021-09-26T16:20:33+00:00,FanDuel,2021_03_BAL_DET,,Rushing Attempts,over,12.5,player not matched in the game's teams
+2021-09-26T16:20:33+00:00,FanDuel,2021_03_BAL_DET,,Rushing Attempts,under,12.5,player not matched in the game's teams
+2021-09-26T16:40:28+00:00,FanDuel,2021_03_WAS_BUF,,Receptions,over,4.5,player not matched in the game's teams
+2021-09-26T16:40:28+00:00,FanDuel,2021_03_WAS_BUF,,Receptions,under,4.5,player not matched in the game's teams
+2021-09-26T16:40:32+00:00,FanDuel,2021_03_IND_TEN,Nyheim Miller-Hines,Rushing Yards,over,18.5,player not matched in the game's teams
+2021-09-26T16:40:32+00:00,FanDuel,2021_03_IND_TEN,Nyheim Miller-Hines,Rushing Yards,under,18.5,player not matched in the game's teams
+2021-09-26T16:40:36+00:00,FanDuel,2021_03_ARI_JAX,,Receiving Yards,over,49.5,player not matched in the game's teams
+2021-09-26T16:40:36+00:00,FanDuel,2021_03_ARI_JAX,,Receiving Yards,under,49.5,player not matched in the game's teams
+2021-09-30T14:40:14+00:00,FanDuel,2021_04_JAX_CIN,DJ Chark Jr.,Receptions,over,3.5,player not matched in the game's teams
+2021-09-30T14:40:14+00:00,FanDuel,2021_04_JAX_CIN,DJ Chark Jr.,Receptions,under,3.5,player not matched in the game's teams
+2021-09-30T20:40:14+00:00,FanDuel,2021_04_TB_NE,Rob Gronkowski,Receiving Yards,over,42.5,player not matched in the game's teams
+2021-09-30T20:40:14+00:00,FanDuel,2021_04_TB_NE,Rob Gronkowski,Receiving Yards,under,42.5,player not matched in the game's teams
+2021-09-30T23:40:13+00:00,FanDuel,2021_04_JAX_CIN,DJ Chark Jr.,Receiving Yards,over,51.5,player not matched in the game's teams
+2021-09-30T23:40:13+00:00,FanDuel,2021_04_JAX_CIN,DJ Chark Jr.,Receiving Yards,under,51.5,player not matched in the game's teams
+2021-10-01T19:00:28+00:00,FanDuel,2021_04_IND_MIA,Nyheim Miller-Hines,Receptions,over,3.5,player not matched in the game's teams
+2021-10-01T19:00:28+00:00,FanDuel,2021_04_IND_MIA,Nyheim Miller-Hines,Receptions,under,3.5,player not matched in the game's teams
+2021-10-01T19:00:28+00:00,FanDuel,2021_04_IND_MIA,Nyheim Miller-Hines,Rushing Yards,over,24.5,player not matched in the game's teams
+2021-10-01T19:00:28+00:00,FanDuel,2021_04_IND_MIA,Nyheim Miller-Hines,Rushing Yards,under,24.5,player not matched in the game's teams
+2021-10-03T07:20:17+00:00,FanDuel,2021_04_KC_PHI,Demarcus Robinson,Receiving Yards,over,21.5,player not matched in the game's teams
+2021-10-03T07:20:17+00:00,FanDuel,2021_04_KC_PHI,Demarcus Robinson,Receiving Yards,under,21.5,player not matched in the game's teams
+2021-10-03T07:20:21+00:00,FanDuel,2021_04_HOU_BUF,,Receiving Yards,over,59.5,player not matched in the game's teams
+2021-10-03T07:20:21+00:00,FanDuel,2021_04_HOU_BUF,,Receiving Yards,under,59.5,player not matched in the game's teams
+2021-10-03T07:20:25+00:00,FanDuel,2021_04_WAS_ATL,,Receptions,over,2.5,player not matched in the game's teams
+2021-10-03T07:20:25+00:00,FanDuel,2021_04_WAS_ATL,,Receptions,under,2.5,player not matched in the game's teams
+2021-10-03T07:20:25+00:00,FanDuel,2021_04_WAS_ATL,Logan Thomas,Receiving Yards,over,41.5,player not matched in the game's teams
+2021-10-03T07:20:25+00:00,FanDuel,2021_04_WAS_ATL,Logan Thomas,Receiving Yards,under,41.5,player not matched in the game's teams
+2021-10-03T07:20:25+00:00,FanDuel,2021_04_WAS_ATL,Logan Thomas,Receptions,over,3.5,player not matched in the game's teams
+2021-10-03T07:20:25+00:00,FanDuel,2021_04_WAS_ATL,Logan Thomas,Receptions,under,3.5,player not matched in the game's teams
+2021-10-03T07:20:29+00:00,FanDuel,2021_04_IND_MIA,Nyheim Miller-Hines,Receiving Yards,over,24.5,player not matched in the game's teams
+2021-10-03T07:20:29+00:00,FanDuel,2021_04_IND_MIA,Nyheim Miller-Hines,Receiving Yards,under,24.5,player not matched in the game's teams
+2021-10-03T07:20:29+00:00,FanDuel,2021_04_KC_PHI,Demarcus Robinson,Receptions,over,1.5,player not matched in the game's teams
+2021-10-03T07:20:29+00:00,FanDuel,2021_04_KC_PHI,Demarcus Robinson,Receptions,under,1.5,player not matched in the game's teams
+2021-10-03T07:20:34+00:00,FanDuel,2021_04_CLE_MIN,Donovan Peoples-Jones,Receiving Yards,over,22.5,player not matched in the game's teams
+2021-10-03T07:20:34+00:00,FanDuel,2021_04_CLE_MIN,Donovan Peoples-Jones,Receiving Yards,under,22.5,player not matched in the game's teams
+2021-10-03T07:20:34+00:00,FanDuel,2021_04_CLE_MIN,Donovan Peoples-Jones,Receptions,over,1.5,player not matched in the game's teams
+2021-10-03T07:20:34+00:00,FanDuel,2021_04_CLE_MIN,Donovan Peoples-Jones,Receptions,under,1.5,player not matched in the game's teams
+2021-10-03T07:20:39+00:00,FanDuel,2021_04_TEN_NYJ,,Receiving Yards,over,35.5,player not matched in the game's teams
+2021-10-03T07:20:39+00:00,FanDuel,2021_04_TEN_NYJ,,Receiving Yards,under,35.5,player not matched in the game's teams
+2021-10-03T07:20:39+00:00,FanDuel,2021_04_TEN_NYJ,,Receptions,over,2.5,player not matched in the game's teams
+2021-10-03T07:20:39+00:00,FanDuel,2021_04_TEN_NYJ,,Receptions,under,2.5,player not matched in the game's teams
+2021-10-03T07:20:39+00:00,FanDuel,2021_04_TEN_NYJ,,Receiving Yards,over,35.5,player not matched in the game's teams
+2021-10-03T07:20:39+00:00,FanDuel,2021_04_TEN_NYJ,,Receiving Yards,under,35.5,player not matched in the game's teams
+2021-10-03T07:20:39+00:00,FanDuel,2021_04_TEN_NYJ,,Receptions,over,2.5,player not matched in the game's teams
+2021-10-03T07:20:39+00:00,FanDuel,2021_04_TEN_NYJ,,Receptions,under,2.5,player not matched in the game's teams
+2021-10-03T10:20:35+00:00,FanDuel,2021_04_ARI_LA,,Receiving Yards,over,37.5,player not matched in the game's teams
+2021-10-03T10:20:35+00:00,FanDuel,2021_04_ARI_LA,,Receiving Yards,under,37.5,player not matched in the game's teams
+2021-10-03T10:40:30+00:00,FanDuel,2021_04_BAL_DEN,Hollywood Brown,Receiving Yards,over,52.5,player not matched in the game's teams
+2021-10-03T10:40:30+00:00,FanDuel,2021_04_BAL_DEN,Hollywood Brown,Receiving Yards,under,52.5,player not matched in the game's teams
+2021-10-03T10:40:30+00:00,FanDuel,2021_04_BAL_DEN,Hollywood Brown,Receiving Yards,over,52.5,player not matched in the game's teams
+2021-10-03T10:40:30+00:00,FanDuel,2021_04_BAL_DEN,Hollywood Brown,Receiving Yards,under,52.5,player not matched in the game's teams
+2021-10-03T10:40:34+00:00,FanDuel,2021_04_BAL_DEN,Hollywood Brown,Receptions,over,3.5,player not matched in the game's teams
+2021-10-03T10:40:34+00:00,FanDuel,2021_04_BAL_DEN,Hollywood Brown,Receptions,under,3.5,player not matched in the game's teams
+2021-10-03T13:00:27+00:00,FanDuel,2021_04_WAS_ATL,,Receiving Yards,over,22.5,player not matched in the game's teams
+2021-10-03T13:00:27+00:00,FanDuel,2021_04_WAS_ATL,,Receiving Yards,under,22.5,player not matched in the game's teams
+2021-10-03T16:40:32+00:00,FanDuel,2021_04_BAL_DEN,,Rushing Yards,over,29.5,player not matched in the game's teams
+2021-10-03T16:40:32+00:00,FanDuel,2021_04_BAL_DEN,,Rushing Yards,under,29.5,player not matched in the game's teams
+2021-10-03T16:40:34+00:00,FanDuel,2021_04_HOU_BUF,,Receptions,over,5.5,player not matched in the game's teams
+2021-10-03T16:40:34+00:00,FanDuel,2021_04_HOU_BUF,,Receptions,under,5.5,player not matched in the game's teams
+2021-10-03T19:00:17+00:00,FanDuel,2021_04_ARI_LA,,Receptions,over,3.5,player not matched in the game's teams
+2021-10-03T19:00:17+00:00,FanDuel,2021_04_ARI_LA,,Receptions,under,3.5,player not matched in the game's teams
+2021-10-03T23:20:07+00:00,FanDuel,2021_04_TB_NE,,Rushing Attempts,over,7.5,player not matched in the game's teams
+2021-10-03T23:20:07+00:00,FanDuel,2021_04_TB_NE,,Rushing Attempts,under,7.5,player not matched in the game's teams
+2021-10-03T23:20:07+00:00,FanDuel,2021_04_TB_NE,,Rushing Attempts,over,7.5,player not matched in the game's teams
+2021-10-03T23:20:07+00:00,FanDuel,2021_04_TB_NE,,Rushing Attempts,under,7.5,player not matched in the game's teams
+2021-10-03T23:20:07+00:00,FanDuel,2021_04_TB_NE,,Rushing Yards,over,29.5,player not matched in the game's teams
+2021-10-03T23:20:07+00:00,FanDuel,2021_04_TB_NE,,Rushing Yards,under,29.5,player not matched in the game's teams
+2021-10-04T14:20:03+00:00,FanDuel,2021_04_LV_LAC,,Rushing Yards,over,12.5,player not matched in the game's teams
+2021-10-04T14:20:03+00:00,FanDuel,2021_04_LV_LAC,,Rushing Yards,under,12.5,player not matched in the game's teams
+2021-10-06T15:20:13+00:00,FanDuel,2021_05_NYJ_ATL,Calvin Ridley,Receiving Yards,over,75.5,player not matched in the game's teams
+2021-10-06T15:20:13+00:00,FanDuel,2021_05_NYJ_ATL,Calvin Ridley,Receiving Yards,under,75.5,player not matched in the game's teams
+2021-10-06T15:20:13+00:00,FanDuel,2021_05_NYJ_ATL,Calvin Ridley,Receiving Yards,over,75.5,player not matched in the game's teams
+2021-10-06T15:20:13+00:00,FanDuel,2021_05_NYJ_ATL,Calvin Ridley,Receiving Yards,under,75.5,player not matched in the game's teams
+2021-10-07T17:20:17+00:00,FanDuel,2021_05_LA_SEA,,Receptions,over,2.5,player not matched in the game's teams
+2021-10-07T17:20:17+00:00,FanDuel,2021_05_LA_SEA,,Receptions,under,2.5,player not matched in the game's teams
+2021-10-07T17:20:17+00:00,FanDuel,2021_05_LA_SEA,,Rushing Attempts,over,14.5,player not matched in the game's teams
+2021-10-07T17:20:17+00:00,FanDuel,2021_05_LA_SEA,,Rushing Attempts,under,14.5,player not matched in the game's teams
+2021-10-07T19:20:18+00:00,FanDuel,2021_05_MIA_TB,DeVante Parker,Receiving Yards,over,52.5,player not matched in the game's teams
+2021-10-07T19:20:18+00:00,FanDuel,2021_05_MIA_TB,DeVante Parker,Receiving Yards,under,52.5,player not matched in the game's teams
+2021-10-07T21:20:11+00:00,FanDuel,2021_05_LA_SEA,Chris Carson,Rushing Yards,over,40.5,player not matched in the game's teams
+2021-10-07T21:20:11+00:00,FanDuel,2021_05_LA_SEA,Chris Carson,Rushing Yards,under,40.5,player not matched in the game's teams
+2021-10-07T21:40:15+00:00,FanDuel,2021_05_LA_SEA,,Receiving Yards,over,20.5,player not matched in the game's teams
+2021-10-07T21:40:15+00:00,FanDuel,2021_05_LA_SEA,,Receiving Yards,under,20.5,player not matched in the game's teams
+2021-10-07T23:20:13+00:00,FanDuel,2021_05_LA_SEA,,Rushing Yards,over,70.5,player not matched in the game's teams
+2021-10-07T23:20:13+00:00,FanDuel,2021_05_LA_SEA,,Rushing Yards,under,70.5,player not matched in the game's teams
+2021-10-09T07:20:31+00:00,FanDuel,2021_05_CHI_LV,,Receptions,over,3.5,player not matched in the game's teams
+2021-10-09T07:20:31+00:00,FanDuel,2021_05_CHI_LV,,Receptions,under,3.5,player not matched in the game's teams
+2021-10-09T07:20:31+00:00,FanDuel,2021_05_CHI_LV,,Rushing Attempts,over,14.5,player not matched in the game's teams
+2021-10-09T07:20:31+00:00,FanDuel,2021_05_CHI_LV,,Rushing Attempts,under,14.5,player not matched in the game's teams
+2021-10-09T07:20:32+00:00,FanDuel,2021_05_BUF_KC,,Receptions,over,4.5,player not matched in the game's teams
+2021-10-09T07:20:32+00:00,FanDuel,2021_05_BUF_KC,,Receptions,under,4.5,player not matched in the game's teams
+2021-10-09T15:20:32+00:00,FanDuel,2021_05_MIA_TB,DeVante Parker,Receptions,over,4.5,player not matched in the game's teams
+2021-10-09T15:20:32+00:00,FanDuel,2021_05_MIA_TB,DeVante Parker,Receptions,under,4.5,player not matched in the game's teams
+2021-10-09T17:20:18+00:00,FanDuel,2021_05_MIA_TB,DeVante Parker,Receiving Yards,over,53.5,player not matched in the game's teams
+2021-10-09T17:20:18+00:00,FanDuel,2021_05_MIA_TB,DeVante Parker,Receiving Yards,under,53.5,player not matched in the game's teams
+2021-10-09T17:20:30+00:00,FanDuel,2021_05_DET_MIN,Dalvin Cook,Rushing Yards,over,65.5,player not matched in the game's teams
+2021-10-09T17:20:30+00:00,FanDuel,2021_05_DET_MIN,Dalvin Cook,Rushing Yards,under,65.5,player not matched in the game's teams
+2021-10-09T17:20:32+00:00,FanDuel,2021_05_DET_MIN,Dalvin Cook,Receiving Yards,over,19.5,player not matched in the game's teams
+2021-10-09T17:20:32+00:00,FanDuel,2021_05_DET_MIN,Dalvin Cook,Receiving Yards,under,19.5,player not matched in the game's teams
+2021-10-09T17:20:32+00:00,FanDuel,2021_05_DET_MIN,Dalvin Cook,Receptions,over,2.5,player not matched in the game's teams
+2021-10-09T17:20:32+00:00,FanDuel,2021_05_DET_MIN,Dalvin Cook,Receptions,under,2.5,player not matched in the game's teams
+2021-10-09T19:20:33+00:00,FanDuel,2021_05_NE_HOU,Danny Amendola,Receiving Yards,over,28.5,player not matched in the game's teams
+2021-10-09T19:20:33+00:00,FanDuel,2021_05_NE_HOU,Danny Amendola,Receiving Yards,under,28.5,player not matched in the game's teams
+2021-10-09T19:20:33+00:00,FanDuel,2021_05_NE_HOU,Danny Amendola,Receptions,over,3.5,player not matched in the game's teams
+2021-10-09T19:20:33+00:00,FanDuel,2021_05_NE_HOU,Danny Amendola,Receptions,under,3.5,player not matched in the game's teams
+2021-10-09T19:20:34+00:00,FanDuel,2021_05_SF_ARI,,Receptions,over,1.5,player not matched in the game's teams
+2021-10-09T19:20:34+00:00,FanDuel,2021_05_SF_ARI,,Receptions,under,1.5,player not matched in the game's teams
+2021-10-09T20:20:30+00:00,FanDuel,2021_05_CHI_LV,,Rushing Yards,over,60.5,player not matched in the game's teams
+2021-10-09T20:20:30+00:00,FanDuel,2021_05_CHI_LV,,Rushing Yards,under,60.5,player not matched in the game's teams
+2021-10-09T20:20:31+00:00,FanDuel,2021_05_CHI_LV,,Receiving Yards,over,21.5,player not matched in the game's teams
+2021-10-09T20:20:31+00:00,FanDuel,2021_05_CHI_LV,,Receiving Yards,under,21.5,player not matched in the game's teams
+2021-10-09T20:40:29+00:00,FanDuel,2021_05_SF_ARI,,Receiving Yards,over,18.5,player not matched in the game's teams
+2021-10-09T20:40:29+00:00,FanDuel,2021_05_SF_ARI,,Receiving Yards,over,40.5,player not matched in the game's teams
+2021-10-09T20:40:29+00:00,FanDuel,2021_05_SF_ARI,,Receiving Yards,under,18.5,player not matched in the game's teams
+2021-10-09T20:40:29+00:00,FanDuel,2021_05_SF_ARI,,Receiving Yards,under,40.5,player not matched in the game's teams
+2021-10-09T21:20:29+00:00,FanDuel,2021_05_SF_ARI,,Receptions,over,3.5,player not matched in the game's teams
+2021-10-09T21:20:29+00:00,FanDuel,2021_05_SF_ARI,,Receptions,under,3.5,player not matched in the game's teams
+2021-10-09T21:20:35+00:00,FanDuel,2021_05_CHI_LV,Jimmy Graham,Receiving Yards,over,5.5,player not matched in the game's teams
+2021-10-09T21:20:35+00:00,FanDuel,2021_05_CHI_LV,Jimmy Graham,Receiving Yards,under,5.5,player not matched in the game's teams
+2021-10-10T00:40:21+00:00,FanDuel,2021_05_BUF_KC,,Receiving Yards,over,52.5,player not matched in the game's teams
+2021-10-10T00:40:21+00:00,FanDuel,2021_05_BUF_KC,,Receiving Yards,under,52.5,player not matched in the game's teams
+2021-10-10T00:40:35+00:00,FanDuel,2021_05_BUF_KC,,Receiving Yards,over,10.5,player not matched in the game's teams
+2021-10-10T00:40:35+00:00,FanDuel,2021_05_BUF_KC,,Receiving Yards,under,10.5,player not matched in the game's teams
+2021-10-10T00:40:35+00:00,FanDuel,2021_05_BUF_KC,,Rushing Yards,over,16.5,player not matched in the game's teams
+2021-10-10T00:40:35+00:00,FanDuel,2021_05_BUF_KC,,Rushing Yards,under,16.5,player not matched in the game's teams
+2021-10-10T02:40:30+00:00,FanDuel,2021_05_NO_WAS,,Receiving Yards,over,24.5,player not matched in the game's teams
+2021-10-10T02:40:30+00:00,FanDuel,2021_05_NO_WAS,,Receiving Yards,under,24.5,player not matched in the game's teams
+2021-10-10T02:40:30+00:00,FanDuel,2021_05_NO_WAS,,Receptions,over,2.5,player not matched in the game's teams
+2021-10-10T02:40:30+00:00,FanDuel,2021_05_NO_WAS,,Receptions,under,2.5,player not matched in the game's teams
+2021-10-10T03:20:35+00:00,FanDuel,2021_05_CLE_LAC,,Rushing Yards,over,18.5,player not matched in the game's teams
+2021-10-10T03:20:35+00:00,FanDuel,2021_05_CLE_LAC,,Rushing Yards,under,18.5,player not matched in the game's teams
+2021-10-10T03:40:33+00:00,FanDuel,2021_05_NYJ_ATL,,Receiving Yards,over,22.5,player not matched in the game's teams
+2021-10-10T03:40:33+00:00,FanDuel,2021_05_NYJ_ATL,,Receiving Yards,under,22.5,player not matched in the game's teams
+2021-10-11T16:20:04+00:00,FanDuel,2021_05_IND_BAL,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2021-10-11T16:20:04+00:00,FanDuel,2021_05_IND_BAL,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2021-10-11T19:20:05+00:00,FanDuel,2021_05_IND_BAL,Nyheim Miller-Hines,Receiving Yards,over,23.5,player not matched in the game's teams
+2021-10-11T19:20:05+00:00,FanDuel,2021_05_IND_BAL,Nyheim Miller-Hines,Receiving Yards,under,23.5,player not matched in the game's teams
+2021-10-11T23:00:05+00:00,FanDuel,2021_05_IND_BAL,Hollywood Brown,Receiving Yards,over,57.5,player not matched in the game's teams
+2021-10-11T23:00:05+00:00,FanDuel,2021_05_IND_BAL,Hollywood Brown,Receiving Yards,under,57.5,player not matched in the game's teams
+2021-10-13T19:20:12+00:00,FanDuel,2021_06_GB_CHI,,Rushing Yards,over,48.5,player not matched in the game's teams
+2021-10-13T19:20:12+00:00,FanDuel,2021_06_GB_CHI,,Rushing Yards,under,48.5,player not matched in the game's teams
+2021-10-14T15:20:15+00:00,FanDuel,2021_06_ARI_CLE,Nick Chubb,Rushing Yards,over,85.5,player not matched in the game's teams
+2021-10-14T15:20:15+00:00,FanDuel,2021_06_ARI_CLE,Nick Chubb,Rushing Yards,under,85.5,player not matched in the game's teams
+2021-10-14T19:20:16+00:00,FanDuel,2021_06_ARI_CLE,Nick Chubb,Rushing Yards,over,90.5,player not matched in the game's teams
+2021-10-14T19:20:16+00:00,FanDuel,2021_06_ARI_CLE,Nick Chubb,Rushing Yards,under,90.5,player not matched in the game's teams
+2021-10-14T20:00:18+00:00,FanDuel,2021_06_TB_PHI,Tyler Johnson,Receiving Yards,over,8.5,player not matched in the game's teams
+2021-10-14T20:00:18+00:00,FanDuel,2021_06_TB_PHI,Tyler Johnson,Receiving Yards,under,8.5,player not matched in the game's teams
+2021-10-14T22:40:13+00:00,FanDuel,2021_06_TB_PHI,,Rushing Yards,over,19.5,player not matched in the game's teams
+2021-10-14T22:40:13+00:00,FanDuel,2021_06_TB_PHI,,Rushing Yards,under,19.5,player not matched in the game's teams
+2021-10-15T21:20:24+00:00,FanDuel,2021_06_GB_CHI,Randall Cobb,Receptions,under,2.5,player not matched in the game's teams
+2021-10-16T17:20:29+00:00,FanDuel,2021_06_LA_NYG,,Rushing Attempts,over,16.5,player not matched in the game's teams
+2021-10-16T17:20:29+00:00,FanDuel,2021_06_LA_NYG,,Rushing Attempts,under,16.5,player not matched in the game's teams
+2021-10-16T19:20:28+00:00,FanDuel,2021_06_LAC_BAL,,Rushing Yards,over,15.5,player not matched in the game's teams
+2021-10-16T19:20:28+00:00,FanDuel,2021_06_LAC_BAL,,Rushing Yards,under,15.5,player not matched in the game's teams
+2021-10-16T19:20:28+00:00,FanDuel,2021_06_LAC_BAL,Sammy Watkins,Receiving Yards,over,45.5,player not matched in the game's teams
+2021-10-16T19:20:28+00:00,FanDuel,2021_06_LAC_BAL,Sammy Watkins,Receiving Yards,under,45.5,player not matched in the game's teams
+2021-10-16T19:20:28+00:00,FanDuel,2021_06_LAC_BAL,Sammy Watkins,Receptions,over,3.5,player not matched in the game's teams
+2021-10-16T19:20:28+00:00,FanDuel,2021_06_LAC_BAL,Sammy Watkins,Receptions,under,3.5,player not matched in the game's teams
+2021-10-16T19:20:28+00:00,FanDuel,2021_06_LAC_BAL,,Rushing Yards,over,15.5,player not matched in the game's teams
+2021-10-16T19:20:28+00:00,FanDuel,2021_06_LAC_BAL,,Rushing Yards,under,15.5,player not matched in the game's teams
+2021-10-16T19:20:28+00:00,FanDuel,2021_06_LAC_BAL,Sammy Watkins,Receiving Yards,over,45.5,player not matched in the game's teams
+2021-10-16T19:20:28+00:00,FanDuel,2021_06_LAC_BAL,Sammy Watkins,Receiving Yards,under,45.5,player not matched in the game's teams
+2021-10-16T19:20:28+00:00,FanDuel,2021_06_LAC_BAL,Sammy Watkins,Receptions,over,3.5,player not matched in the game's teams
+2021-10-16T19:20:28+00:00,FanDuel,2021_06_LAC_BAL,Sammy Watkins,Receptions,under,3.5,player not matched in the game's teams
+2021-10-16T21:20:29+00:00,FanDuel,2021_06_KC_WAS,,Receptions,over,2.5,player not matched in the game's teams
+2021-10-17T03:40:28+00:00,FanDuel,2021_06_MIA_JAX,Carlos Hyde,Rushing Yards,over,16.5,player not matched in the game's teams
+2021-10-17T03:40:28+00:00,FanDuel,2021_06_MIA_JAX,Carlos Hyde,Rushing Yards,under,16.5,player not matched in the game's teams
+2021-10-17T07:20:11+00:00,FanDuel,2021_06_GB_CHI,Randall Cobb,Receiving Yards,over,35.5,player not matched in the game's teams
+2021-10-17T07:20:11+00:00,FanDuel,2021_06_GB_CHI,Randall Cobb,Receiving Yards,under,35.5,player not matched in the game's teams
+2021-10-17T07:20:16+00:00,FanDuel,2021_06_LAC_BAL,Hollywood Brown,Receiving Yards,over,61.5,player not matched in the game's teams
+2021-10-17T07:20:16+00:00,FanDuel,2021_06_LAC_BAL,Hollywood Brown,Receiving Yards,under,61.5,player not matched in the game's teams
+2021-10-17T07:20:19+00:00,FanDuel,2021_06_LA_NYG,,Receiving Yards,over,15.5,player not matched in the game's teams
+2021-10-17T07:20:19+00:00,FanDuel,2021_06_LA_NYG,,Receiving Yards,under,15.5,player not matched in the game's teams
+2021-10-17T07:20:19+00:00,FanDuel,2021_06_LA_NYG,,Rushing Yards,over,75.5,player not matched in the game's teams
+2021-10-17T07:20:19+00:00,FanDuel,2021_06_LA_NYG,,Rushing Yards,under,75.5,player not matched in the game's teams
+2021-10-17T07:20:25+00:00,FanDuel,2021_06_GB_CHI,Randall Cobb,Receptions,over,2.5,player not matched in the game's teams
+2021-10-17T07:20:26+00:00,FanDuel,2021_06_LAC_BAL,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2021-10-17T07:20:26+00:00,FanDuel,2021_06_LAC_BAL,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2021-10-17T07:20:28+00:00,FanDuel,2021_06_KC_WAS,,Receptions,over,3.5,player not matched in the game's teams
+2021-10-17T07:20:28+00:00,FanDuel,2021_06_KC_WAS,,Receptions,under,3.5,player not matched in the game's teams
+2021-10-17T07:20:28+00:00,FanDuel,2021_06_KC_WAS,,Rushing Yards,over,48.5,player not matched in the game's teams
+2021-10-17T07:20:28+00:00,FanDuel,2021_06_LA_NYG,,Receptions,over,2.5,player not matched in the game's teams
+2021-10-17T07:20:28+00:00,FanDuel,2021_06_LA_NYG,,Receptions,under,2.5,player not matched in the game's teams
+2021-10-17T07:20:29+00:00,FanDuel,2021_06_KC_WAS,,Receiving Yards,over,15.5,player not matched in the game's teams
+2021-10-17T07:20:29+00:00,FanDuel,2021_06_KC_WAS,,Receiving Yards,under,15.5,player not matched in the game's teams
+2021-10-17T07:20:29+00:00,FanDuel,2021_06_KC_WAS,,Receptions,under,2.5,player not matched in the game's teams
+2021-10-17T07:20:29+00:00,FanDuel,2021_06_KC_WAS,,Rushing Yards,under,48.5,player not matched in the game's teams
+2021-10-17T15:20:28+00:00,FanDuel,2021_06_HOU_IND,,Receiving Yards,over,26.5,player not matched in the game's teams
+2021-10-17T15:20:28+00:00,FanDuel,2021_06_HOU_IND,,Receiving Yards,under,26.5,player not matched in the game's teams
+2021-10-17T15:20:28+00:00,FanDuel,2021_06_HOU_IND,,Receiving Yards,over,26.5,player not matched in the game's teams
+2021-10-17T15:20:28+00:00,FanDuel,2021_06_HOU_IND,,Receiving Yards,under,26.5,player not matched in the game's teams
+2021-10-18T17:20:03+00:00,FanDuel,2021_06_BUF_TEN,,Receiving Yards,over,42.5,player not matched in the game's teams
+2021-10-18T17:20:03+00:00,FanDuel,2021_06_BUF_TEN,,Receiving Yards,under,42.5,player not matched in the game's teams
+2021-10-18T17:20:03+00:00,FanDuel,2021_06_BUF_TEN,,Receptions,over,4.5,player not matched in the game's teams
+2021-10-18T17:20:03+00:00,FanDuel,2021_06_BUF_TEN,,Receptions,under,4.5,player not matched in the game's teams
+2021-10-21T22:00:18+00:00,FanDuel,2021_07_DEN_CLE,Donovan Peoples-Jones,Receiving Yards,over,36.5,player not matched in the game's teams
+2021-10-21T22:00:18+00:00,FanDuel,2021_07_DEN_CLE,Donovan Peoples-Jones,Receiving Yards,under,36.5,player not matched in the game's teams
+2021-10-21T23:00:19+00:00,FanDuel,2021_07_DEN_CLE,Donovan Peoples-Jones,Receptions,over,2.5,player not matched in the game's teams
+2021-10-21T23:00:19+00:00,FanDuel,2021_07_DEN_CLE,Donovan Peoples-Jones,Receptions,under,2.5,player not matched in the game's teams
+2021-10-21T23:20:16+00:00,FanDuel,2021_07_CIN_BAL,Hollywood Brown,Receiving Yards,over,54.5,player not matched in the game's teams
+2021-10-21T23:20:16+00:00,FanDuel,2021_07_CIN_BAL,Hollywood Brown,Receiving Yards,under,54.5,player not matched in the game's teams
+2021-10-22T13:20:16+00:00,FanDuel,2021_07_IND_SF,Nyheim Miller-Hines,Receiving Yards,over,12.5,player not matched in the game's teams
+2021-10-22T13:20:16+00:00,FanDuel,2021_07_IND_SF,Nyheim Miller-Hines,Receiving Yards,under,12.5,player not matched in the game's teams
+2021-10-22T15:20:17+00:00,FanDuel,2021_07_NYJ_NE,Rhamondre Stevenson,Rushing Yards,over,23.5,player not matched in the game's teams
+2021-10-22T15:20:17+00:00,FanDuel,2021_07_NYJ_NE,Rhamondre Stevenson,Rushing Yards,under,23.5,player not matched in the game's teams
+2021-10-22T15:20:19+00:00,FanDuel,2021_07_PHI_LV,Darren Waller,Receiving Yards,over,63.5,player not matched in the game's teams
+2021-10-22T15:20:19+00:00,FanDuel,2021_07_PHI_LV,Darren Waller,Receiving Yards,under,63.5,player not matched in the game's teams
+2021-10-22T17:20:22+00:00,FanDuel,2021_07_PHI_LV,Darren Waller,Receptions,over,5.5,player not matched in the game's teams
+2021-10-22T17:20:22+00:00,FanDuel,2021_07_PHI_LV,Darren Waller,Receptions,under,5.5,player not matched in the game's teams
+2021-10-22T19:20:23+00:00,FanDuel,2021_07_HOU_ARI,Chris Conley,Receiving Yards,over,24.5,player not matched in the game's teams
+2021-10-22T19:20:23+00:00,FanDuel,2021_07_HOU_ARI,Chris Conley,Receiving Yards,under,24.5,player not matched in the game's teams
+2021-10-22T20:00:29+00:00,FanDuel,2021_07_HOU_ARI,Chris Conley,Receiving Yards,over,22.5,player not matched in the game's teams
+2021-10-22T20:00:29+00:00,FanDuel,2021_07_HOU_ARI,Chris Conley,Receiving Yards,under,22.5,player not matched in the game's teams
+2021-10-22T21:20:23+00:00,FanDuel,2021_07_HOU_ARI,,Receptions,over,3.5,player not matched in the game's teams
+2021-10-24T06:40:26+00:00,FanDuel,2021_07_KC_TEN,,Rushing Attempts,over,15.5,player not matched in the game's teams
+2021-10-24T06:40:26+00:00,FanDuel,2021_07_KC_TEN,,Rushing Attempts,under,15.5,player not matched in the game's teams
+2021-10-24T10:00:15+00:00,FanDuel,2021_07_KC_TEN,,Rushing Yards,over,56.5,player not matched in the game's teams
+2021-10-24T10:00:15+00:00,FanDuel,2021_07_KC_TEN,,Rushing Yards,under,56.5,player not matched in the game's teams
+2021-10-24T10:00:17+00:00,FanDuel,2021_07_CIN_BAL,Hollywood Brown,Receiving Yards,over,58.5,player not matched in the game's teams
+2021-10-24T10:00:17+00:00,FanDuel,2021_07_CIN_BAL,Hollywood Brown,Receiving Yards,under,58.5,player not matched in the game's teams
+2021-10-24T10:00:21+00:00,FanDuel,2021_07_NYJ_NE,Rhamondre Stevenson,Rushing Yards,over,25.5,player not matched in the game's teams
+2021-10-24T10:00:22+00:00,FanDuel,2021_07_NYJ_NE,Rhamondre Stevenson,Rushing Yards,under,25.5,player not matched in the game's teams
+2021-10-24T10:00:26+00:00,FanDuel,2021_07_CIN_BAL,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2021-10-24T10:00:26+00:00,FanDuel,2021_07_CIN_BAL,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2021-10-24T10:00:30+00:00,FanDuel,2021_07_KC_TEN,,Receiving Yards,over,18.5,player not matched in the game's teams
+2021-10-24T10:00:30+00:00,FanDuel,2021_07_KC_TEN,,Receiving Yards,under,18.5,player not matched in the game's teams
+2021-10-24T10:00:31+00:00,FanDuel,2021_07_NYJ_NE,Rhamondre Stevenson,Receiving Yards,over,11.5,player not matched in the game's teams
+2021-10-24T10:00:31+00:00,FanDuel,2021_07_NYJ_NE,Rhamondre Stevenson,Receiving Yards,under,11.5,player not matched in the game's teams
+2021-10-24T10:00:31+00:00,FanDuel,2021_07_NYJ_NE,Rhamondre Stevenson,Receptions,over,1.5,player not matched in the game's teams
+2021-10-24T10:00:31+00:00,FanDuel,2021_07_NYJ_NE,Rhamondre Stevenson,Receptions,under,1.5,player not matched in the game's teams
+2021-10-24T10:00:32+00:00,FanDuel,2021_07_KC_TEN,,Receptions,over,2.5,player not matched in the game's teams
+2021-10-24T10:00:32+00:00,FanDuel,2021_07_KC_TEN,,Receptions,under,2.5,player not matched in the game's teams
+2021-10-24T10:00:33+00:00,FanDuel,2021_07_WAS_GB,,Receiving Yards,over,22.5,player not matched in the game's teams
+2021-10-24T10:00:33+00:00,FanDuel,2021_07_WAS_GB,,Receiving Yards,under,22.5,player not matched in the game's teams
+2021-10-24T10:00:33+00:00,FanDuel,2021_07_WAS_GB,Dyami Brown,Receiving Yards,over,25.5,player not matched in the game's teams
+2021-10-24T10:00:33+00:00,FanDuel,2021_07_WAS_GB,Dyami Brown,Receiving Yards,under,25.5,player not matched in the game's teams
+2021-10-24T10:00:33+00:00,FanDuel,2021_07_IND_SF,Kyle Juszczyk,Receptions,under,1.5,player not matched in the game's teams
+2021-10-24T10:20:22+00:00,FanDuel,2021_07_DET_LA,,Receiving Yards,over,20.5,player not matched in the game's teams
+2021-10-24T10:20:22+00:00,FanDuel,2021_07_DET_LA,,Receiving Yards,under,20.5,player not matched in the game's teams
+2021-10-24T10:20:22+00:00,FanDuel,2021_07_DET_LA,,Rushing Yards,over,81.5,player not matched in the game's teams
+2021-10-24T10:20:22+00:00,FanDuel,2021_07_DET_LA,,Rushing Yards,under,81.5,player not matched in the game's teams
+2021-10-24T10:20:24+00:00,FanDuel,2021_07_DET_LA,,Receptions,over,2.5,player not matched in the game's teams
+2021-10-24T10:20:24+00:00,FanDuel,2021_07_DET_LA,,Receptions,under,2.5,player not matched in the game's teams
+2021-10-24T10:20:24+00:00,FanDuel,2021_07_DET_LA,Amon-Ra St. Brown,Receiving Yards,over,47.5,player not matched in the game's teams
+2021-10-24T10:20:24+00:00,FanDuel,2021_07_DET_LA,Amon-Ra St. Brown,Receiving Yards,under,47.5,player not matched in the game's teams
+2021-10-24T10:40:24+00:00,FanDuel,2021_07_HOU_ARI,,Receiving Yards,over,31.5,player not matched in the game's teams
+2021-10-24T10:40:24+00:00,FanDuel,2021_07_HOU_ARI,,Receiving Yards,under,31.5,player not matched in the game's teams
+2021-10-24T10:40:25+00:00,FanDuel,2021_07_HOU_ARI,,Receptions,under,3.5,player not matched in the game's teams
+2021-10-24T10:40:26+00:00,FanDuel,2021_07_CHI_TB,,Rushing Yards,over,19.5,player not matched in the game's teams
+2021-10-24T10:40:26+00:00,FanDuel,2021_07_CHI_TB,,Rushing Yards,under,19.5,player not matched in the game's teams
+2021-10-24T13:20:23+00:00,FanDuel,2021_07_DET_LA,Amon-Ra St. Brown,Receptions,over,4.5,player not matched in the game's teams
+2021-10-24T13:20:23+00:00,FanDuel,2021_07_DET_LA,Amon-Ra St. Brown,Receptions,under,4.5,player not matched in the game's teams
+2021-10-24T14:40:28+00:00,FanDuel,2021_07_IND_SF,,Receiving Yards,over,17.5,player not matched in the game's teams
+2021-10-24T14:40:28+00:00,FanDuel,2021_07_IND_SF,,Receiving Yards,under,17.5,player not matched in the game's teams
+2021-10-24T14:40:28+00:00,FanDuel,2021_07_IND_SF,,Receptions,over,1.5,player not matched in the game's teams
+2021-10-24T14:40:28+00:00,FanDuel,2021_07_IND_SF,,Receptions,under,1.5,player not matched in the game's teams
+2021-10-24T14:40:28+00:00,FanDuel,2021_07_IND_SF,Kyle Juszczyk,Receiving Yards,over,14.5,player not matched in the game's teams
+2021-10-24T14:40:28+00:00,FanDuel,2021_07_IND_SF,Kyle Juszczyk,Receiving Yards,under,14.5,player not matched in the game's teams
+2021-10-24T14:40:28+00:00,FanDuel,2021_07_IND_SF,Kyle Juszczyk,Receptions,over,1.5,player not matched in the game's teams
+2021-10-24T14:40:28+00:00,FanDuel,2021_07_IND_SF,Nyheim Miller-Hines,Receptions,over,2.5,player not matched in the game's teams
+2021-10-24T14:40:28+00:00,FanDuel,2021_07_IND_SF,Nyheim Miller-Hines,Receptions,under,2.5,player not matched in the game's teams
+2021-10-24T21:20:03+00:00,FanDuel,2021_07_IND_SF,Nyheim Miller-Hines,Receiving Yards,over,15.5,player not matched in the game's teams
+2021-10-24T21:20:03+00:00,FanDuel,2021_07_IND_SF,Nyheim Miller-Hines,Receiving Yards,under,15.5,player not matched in the game's teams
+2021-10-24T21:20:05+00:00,FanDuel,2021_07_IND_SF,Nyheim Miller-Hines,Rushing Yards,over,17.5,player not matched in the game's teams
+2021-10-24T21:20:05+00:00,FanDuel,2021_07_IND_SF,Nyheim Miller-Hines,Rushing Yards,under,17.5,player not matched in the game's teams
+2021-10-25T19:20:06+00:00,FanDuel,2021_08_GB_ARI,Davante Adams,Receiving Yards,over,94.5,player not matched in the game's teams
+2021-10-25T19:20:06+00:00,FanDuel,2021_08_GB_ARI,Davante Adams,Receiving Yards,under,94.5,player not matched in the game's teams
+2021-10-25T19:20:06+00:00,FanDuel,2021_08_GB_ARI,Davante Adams,Receiving Yards,over,94.5,player not matched in the game's teams
+2021-10-25T19:20:06+00:00,FanDuel,2021_08_GB_ARI,Davante Adams,Receiving Yards,under,94.5,player not matched in the game's teams
+2021-10-28T14:40:11+00:00,FanDuel,2021_08_GB_ARI,,Receptions,over,3.5,player not matched in the game's teams
+2021-10-28T14:40:11+00:00,FanDuel,2021_08_GB_ARI,,Receptions,under,3.5,player not matched in the game's teams
+2021-10-28T19:20:14+00:00,FanDuel,2021_08_CAR_ATL,Calvin Ridley,Receiving Yards,over,73.5,player not matched in the game's teams
+2021-10-28T19:20:14+00:00,FanDuel,2021_08_CAR_ATL,Calvin Ridley,Receiving Yards,under,73.5,player not matched in the game's teams
+2021-10-28T21:00:12+00:00,FanDuel,2021_08_GB_ARI,,Receiving Yards,over,28.5,player not matched in the game's teams
+2021-10-28T21:00:12+00:00,FanDuel,2021_08_GB_ARI,,Receiving Yards,under,28.5,player not matched in the game's teams
+2021-10-28T23:20:16+00:00,FanDuel,2021_08_GB_ARI,,Receptions,over,1.5,player not matched in the game's teams
+2021-10-28T23:20:16+00:00,FanDuel,2021_08_GB_ARI,,Receptions,under,1.5,player not matched in the game's teams
+2021-10-28T23:20:16+00:00,FanDuel,2021_08_GB_ARI,,Receiving Yards,over,20.5,player not matched in the game's teams
+2021-10-28T23:20:16+00:00,FanDuel,2021_08_GB_ARI,,Receiving Yards,under,20.5,player not matched in the game's teams
+2021-10-28T23:20:16+00:00,FanDuel,2021_08_GB_ARI,,Receptions,over,1.5,player not matched in the game's teams
+2021-10-28T23:20:16+00:00,FanDuel,2021_08_GB_ARI,,Receptions,under,1.5,player not matched in the game's teams
+2021-10-29T21:20:24+00:00,FanDuel,2021_08_MIA_BUF,,Receptions,over,4.5,player not matched in the game's teams
+2021-10-29T21:20:24+00:00,FanDuel,2021_08_MIA_BUF,,Receptions,under,4.5,player not matched in the game's teams
+2021-10-29T21:20:24+00:00,FanDuel,2021_08_LA_HOU,,Rushing Attempts,over,16.5,player not matched in the game's teams
+2021-10-29T21:20:24+00:00,FanDuel,2021_08_LA_HOU,,Rushing Attempts,under,16.5,player not matched in the game's teams
+2021-10-30T15:20:31+00:00,FanDuel,2021_08_TEN_IND,Josh Reynolds,Receiving Yards,over,24.5,player not matched in the game's teams
+2021-10-30T15:20:31+00:00,FanDuel,2021_08_TEN_IND,Josh Reynolds,Receiving Yards,under,24.5,player not matched in the game's teams
+2021-10-30T15:20:31+00:00,FanDuel,2021_08_TEN_IND,Josh Reynolds,Receptions,over,3.5,player not matched in the game's teams
+2021-10-30T15:20:31+00:00,FanDuel,2021_08_TEN_IND,Josh Reynolds,Receptions,under,3.5,player not matched in the game's teams
+2021-10-30T15:20:31+00:00,FanDuel,2021_08_TEN_IND,Josh Reynolds,Receptions,over,3.5,player not matched in the game's teams
+2021-10-30T15:20:32+00:00,FanDuel,2021_08_TEN_IND,Nyheim Miller-Hines,Rushing Yards,over,10.5,player not matched in the game's teams
+2021-10-30T15:20:32+00:00,FanDuel,2021_08_TEN_IND,Nyheim Miller-Hines,Rushing Yards,under,10.5,player not matched in the game's teams
+2021-10-30T19:20:31+00:00,FanDuel,2021_08_WAS_DEN,,Receptions,over,2.5,player not matched in the game's teams
+2021-10-30T19:20:31+00:00,FanDuel,2021_08_WAS_DEN,,Receptions,under,2.5,player not matched in the game's teams
+2021-10-31T02:20:27+00:00,FanDuel,2021_08_CAR_ATL,Calvin Ridley,Receptions,over,6.5,player not matched in the game's teams
+2021-10-31T04:00:36+00:00,FanDuel,2021_08_NYG_KC,,Rushing Attempts,over,14.5,player not matched in the game's teams
+2021-10-31T04:00:36+00:00,FanDuel,2021_08_NYG_KC,,Rushing Attempts,under,14.5,player not matched in the game's teams
+2021-10-31T07:20:15+00:00,FanDuel,2021_08_LA_HOU,,Rushing Yards,over,81.5,player not matched in the game's teams
+2021-10-31T07:20:15+00:00,FanDuel,2021_08_LA_HOU,,Rushing Yards,under,81.5,player not matched in the game's teams
+2021-10-31T07:20:15+00:00,FanDuel,2021_08_MIA_BUF,,Receiving Yards,over,51.5,player not matched in the game's teams
+2021-10-31T07:20:15+00:00,FanDuel,2021_08_MIA_BUF,,Receiving Yards,under,51.5,player not matched in the game's teams
+2021-10-31T07:20:21+00:00,FanDuel,2021_08_TEN_IND,Nyheim Miller-Hines,Receptions,over,2.5,player not matched in the game's teams
+2021-10-31T07:20:21+00:00,FanDuel,2021_08_TEN_IND,Nyheim Miller-Hines,Receptions,under,2.5,player not matched in the game's teams
+2021-10-31T07:20:26+00:00,FanDuel,2021_08_CAR_ATL,Calvin Ridley,Receptions,under,6.5,player not matched in the game's teams
+2021-10-31T07:20:26+00:00,FanDuel,2021_08_LA_HOU,,Receiving Yards,over,20.5,player not matched in the game's teams
+2021-10-31T07:20:26+00:00,FanDuel,2021_08_LA_HOU,,Receiving Yards,under,20.5,player not matched in the game's teams
+2021-10-31T07:20:26+00:00,FanDuel,2021_08_LA_HOU,,Receptions,over,2.5,player not matched in the game's teams
+2021-10-31T07:20:26+00:00,FanDuel,2021_08_LA_HOU,,Receptions,under,2.5,player not matched in the game's teams
+2021-10-31T07:20:26+00:00,FanDuel,2021_08_MIA_BUF,,Receptions,over,4.5,player not matched in the game's teams
+2021-10-31T07:20:26+00:00,FanDuel,2021_08_MIA_BUF,,Receptions,under,4.5,player not matched in the game's teams
+2021-10-31T07:20:28+00:00,FanDuel,2021_08_TEN_IND,Josh Reynolds,Receptions,under,3.5,player not matched in the game's teams
+2021-10-31T07:20:29+00:00,FanDuel,2021_08_TEN_IND,Nyheim Miller-Hines,Rushing Yards,over,10.5,player not matched in the game's teams
+2021-10-31T07:20:29+00:00,FanDuel,2021_08_TEN_IND,Nyheim Miller-Hines,Rushing Yards,under,10.5,player not matched in the game's teams
+2021-10-31T10:40:30+00:00,FanDuel,2021_08_WAS_DEN,,Receiving Yards,over,26.5,player not matched in the game's teams
+2021-10-31T10:40:30+00:00,FanDuel,2021_08_WAS_DEN,,Receiving Yards,under,26.5,player not matched in the game's teams
+2021-10-31T10:40:32+00:00,FanDuel,2021_08_WAS_DEN,,Receptions,over,2.5,player not matched in the game's teams
+2021-10-31T10:40:32+00:00,FanDuel,2021_08_WAS_DEN,,Receptions,under,2.5,player not matched in the game's teams
+2021-10-31T13:40:30+00:00,FanDuel,2021_08_TEN_IND,Josh Reynolds,Receiving Yards,over,25.5,player not matched in the game's teams
+2021-10-31T13:40:30+00:00,FanDuel,2021_08_TEN_IND,Josh Reynolds,Receiving Yards,under,25.5,player not matched in the game's teams
+2021-10-31T14:00:31+00:00,FanDuel,2021_08_JAX_SEA,,Receiving Yards,over,54.5,player not matched in the game's teams
+2021-10-31T14:00:31+00:00,FanDuel,2021_08_JAX_SEA,,Receiving Yards,under,54.5,player not matched in the game's teams
+2021-10-31T14:20:23+00:00,FanDuel,2021_08_TEN_IND,Nyheim Miller-Hines,Receiving Yards,over,17.5,player not matched in the game's teams
+2021-10-31T14:20:23+00:00,FanDuel,2021_08_TEN_IND,Nyheim Miller-Hines,Receiving Yards,under,17.5,player not matched in the game's teams
+2021-10-31T16:00:15+00:00,FanDuel,2021_08_CAR_ATL,Russell Gage Jr.,Receiving Yards,over,43.5,player not matched in the game's teams
+2021-10-31T16:00:15+00:00,FanDuel,2021_08_CAR_ATL,Russell Gage Jr.,Receiving Yards,under,43.5,player not matched in the game's teams
+2021-10-31T16:20:26+00:00,FanDuel,2021_08_CAR_ATL,Russell Gage Jr.,Receptions,over,4.5,player not matched in the game's teams
+2021-10-31T16:20:26+00:00,FanDuel,2021_08_CAR_ATL,Russell Gage Jr.,Receptions,under,4.5,player not matched in the game's teams
+2021-11-01T14:20:03+00:00,FanDuel,2021_08_NYG_KC,,Receiving Yards,over,16.5,player not matched in the game's teams
+2021-11-01T14:20:03+00:00,FanDuel,2021_08_NYG_KC,,Receiving Yards,under,16.5,player not matched in the game's teams
+2021-11-01T14:20:03+00:00,FanDuel,2021_08_NYG_KC,,Rushing Yards,over,58.5,player not matched in the game's teams
+2021-11-01T14:20:03+00:00,FanDuel,2021_08_NYG_KC,,Rushing Yards,under,58.5,player not matched in the game's teams
+2021-11-01T19:20:07+00:00,FanDuel,2021_08_NYG_KC,Jerick McKinnon,Receiving Yards,over,9.5,player not matched in the game's teams
+2021-11-01T19:20:07+00:00,FanDuel,2021_08_NYG_KC,Jerick McKinnon,Receiving Yards,under,9.5,player not matched in the game's teams
+2021-11-01T19:20:07+00:00,FanDuel,2021_08_NYG_KC,Jerick McKinnon,Receptions,over,1.5,player not matched in the game's teams
+2021-11-01T19:20:07+00:00,FanDuel,2021_08_NYG_KC,Jerick McKinnon,Receptions,under,1.5,player not matched in the game's teams
+2021-11-02T00:00:07+00:00,FanDuel,2021_08_NYG_KC,,Receptions,over,2.5,player not matched in the game's teams
+2021-11-02T00:00:07+00:00,FanDuel,2021_08_NYG_KC,,Receptions,under,2.5,player not matched in the game's teams
+2021-11-03T17:20:12+00:00,FanDuel,2021_09_MIN_BAL,Hollywood Brown,Receiving Yards,over,65.5,player not matched in the game's teams
+2021-11-03T17:20:12+00:00,FanDuel,2021_09_MIN_BAL,Hollywood Brown,Receiving Yards,under,65.5,player not matched in the game's teams
+2021-11-03T19:20:12+00:00,FanDuel,2021_09_BUF_JAX,,Receiving Yards,over,55.5,player not matched in the game's teams
+2021-11-03T19:20:12+00:00,FanDuel,2021_09_BUF_JAX,,Receiving Yards,over,47.5,player not matched in the game's teams
+2021-11-03T19:20:12+00:00,FanDuel,2021_09_BUF_JAX,,Receiving Yards,under,55.5,player not matched in the game's teams
+2021-11-03T19:20:12+00:00,FanDuel,2021_09_BUF_JAX,,Receiving Yards,under,47.5,player not matched in the game's teams
+2021-11-04T23:20:12+00:00,FanDuel,2021_09_NYJ_IND,Nyheim Miller-Hines,Receiving Yards,over,15.5,player not matched in the game's teams
+2021-11-04T23:20:12+00:00,FanDuel,2021_09_NYJ_IND,Nyheim Miller-Hines,Receiving Yards,under,15.5,player not matched in the game's teams
+2021-11-04T23:20:18+00:00,FanDuel,2021_09_NYJ_IND,Nyheim Miller-Hines,Rushing Yards,over,15.5,player not matched in the game's teams
+2021-11-04T23:20:18+00:00,FanDuel,2021_09_NYJ_IND,Nyheim Miller-Hines,Rushing Yards,under,15.5,player not matched in the game's teams
+2021-11-05T23:20:26+00:00,FanDuel,2021_09_TEN_LA,,Rushing Attempts,over,16.5,player not matched in the game's teams
+2021-11-05T23:20:26+00:00,FanDuel,2021_09_TEN_LA,,Rushing Attempts,under,16.5,player not matched in the game's teams
+2021-11-06T15:20:29+00:00,FanDuel,2021_09_NE_CAR,Nelson Agholor,Receptions,over,2.5,player not matched in the game's teams
+2021-11-06T15:20:29+00:00,FanDuel,2021_09_NE_CAR,Nelson Agholor,Receptions,under,2.5,player not matched in the game's teams
+2021-11-06T15:20:29+00:00,FanDuel,2021_09_NE_CAR,Nelson Agholor,Receptions,under,2.5,player not matched in the game's teams
+2021-11-06T17:20:30+00:00,FanDuel,2021_09_HOU_MIA,Tua Tagovailoa,Passing Completions,over,23.5,player not matched in the game's teams
+2021-11-06T17:20:30+00:00,FanDuel,2021_09_HOU_MIA,Tua Tagovailoa,Passing Completions,under,23.5,player not matched in the game's teams
+2021-11-06T17:20:30+00:00,FanDuel,2021_09_HOU_MIA,Tua Tagovailoa,Rushing Yards,over,11.5,player not matched in the game's teams
+2021-11-06T17:20:30+00:00,FanDuel,2021_09_HOU_MIA,Tua Tagovailoa,Rushing Yards,under,11.5,player not matched in the game's teams
+2021-11-06T17:20:30+00:00,FanDuel,2021_09_ARI_SF,,Receiving Yards,over,44.5,player not matched in the game's teams
+2021-11-06T17:20:30+00:00,FanDuel,2021_09_ARI_SF,,Receiving Yards,under,44.5,player not matched in the game's teams
+2021-11-06T17:20:30+00:00,FanDuel,2021_09_HOU_MIA,Tua Tagovailoa,Passing Completions,over,23.5,player not matched in the game's teams
+2021-11-06T21:20:31+00:00,FanDuel,2021_09_BUF_JAX,,Receptions,over,4.5,player not matched in the game's teams
+2021-11-06T21:20:31+00:00,FanDuel,2021_09_BUF_JAX,,Receptions,under,4.5,player not matched in the game's teams
+2021-11-07T08:20:12+00:00,FanDuel,2021_09_BUF_JAX,,Receiving Yards,over,49.5,player not matched in the game's teams
+2021-11-07T08:20:12+00:00,FanDuel,2021_09_BUF_JAX,,Receiving Yards,under,49.5,player not matched in the game's teams
+2021-11-07T08:20:17+00:00,FanDuel,2021_09_ATL_NO,,Receiving Yards,over,31.5,player not matched in the game's teams
+2021-11-07T08:20:17+00:00,FanDuel,2021_09_ATL_NO,,Receiving Yards,under,31.5,player not matched in the game's teams
+2021-11-07T08:20:22+00:00,FanDuel,2021_09_MIN_BAL,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2021-11-07T08:20:22+00:00,FanDuel,2021_09_MIN_BAL,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2021-11-07T08:20:22+00:00,FanDuel,2021_09_NE_CAR,Nelson Agholor,Receiving Yards,over,37.5,player not matched in the game's teams
+2021-11-07T08:20:22+00:00,FanDuel,2021_09_NE_CAR,Nelson Agholor,Receiving Yards,under,37.5,player not matched in the game's teams
+2021-11-07T08:20:27+00:00,FanDuel,2021_09_NE_CAR,Nelson Agholor,Receptions,over,2.5,player not matched in the game's teams
+2021-11-07T08:20:28+00:00,FanDuel,2021_09_ATL_NO,Juwan Johnson,Receiving Yards,over,6.5,player not matched in the game's teams
+2021-11-07T08:20:28+00:00,FanDuel,2021_09_ATL_NO,Juwan Johnson,Receiving Yards,under,6.5,player not matched in the game's teams
+2021-11-07T08:20:28+00:00,FanDuel,2021_09_HOU_MIA,Tua Tagovailoa,Passing Completions,under,23.5,player not matched in the game's teams
+2021-11-07T08:20:28+00:00,FanDuel,2021_09_HOU_MIA,Tua Tagovailoa,Rushing Yards,over,11.5,player not matched in the game's teams
+2021-11-07T08:20:28+00:00,FanDuel,2021_09_HOU_MIA,Tua Tagovailoa,Rushing Yards,under,11.5,player not matched in the game's teams
+2021-11-07T08:20:29+00:00,FanDuel,2021_09_BUF_JAX,,Receptions,over,4.5,player not matched in the game's teams
+2021-11-07T08:20:29+00:00,FanDuel,2021_09_BUF_JAX,,Receptions,under,4.5,player not matched in the game's teams
+2021-11-07T11:40:26+00:00,FanDuel,2021_09_GB_KC,,Receiving Yards,over,17.5,player not matched in the game's teams
+2021-11-07T11:40:26+00:00,FanDuel,2021_09_GB_KC,,Receiving Yards,under,17.5,player not matched in the game's teams
+2021-11-07T11:40:26+00:00,FanDuel,2021_09_GB_KC,,Receptions,over,2.5,player not matched in the game's teams
+2021-11-07T11:40:26+00:00,FanDuel,2021_09_GB_KC,,Receptions,under,2.5,player not matched in the game's teams
+2021-11-07T13:20:29+00:00,FanDuel,2021_09_GB_KC,Byron Pringle,Receiving Yards,over,19.5,player not matched in the game's teams
+2021-11-07T13:20:29+00:00,FanDuel,2021_09_GB_KC,Byron Pringle,Receiving Yards,under,19.5,player not matched in the game's teams
+2021-11-07T14:00:11+00:00,FanDuel,2021_09_MIN_BAL,Hollywood Brown,Receiving Yards,over,61.5,player not matched in the game's teams
+2021-11-07T14:00:11+00:00,FanDuel,2021_09_MIN_BAL,Hollywood Brown,Receiving Yards,under,61.5,player not matched in the game's teams
+2021-11-07T15:00:24+00:00,FanDuel,2021_09_HOU_MIA,,Rushing Yards,over,17.5,player not matched in the game's teams
+2021-11-07T15:00:24+00:00,FanDuel,2021_09_HOU_MIA,,Rushing Yards,under,17.5,player not matched in the game's teams
+2021-11-07T15:40:28+00:00,FanDuel,2021_09_ATL_NO,,Receptions,over,2.5,player not matched in the game's teams
+2021-11-07T15:40:28+00:00,FanDuel,2021_09_ATL_NO,,Receptions,under,2.5,player not matched in the game's teams
+2021-11-07T16:20:18+00:00,FanDuel,2021_09_GB_KC,,Rushing Yards,over,46.5,player not matched in the game's teams
+2021-11-07T16:20:18+00:00,FanDuel,2021_09_GB_KC,,Rushing Yards,under,46.5,player not matched in the game's teams
+2021-11-07T17:40:16+00:00,FanDuel,2021_09_BUF_JAX,,Receiving Yards,over,46.5,player not matched in the game's teams
+2021-11-07T17:40:16+00:00,FanDuel,2021_09_BUF_JAX,,Receiving Yards,under,46.5,player not matched in the game's teams
+2021-11-07T20:40:12+00:00,FanDuel,2021_09_ARI_SF,,Receiving Yards,over,39.5,player not matched in the game's teams
+2021-11-07T20:40:12+00:00,FanDuel,2021_09_ARI_SF,,Receiving Yards,under,39.5,player not matched in the game's teams
+2021-11-07T20:40:13+00:00,FanDuel,2021_09_ARI_SF,,Receiving Yards,over,18.5,player not matched in the game's teams
+2021-11-07T20:40:13+00:00,FanDuel,2021_09_ARI_SF,,Receiving Yards,under,18.5,player not matched in the game's teams
+2021-11-07T20:40:13+00:00,FanDuel,2021_09_ARI_SF,,Receptions,over,1.5,player not matched in the game's teams
+2021-11-07T20:40:13+00:00,FanDuel,2021_09_ARI_SF,,Receptions,over,4.5,player not matched in the game's teams
+2021-11-07T20:40:13+00:00,FanDuel,2021_09_ARI_SF,,Receptions,under,1.5,player not matched in the game's teams
+2021-11-07T20:40:13+00:00,FanDuel,2021_09_ARI_SF,,Receptions,under,4.5,player not matched in the game's teams
+2021-11-07T22:20:05+00:00,FanDuel,2021_09_TEN_LA,,Receiving Yards,over,18.5,player not matched in the game's teams
+2021-11-07T22:20:05+00:00,FanDuel,2021_09_TEN_LA,,Receiving Yards,under,18.5,player not matched in the game's teams
+2021-11-07T22:20:05+00:00,FanDuel,2021_09_TEN_LA,,Rushing Yards,over,76.5,player not matched in the game's teams
+2021-11-07T22:20:05+00:00,FanDuel,2021_09_TEN_LA,,Rushing Yards,under,76.5,player not matched in the game's teams
+2021-11-07T22:20:06+00:00,FanDuel,2021_09_TEN_LA,,Receptions,over,2.5,player not matched in the game's teams
+2021-11-07T22:20:06+00:00,FanDuel,2021_09_TEN_LA,,Receptions,under,2.5,player not matched in the game's teams
+2021-11-08T22:00:05+00:00,FanDuel,2021_09_CHI_PIT,Zach Gentry,Receiving Yards,over,10.5,player not matched in the game's teams
+2021-11-08T22:00:05+00:00,FanDuel,2021_09_CHI_PIT,Zach Gentry,Receiving Yards,under,10.5,player not matched in the game's teams
+2021-11-11T15:40:11+00:00,FanDuel,2021_10_BAL_MIA,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2021-11-11T15:40:11+00:00,FanDuel,2021_10_BAL_MIA,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2021-11-12T00:20:12+00:00,FanDuel,2021_10_BAL_MIA,Hollywood Brown,Receiving Yards,over,63.5,player not matched in the game's teams
+2021-11-12T00:20:12+00:00,FanDuel,2021_10_BAL_MIA,Hollywood Brown,Receiving Yards,under,63.5,player not matched in the game's teams
+2021-11-12T16:20:14+00:00,FanDuel,2021_10_LA_SF,,Rushing Yards,over,62.5,player not matched in the game's teams
+2021-11-12T16:20:14+00:00,FanDuel,2021_10_LA_SF,,Rushing Yards,under,62.5,player not matched in the game's teams
+2021-11-12T16:20:15+00:00,FanDuel,2021_10_LA_SF,Robert Woods,Receiving Yards,over,55.5,player not matched in the game's teams
+2021-11-12T16:20:15+00:00,FanDuel,2021_10_LA_SF,Robert Woods,Receiving Yards,under,55.5,player not matched in the game's teams
+2021-11-12T16:20:15+00:00,FanDuel,2021_10_LA_SF,Robert Woods,Receiving Yards,over,55.5,player not matched in the game's teams
+2021-11-12T16:20:15+00:00,FanDuel,2021_10_LA_SF,Robert Woods,Receiving Yards,under,55.5,player not matched in the game's teams
+2021-11-13T04:20:25+00:00,FanDuel,2021_10_DET_PIT,Ben Roethlisberger,Passing Completions,over,21.5,player not matched in the game's teams
+2021-11-13T04:20:25+00:00,FanDuel,2021_10_DET_PIT,Ben Roethlisberger,Passing Completions,under,21.5,player not matched in the game's teams
+2021-11-13T18:20:20+00:00,FanDuel,2021_10_DET_PIT,Ben Roethlisberger,Passing Yards,over,249.5,player not matched in the game's teams
+2021-11-13T18:20:20+00:00,FanDuel,2021_10_DET_PIT,Ben Roethlisberger,Passing Yards,under,249.5,player not matched in the game's teams
+2021-11-13T20:20:29+00:00,FanDuel,2021_10_CLE_NE,Jonnu Smith,Receiving Yards,over,20.5,player not matched in the game's teams
+2021-11-13T20:20:29+00:00,FanDuel,2021_10_CLE_NE,Jonnu Smith,Receiving Yards,under,20.5,player not matched in the game's teams
+2021-11-14T03:00:24+00:00,FanDuel,2021_10_ATL_DAL,,Receptions,over,2.5,player not matched in the game's teams
+2021-11-14T08:20:20+00:00,FanDuel,2021_10_ATL_DAL,Hayden Hurst,Receiving Yards,over,24.5,player not matched in the game's teams
+2021-11-14T08:20:20+00:00,FanDuel,2021_10_ATL_DAL,Hayden Hurst,Receiving Yards,under,24.5,player not matched in the game's teams
+2021-11-14T08:20:20+00:00,FanDuel,2021_10_ATL_DAL,Hayden Hurst,Receptions,over,2.5,player not matched in the game's teams
+2021-11-14T08:20:20+00:00,FanDuel,2021_10_ATL_DAL,Hayden Hurst,Receptions,under,2.5,player not matched in the game's teams
+2021-11-14T08:20:21+00:00,FanDuel,2021_10_ATL_DAL,,Receptions,under,2.5,player not matched in the game's teams
+2021-11-14T08:20:23+00:00,FanDuel,2021_10_TB_WAS,,Receiving Yards,over,27.5,player not matched in the game's teams
+2021-11-14T08:20:23+00:00,FanDuel,2021_10_TB_WAS,,Receiving Yards,under,27.5,player not matched in the game's teams
+2021-11-14T08:20:24+00:00,FanDuel,2021_10_JAX_IND,,Receiving Yards,over,45.5,player not matched in the game's teams
+2021-11-14T08:20:24+00:00,FanDuel,2021_10_JAX_IND,,Receiving Yards,under,45.5,player not matched in the game's teams
+2021-11-14T08:20:29+00:00,FanDuel,2021_10_CLE_NE,Jonnu Smith,Receiving Yards,over,16.5,player not matched in the game's teams
+2021-11-14T08:20:29+00:00,FanDuel,2021_10_CLE_NE,Jonnu Smith,Receiving Yards,under,16.5,player not matched in the game's teams
+2021-11-14T11:40:27+00:00,FanDuel,2021_10_PHI_DEN,,Rushing Yards,over,40.5,player not matched in the game's teams
+2021-11-14T11:40:27+00:00,FanDuel,2021_10_PHI_DEN,,Rushing Yards,under,40.5,player not matched in the game's teams
+2021-11-14T15:00:23+00:00,FanDuel,2021_10_ATL_DAL,,Receiving Yards,over,28.5,player not matched in the game's teams
+2021-11-14T15:00:23+00:00,FanDuel,2021_10_ATL_DAL,,Receiving Yards,under,28.5,player not matched in the game's teams
+2021-11-14T17:00:21+00:00,FanDuel,2021_10_BUF_NYJ,,Receiving Yards,over,47.5,player not matched in the game's teams
+2021-11-14T17:00:21+00:00,FanDuel,2021_10_BUF_NYJ,,Receiving Yards,under,47.5,player not matched in the game's teams
+2021-11-14T17:00:21+00:00,FanDuel,2021_10_BUF_NYJ,,Receptions,over,4.5,player not matched in the game's teams
+2021-11-14T17:00:21+00:00,FanDuel,2021_10_BUF_NYJ,,Receptions,under,4.5,player not matched in the game's teams
+2021-11-14T20:40:17+00:00,FanDuel,2021_10_CAR_ARI,,Passing Yards,over,223.5,player not matched in the game's teams
+2021-11-14T20:40:17+00:00,FanDuel,2021_10_CAR_ARI,,Passing Yards,under,223.5,player not matched in the game's teams
+2021-11-14T22:00:07+00:00,FanDuel,2021_10_KC_LV,,Rushing Yards,over,53.5,player not matched in the game's teams
+2021-11-14T22:00:07+00:00,FanDuel,2021_10_KC_LV,,Rushing Yards,under,53.5,player not matched in the game's teams
+2021-11-14T22:20:07+00:00,FanDuel,2021_10_KC_LV,,Receiving Yards,over,20.5,player not matched in the game's teams
+2021-11-14T22:20:07+00:00,FanDuel,2021_10_KC_LV,,Receiving Yards,under,20.5,player not matched in the game's teams
+2021-11-14T22:20:07+00:00,FanDuel,2021_10_KC_LV,,Receptions,over,3.5,player not matched in the game's teams
+2021-11-14T22:20:07+00:00,FanDuel,2021_10_KC_LV,,Receptions,under,3.5,player not matched in the game's teams
+2021-11-15T00:20:06+00:00,FanDuel,2021_10_KC_LV,,Rushing Attempts,over,12.5,player not matched in the game's teams
+2021-11-15T00:20:06+00:00,FanDuel,2021_10_KC_LV,,Rushing Attempts,under,12.5,player not matched in the game's teams
+2021-11-15T15:20:02+00:00,FanDuel,2021_10_LA_SF,,Rushing Yards,over,67.5,player not matched in the game's teams
+2021-11-15T15:20:02+00:00,FanDuel,2021_10_LA_SF,,Rushing Yards,under,67.5,player not matched in the game's teams
+2021-11-15T15:20:04+00:00,FanDuel,2021_10_LA_SF,,Receiving Yards,over,16.5,player not matched in the game's teams
+2021-11-15T15:20:04+00:00,FanDuel,2021_10_LA_SF,,Receiving Yards,under,16.5,player not matched in the game's teams
+2021-11-15T15:20:04+00:00,FanDuel,2021_10_LA_SF,,Receptions,over,2.5,player not matched in the game's teams
+2021-11-15T15:20:04+00:00,FanDuel,2021_10_LA_SF,,Receptions,under,2.5,player not matched in the game's teams
+2021-11-16T00:40:04+00:00,FanDuel,2021_10_LA_SF,,Rushing Attempts,over,15.5,player not matched in the game's teams
+2021-11-16T00:40:04+00:00,FanDuel,2021_10_LA_SF,,Rushing Attempts,under,15.5,player not matched in the game's teams
+2021-11-18T15:40:11+00:00,FanDuel,2021_11_NE_ATL,,Receiving Yards,over,24.5,player not matched in the game's teams
+2021-11-18T15:40:11+00:00,FanDuel,2021_11_NE_ATL,,Receiving Yards,under,24.5,player not matched in the game's teams
+2021-11-18T20:20:18+00:00,FanDuel,2021_11_DAL_KC,Amari Cooper,Receiving Yards,over,63.5,player not matched in the game's teams
+2021-11-18T20:20:18+00:00,FanDuel,2021_11_DAL_KC,Amari Cooper,Receiving Yards,under,63.5,player not matched in the game's teams
+2021-11-19T18:20:20+00:00,FanDuel,2021_11_IND_BUF,,Receptions,over,2.5,player not matched in the game's teams
+2021-11-19T18:20:20+00:00,FanDuel,2021_11_IND_BUF,,Receptions,under,2.5,player not matched in the game's teams
+2021-11-20T02:20:27+00:00,FanDuel,2021_11_IND_BUF,,Receptions,over,4.5,player not matched in the game's teams
+2021-11-20T02:20:27+00:00,FanDuel,2021_11_IND_BUF,,Receptions,under,4.5,player not matched in the game's teams
+2021-11-20T04:20:29+00:00,FanDuel,2021_11_DET_CLE,Donovan Peoples-Jones,Receiving Yards,over,41.5,player not matched in the game's teams
+2021-11-20T04:20:29+00:00,FanDuel,2021_11_DET_CLE,Donovan Peoples-Jones,Receiving Yards,under,41.5,player not matched in the game's teams
+2021-11-20T04:20:29+00:00,FanDuel,2021_11_WAS_CAR,,Receiving Yards,over,24.5,player not matched in the game's teams
+2021-11-20T04:20:29+00:00,FanDuel,2021_11_WAS_CAR,,Receiving Yards,under,24.5,player not matched in the game's teams
+2021-11-20T16:20:31+00:00,FanDuel,2021_11_BAL_CHI,Lamar Jackson,Passing Completions,over,21.5,player not matched in the game's teams
+2021-11-20T16:20:31+00:00,FanDuel,2021_11_BAL_CHI,Lamar Jackson,Passing Completions,under,21.5,player not matched in the game's teams
+2021-11-20T18:20:30+00:00,FanDuel,2021_11_BAL_CHI,Hollywood Brown,Receiving Yards,over,60.5,player not matched in the game's teams
+2021-11-20T18:20:30+00:00,FanDuel,2021_11_BAL_CHI,Hollywood Brown,Receiving Yards,under,60.5,player not matched in the game's teams
+2021-11-20T18:20:31+00:00,FanDuel,2021_11_DET_CLE,Donovan Peoples-Jones,Receptions,over,2.5,player not matched in the game's teams
+2021-11-20T18:20:31+00:00,FanDuel,2021_11_DET_CLE,Donovan Peoples-Jones,Receptions,under,2.5,player not matched in the game's teams
+2021-11-20T20:20:31+00:00,FanDuel,2021_11_BAL_CHI,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2021-11-20T20:20:31+00:00,FanDuel,2021_11_BAL_CHI,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2021-11-20T20:20:32+00:00,FanDuel,2021_11_BAL_CHI,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2021-11-20T20:20:32+00:00,FanDuel,2021_11_NO_PHI,,Rushing Yards,over,35.5,player not matched in the game's teams
+2021-11-20T20:20:32+00:00,FanDuel,2021_11_NO_PHI,,Rushing Yards,under,35.5,player not matched in the game's teams
+2021-11-20T20:20:32+00:00,FanDuel,2021_11_BAL_CHI,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2021-11-20T22:20:33+00:00,FanDuel,2021_11_DAL_KC,,Receiving Yards,over,20.5,player not matched in the game's teams
+2021-11-20T22:20:33+00:00,FanDuel,2021_11_DAL_KC,,Receiving Yards,under,20.5,player not matched in the game's teams
+2021-11-20T22:20:33+00:00,FanDuel,2021_11_DAL_KC,,Receptions,over,3.5,player not matched in the game's teams
+2021-11-20T22:20:33+00:00,FanDuel,2021_11_DAL_KC,,Receptions,under,3.5,player not matched in the game's teams
+2021-11-20T22:20:33+00:00,FanDuel,2021_11_DAL_KC,,Rushing Attempts,over,10.5,player not matched in the game's teams
+2021-11-20T22:20:33+00:00,FanDuel,2021_11_DAL_KC,,Rushing Attempts,under,10.5,player not matched in the game's teams
+2021-11-20T22:20:33+00:00,FanDuel,2021_11_DAL_KC,,Rushing Attempts,over,10.5,player not matched in the game's teams
+2021-11-20T22:20:33+00:00,FanDuel,2021_11_DAL_KC,,Rushing Attempts,under,10.5,player not matched in the game's teams
+2021-11-21T08:20:23+00:00,FanDuel,2021_11_IND_BUF,,Receiving Yards,over,31.5,player not matched in the game's teams
+2021-11-21T08:20:23+00:00,FanDuel,2021_11_IND_BUF,,Receiving Yards,under,31.5,player not matched in the game's teams
+2021-11-21T08:20:23+00:00,FanDuel,2021_11_IND_BUF,,Receptions,over,2.5,player not matched in the game's teams
+2021-11-21T08:20:23+00:00,FanDuel,2021_11_IND_BUF,,Receptions,under,2.5,player not matched in the game's teams
+2021-11-21T08:20:25+00:00,FanDuel,2021_11_SF_JAX,,Receiving Yards,over,45.5,player not matched in the game's teams
+2021-11-21T08:20:25+00:00,FanDuel,2021_11_SF_JAX,,Receiving Yards,under,45.5,player not matched in the game's teams
+2021-11-21T08:20:28+00:00,FanDuel,2021_11_BAL_CHI,Lamar Jackson,Passing Yards,over,245.5,player not matched in the game's teams
+2021-11-21T08:20:28+00:00,FanDuel,2021_11_BAL_CHI,Lamar Jackson,Passing Yards,under,245.5,player not matched in the game's teams
+2021-11-21T08:20:28+00:00,FanDuel,2021_11_BAL_CHI,Lamar Jackson,Rushing Yards,over,60.5,player not matched in the game's teams
+2021-11-21T08:20:28+00:00,FanDuel,2021_11_BAL_CHI,Lamar Jackson,Rushing Yards,under,60.5,player not matched in the game's teams
+2021-11-21T08:20:28+00:00,FanDuel,2021_11_GB_MIN,Marcedes Lewis,Receiving Yards,over,10.5,player not matched in the game's teams
+2021-11-21T08:20:28+00:00,FanDuel,2021_11_GB_MIN,Marcedes Lewis,Receiving Yards,under,10.5,player not matched in the game's teams
+2021-11-21T08:20:31+00:00,FanDuel,2021_11_BAL_CHI,Lamar Jackson,Passing Completions,over,21.5,player not matched in the game's teams
+2021-11-21T08:20:31+00:00,FanDuel,2021_11_BAL_CHI,Lamar Jackson,Passing Completions,under,21.5,player not matched in the game's teams
+2021-11-21T08:20:31+00:00,FanDuel,2021_11_DET_CLE,Donovan Peoples-Jones,Receiving Yards,over,34.5,player not matched in the game's teams
+2021-11-21T08:20:31+00:00,FanDuel,2021_11_DET_CLE,Donovan Peoples-Jones,Receiving Yards,under,34.5,player not matched in the game's teams
+2021-11-21T08:20:31+00:00,FanDuel,2021_11_WAS_CAR,,Receiving Yards,over,21.5,player not matched in the game's teams
+2021-11-21T08:20:31+00:00,FanDuel,2021_11_WAS_CAR,,Receiving Yards,under,21.5,player not matched in the game's teams
+2021-11-21T08:20:33+00:00,FanDuel,2021_11_NO_PHI,,Rushing Yards,over,24.5,player not matched in the game's teams
+2021-11-21T08:20:33+00:00,FanDuel,2021_11_NO_PHI,,Rushing Yards,under,24.5,player not matched in the game's teams
+2021-11-21T11:40:29+00:00,FanDuel,2021_11_DAL_KC,Demarcus Robinson,Receiving Yards,over,13.5,player not matched in the game's teams
+2021-11-21T11:40:29+00:00,FanDuel,2021_11_DAL_KC,Demarcus Robinson,Receiving Yards,under,13.5,player not matched in the game's teams
+2021-11-21T11:40:33+00:00,FanDuel,2021_11_DAL_KC,,Receiving Yards,over,20.5,player not matched in the game's teams
+2021-11-21T11:40:33+00:00,FanDuel,2021_11_DAL_KC,,Receiving Yards,under,20.5,player not matched in the game's teams
+2021-11-21T11:40:33+00:00,FanDuel,2021_11_DAL_KC,,Receptions,over,3.5,player not matched in the game's teams
+2021-11-21T11:40:33+00:00,FanDuel,2021_11_DAL_KC,,Receptions,under,3.5,player not matched in the game's teams
+2021-11-21T15:20:32+00:00,FanDuel,2021_11_DET_CLE,Donovan Peoples-Jones,Receptions,over,2.5,player not matched in the game's teams
+2021-11-21T15:20:32+00:00,FanDuel,2021_11_DET_CLE,Donovan Peoples-Jones,Receptions,under,2.5,player not matched in the game's teams
+2021-11-21T15:40:30+00:00,FanDuel,2021_11_IND_BUF,,Receiving Yards,over,43.5,player not matched in the game's teams
+2021-11-21T15:40:30+00:00,FanDuel,2021_11_IND_BUF,,Receiving Yards,under,43.5,player not matched in the game's teams
+2021-11-21T16:20:28+00:00,FanDuel,2021_11_IND_BUF,,Receptions,over,4.5,player not matched in the game's teams
+2021-11-21T16:20:28+00:00,FanDuel,2021_11_IND_BUF,,Receptions,under,4.5,player not matched in the game's teams
+2021-11-23T22:00:15+00:00,FanDuel,2021_12_BUF_NO,Zack Moss,Receiving Yards,over,9.5,player not matched in the game's teams
+2021-11-24T18:20:14+00:00,FanDuel,2021_12_BUF_NO,Zack Moss,Rushing Attempts,over,6.5,player not matched in the game's teams
+2021-11-24T18:20:14+00:00,FanDuel,2021_12_BUF_NO,Zack Moss,Rushing Attempts,under,6.5,player not matched in the game's teams
+2021-11-25T01:40:13+00:00,FanDuel,2021_12_BUF_NO,Zack Moss,Receiving Yards,under,9.5,player not matched in the game's teams
+2021-11-25T01:40:13+00:00,FanDuel,2021_12_BUF_NO,Zack Moss,Rushing Yards,over,21.5,player not matched in the game's teams
+2021-11-25T01:40:13+00:00,FanDuel,2021_12_BUF_NO,Zack Moss,Rushing Yards,under,21.5,player not matched in the game's teams
+2021-11-25T05:40:13+00:00,FanDuel,2021_12_BUF_NO,Zack Moss,Rushing Attempts,over,6.5,player not matched in the game's teams
+2021-11-25T05:40:13+00:00,FanDuel,2021_12_BUF_NO,Zack Moss,Rushing Attempts,under,6.5,player not matched in the game's teams
+2021-11-25T23:20:10+00:00,FanDuel,2021_12_BUF_NO,,Receptions,over,4.5,player not matched in the game's teams
+2021-11-25T23:20:10+00:00,FanDuel,2021_12_BUF_NO,,Receptions,under,4.5,player not matched in the game's teams
+2021-11-26T00:00:13+00:00,FanDuel,2021_12_BUF_NO,,Receiving Yards,over,41.5,player not matched in the game's teams
+2021-11-26T00:00:13+00:00,FanDuel,2021_12_BUF_NO,,Receiving Yards,under,41.5,player not matched in the game's teams
+2021-11-27T04:20:24+00:00,FanDuel,2021_12_ATL_JAX,,Receptions,over,2.5,player not matched in the game's teams
+2021-11-27T04:20:24+00:00,FanDuel,2021_12_ATL_JAX,,Receptions,under,2.5,player not matched in the game's teams
+2021-11-27T04:20:24+00:00,FanDuel,2021_12_LA_GB,,Rushing Attempts,over,13.5,player not matched in the game's teams
+2021-11-27T04:20:24+00:00,FanDuel,2021_12_LA_GB,,Rushing Attempts,under,13.5,player not matched in the game's teams
+2021-11-28T01:00:26+00:00,FanDuel,2021_12_ATL_JAX,,Receptions,over,2.5,player not matched in the game's teams
+2021-11-28T08:20:23+00:00,FanDuel,2021_12_ATL_JAX,,Receptions,under,2.5,player not matched in the game's teams
+2021-11-28T11:40:25+00:00,FanDuel,2021_12_LA_GB,,Receptions,over,2.5,player not matched in the game's teams
+2021-11-28T11:40:25+00:00,FanDuel,2021_12_LA_GB,,Receptions,under,2.5,player not matched in the game's teams
+2021-11-28T15:40:19+00:00,FanDuel,2021_12_TB_IND,,Receiving Yards,over,35.5,player not matched in the game's teams
+2021-11-28T15:40:19+00:00,FanDuel,2021_12_TB_IND,,Receiving Yards,under,35.5,player not matched in the game's teams
+2021-11-28T15:40:19+00:00,FanDuel,2021_12_TB_IND,Nyheim Miller-Hines,Receptions,over,2.5,player not matched in the game's teams
+2021-11-28T15:40:19+00:00,FanDuel,2021_12_TB_IND,Nyheim Miller-Hines,Receptions,under,2.5,player not matched in the game's teams
+2021-11-28T16:20:25+00:00,FanDuel,2021_12_LA_GB,,Receiving Yards,over,14.5,player not matched in the game's teams
+2021-11-28T16:20:25+00:00,FanDuel,2021_12_LA_GB,,Receiving Yards,under,14.5,player not matched in the game's teams
+2021-11-28T17:20:21+00:00,FanDuel,2021_12_TB_IND,Nyheim Miller-Hines,Receiving Yards,over,17.5,player not matched in the game's teams
+2021-11-28T17:20:21+00:00,FanDuel,2021_12_TB_IND,Nyheim Miller-Hines,Receiving Yards,under,17.5,player not matched in the game's teams
+2021-11-28T17:20:25+00:00,FanDuel,2021_12_ATL_JAX,,Receiving Yards,over,25.5,player not matched in the game's teams
+2021-11-28T17:20:25+00:00,FanDuel,2021_12_ATL_JAX,,Receiving Yards,under,25.5,player not matched in the game's teams
+2021-11-28T17:40:20+00:00,FanDuel,2021_12_TB_IND,,Receptions,over,3.5,player not matched in the game's teams
+2021-11-28T17:40:20+00:00,FanDuel,2021_12_TB_IND,,Receptions,under,3.5,player not matched in the game's teams
+2021-11-28T17:40:25+00:00,FanDuel,2021_12_ATL_JAX,,Receiving Yards,over,44.5,player not matched in the game's teams
+2021-11-28T17:40:25+00:00,FanDuel,2021_12_ATL_JAX,,Receiving Yards,under,44.5,player not matched in the game's teams
+2021-11-28T19:40:05+00:00,FanDuel,2021_12_LA_GB,,Rushing Yards,over,68.5,player not matched in the game's teams
+2021-11-28T19:40:05+00:00,FanDuel,2021_12_LA_GB,,Rushing Yards,under,68.5,player not matched in the game's teams
+2021-11-29T19:40:05+00:00,FanDuel,2021_12_SEA_WAS,,Receiving Yards,over,18.5,player not matched in the game's teams
+2021-11-29T19:40:05+00:00,FanDuel,2021_12_SEA_WAS,,Receiving Yards,under,18.5,player not matched in the game's teams
+2021-11-29T20:20:05+00:00,FanDuel,2021_12_SEA_WAS,,Receptions,over,2.5,player not matched in the game's teams
+2021-11-29T20:20:05+00:00,FanDuel,2021_12_SEA_WAS,,Receptions,under,2.5,player not matched in the game's teams
+2021-12-03T18:20:20+00:00,FanDuel,2021_13_IND_HOU,Nyheim Miller-Hines,Receiving Yards,over,17.5,player not matched in the game's teams
+2021-12-03T18:20:20+00:00,FanDuel,2021_13_IND_HOU,Nyheim Miller-Hines,Receiving Yards,under,17.5,player not matched in the game's teams
+2021-12-05T04:20:28+00:00,FanDuel,2021_13_DEN_KC,,Receptions,over,2.5,player not matched in the game's teams
+2021-12-05T08:20:22+00:00,FanDuel,2021_13_TB_ATL,,Rushing Yards,over,26.5,player not matched in the game's teams
+2021-12-05T08:20:22+00:00,FanDuel,2021_13_TB_ATL,,Rushing Yards,under,26.5,player not matched in the game's teams
+2021-12-05T08:20:28+00:00,FanDuel,2021_13_IND_HOU,,Receiving Yards,over,33.5,player not matched in the game's teams
+2021-12-05T08:20:28+00:00,FanDuel,2021_13_IND_HOU,,Receiving Yards,under,33.5,player not matched in the game's teams
+2021-12-05T11:40:26+00:00,FanDuel,2021_13_BAL_PIT,Hollywood Brown,Receiving Yards,over,62.5,player not matched in the game's teams
+2021-12-05T11:40:26+00:00,FanDuel,2021_13_BAL_PIT,Hollywood Brown,Receiving Yards,under,62.5,player not matched in the game's teams
+2021-12-05T11:40:26+00:00,FanDuel,2021_13_BAL_PIT,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2021-12-05T11:40:26+00:00,FanDuel,2021_13_BAL_PIT,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2021-12-05T11:40:29+00:00,FanDuel,2021_13_SF_SEA,Jeff Wilson Jr.,Rushing Yards,over,17.5,player not matched in the game's teams
+2021-12-05T11:40:29+00:00,FanDuel,2021_13_SF_SEA,Jeff Wilson Jr.,Rushing Yards,under,17.5,player not matched in the game's teams
+2021-12-05T13:00:31+00:00,FanDuel,2021_13_JAX_LA,,Receiving Yards,over,48.5,player not matched in the game's teams
+2021-12-05T13:00:31+00:00,FanDuel,2021_13_JAX_LA,,Receiving Yards,under,48.5,player not matched in the game's teams
+2021-12-05T15:00:24+00:00,FanDuel,2021_13_IND_HOU,Nyheim Miller-Hines,Receiving Yards,over,16.5,player not matched in the game's teams
+2021-12-05T15:00:24+00:00,FanDuel,2021_13_IND_HOU,Nyheim Miller-Hines,Receiving Yards,under,16.5,player not matched in the game's teams
+2021-12-05T15:00:24+00:00,FanDuel,2021_13_TB_ATL,,Receiving Yards,over,22.5,player not matched in the game's teams
+2021-12-05T15:00:24+00:00,FanDuel,2021_13_TB_ATL,,Receiving Yards,under,22.5,player not matched in the game's teams
+2021-12-05T15:40:26+00:00,FanDuel,2021_13_DEN_KC,,Receiving Yards,over,15.5,player not matched in the game's teams
+2021-12-05T15:40:26+00:00,FanDuel,2021_13_DEN_KC,,Receiving Yards,under,15.5,player not matched in the game's teams
+2021-12-05T15:40:26+00:00,FanDuel,2021_13_DEN_KC,,Rushing Yards,over,24.5,player not matched in the game's teams
+2021-12-05T15:40:26+00:00,FanDuel,2021_13_DEN_KC,,Rushing Yards,under,24.5,player not matched in the game's teams
+2021-12-05T15:40:29+00:00,FanDuel,2021_13_DEN_KC,,Receptions,under,2.5,player not matched in the game's teams
+2021-12-06T15:20:04+00:00,FanDuel,2021_13_NE_BUF,,Receiving Yards,over,30.5,player not matched in the game's teams
+2021-12-06T15:20:04+00:00,FanDuel,2021_13_NE_BUF,,Receiving Yards,under,30.5,player not matched in the game's teams
+2021-12-06T21:00:06+00:00,FanDuel,2021_13_NE_BUF,Hunter Henry,Receiving Yards,over,23.5,player not matched in the game's teams
+2021-12-06T21:00:06+00:00,FanDuel,2021_13_NE_BUF,Hunter Henry,Receiving Yards,under,23.5,player not matched in the game's teams
+2021-12-06T22:20:05+00:00,FanDuel,2021_13_NE_BUF,,Receptions,over,3.5,player not matched in the game's teams
+2021-12-06T22:20:05+00:00,FanDuel,2021_13_NE_BUF,,Receptions,under,3.5,player not matched in the game's teams
+2021-12-06T22:40:04+00:00,FanDuel,2021_13_NE_BUF,Jakobi Meyers,Receiving Yards,over,39.5,player not matched in the game's teams
+2021-12-06T22:40:04+00:00,FanDuel,2021_13_NE_BUF,Jakobi Meyers,Receiving Yards,under,39.5,player not matched in the game's teams
+2021-12-06T23:20:06+00:00,FanDuel,2021_13_NE_BUF,Jakobi Meyers,Receptions,over,3.5,player not matched in the game's teams
+2021-12-06T23:20:06+00:00,FanDuel,2021_13_NE_BUF,Jakobi Meyers,Receptions,under,3.5,player not matched in the game's teams
+2021-12-07T00:40:05+00:00,FanDuel,2021_13_NE_BUF,Hunter Henry,Receptions,over,2.5,player not matched in the game's teams
+2021-12-07T00:40:05+00:00,FanDuel,2021_13_NE_BUF,Hunter Henry,Receptions,under,2.5,player not matched in the game's teams
+2021-12-09T18:20:10+00:00,FanDuel,2021_14_PIT_MIN,Zach Gentry,Receiving Yards,over,6.5,player not matched in the game's teams
+2021-12-09T18:20:10+00:00,FanDuel,2021_14_PIT_MIN,Zach Gentry,Receiving Yards,under,6.5,player not matched in the game's teams
+2021-12-11T14:20:26+00:00,FanDuel,2021_14_ATL_CAR,Olamide Zaccheaus,Receptions,over,2.5,player not matched in the game's teams
+2021-12-11T20:20:27+00:00,FanDuel,2021_14_LV_KC,,Receptions,over,2.5,player not matched in the game's teams
+2021-12-12T08:20:11+00:00,FanDuel,2021_14_BAL_CLE,Hollywood Brown,Receiving Yards,over,54.5,player not matched in the game's teams
+2021-12-12T08:20:11+00:00,FanDuel,2021_14_BAL_CLE,Hollywood Brown,Receiving Yards,under,54.5,player not matched in the game's teams
+2021-12-12T08:20:13+00:00,FanDuel,2021_14_DAL_WAS,,Receiving Yards,over,20.5,player not matched in the game's teams
+2021-12-12T08:20:13+00:00,FanDuel,2021_14_DAL_WAS,,Receiving Yards,under,20.5,player not matched in the game's teams
+2021-12-12T08:20:14+00:00,FanDuel,2021_14_ATL_CAR,,Receiving Yards,over,22.5,player not matched in the game's teams
+2021-12-12T08:20:14+00:00,FanDuel,2021_14_ATL_CAR,,Receiving Yards,under,22.5,player not matched in the game's teams
+2021-12-12T08:20:14+00:00,FanDuel,2021_14_ATL_CAR,Olamide Zaccheaus,Receiving Yards,over,27.5,player not matched in the game's teams
+2021-12-12T08:20:14+00:00,FanDuel,2021_14_ATL_CAR,Olamide Zaccheaus,Receiving Yards,under,27.5,player not matched in the game's teams
+2021-12-12T08:20:15+00:00,FanDuel,2021_14_JAX_TEN,,Receiving Yards,over,38.5,player not matched in the game's teams
+2021-12-12T08:20:15+00:00,FanDuel,2021_14_JAX_TEN,,Receiving Yards,under,38.5,player not matched in the game's teams
+2021-12-12T08:20:17+00:00,FanDuel,2021_14_LV_KC,,Receiving Yards,over,17.5,player not matched in the game's teams
+2021-12-12T08:20:17+00:00,FanDuel,2021_14_LV_KC,,Receiving Yards,under,17.5,player not matched in the game's teams
+2021-12-12T08:20:17+00:00,FanDuel,2021_14_LV_KC,Demarcus Robinson,Receiving Yards,over,16.5,player not matched in the game's teams
+2021-12-12T08:20:17+00:00,FanDuel,2021_14_LV_KC,Demarcus Robinson,Receiving Yards,under,16.5,player not matched in the game's teams
+2021-12-12T08:20:18+00:00,FanDuel,2021_14_LV_KC,,Rushing Yards,over,23.5,player not matched in the game's teams
+2021-12-12T08:20:18+00:00,FanDuel,2021_14_LV_KC,,Rushing Yards,under,23.5,player not matched in the game's teams
+2021-12-12T08:20:26+00:00,FanDuel,2021_14_ATL_CAR,,Receptions,over,2.5,player not matched in the game's teams
+2021-12-12T08:20:26+00:00,FanDuel,2021_14_ATL_CAR,,Receptions,under,2.5,player not matched in the game's teams
+2021-12-12T08:20:26+00:00,FanDuel,2021_14_ATL_CAR,Olamide Zaccheaus,Receptions,under,2.5,player not matched in the game's teams
+2021-12-12T08:20:26+00:00,FanDuel,2021_14_BAL_CLE,Ja'Marcus Bradley,Receiving Yards,over,16.5,player not matched in the game's teams
+2021-12-12T08:20:26+00:00,FanDuel,2021_14_BAL_CLE,Ja'Marcus Bradley,Receiving Yards,under,16.5,player not matched in the game's teams
+2021-12-12T08:20:26+00:00,FanDuel,2021_14_SEA_HOU,David Johnson,Receptions,over,2.5,player not matched in the game's teams
+2021-12-12T08:20:26+00:00,FanDuel,2021_14_SEA_HOU,David Johnson,Receptions,under,2.5,player not matched in the game's teams
+2021-12-12T08:20:27+00:00,FanDuel,2021_14_BAL_CLE,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2021-12-12T08:20:27+00:00,FanDuel,2021_14_BAL_CLE,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2021-12-12T08:20:27+00:00,FanDuel,2021_14_LV_KC,,Receptions,under,2.5,player not matched in the game's teams
+2021-12-12T11:40:19+00:00,FanDuel,2021_14_BUF_TB,,Receiving Yards,over,45.5,player not matched in the game's teams
+2021-12-12T11:40:19+00:00,FanDuel,2021_14_BUF_TB,,Receiving Yards,under,45.5,player not matched in the game's teams
+2021-12-12T11:40:26+00:00,FanDuel,2021_14_BUF_TB,,Receptions,over,4.5,player not matched in the game's teams
+2021-12-12T11:40:26+00:00,FanDuel,2021_14_BUF_TB,,Receptions,under,4.5,player not matched in the game's teams
+2021-12-12T11:40:28+00:00,FanDuel,2021_14_BUF_TB,Zack Moss,Rushing Yards,over,19.5,player not matched in the game's teams
+2021-12-12T11:40:28+00:00,FanDuel,2021_14_BUF_TB,Zack Moss,Rushing Yards,under,19.5,player not matched in the game's teams
+2021-12-13T00:20:07+00:00,FanDuel,2021_14_LA_ARI,Tyler Higbee,Receptions,under,3.5,player not matched in the game's teams
+2021-12-13T15:20:02+00:00,FanDuel,2021_14_LA_ARI,,Receiving Yards,over,23.5,player not matched in the game's teams
+2021-12-13T15:20:02+00:00,FanDuel,2021_14_LA_ARI,,Receiving Yards,under,23.5,player not matched in the game's teams
+2021-12-13T15:20:02+00:00,FanDuel,2021_14_LA_ARI,Tyler Higbee,Receiving Yards,over,35.5,player not matched in the game's teams
+2021-12-13T15:20:02+00:00,FanDuel,2021_14_LA_ARI,Tyler Higbee,Receiving Yards,under,35.5,player not matched in the game's teams
+2021-12-13T15:20:03+00:00,FanDuel,2021_14_LA_ARI,Tyler Higbee,Receptions,over,3.5,player not matched in the game's teams
+2021-12-13T18:20:05+00:00,FanDuel,2021_14_LA_ARI,,Receptions,over,3.5,player not matched in the game's teams
+2021-12-13T18:20:05+00:00,FanDuel,2021_14_LA_ARI,,Receptions,under,3.5,player not matched in the game's teams
+2021-12-15T14:20:12+00:00,FanDuel,2021_15_NE_IND,,Receiving Yards,over,28.5,player not matched in the game's teams
+2021-12-15T14:20:12+00:00,FanDuel,2021_15_NE_IND,,Receiving Yards,under,28.5,player not matched in the game's teams
+2021-12-16T15:40:13+00:00,FanDuel,2021_15_KC_LAC,,Rushing Yards,over,14.5,player not matched in the game's teams
+2021-12-16T15:40:13+00:00,FanDuel,2021_15_KC_LAC,,Rushing Yards,under,14.5,player not matched in the game's teams
+2021-12-16T15:40:13+00:00,FanDuel,2021_15_KC_LAC,Joshua Palmer,Receiving Yards,over,14.5,player not matched in the game's teams
+2021-12-16T15:40:13+00:00,FanDuel,2021_15_KC_LAC,Joshua Palmer,Receiving Yards,under,14.5,player not matched in the game's teams
+2021-12-17T00:00:16+00:00,FanDuel,2021_15_KC_LAC,,Receiving Yards,over,17.5,player not matched in the game's teams
+2021-12-17T00:00:16+00:00,FanDuel,2021_15_KC_LAC,,Receiving Yards,under,17.5,player not matched in the game's teams
+2021-12-17T00:20:13+00:00,FanDuel,2021_15_KC_LAC,,Receptions,over,2.5,player not matched in the game's teams
+2021-12-17T00:20:13+00:00,FanDuel,2021_15_KC_LAC,,Receptions,under,2.5,player not matched in the game's teams
+2021-12-18T15:40:18+00:00,FanDuel,2021_15_NE_IND,Nyheim Miller-Hines,Receiving Yards,over,16.5,player not matched in the game's teams
+2021-12-18T15:40:18+00:00,FanDuel,2021_15_NE_IND,Nyheim Miller-Hines,Receiving Yards,under,16.5,player not matched in the game's teams
+2021-12-18T16:20:24+00:00,FanDuel,2021_15_NE_IND,,Receptions,over,2.5,player not matched in the game's teams
+2021-12-18T16:20:24+00:00,FanDuel,2021_15_NE_IND,,Receptions,under,2.5,player not matched in the game's teams
+2021-12-18T16:20:25+00:00,FanDuel,2021_15_ARI_DET,,Receiving Yards,over,33.5,player not matched in the game's teams
+2021-12-18T18:20:23+00:00,FanDuel,2021_15_ARI_DET,,Receiving Yards,under,33.5,player not matched in the game's teams
+2021-12-19T01:00:12+00:00,FanDuel,2021_15_NE_IND,,Receiving Yards,over,29.5,player not matched in the game's teams
+2021-12-19T01:00:12+00:00,FanDuel,2021_15_NE_IND,,Receiving Yards,under,29.5,player not matched in the game's teams
+2021-12-19T08:20:17+00:00,FanDuel,2021_15_HOU_JAX,,Receiving Yards,over,44.5,player not matched in the game's teams
+2021-12-19T08:20:17+00:00,FanDuel,2021_15_HOU_JAX,,Receiving Yards,under,44.5,player not matched in the game's teams
+2021-12-19T08:20:19+00:00,FanDuel,2021_15_CAR_BUF,,Receiving Yards,over,45.5,player not matched in the game's teams
+2021-12-19T08:20:19+00:00,FanDuel,2021_15_CAR_BUF,,Receiving Yards,under,45.5,player not matched in the game's teams
+2021-12-19T08:20:23+00:00,FanDuel,2021_15_CAR_BUF,,Receptions,over,4.5,player not matched in the game's teams
+2021-12-19T08:20:23+00:00,FanDuel,2021_15_CAR_BUF,,Receptions,under,4.5,player not matched in the game's teams
+2021-12-19T16:20:24+00:00,FanDuel,2021_15_GB_BAL,Hollywood Brown,Receiving Yards,over,50.5,player not matched in the game's teams
+2021-12-19T16:20:24+00:00,FanDuel,2021_15_GB_BAL,Hollywood Brown,Receiving Yards,under,50.5,player not matched in the game's teams
+2021-12-19T16:20:24+00:00,FanDuel,2021_15_GB_BAL,Hollywood Brown,Receiving Yards,over,50.5,player not matched in the game's teams
+2021-12-19T16:20:24+00:00,FanDuel,2021_15_GB_BAL,Hollywood Brown,Receiving Yards,under,50.5,player not matched in the game's teams
+2021-12-19T17:20:22+00:00,FanDuel,2021_15_ARI_DET,,Receiving Yards,over,33.5,player not matched in the game's teams
+2021-12-19T17:20:22+00:00,FanDuel,2021_15_ARI_DET,,Receiving Yards,under,33.5,player not matched in the game's teams
+2021-12-25T17:00:31+00:00,FanDuel,2021_16_BAL_CIN,Hollywood Brown,Receptions,over,5.5,player not matched in the game's teams
+2021-12-25T17:00:31+00:00,FanDuel,2021_16_BAL_CIN,Hollywood Brown,Receptions,under,5.5,player not matched in the game's teams
+2021-12-25T17:00:31+00:00,FanDuel,2021_16_LAC_HOU,Brandin Cooks,Receptions,over,5.5,player not matched in the game's teams
+2021-12-25T17:00:31+00:00,FanDuel,2021_16_LAC_HOU,Brandin Cooks,Receptions,under,5.5,player not matched in the game's teams
+2021-12-25T20:59:07+00:00,FanDuel,2021_16_LAC_HOU,Brandin Cooks,Receiving Yards,over,56.5,player not matched in the game's teams
+2021-12-25T20:59:08+00:00,FanDuel,2021_16_LAC_HOU,Brandin Cooks,Receiving Yards,under,56.5,player not matched in the game's teams
+2021-12-25T20:59:08+00:00,FanDuel,2021_16_LAC_HOU,Brandin Cooks,Receptions,over,5.5,player not matched in the game's teams
+2021-12-25T20:59:08+00:00,FanDuel,2021_16_LAC_HOU,Brandin Cooks,Receptions,under,5.5,player not matched in the game's teams
+2021-12-25T21:21:07+00:00,FanDuel,2021_16_IND_ARI,Zach Pascal,Receiving Yards,over,22.5,player not matched in the game's teams
+2021-12-25T21:21:07+00:00,FanDuel,2021_16_IND_ARI,Zach Pascal,Receiving Yards,under,22.5,player not matched in the game's teams
+2021-12-25T23:41:46+00:00,FanDuel,2021_16_IND_ARI,James Conner,Receiving Yards,over,15.5,player not matched in the game's teams
+2021-12-25T23:41:46+00:00,FanDuel,2021_16_IND_ARI,James Conner,Receptions,over,2.5,player not matched in the game's teams
+2021-12-25T23:41:46+00:00,FanDuel,2021_16_IND_ARI,James Conner,Rushing Yards,over,41.5,player not matched in the game's teams
+2021-12-25T23:41:47+00:00,FanDuel,2021_16_IND_ARI,James Conner,Receiving Yards,under,15.5,player not matched in the game's teams
+2021-12-25T23:41:47+00:00,FanDuel,2021_16_IND_ARI,James Conner,Receptions,under,2.5,player not matched in the game's teams
+2021-12-25T23:41:47+00:00,FanDuel,2021_16_IND_ARI,James Conner,Rushing Yards,under,41.5,player not matched in the game's teams
+2021-12-25T23:53:57+00:00,FanDuel,2021_16_IND_ARI,Nyheim Miller-Hines,Receiving Yards,over,17.5,player not matched in the game's teams
+2021-12-25T23:53:57+00:00,FanDuel,2021_16_IND_ARI,Nyheim Miller-Hines,Receiving Yards,under,17.5,player not matched in the game's teams
+2021-12-25T23:54:07+00:00,FanDuel,2021_16_IND_ARI,Jack Doyle,Receiving Yards,over,16.5,player not matched in the game's teams
+2021-12-25T23:54:07+00:00,FanDuel,2021_16_IND_ARI,Jack Doyle,Receiving Yards,under,16.5,player not matched in the game's teams
+2021-12-25T23:54:07+00:00,FanDuel,2021_16_IND_ARI,Nyheim Miller-Hines,Rushing Yards,over,13.5,player not matched in the game's teams
+2021-12-25T23:54:07+00:00,FanDuel,2021_16_IND_ARI,Nyheim Miller-Hines,Rushing Yards,under,13.5,player not matched in the game's teams
+2021-12-25T23:54:12+00:00,FanDuel,2021_16_IND_ARI,,Receiving Yards,over,27.5,player not matched in the game's teams
+2021-12-25T23:54:12+00:00,FanDuel,2021_16_IND_ARI,,Receiving Yards,under,27.5,player not matched in the game's teams
+2021-12-25T23:54:29+00:00,FanDuel,2021_16_IND_ARI,,Receptions,over,2.5,player not matched in the game's teams
+2021-12-25T23:54:29+00:00,FanDuel,2021_16_IND_ARI,,Receptions,under,2.5,player not matched in the game's teams
+2021-12-25T23:54:34+00:00,FanDuel,2021_16_IND_ARI,Nyheim Miller-Hines,Receptions,over,2.5,player not matched in the game's teams
+2021-12-25T23:54:34+00:00,FanDuel,2021_16_IND_ARI,Nyheim Miller-Hines,Receptions,under,2.5,player not matched in the game's teams
+2021-12-26T08:01:21+00:00,FanDuel,2021_16_BAL_CIN,Hollywood Brown,Receiving Yards,over,49.5,player not matched in the game's teams
+2021-12-26T08:01:21+00:00,FanDuel,2021_16_BAL_CIN,Hollywood Brown,Receiving Yards,under,49.5,player not matched in the game's teams
+2021-12-26T13:00:26+00:00,FanDuel,2021_16_TB_CAR,,Rushing Attempts,over,15.5,player not matched in the game's teams
+2021-12-26T13:00:26+00:00,FanDuel,2021_16_TB_CAR,,Rushing Attempts,under,15.5,player not matched in the game's teams
+2021-12-26T13:01:04+00:00,FanDuel,2021_16_TB_CAR,,Rushing Yards,over,66.5,player not matched in the game's teams
+2021-12-26T13:01:04+00:00,FanDuel,2021_16_TB_CAR,,Rushing Yards,under,66.5,player not matched in the game's teams
+2021-12-26T13:01:13+00:00,FanDuel,2021_16_TB_CAR,,Rushing Attempts,over,15.5,player not matched in the game's teams
+2021-12-26T13:01:13+00:00,FanDuel,2021_16_TB_CAR,,Rushing Attempts,under,15.5,player not matched in the game's teams
+2021-12-26T15:21:08+00:00,FanDuel,2021_16_WAS_DAL,,Receiving Yards,over,26.5,player not matched in the game's teams
+2021-12-26T15:21:08+00:00,FanDuel,2021_16_WAS_DAL,,Receiving Yards,under,26.5,player not matched in the game's teams
+2021-12-26T15:59:30+00:00,FanDuel,2021_16_BAL_CIN,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2021-12-26T15:59:30+00:00,FanDuel,2021_16_BAL_CIN,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2021-12-26T16:00:44+00:00,FanDuel,2021_16_CHI_SEA,Allen Robinson II,Receiving Yards,over,39.5,player not matched in the game's teams
+2021-12-26T16:00:44+00:00,FanDuel,2021_16_CHI_SEA,Allen Robinson II,Receiving Yards,under,39.5,player not matched in the game's teams
+2021-12-26T17:01:11+00:00,FanDuel,2021_16_BAL_CIN,Sammy Watkins,Receiving Yards,over,20.5,player not matched in the game's teams
+2021-12-26T17:01:11+00:00,FanDuel,2021_16_BAL_CIN,Sammy Watkins,Receiving Yards,under,20.5,player not matched in the game's teams
+2021-12-26T17:11:52+00:00,FanDuel,2021_16_CHI_SEA,Allen Robinson II,Receiving Yards,over,39.5,player not matched in the game's teams
+2021-12-26T17:11:52+00:00,FanDuel,2021_16_CHI_SEA,Allen Robinson II,Receiving Yards,under,39.5,player not matched in the game's teams
+2021-12-26T17:43:49+00:00,FanDuel,2021_16_LAC_HOU,Joshua Palmer,Receiving Yards,over,42.5,player not matched in the game's teams
+2021-12-26T17:43:49+00:00,FanDuel,2021_16_LAC_HOU,Joshua Palmer,Receiving Yards,under,42.5,player not matched in the game's teams
+2021-12-26T18:49:03+00:00,FanDuel,2021_16_DEN_LV,Bryan Edwards,Receptions,over,2.5,player not matched in the game's teams
+2021-12-26T18:49:03+00:00,FanDuel,2021_16_DEN_LV,Bryan Edwards,Receptions,under,2.5,player not matched in the game's teams
+2021-12-26T18:49:04+00:00,FanDuel,2021_16_DEN_LV,Bryan Edwards,Receiving Yards,over,25.5,player not matched in the game's teams
+2021-12-26T18:49:04+00:00,FanDuel,2021_16_DEN_LV,Bryan Edwards,Receiving Yards,under,25.5,player not matched in the game's teams
+2021-12-26T23:40:14+00:00,FanDuel,2021_16_WAS_DAL,,Receptions,over,2.5,player not matched in the game's teams
+2021-12-26T23:40:14+00:00,FanDuel,2021_16_WAS_DAL,,Receptions,under,2.5,player not matched in the game's teams
+2021-12-26T23:59:24+00:00,FanDuel,2021_16_MIA_NO,Tre'Quan Smith,Receiving Yards,over,30.5,player not matched in the game's teams
+2021-12-26T23:59:24+00:00,FanDuel,2021_16_MIA_NO,Tre'Quan Smith,Receiving Yards,under,30.5,player not matched in the game's teams
+2021-12-27T15:16:13+00:00,FanDuel,2021_16_MIA_NO,DeVante Parker,Receptions,over,4.5,player not matched in the game's teams
+2021-12-27T15:16:13+00:00,FanDuel,2021_16_MIA_NO,DeVante Parker,Receptions,under,4.5,player not matched in the game's teams
+2021-12-27T15:16:15+00:00,FanDuel,2021_16_MIA_NO,DeVante Parker,Receiving Yards,over,50.5,player not matched in the game's teams
+2021-12-27T15:16:15+00:00,FanDuel,2021_16_MIA_NO,DeVante Parker,Receiving Yards,under,50.5,player not matched in the game's teams
+2021-12-27T22:28:41+00:00,FanDuel,2021_16_MIA_NO,Tre'Quan Smith,Receptions,over,2.5,player not matched in the game's teams
+2021-12-27T22:28:41+00:00,FanDuel,2021_16_MIA_NO,Tre'Quan Smith,Receptions,under,2.5,player not matched in the game's teams
+2021-12-27T22:56:02+00:00,FanDuel,2021_16_MIA_NO,Tre'Quan Smith,Receiving Yards,over,29.5,player not matched in the game's teams
+2021-12-27T22:56:02+00:00,FanDuel,2021_16_MIA_NO,Tre'Quan Smith,Receiving Yards,under,29.5,player not matched in the game's teams
+2022-01-02T08:01:03+00:00,FanDuel,2021_17_PHI_WAS,,Receiving Yards,over,27.5,player not matched in the game's teams
+2022-01-02T08:01:03+00:00,FanDuel,2021_17_PHI_WAS,,Receiving Yards,under,27.5,player not matched in the game's teams
+2022-01-02T08:01:14+00:00,FanDuel,2021_17_PHI_WAS,,Receptions,over,2.5,player not matched in the game's teams
+2022-01-02T08:01:14+00:00,FanDuel,2021_17_PHI_WAS,,Receptions,under,2.5,player not matched in the game's teams
+2022-01-02T08:01:31+00:00,FanDuel,2021_17_ATL_BUF,,Receiving Yards,over,38.5,player not matched in the game's teams
+2022-01-02T08:01:31+00:00,FanDuel,2021_17_ATL_BUF,,Receiving Yards,under,38.5,player not matched in the game's teams
+2022-01-02T11:26:20+00:00,FanDuel,2021_17_CAR_NO,Adam Trautman,Receiving Yards,over,20.5,player not matched in the game's teams
+2022-01-02T11:26:20+00:00,FanDuel,2021_17_CAR_NO,Adam Trautman,Receiving Yards,under,20.5,player not matched in the game's teams
+2022-01-02T14:45:16+00:00,FanDuel,2021_17_TB_NYJ,,Rushing Yards,over,73.5,player not matched in the game's teams
+2022-01-02T14:45:16+00:00,FanDuel,2021_17_TB_NYJ,,Rushing Yards,under,73.5,player not matched in the game's teams
+2022-01-02T16:00:34+00:00,FanDuel,2021_17_LA_BAL,Hollywood Brown,Receptions,over,5.5,player not matched in the game's teams
+2022-01-02T16:00:34+00:00,FanDuel,2021_17_LA_BAL,Hollywood Brown,Receptions,under,5.5,player not matched in the game's teams
+2022-01-02T16:01:00+00:00,FanDuel,2021_17_LA_BAL,Hollywood Brown,Receptions,over,5.5,player not matched in the game's teams
+2022-01-02T16:01:00+00:00,FanDuel,2021_17_LA_BAL,Hollywood Brown,Receptions,under,5.5,player not matched in the game's teams
+2022-01-02T16:01:12+00:00,FanDuel,2021_17_LV_IND,Nyheim Miller-Hines,Receiving Yards,over,12.5,player not matched in the game's teams
+2022-01-02T16:01:12+00:00,FanDuel,2021_17_LV_IND,Nyheim Miller-Hines,Receiving Yards,under,12.5,player not matched in the game's teams
+2022-01-02T16:24:21+00:00,FanDuel,2021_17_LV_IND,,Receiving Yards,over,25.5,player not matched in the game's teams
+2022-01-02T16:24:21+00:00,FanDuel,2021_17_LV_IND,,Receiving Yards,under,25.5,player not matched in the game's teams
+2022-01-02T17:00:39+00:00,FanDuel,2021_17_LV_IND,,Receptions,over,2.5,player not matched in the game's teams
+2022-01-02T17:00:39+00:00,FanDuel,2021_17_LV_IND,,Receptions,under,2.5,player not matched in the game's teams
+2022-01-02T17:01:27+00:00,FanDuel,2021_17_LV_IND,,Receptions,over,2.5,player not matched in the game's teams
+2022-01-02T17:01:27+00:00,FanDuel,2021_17_LV_IND,,Receptions,under,2.5,player not matched in the game's teams
+2022-01-06T21:00:49+00:00,FanDuel,2021_18_IND_JAX,,Receptions,over,2.5,player not matched in the game's teams
+2022-01-06T21:00:49+00:00,FanDuel,2021_18_IND_JAX,,Receptions,under,2.5,player not matched in the game's teams
+2022-01-06T21:00:49+00:00,FanDuel,2021_18_IND_JAX,Nyheim Miller-Hines,Receiving Yards,over,13.5,player not matched in the game's teams
+2022-01-06T21:00:49+00:00,FanDuel,2021_18_IND_JAX,Nyheim Miller-Hines,Receiving Yards,under,13.5,player not matched in the game's teams
+2022-01-06T21:00:49+00:00,FanDuel,2021_18_IND_JAX,Nyheim Miller-Hines,Rushing Yards,over,12.5,player not matched in the game's teams
+2022-01-06T21:00:49+00:00,FanDuel,2021_18_IND_JAX,Nyheim Miller-Hines,Rushing Yards,under,12.5,player not matched in the game's teams
+2022-01-06T21:01:28+00:00,FanDuel,2021_18_IND_JAX,Nyheim Miller-Hines,Receiving Yards,under,13.5,player not matched in the game's teams
+2022-01-06T21:01:29+00:00,FanDuel,2021_18_IND_JAX,Nyheim Miller-Hines,Receiving Yards,over,13.5,player not matched in the game's teams
+2022-01-06T21:01:29+00:00,FanDuel,2021_18_IND_JAX,Nyheim Miller-Hines,Rushing Yards,over,12.5,player not matched in the game's teams
+2022-01-06T21:01:29+00:00,FanDuel,2021_18_IND_JAX,Nyheim Miller-Hines,Rushing Yards,under,12.5,player not matched in the game's teams
+2022-01-06T21:08:00+00:00,FanDuel,2021_18_IND_JAX,,Receptions,under,2.5,player not matched in the game's teams
+2022-01-06T21:08:01+00:00,FanDuel,2021_18_IND_JAX,,Receptions,over,2.5,player not matched in the game's teams
+2022-01-08T11:31:29+00:00,FanDuel,2021_18_KC_DEN,,Rushing Yards,over,59.5,player not matched in the game's teams
+2022-01-08T11:31:29+00:00,FanDuel,2021_18_KC_DEN,,Rushing Yards,under,59.5,player not matched in the game's teams
+2022-01-08T11:31:31+00:00,FanDuel,2021_18_KC_DEN,,Receiving Yards,over,23.5,player not matched in the game's teams
+2022-01-08T11:31:31+00:00,FanDuel,2021_18_KC_DEN,,Receiving Yards,under,23.5,player not matched in the game's teams
+2022-01-08T19:06:50+00:00,FanDuel,2021_18_KC_DEN,,Rushing Attempts,over,13.5,player not matched in the game's teams
+2022-01-08T19:06:50+00:00,FanDuel,2021_18_KC_DEN,,Rushing Attempts,under,13.5,player not matched in the game's teams
+2022-01-08T21:06:57+00:00,FanDuel,2021_18_KC_DEN,,Receptions,over,2.5,player not matched in the game's teams
+2022-01-08T21:06:57+00:00,FanDuel,2021_18_KC_DEN,,Receptions,under,2.5,player not matched in the game's teams
+2022-01-09T08:01:17+00:00,FanDuel,2021_18_IND_JAX,,Receiving Yards,over,28.5,player not matched in the game's teams
+2022-01-09T08:01:17+00:00,FanDuel,2021_18_IND_JAX,,Receiving Yards,under,28.5,player not matched in the game's teams
+2022-01-09T08:01:17+00:00,FanDuel,2021_18_PIT_BAL,Hollywood Brown,Receiving Yards,over,45.5,player not matched in the game's teams
+2022-01-09T08:01:17+00:00,FanDuel,2021_18_PIT_BAL,Hollywood Brown,Receiving Yards,under,45.5,player not matched in the game's teams
+2022-01-09T08:01:25+00:00,FanDuel,2021_18_TEN_HOU,Brevin Jordan,Receiving Yards,over,19.5,player not matched in the game's teams
+2022-01-09T08:01:25+00:00,FanDuel,2021_18_TEN_HOU,Brevin Jordan,Receiving Yards,under,19.5,player not matched in the game's teams
+2022-01-09T08:01:35+00:00,FanDuel,2021_18_PIT_BAL,Hollywood Brown,Receptions,over,4.5,player not matched in the game's teams
+2022-01-09T08:01:35+00:00,FanDuel,2021_18_PIT_BAL,Hollywood Brown,Receptions,under,4.5,player not matched in the game's teams
+2022-01-09T11:26:04+00:00,FanDuel,2021_18_NYJ_BUF,,Receiving Yards,over,32.5,player not matched in the game's teams
+2022-01-09T11:26:04+00:00,FanDuel,2021_18_NYJ_BUF,,Receiving Yards,under,32.5,player not matched in the game's teams
+2022-01-09T11:26:15+00:00,FanDuel,2021_18_SF_LA,Kyle Juszczyk,Receiving Yards,over,8.5,player not matched in the game's teams
+2022-01-09T11:26:15+00:00,FanDuel,2021_18_SF_LA,Kyle Juszczyk,Receiving Yards,under,8.5,player not matched in the game's teams
+2022-01-09T13:41:17+00:00,FanDuel,2021_18_IND_JAX,,Receiving Yards,over,47.5,player not matched in the game's teams
+2022-01-09T13:41:17+00:00,FanDuel,2021_18_IND_JAX,,Receiving Yards,under,47.5,player not matched in the game's teams
+2022-01-09T16:06:36+00:00,FanDuel,2021_18_SF_LA,Kyle Juszczyk,Receptions,over,1.5,player not matched in the game's teams
+2022-01-09T16:06:36+00:00,FanDuel,2021_18_SF_LA,Kyle Juszczyk,Receptions,under,1.5,player not matched in the game's teams
+2022-01-09T20:23:16+00:00,FanDuel,2021_18_LAC_LV,Joshua Palmer,Receiving Yards,over,20.5,player not matched in the game's teams
+2022-01-09T20:23:16+00:00,FanDuel,2021_18_LAC_LV,Joshua Palmer,Receiving Yards,under,20.5,player not matched in the game's teams
+2022-01-09T20:23:26+00:00,FanDuel,2021_18_LAC_LV,Joshua Palmer,Receptions,over,1.5,player not matched in the game's teams
+2022-01-09T20:23:26+00:00,FanDuel,2021_18_LAC_LV,Joshua Palmer,Receptions,under,1.5,player not matched in the game's teams
