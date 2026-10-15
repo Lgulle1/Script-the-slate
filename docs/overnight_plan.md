@@ -880,6 +880,16 @@ Break-even hit rate at the average price: {round(float(1/(1+(dec-1).mean()))*100
 **Parlays with a 30% profit boost (legs in different games).** Model picks with edge >= 4 points: 2-leg +15.9% [+8.4, +23.4], 3-leg +17.7% [+6.6, +29.0], 4-leg +18.3% [+1.7, +35.9]. The same parlays built from a bettor with no skill return +8.1%, +5.1% and +0.7%, and parlays of the better-priced side with no model return +14.0%, +13.6%, +11.4%. So the boost is most of it, and the model's picks are 2-4 points above a model-free choice with intervals that overlap. Without a boost every version loses (model picks -4.7%, -6.3%, -7.4%). Boosts are capped and not offered on every leg; this is arithmetic about prices on past data, found after seeing the single-bet results, not a plan.
 **What it means for scoring and weighting.** Nothing is changed: no model, weight or threshold moves on these results. The only candidate that survived a walk-forward is the unders-in-the-middle rule above, and the price-side effect which needs no model. Both go on the prospective record from the next run.
 
+## One fixed setup tuned on all the lines (yours, 2026-10-15: "one set of data, tweak the numbers until it works"; scripts/tune_setup.py)
+
+Knobs tuned together on all clean 2024-2026 lines: weight on the model vs the book's vig-free chance (0-100%), a shift on the over's chance (-12 to +4 points), pool (300/600/1200), width (x0.85/1/1.15), minimum edge (0-10 points), side, and the market list. The same tuning was also run on 2024 alone and on 2025-26 alone, each checked on the other.
+- Tuned on everything: 304 bets, hit 59.5%, ROI +13.5% [+2.1, +24.7] (model 30%, book 70%, shift -2, pool 300, edge >= 6, both sides; pass completions, pass yards, rush attempts, rush yards). In-sample: optimistic by construction.
+- Tuned on 2024, scored on 2025-26: 207 bets, hit 56.5%, ROI +7.1% [-5.9, +20.7]. Tuned on 2025-26, scored on 2024: 467 bets, hit 56.1%, ROI +6.0% [-3.1, +14.4]. Both halves chose unders only, a shift of -6 to -8 points, edge >= 10 points, rush attempts and pass attempts.
+- Plain unders in those markets with no model: -0.9% (2024), +0.9% (2025). The model's selection is what is positive.
+- The setup both halves agreed on (unders; pass attempts and rush attempts; model 50%, book 50%; shift -6; pool 600; edge >= 10): 365 bets, 58.6% hit, +11.7% (2024 +12.1%, 2025 +11.0%; the 2026 files have no attempts lines). Chosen after both halves were seen, so its honest expectation is the out-of-sample +6-7%, not +11.7%.
+- Parlays from those legs, averaged over every 2- or 3-leg combination in different games of a week, $10 with a 30% boost: 2-leg +$5.45, 3-leg +$6.80 (no boost +$2.69 / +$3.37; a coin-flipper with the boost +$0.70 / +$0.36). Same in-sample caveat. One parlay a week of the top two edges is too few (36 parlays) to read.
+Proposed, not done: freeze the agreed setup now and log its picks from the next run, so its record is prospective.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming
