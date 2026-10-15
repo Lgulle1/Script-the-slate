@@ -98,11 +98,11 @@ ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);max-width:75ch;display:
 <section class="panel" id="livepanel" hidden>
   <h2 id="livetitle">This week</h2>
   <p class="lede" id="livemeta"></p>
-  <div class="tierhead"><h3>Top 10 &mdash; bet these</h3></div>
+  <div class="tierhead"><h3>Bet: the top 8, flat stake</h3></div>
   <div class="scroll"><table id="livetop"></table></div>
-  <div class="tierhead"><h3>Boosted 2-leg parlays from the Top 10</h3></div>
+  <div class="tierhead"><h3>Boosted 2-leg parlays, in this order</h3></div>
   <div class="scroll"><table id="liveparlays"></table></div>
-  <div class="tierhead"><h3>Next 10 &mdash; watch only</h3></div>
+  <div class="tierhead"><h3>Watch only: ranks 9&ndash;16</h3></div>
   <div class="scroll"><table id="livenext"></table></div>
 </section>
 
@@ -222,12 +222,12 @@ function live() {
   const L = DATA.live; if (!L) return;
   $("#livepanel").hidden = false;
   $("#livetitle").textContent = `Week ${L.meta.week} card`;
-  $("#livemeta").textContent = `Made ${L.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")}, before kickoff. Unders only, FanDuel markets and prices only. Caesars attempts lines are used to train the picker but are not on the card, since FanDuel does not offer those markets.`;
+  $("#livemeta").textContent = `Made ${L.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")}, before kickoff. Locked setup: unders only, FanDuel only, bet the top 8, parlays #1+#2, #3+#4, #5+#6, #7+#8 (with fewer boosts, place them in that order). Caesars attempts lines are used to train the picker but are not on the card, since FanDuel does not offer those markets.`;
   const day = g => new Date(g + "T12:00:00Z").toLocaleDateString("en-US", {weekday: "short", month: "short", day: "numeric", timeZone: "UTC"});
   const t = l => `<thead><tr><th class="num">#</th><th>Player</th><th>Team</th><th>Bet</th><th class="num">FanDuel price</th><th class="num">Our prediction</th><th class="num">Picker chance</th><th>Game day</th></tr></thead><tbody>` +
     l.map(r => `<tr><td class="num">${r.rank}</td><td>${r.player_name}</td><td>${r.team ?? ""}</td><td class="under">${r.market} under ${r.line}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${(100 * r.picker_under_chance).toFixed(0)}%</td><td>${day(r.gameday)}</td></tr>`).join("") + "</tbody>";
-  $("#livetop").innerHTML = t(L.card.filter(r => r.tier === "Top 10"));
-  $("#livenext").innerHTML = t(L.card.filter(r => r.tier === "Next 10"));
+  $("#livetop").innerHTML = t(L.card.filter(r => r.tier === "Bet"));
+  $("#livenext").innerHTML = t(L.card.filter(r => r.tier === "Watch"));
   $("#liveparlays").innerHTML = `<thead><tr><th>Leg 1</th><th>Leg 2</th><th class="num">Price</th><th class="num">Picker chance both hit</th><th class="num">Win on $10 (boosted)</th></tr></thead><tbody>` +
     L.parlays.map(r => `<tr><td>${r.leg1}</td><td>${r.leg2}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(100 * r.picker_chance).toFixed(0)}%</td><td class="num">$${(+r.payout_on_10_boosted).toFixed(2)}</td></tr>`).join("") + "</tbody>";
 }

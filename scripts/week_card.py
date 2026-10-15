@@ -35,6 +35,7 @@ REGULAR = ["FanDuel", "DraftKings", "Caesars", "Fanatics", "BetMGM", "theScore B
 BOOK_MARKET = {"pass_att": "passing-attempts", "pass_cmp": "passing-completions", "pass_yds": "passing-yards", "rush_att": "rushing-attempts", "rush_yds": "rushing-yards",
                "rec": "receptions", "rec_yds": "receiving-yards"}
 COMP = {"pass_att": "Caesars", "pass_cmp": "Caesars", "rush_att": "Caesars"}
+BET_N = 8
 LABEL = {"rec": "Receptions", "rec_yds": "Receiving yds", "rush_yds": "Rush yds", "rush_att": "Rush attempts", "pass_yds": "Pass yds", "pass_att": "Pass attempts", "pass_cmp": "Pass completions"}
 
 
@@ -81,7 +82,10 @@ def main(argv=None):
     x = x.filter(pl.col("history") >= CF.MIN_HISTORY)
     if not a.include_comp:                                                  # you bet FanDuel only: Caesars-comp markets stay in training, not on the card
         x = x.filter(~pl.col("market").is_in(list(COMP)))
-    x = CF.tier(x, True).with_columns(price=pl.Series(SC.american(x["dec_u"].to_numpy())) if False else pl.col("price"))
+    x = CF.tier(x, True)
+    # locked setup (records/cards/locked_setup.json): bet the top 8, watch 9-16, parlays from the top 8 in rank order
+    x = x.with_columns(tier=pl.when(pl.col("rank").is_null()).then(pl.col("tier")).when(pl.col("rank") <= BET_N).then(pl.lit("Bet"))
+                       .when(pl.col("rank") <= 2 * BET_N).then(pl.lit("Watch")).otherwise(pl.lit("Rest"))).with_columns(price=pl.Series(SC.american(x["dec_u"].to_numpy())) if False else pl.col("price"))
     x = x.with_columns(book=pl.col("market").replace_strict(COMP, default="FanDuel"), key=pl.col("player_name").str.to_lowercase(),
                        book_market=pl.col("market").replace_strict(BOOK_MARKET))
     bp = best_prices(a.books, a.season, a.week)
@@ -89,15 +93,15 @@ def main(argv=None):
     card = x.select("rank", "tier", "player_name", "team", pl.col("market").replace_strict(LABEL).alias("market"), "line", "book", "price",
                     pl.col("mean").round(1).alias("our_prediction"), pl.col("picker_under_chance").round(3), pl.col("edge").round(3), "best_book", "best_price", "books_quoting",
                     "gameday", "game_id").sort("rank", nulls_last=True)
-    P = ungraded_parlays(x.filter(pl.col("tier") == "Top 10"))
+    P = ungraded_parlays(x.filter(pl.col("tier") == "Bet"))
     OUTD.mkdir(parents=True, exist_ok=True)
     stem = f"{a.season}_wk{a.week:02d}_card"
     card.write_csv(OUTD / f"{stem}.csv")
     P.write_csv(OUTD / f"{stem}_parlays.csv")
-    (OUTD / f"{stem}_meta.json").write_text(json.dumps(dict(made_at_utc=made_at, season=a.season, week=a.week, version="A + B + C", picks=card.height,
+    (OUTD / f"{stem}_meta.json").write_text(json.dumps(dict(made_at_utc=made_at, season=a.season, week=a.week, version="A + B + C, locked setup (records/cards/locked_setup.json)", picks=card.height,
                                                             trained_on="every graded line before the week", comp_book_for_attempts="Caesars"), indent=1))
     with pl.Config(tbl_rows=40, tbl_cols=20, tbl_width_chars=250, fmt_str_lengths=40):
-        print(card.filter(pl.col("tier").is_in(["Top 10", "Next 10"])))
+        print(card.filter(pl.col("tier").is_in(["Bet", "Watch"])))
         print(P)
         print("picks:", card.height, card.group_by("tier").len().rows())
 

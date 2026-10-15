@@ -1,0 +1,19 @@
+{
+ "locked_at_utc": "2026-10-15",
+ "book": "FanDuel only (markets FanDuel does not post are used for training, never bet)",
+ "side": "unders only",
+ "markets_bet": ["receptions", "receiving yards", "rush yards", "pass yards"],
+ "picker": "six gradient-boosted picker versions averaged (depth 2/3/4, rate 0.1, leaf 50/150), retrained every week on every graded line before that week; inputs: FanDuel prices, model chances (incl. tuned layers), model-vs-line gap, line, game total, spread, home/away, dome, week, market",
+ "qualifies": "picker edge over the FanDuel break-even >= 4 points; player has 3+ games for his current team; at most 1 pick per player and 2 per game",
+ "rank": "by the picker's chance the under hits",
+ "singles": "bet the top 8, flat stake",
+ "watch_only": "ranks 9-16 (not bet)",
+ "parlays": "2-leg, $ flat, from the top 8 in rank order: #1+#2, #3+#4, #5+#6, #7+#8 (a leg skips to the next pick if the two share a game); with fewer boosts, place them in that order",
+ "boost": "30% profit boost on each parlay where available",
+ "why (2024 wk4 - 2026 wk5 replay, best case: chosen after seeing these weeks)": {
+   "top 8 singles": "296 bets, 62.5% hit, +10.9% ROI",
+   "top 8 parlays in rank order": "143 parlays, 44% hit, +66% per $ staked with boost, 26 of 38 weeks up",
+   "top 4 parlays (if only 2 boosts)": "72 parlays, 51% hit, +86% per $ staked, 29 of 38 weeks up"
+ },
+ "change_rule": "nothing here changes until at least 8 live weeks are graded; changes are written here with a date"
+}
