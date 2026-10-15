@@ -1,9 +1,11 @@
 """Import a FanDuel player-prop export (BettingPros public odds feed, supplied by the project manager) into the prop-line log.
 
-Rules: docs/overnight_plan.md, "BettingPros FanDuel export, import and week-5 comparison". Only Over/Under rows of the four markets the model predicts; each selection gives an OPENING
-row (stamped with the file's opening time) and a LAST row (stamped with the file's line-updated time, accepted up to 300 s after kickoff and noted).
+Rules: docs/overnight_plan.md, "BettingPros FanDuel export, import and week-5 comparison". Only Over/Under rows of the markets the model predicts (the four of the first import plus pass attempts, pass completions and rush
+attempts); each selection gives an OPENING row (stamped with the file's opening time) and a LAST row (stamped with the file's line-updated time).
+A LAST row stamped after kickoff is refused by default beyond 300 s. With --grace-seconds N (N large enough to keep every row) it is kept instead and carries "stamp S s after kickoff" in its note, so an analysis
+can run with and without the flagged rows (the feed overwrites a line once the game starts, so such a row may already know part of the game).
 
-  python scripts/import_bettingpros.py FanDuel_NFL_2026_Week5_Player_Props.csv [--push]
+  python scripts/import_bettingpros.py FanDuel_NFL_2026_Week5_Player_Props.csv [--push] [--grace-seconds N]
 """
 import argparse
 import shutil
@@ -20,7 +22,8 @@ from live import prop_lines as PL
 from live import publish
 from live import targets as TG
 
-MARKETS = {"passing-yards": "Passing Yards", "rushing-yards": "Rushing Yards", "receiving-yards": "Receiving Yards", "receptions": "Receptions"}
+MARKETS = {"passing-yards": "Passing Yards", "rushing-yards": "Rushing Yards", "receiving-yards": "Receiving Yards", "receptions": "Receptions",
+           "passing-attempts": "Passing Attempts", "passing-completions": "Passing Completions", "rushing-attempts": "Rushing Attempts"}
 TEAM_FIX = {"JAC": "JAX", "LAR": "LA"}
 GRACE_SECONDS = 300
 
@@ -63,6 +66,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("csv", type=Path)
     ap.add_argument("--push", action="store_true")
+    ap.add_argument("--grace-seconds", type=int, default=GRACE_SECONDS, help="keep a LAST row stamped up to this many seconds after kickoff (noted in the row); later ones are refused")
     ap.add_argument("--roster-season", type=int, default=None, help="match names inside each game's roster of this season (archives of past seasons)")
     ap.add_argument("--log", type=Path, default=config.ROOT / "records" / "lines" / "prop_lines_log.csv")
     a = ap.parse_args(argv)
@@ -76,7 +80,7 @@ def main(argv=None):
     pcon.close()
     rows, counts = to_rows(load(a.csv), sched)
     roster = roster_for(a.roster_season) if a.roster_season else None
-    res = PL.log_prop_lines(rows, datetime.now(timezone.utc), a.log, TG.schedule_frame(sched), players, source="bettingpros_import", grace_seconds=GRACE_SECONDS, roster=roster)
+    res = PL.log_prop_lines(rows, datetime.now(timezone.utc), a.log, TG.schedule_frame(sched), players, source="bettingpros_import", grace_seconds=a.grace_seconds, roster=roster)
     keep_copy = a.log.parent / "imports" / a.csv.name
     keep_copy.parent.mkdir(parents=True, exist_ok=True)
     if not keep_copy.exists():
