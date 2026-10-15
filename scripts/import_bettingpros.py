@@ -31,23 +31,39 @@ def load(path: Path) -> pl.DataFrame:
 
 
 def to_rows(d: pl.DataFrame, sched: pl.DataFrame) -> tuple:
-    """(rows for log_prop_lines, counts) from the export; the game is resolved on season + week + the two teams."""
+    """(rows for log_prop_lines, counts) from the export; the game is resolved on season + week + the two teams. Regular season only; the book is the row's sportsbook; alternate lines are flagged by is_main_line."""
     fix = lambda c: pl.col(c).replace(TEAM_FIX)
+    if "season_type" in d.columns:
+        d = d.filter(pl.col("season_type") == "REG")
     d = d.with_columns(away=fix("away_team"), home=fix("home_team"))
     keep = d.filter(pl.col("market").is_in(list(MARKETS)) & pl.col("selection").is_in(["Over", "Under"]))
     games = sched.select("game_id", "season", "week", "home_team", "away_team").unique().with_columns(season=pl.col("season").cast(pl.Utf8), week=pl.col("week").cast(pl.Utf8))
     keep = keep.join(games, left_on=["season", "week", "home", "away"], right_on=["season", "week", "home_team", "away_team"], how="left")
-    base = dict(book=pl.lit("FanDuel"), game_id=pl.col("game_id"), player_name=pl.col("player"), book_market=pl.col("market").replace(MARKETS), side=pl.col("selection").str.to_lowercase())
-    opens = keep.select(**base, line=pl.col("fanduel_opening_line"), price=pl.col("fanduel_opening_odds"), captured_at=pl.col("fanduel_opening_timestamp_utc"), note=pl.lit("open"))
+    book = pl.col("sportsbook") if "sportsbook" in keep.columns else pl.lit("FanDuel")
+    alt = (pl.col("is_main_line") == "False") if "is_main_line" in keep.columns else pl.lit(False)
+    base = dict(book=book, game_id=pl.col("game_id"), player_name=pl.col("player"), book_market=pl.col("market").replace(MARKETS), side=pl.col("selection").str.to_lowercase(), is_alt=alt)
+    has_open = pl.col("fanduel_opening_line").is_not_null() & pl.col("fanduel_opening_odds").is_not_null() & pl.col("fanduel_opening_timestamp_utc").is_not_null() if "fanduel_opening_line" in keep.columns else pl.lit(False)
+    opens = keep.filter(has_open).select(**base, line=pl.col("fanduel_opening_line"), price=pl.col("fanduel_opening_odds"), captured_at=pl.col("fanduel_opening_timestamp_utc"), note=pl.lit("open"))
     lasts = keep.select(**base, line=pl.col("line"), price=pl.col("american_odds"), captured_at=pl.col("line_updated_utc"), note=pl.lit("last"))
-    counts = dict(file_rows=d.height, skipped_other_markets=d.height - keep.height, selections=keep.height, no_game=keep["game_id"].null_count())
+    counts = dict(file_rows=d.height, skipped_other_markets=d.height - keep.height, selections=keep.height, no_game=keep["game_id"].null_count(), with_opening=int(has_open.sum()) if False else opens.height)
     return pl.concat([opens, lasts]).filter(pl.col("game_id").is_not_null()), counts
+
+
+def roster_for(season: int) -> pl.DataFrame:
+    """Who played in each game of `season` (game_id, gsis_id, display_name, team, position): played log plus the player master's names."""
+    from live import history as H
+    plog = H.read_played_logs(season)[0].filter(pl.col("season") == season).select("game_id", gsis_id="player_id", team="team", position="family")
+    pcon = duckdb.connect(str(config.DUCKDB_PATH), read_only=True)
+    names = pcon.execute("SELECT DISTINCT gsis_id, display_name FROM players WHERE gsis_id IS NOT NULL").pl()
+    pcon.close()
+    return plog.join(names, on="gsis_id", how="inner").unique(["game_id", "gsis_id"])
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("csv", type=Path)
     ap.add_argument("--push", action="store_true")
+    ap.add_argument("--roster-season", type=int, default=None, help="match names inside each game's roster of this season (archives of past seasons)")
     ap.add_argument("--log", type=Path, default=config.ROOT / "records" / "lines" / "prop_lines_log.csv")
     a = ap.parse_args(argv)
     if a.push:
@@ -59,7 +75,8 @@ def main(argv=None):
     players = pcon.execute("SELECT DISTINCT gsis_id, display_name, latest_team, position FROM players WHERE gsis_id IS NOT NULL").pl()
     pcon.close()
     rows, counts = to_rows(load(a.csv), sched)
-    res = PL.log_prop_lines(rows, datetime.now(timezone.utc), a.log, TG.schedule_frame(sched), players, source="bettingpros_import", grace_seconds=GRACE_SECONDS)
+    roster = roster_for(a.roster_season) if a.roster_season else None
+    res = PL.log_prop_lines(rows, datetime.now(timezone.utc), a.log, TG.schedule_frame(sched), players, source="bettingpros_import", grace_seconds=GRACE_SECONDS, roster=roster)
     keep_copy = a.log.parent / "imports" / a.csv.name
     keep_copy.parent.mkdir(parents=True, exist_ok=True)
     if not keep_copy.exists():
