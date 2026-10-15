@@ -70,6 +70,7 @@ def main(argv=None):
     ap.add_argument("--season", type=int, default=2026)
     ap.add_argument("--week", type=int, default=6)
     ap.add_argument("--books", type=Path, required=True)
+    ap.add_argument("--include-comp", action="store_true", help="also card the markets FanDuel does not post (priced at Caesars); off by default: you bet FanDuel only")
     a = ap.parse_args(argv)
     made_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
     d = TN.build()
@@ -78,6 +79,8 @@ def main(argv=None):
     d = d.with_columns(history=pl.Series(CR.history_counts(d)))
     x = CF.picks_for(d, A, X, a.season, a.week, True)
     x = x.filter(pl.col("history") >= CF.MIN_HISTORY)
+    if not a.include_comp:                                                  # you bet FanDuel only: Caesars-comp markets stay in training, not on the card
+        x = x.filter(~pl.col("market").is_in(list(COMP)))
     x = CF.tier(x, True).with_columns(price=pl.Series(SC.american(x["dec_u"].to_numpy())) if False else pl.col("price"))
     x = x.with_columns(book=pl.col("market").replace_strict(COMP, default="FanDuel"), key=pl.col("player_name").str.to_lowercase(),
                        book_market=pl.col("market").replace_strict(BOOK_MARKET))

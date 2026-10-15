@@ -222,10 +222,10 @@ function live() {
   const L = DATA.live; if (!L) return;
   $("#livepanel").hidden = false;
   $("#livetitle").textContent = `Week ${L.meta.week} card`;
-  $("#livemeta").textContent = `Made ${L.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")}, before kickoff. Unders only. Book is where the line comes from: FanDuel, or Caesars for rush attempts, pass attempts and completions (FanDuel does not post them). Best price is the best under at the same line across regular sportsbooks.`;
+  $("#livemeta").textContent = `Made ${L.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")}, before kickoff. Unders only, FanDuel markets and prices only. Caesars attempts lines are used to train the picker but are not on the card, since FanDuel does not offer those markets.`;
   const day = g => new Date(g + "T12:00:00Z").toLocaleDateString("en-US", {weekday: "short", month: "short", day: "numeric", timeZone: "UTC"});
-  const t = l => `<thead><tr><th class="num">#</th><th>Player</th><th>Team</th><th>Bet</th><th>Book</th><th class="num">Price</th><th>Best price</th><th class="num">Our prediction</th><th class="num">Picker chance</th><th>Game day</th></tr></thead><tbody>` +
-    l.map(r => `<tr><td class="num">${r.rank}</td><td>${r.player_name}</td><td>${r.team ?? ""}</td><td class="under">${r.market} under ${r.line}</td><td>${r.book}</td><td class="num">${fmtP(r.price)}</td><td>${r.best_book ? `${fmtP(r.best_price)} ${r.best_book}` : "–"}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${(100 * r.picker_under_chance).toFixed(0)}%</td><td>${day(r.gameday)}</td></tr>`).join("") + "</tbody>";
+  const t = l => `<thead><tr><th class="num">#</th><th>Player</th><th>Team</th><th>Bet</th><th class="num">FanDuel price</th><th class="num">Our prediction</th><th class="num">Picker chance</th><th>Game day</th></tr></thead><tbody>` +
+    l.map(r => `<tr><td class="num">${r.rank}</td><td>${r.player_name}</td><td>${r.team ?? ""}</td><td class="under">${r.market} under ${r.line}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${(100 * r.picker_under_chance).toFixed(0)}%</td><td>${day(r.gameday)}</td></tr>`).join("") + "</tbody>";
   $("#livetop").innerHTML = t(L.card.filter(r => r.tier === "Top 10"));
   $("#livenext").innerHTML = t(L.card.filter(r => r.tier === "Next 10"));
   $("#liveparlays").innerHTML = `<thead><tr><th>Leg 1</th><th>Leg 2</th><th class="num">Price</th><th class="num">Picker chance both hit</th><th class="num">Win on $10 (boosted)</th></tr></thead><tbody>` +
