@@ -1,0 +1,727 @@
+{
+ "candidates": 126000,
+ "singles_candidates": 100800,
+ "parlay_candidates": 25200,
+ "seasons": [
+  2021,
+  2022,
+  2023,
+  2024,
+  2025,
+  2026
+ ],
+ "held_out": {
+  "total": [
+   {
+    "season": 2021,
+    "mix": "parlays only",
+    "setups": [
+     {
+      "kind": "parlays",
+      "picker": "P5 bigger model + layers",
+      "side": "under",
+      "edge_min": 0.08,
+      "history_min": 0,
+      "rank_by": "edge",
+      "markets": "receptions",
+      "top_n": 6,
+      "per_game": "2",
+      "per_player": "1"
+     }
+    ],
+    "tune": [
+     {
+      "units": 48.43189615556618,
+      "bets": 54
+     }
+    ],
+    "held_out": [
+     {
+      "units": 10.776800000000003,
+      "bets": 8
+     }
+    ],
+    "held_out_units": 10.776800000000003,
+    "held_out_bets": 8,
+    "tune_units": 48.43189615556618,
+    "tune_bets": 54
+   },
+   {
+    "season": 2022,
+    "mix": "parlays only",
+    "setups": [
+     {
+      "kind": "parlays",
+      "picker": "P5 bigger model + layers",
+      "side": "under",
+      "edge_min": 0.04,
+      "history_min": 0,
+      "rank_by": "chance",
+      "markets": "rush yards",
+      "top_n": 8,
+      "per_game": "2",
+      "per_player": "1"
+     }
+    ],
+    "tune": [
+     {
+      "units": 66.92791715509274,
+      "bets": 66
+     }
+    ],
+    "held_out": [
+     {
+      "units": 1.4249673771204936,
+      "bets": 34
+     }
+    ],
+    "held_out_units": 1.4249673771204936,
+    "held_out_bets": 34,
+    "tune_units": 66.92791715509274,
+    "tune_bets": 66
+   },
+   {
+    "season": 2023,
+    "mix": "parlays only",
+    "setups": [
+     {
+      "kind": "parlays",
+      "picker": "P5 bigger model + layers",
+      "side": "under",
+      "edge_min": 0.06,
+      "history_min": 3,
+      "rank_by": "edge",
+      "markets": "all but pass yards",
+      "top_n": 2,
+      "per_game": "2",
+      "per_player": "1"
+     }
+    ],
+    "tune": [
+     {
+      "units": 54.988841435097314,
+      "bets": 60
+     }
+    ],
+    "held_out": [
+     {
+      "units": -5.901400000000001,
+      "bets": 12
+     }
+    ],
+    "held_out_units": -5.901400000000001,
+    "held_out_bets": 12,
+    "tune_units": 54.988841435097314,
+    "tune_bets": 60
+   },
+   {
+    "season": 2024,
+    "mix": "parlays only",
+    "setups": [
+     {
+      "kind": "parlays",
+      "picker": "P5 bigger model + layers",
+      "side": "both",
+      "edge_min": 0.08,
+      "history_min": 3,
+      "rank_by": "chance",
+      "markets": "receiving (rec + rec yds)",
+      "top_n": 8,
+      "per_game": "2",
+      "per_player": "1"
+     }
+    ],
+    "tune": [
+     {
+      "units": 61.026295980926605,
+      "bets": 65
+     }
+    ],
+    "held_out": [
+     {
+      "units": -0.4028849999999995,
+      "bets": 18
+     }
+    ],
+    "held_out_units": -0.4028849999999995,
+    "held_out_bets": 18,
+    "tune_units": 61.026295980926605,
+    "tune_bets": 65
+   },
+   {
+    "season": 2025,
+    "mix": "parlays only",
+    "setups": [
+     {
+      "kind": "parlays",
+      "picker": "P1 six averaged + layers (locked)",
+      "side": "under",
+      "edge_min": 0.0,
+      "history_min": 3,
+      "rank_by": "edge",
+      "markets": "all four",
+      "top_n": 2,
+      "per_game": "2",
+      "per_player": "1"
+     }
+    ],
+    "tune": [
+     {
+      "units": 65.71624728621964,
+      "bets": 63
+     }
+    ],
+    "held_out": [
+     {
+      "units": 1.248918699538609,
+      "bets": 17
+     }
+    ],
+    "held_out_units": 1.248918699538609,
+    "held_out_bets": 17,
+    "tune_units": 65.71624728621964,
+    "tune_bets": 63
+   },
+   {
+    "season": 2026,
+    "mix": "parlays only",
+    "setups": [
+     {
+      "kind": "parlays",
+      "picker": "P4 logistic stacker + layers",
+      "side": "under",
+      "edge_min": 0.02,
+      "history_min": 0,
+      "rank_by": "chance",
+      "markets": "pass yards",
+      "top_n": 4,
+      "per_game": "2",
+      "per_player": "1"
+     }
+    ],
+    "tune": [
+     {
+      "units": 55.7109398853306,
+      "bets": 54
+     }
+    ],
+    "held_out": [
+     {
+      "units": 0.3189756441381477,
+      "bets": 4
+     }
+    ],
+    "held_out_units": 0.3189756441381477,
+    "held_out_bets": 4,
+    "tune_units": 55.7109398853306,
+    "tune_bets": 54
+   }
+  ],
+  "worst season": [
+   {
+    "season": 2021,
+    "mix": "parlays only",
+    "setups": [
+     {
+      "kind": "parlays",
+      "picker": "P3 one model + layers (tournament 1 winner)",
+      "side": "both",
+      "edge_min": 0.0,
+      "history_min": 3,
+      "rank_by": "chance",
+      "markets": "receptions",
+      "top_n": 4,
+      "per_game": "2",
+      "per_player": "1"
+     }
+    ],
+    "tune": [
+     {
+      "units": 81.56471607053747,
+      "bets": 150
+     }
+    ],
+    "held_out": [
+     {
+      "units": -0.5187169151793452,
+      "bets": 36
+     }
+    ],
+    "held_out_units": -0.5187169151793452,
+    "held_out_bets": 36,
+    "tune_units": 81.56471607053747,
+    "tune_bets": 150
+   },
+   {
+    "season": 2022,
+    "mix": "parlays only",
+    "setups": [
+     {
+      "kind": "parlays",
+      "picker": "P1 six averaged + layers (locked)",
+      "side": "under",
+      "edge_min": 0.0,
+      "history_min": 3,
+      "rank_by": "edge",
+      "markets": "rush yards",
+      "top_n": 8,
+      "per_game": "2",
+      "per_player": "1"
+     }
+    ],
+    "tune": [
+     {
+      "units": 142.88971518444296,
+      "bets": 262
+     }
+    ],
+    "held_out": [
+     {
+      "units": 16.35058721183126,
+      "bets": 68
+     }
+    ],
+    "held_out_units": 16.35058721183126,
+    "held_out_bets": 68,
+    "tune_units": 142.88971518444296,
+    "tune_bets": 262
+   },
+   {
+    "season": 2023,
+    "mix": "parlays only",
+    "setups": [
+     {
+      "kind": "parlays",
+      "picker": "P5 bigger model + layers",
+      "side": "under",
+      "edge_min": 0.04,
+      "history_min": 0,
+      "rank_by": "edge",
+      "markets": "receiving (rec + rec yds)",
+      "top_n": 6,
+      "per_game": "2",
+      "per_player": "1"
+     }
+    ],
+    "tune": [
+     {
+      "units": 87.60127846031611,
+      "bets": 215
+     }
+    ],
+    "held_out": [
+     {
+      "units": -15.733486060606056,
+      "bets": 51
+     }
+    ],
+    "held_out_units": -15.733486060606056,
+    "held_out_bets": 51,
+    "tune_units": 87.60127846031611,
+    "tune_bets": 215
+   },
+   {
+    "season": 2024,
+    "mix": "parlays only",
+    "setups": [
+     {
+      "kind": "parlays",
+      "picker": "P5 bigger model + layers",
+      "side": "both",
+      "edge_min": 0.08,
+      "history_min": 0,
+      "rank_by": "chance",
+      "markets": "receiving (rec + rec yds)",
+      "top_n": 8,
+      "per_game": "2",
+      "per_player": "1"
+     }
+    ],
+    "tune": [
+     {
+      "units": 56.43455668889119,
+      "bets": 70
+     }
+    ],
+    "held_out": [
+     {
+      "units": 4.826155000000003,
+      "bets": 21
+     }
+    ],
+    "held_out_units": 4.826155000000003,
+    "held_out_bets": 21,
+    "tune_units": 56.43455668889119,
+    "tune_bets": 70
+   },
+   {
+    "season": 2025,
+    "mix": "parlays only",
+    "setups": [
+     {
+      "kind": "parlays",
+      "picker": "P4 logistic stacker + layers",
+      "side": "under",
+      "edge_min": 0.0,
+      "history_min": 3,
+      "rank_by": "chance",
+      "markets": "receiving yards",
+      "top_n": 8,
+      "per_game": "2",
+      "per_player": "1"
+     }
+    ],
+    "tune": [
+     {
+      "units": 169.36793453008443,
+      "bets": 301
+     }
+    ],
+    "held_out": [
+     {
+      "units": 7.91335123872059,
+      "bets": 69
+     }
+    ],
+    "held_out_units": 7.91335123872059,
+    "held_out_bets": 69,
+    "tune_units": 169.36793453008443,
+    "tune_bets": 301
+   },
+   {
+    "season": 2026,
+    "mix": "parlays only",
+    "setups": [
+     {
+      "kind": "parlays",
+      "picker": "P3 one model + layers (tournament 1 winner)",
+      "side": "both",
+      "edge_min": 0.08,
+      "history_min": 0,
+      "rank_by": "chance",
+      "markets": "all four",
+      "top_n": 2,
+      "per_game": "2",
+      "per_player": "1"
+     }
+    ],
+    "tune": [
+     {
+      "units": 36.36017278334886,
+      "bets": 55
+     }
+    ],
+    "held_out": [
+     {
+      "units": -2.0,
+      "bets": 2
+     }
+    ],
+    "held_out_units": -2.0,
+    "held_out_bets": 2,
+    "tune_units": 36.36017278334886,
+    "tune_bets": 55
+   }
+  ]
+ },
+ "all_seasons": {
+  "total": {
+   "mix": "parlays only",
+   "setups": [
+    {
+     "kind": "parlays",
+     "picker": "P4 logistic stacker + layers",
+     "side": "under",
+     "edge_min": 0.0,
+     "history_min": 0,
+     "rank_by": "edge",
+     "markets": "pass yards",
+     "top_n": 2,
+     "per_game": "2",
+     "per_player": "1"
+    }
+   ],
+   "per_season": [
+    {
+     "2021": {
+      "units": -1.0,
+      "bets": 1
+     },
+     "2022": {
+      "units": 8.628099173553725,
+      "bets": 18
+     },
+     "2023": {
+      "units": 21.94214876033059,
+      "bets": 18
+     },
+     "2024": {
+      "units": 18.066115702479344,
+      "bets": 13
+     },
+     "2025": {
+      "units": 16.081744932506705,
+      "bets": 14
+     },
+     "2026": {
+      "units": 3.6379512882762954,
+      "bets": 5
+     }
+    }
+   ]
+  },
+  "worst season": {
+   "mix": "parlays only",
+   "setups": [
+    {
+     "kind": "parlays",
+     "picker": "P5 bigger model + layers",
+     "side": "under",
+     "edge_min": 0.0,
+     "history_min": 3,
+     "rank_by": "edge",
+     "markets": "rush yards",
+     "top_n": 6,
+     "per_game": "2",
+     "per_player": "1"
+    }
+   ],
+   "per_season": [
+    {
+     "2021": {
+      "units": 28.33179785936867,
+      "bets": 47
+     },
+     "2022": {
+      "units": 17.23388429752069,
+      "bets": 54
+     },
+     "2023": {
+      "units": 18.421645977197727,
+      "bets": 48
+     },
+     "2024": {
+      "units": 18.00826446280994,
+      "bets": 53
+     },
+     "2025": {
+      "units": 23.687282900233043,
+      "bets": 45
+     },
+     "2026": {
+      "units": 17.232829508967033,
+      "bets": 13
+     }
+    }
+   ]
+  }
+ },
+ "rank_vs_heldout": {
+  "singles": {
+   "top 0.1%": {
+    "2021": -0.031038291476350205,
+    "2022": -0.22858585858585861,
+    "2023": 0.11225223171500118,
+    "2024": -0.18983515967279058,
+    "2025": -0.14207638092273392,
+    "2026": 0.0670766461676917
+   },
+   "top 1%": {
+    "2021": 0.011821256257718021,
+    "2022": -0.005437539654060874,
+    "2023": 0.13685770321670368,
+    "2024": -0.08920384112239518,
+    "2025": -0.24735918674674637,
+    "2026": -0.011284760773980005
+   },
+   "top 10%": {
+    "2021": 0.02759144754481545,
+    "2022": -0.02625549805444782,
+    "2023": 0.0747543421013618,
+    "2024": -0.0713146167440153,
+    "2025": -0.18300769166234176,
+    "2026": -0.05342972408978642
+   },
+   "middle 10%": {
+    "2021": -0.006434678678654406,
+    "2022": 0.013935633347940532,
+    "2023": -0.024793781823651273,
+    "2024": -0.06085327628516471,
+    "2025": -0.09001449268537275,
+    "2026": -0.045453847107689134
+   },
+   "bottom 10%": {
+    "2021": 0.022661719846011875,
+    "2022": 0.0009196809428017736,
+    "2023": 0.0968869804754325,
+    "2024": -0.08216344416271103,
+    "2025": -0.12984642232034885,
+    "2026": -0.17502527213130378
+   },
+   "all": {
+    "2021": 0.0035601599336790293,
+    "2022": -0.0006768882672617173,
+    "2023": 0.0037770347452725215,
+    "2024": -0.06767426612925401,
+    "2025": -0.10854154104137868,
+    "2026": -0.05886264976095205
+   }
+  },
+  "parlays": {
+   "top 0.1%": {
+    "2021": 0.4092179904306221,
+    "2022": 0.08378280079008,
+    "2023": 0.17553039629738898,
+    "2024": -0.5895912277815575,
+    "2025": 0.14055741872116306,
+    "2026": 0.36767562064374676
+   },
+   "top 1%": {
+    "2021": 0.16310622711757436,
+    "2022": 0.2426922926784376,
+    "2023": 0.4641074916361453,
+    "2024": -0.24527794305015724,
+    "2025": -0.06157284318947356,
+    "2026": -0.3502297573064565
+   },
+   "top 10%": {
+    "2021": 0.1846372003723736,
+    "2022": 0.18436664377336034,
+    "2023": 0.300647361727305,
+    "2024": -7.949700047367125e-05,
+    "2025": -0.05315760891953371,
+    "2026": -0.03594608710963734
+   },
+   "middle 10%": {
+    "2021": 0.27842446476273586,
+    "2022": 0.25561438993458224,
+    "2023": 0.25163525303997075,
+    "2024": 0.06597349136146367,
+    "2025": 0.10777400251105794,
+    "2026": 0.19198033424826355
+   },
+   "bottom 10%": {
+    "2021": 0.4121063142136057,
+    "2022": -0.0331726402518637,
+    "2023": 0.2893388534140926,
+    "2024": 0.07166854931319086,
+    "2025": -0.0129855764579161,
+    "2026": -0.07361652278480631
+   },
+   "all": {
+    "2021": 0.28018502876045576,
+    "2022": 0.21236833204628133,
+    "2023": 0.2354593342666646,
+    "2024": 0.07373608488108216,
+    "2025": 0.05719738971324647,
+    "2026": 0.1393335940562847
+   }
+  }
+ },
+ "locked": {
+  "singles top 2": {
+   "2021": {
+    "units": -7.810515078828094,
+    "bets": 36
+   },
+   "2022": {
+    "units": -2.2128578266138463,
+    "bets": 36
+   },
+   "2023": {
+    "units": -6.182668143997102,
+    "bets": 36
+   },
+   "2024": {
+    "units": 0.5227272727272751,
+    "bets": 34
+   },
+   "2025": {
+    "units": -5.651683306627223,
+    "bets": 34
+   },
+   "2026": {
+    "units": 0.33982300884955796,
+    "bets": 9
+   }
+  },
+  "parlays top 2": {
+   "2021": {
+    "units": -2.6546423565082087,
+    "bets": 15
+   },
+   "2022": {
+    "units": 3.918385615782599,
+    "bets": 17
+   },
+   "2023": {
+    "units": -7.576702214930271,
+    "bets": 12
+   },
+   "2024": {
+    "units": 15.438927438016535,
+    "bets": 11
+   },
+   "2025": {
+    "units": 6.200757682241269,
+    "bets": 15
+   },
+   "2026": {
+    "units": 5.4297721043151395,
+    "bets": 3
+   }
+  },
+  "singles top 8": {
+   "2021": {
+    "units": 6.699548898492551,
+    "bets": 125
+   },
+   "2022": {
+    "units": -0.848095921851935,
+    "bets": 127
+   },
+   "2023": {
+    "units": -6.999770710824161,
+    "bets": 133
+   },
+   "2024": {
+    "units": 4.530000000000009,
+    "bets": 82
+   },
+   "2025": {
+    "units": -13.042519219939916,
+    "bets": 64
+   },
+   "2026": {
+    "units": 0.9297345132743366,
+    "bets": 25
+   }
+  },
+  "parlays top 8": {
+   "2021": {
+    "units": 26.26440138224701,
+    "bets": 59
+   },
+   "2022": {
+    "units": 32.4179622470998,
+    "bets": 56
+   },
+   "2023": {
+    "units": 9.578173589940645,
+    "bets": 64
+   },
+   "2024": {
+    "units": 38.07671652892564,
+    "bets": 34
+   },
+   "2025": {
+    "units": 10.890312115279489,
+    "bets": 25
+   },
+   "2026": {
+    "units": 7.867430157412485,
+    "bets": 11
+   }
+  }
+ }
+}

@@ -181,7 +181,7 @@ def choose(R, K, tune_cols, rule):
         worst = np.where(b >= 0, u / np.where(b > 0, b, np.nan), np.nan)
     best = {}
     for kind in ("singles", "parlays"):
-        isk = np.array([k[1][0] == kind for k in K])
+        isk = np.array([k[0][0] == kind for k in K])
         if rule == "total":
             score = np.where(isk & (tb >= MIN_BETS[kind]), roi, -np.inf)
         else:
