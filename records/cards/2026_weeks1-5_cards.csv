@@ -1,0 +1,258 @@
+week,rank,tier,player_name,team,market,market_rating,line,price,model_prediction,picker_under_chance,edge,actual,result,profit_units,game_id
+1,1,Top 10,Noah Gray,KC,rec,favourite,1.5,-200.0,1.5,0.774,0.107,1.0,WIN,0.5,2026_01_DEN_KC
+1,2,Top 10,Marvin Mims Jr.,DEN,rec,favourite,1.5,-194.0,1.7,0.752,0.092,0.0,WIN,0.515,2026_01_DEN_KC
+1,3,Top 10,Mack Hollins,NE,rec,favourite,1.5,-220.0,2.4,0.733,0.045,4.0,LOSS,-1.0,2026_01_NE_SEA
+1,4,Top 10,Denzel Boston,CLE,rec_yds,shaky,25.5,-113.0,14.2,0.732,0.202,59.0,LOSS,-1.0,2026_01_CLE_JAX
+1,5,Top 10,KC Concepcion Jr.,CLE,rec_yds,shaky,33.5,-113.0,13.5,0.729,0.199,43.0,LOSS,-1.0,2026_01_CLE_JAX
+1,6,Top 10,Jacory Croskey-Merritt,WAS,rec,favourite,1.5,-220.0,0.7,0.728,0.04,1.0,WIN,0.455,2026_01_WAS_PHI
+1,7,Top 10,KC Concepcion Jr.,CLE,rec,favourite,3.5,-136.0,1.3,0.726,0.15,4.0,LOSS,-1.0,2026_01_CLE_JAX
+1,8,Top 10,D'Andre Swift,CHI,rec,favourite,2.5,-198.0,2.2,0.72,0.055,1.0,WIN,0.505,2026_01_CHI_CAR
+1,9,Top 10,Jeremiyah Love,ARI,rush_yds,solid,31.5,-113.0,17.0,0.711,0.18,41.0,LOSS,-1.0,2026_01_ARI_LAC
+1,10,Top 10,Hunter Henry,NE,rec,favourite,3.5,-200.0,3.8,0.708,0.042,3.0,WIN,0.5,2026_01_NE_SEA
+1,11,Next 10,Kendrick Bourne,ARI,rec,favourite,2.5,-194.0,1.3,0.706,0.046,8.0,LOSS,-1.0,2026_01_ARI_LAC
+1,12,Next 10,CeeDee Lamb,DAL,rec,favourite,6.5,-166.0,4.7,0.702,0.078,5.0,WIN,0.602,2026_01_DAL_NYG
+1,13,Next 10,Rashee Rice,KC,rec,favourite,5.5,-160.0,5.6,0.696,0.081,2.0,WIN,0.625,2026_01_DEN_KC
+1,14,Next 10,Quinshon Judkins,CLE,rush_yds,solid,56.5,-113.0,45.5,0.693,0.162,33.0,WIN,0.885,2026_01_CLE_JAX
+1,15,Next 10,Luther Burden III,CHI,rec,favourite,4.5,110.0,3.2,0.677,0.201,5.0,LOSS,-1.0,2026_01_CHI_CAR
+1,16,Next 10,MarShawn Lloyd,GB,rush_yds,solid,44.5,-113.0,12.7,0.676,0.146,37.0,WIN,0.885,2026_01_GB_MIN
+1,17,Next 10,Nico Collins,HOU,rec,favourite,5.5,-148.0,3.9,0.674,0.077,7.0,LOSS,-1.0,2026_01_BUF_HOU
+1,18,Next 10,De'Von Achane,MIA,rec,favourite,4.5,-162.0,3.2,0.668,0.05,4.0,WIN,0.617,2026_01_MIA_LV
+1,19,Next 10,Chris Godwin Jr.,TB,rec,favourite,4.5,-136.0,3.2,0.662,0.085,4.0,WIN,0.735,2026_01_TB_CIN
+1,20,Next 10,Jeremiyah Love,ARI,rec,favourite,2.5,-136.0,1.6,0.66,0.084,2.0,WIN,0.735,2026_01_ARI_LAC
+1,21,Rest,Matthew Golden,GB,rec,favourite,3.5,-130.0,1.5,0.659,0.094,6.0,LOSS,-1.0,2026_01_GB_MIN
+1,22,Rest,Jayden Reed,GB,rec_yds,shaky,45.5,-113.0,21.7,0.657,0.127,20.0,WIN,0.885,2026_01_GB_MIN
+1,23,Rest,Matthew Golden,GB,rec_yds,shaky,39.5,-113.0,17.8,0.652,0.122,95.0,LOSS,-1.0,2026_01_GB_MIN
+1,24,Rest,Isaiah Likely,NYG,rec,favourite,3.5,-138.0,2.1,0.65,0.07,8.0,LOSS,-1.0,2026_01_DAL_NYG
+1,25,Rest,Jadarian Price,SEA,rush_yds,solid,50.5,-113.0,16.0,0.647,0.116,52.0,LOSS,-1.0,2026_01_NE_SEA
+1,26,Rest,Luther Burden III,CHI,rec_yds,shaky,57.5,-113.0,37.1,0.645,0.115,63.0,LOSS,-1.0,2026_01_CHI_CAR
+1,27,Rest,Jayden Daniels,WAS,pass_yds,shaky,201.5,-113.0,177.2,0.645,0.114,164.0,WIN,0.885,2026_01_WAS_PHI
+1,28,Rest,Marvin Harrison Jr.,ARI,rec,favourite,3.5,112.0,3.1,0.642,0.171,1.0,WIN,1.12,2026_01_ARI_LAC
+1,29,Rest,Denzel Boston,CLE,rec,favourite,2.5,-148.0,1.4,0.638,0.041,2.0,WIN,0.676,2026_01_CLE_JAX
+1,30,Rest,Jalen Nailor,LV,rec_yds,shaky,37.5,-114.0,20.6,0.636,0.103,27.0,WIN,0.877,2026_01_MIA_LV
+1,31,Rest,Michael Mayer,LV,rec,favourite,4.5,-108.0,3.0,0.636,0.117,6.0,LOSS,-1.0,2026_01_MIA_LV
+1,32,Rest,Jonathon Brooks,CAR,rush_yds,solid,26.5,-113.0,12.9,0.631,0.101,14.0,WIN,0.885,2026_01_CHI_CAR
+1,33,Rest,Lamar Jackson,BAL,pass_yds,shaky,220.5,-113.0,193.7,0.631,0.1,324.0,LOSS,-1.0,2026_01_BAL_IND
+1,34,Rest,Tyler Allgeier,ARI,rush_yds,solid,37.5,-113.0,27.4,0.63,0.1,61.0,LOSS,-1.0,2026_01_ARI_LAC
+1,35,Rest,Bhayshul Tuten,JAX,rush_yds,solid,44.5,-113.0,17.4,0.627,0.097,66.0,LOSS,-1.0,2026_01_CLE_JAX
+1,36,Rest,Stefon Diggs,WAS,rec_yds,shaky,42.5,-113.0,38.5,0.627,0.097,55.0,LOSS,-1.0,2026_01_WAS_PHI
+1,37,Rest,Jeremiyah Love,ARI,rec_yds,shaky,15.5,-113.0,11.0,0.627,0.096,9.0,WIN,0.885,2026_01_ARI_LAC
+1,38,Rest,Romeo Doubs,NE,rec,favourite,3.5,-140.0,2.8,0.626,0.043,0.0,WIN,0.714,2026_01_NE_SEA
+1,39,Rest,Marvin Harrison Jr.,ARI,rec_yds,shaky,47.5,-113.0,36.5,0.625,0.094,33.0,WIN,0.885,2026_01_ARI_LAC
+1,40,Rest,Emeka Egbuka,TB,rec_yds,shaky,55.5,-113.0,49.6,0.624,0.094,63.0,LOSS,-1.0,2026_01_TB_CIN
+1,41,Rest,Deshaun Watson,CLE,pass_yds,shaky,178.5,-113.0,192.7,0.622,0.092,205.0,LOSS,-1.0,2026_01_CLE_JAX
+1,42,Rest,Chris Godwin Jr.,TB,rec_yds,shaky,47.5,-113.0,36.8,0.619,0.088,40.0,WIN,0.885,2026_01_TB_CIN
+1,43,Rest,Chris Bell,MIA,rec,favourite,1.5,112.0,1.4,0.616,0.144,1.0,WIN,1.12,2026_01_MIA_LV
+1,44,Rest,George Holani,SEA,rush_yds,solid,19.5,-113.0,7.9,0.615,0.085,29.0,LOSS,-1.0,2026_01_NE_SEA
+1,45,Rest,George Holani,SEA,rec_yds,shaky,10.5,-113.0,1.9,0.615,0.085,0.0,WIN,0.885,2026_01_NE_SEA
+1,46,Rest,David Montgomery,HOU,rec,favourite,1.5,-108.0,0.9,0.615,0.096,3.0,LOSS,-1.0,2026_01_BUF_HOU
+1,47,Rest,Saquon Barkley,PHI,rec,favourite,2.5,-130.0,2.2,0.614,0.048,1.0,WIN,0.769,2026_01_WAS_PHI
+1,48,Rest,David Montgomery,HOU,rec_yds,shaky,10.5,-113.0,5.8,0.613,0.082,19.0,LOSS,-1.0,2026_01_BUF_HOU
+1,49,Rest,Pat Bryant,DEN,rec,favourite,2.5,-122.0,2.0,0.61,0.061,4.0,LOSS,-1.0,2026_01_DEN_KC
+1,50,Rest,Brian Robinson Jr.,ATL,rush_yds,solid,19.5,-113.0,14.1,0.61,0.079,31.0,LOSS,-1.0,2026_01_ATL_PIT
+1,51,Rest,Woody Marks,HOU,rec,favourite,1.5,-122.0,1.6,0.61,0.06,1.0,WIN,0.82,2026_01_BUF_HOU
+1,52,Rest,James Cook III,BUF,rush_yds,solid,74.5,-113.0,62.5,0.609,0.078,57.0,WIN,0.885,2026_01_BUF_HOU
+1,53,Rest,Kendrick Bourne,ARI,rec_yds,shaky,18.5,-113.0,15.1,0.608,0.078,75.0,LOSS,-1.0,2026_01_ARI_LAC
+1,54,Rest,Rhamondre Stevenson,NE,rush_yds,solid,57.5,-113.0,52.5,0.608,0.078,51.0,WIN,0.885,2026_01_NE_SEA
+1,55,Rest,Jonathon Brooks,CAR,rec_yds,shaky,9.5,-113.0,2.8,0.607,0.077,48.0,LOSS,-1.0,2026_01_CHI_CAR
+1,56,Rest,Jordan Love,GB,pass_yds,shaky,237.5,-113.0,199.4,0.607,0.076,387.0,LOSS,-1.0,2026_01_GB_MIN
+1,57,Rest,Dalton Kincaid,BUF,rec,favourite,3.5,-130.0,2.3,0.605,0.04,5.0,LOSS,-1.0,2026_01_BUF_HOU
+1,58,Rest,Dalton Schultz,HOU,rec,favourite,3.5,-114.0,3.5,0.605,0.072,4.0,LOSS,-1.0,2026_01_BUF_HOU
+1,59,Rest,Garrett Wilson,NYJ,rec,favourite,5.5,-114.0,4.7,0.602,0.069,6.0,LOSS,-1.0,2026_01_NYJ_TEN
+1,60,Rest,Michael Wilson,ARI,rec_yds,shaky,41.5,-113.0,58.5,0.601,0.071,56.0,LOSS,-1.0,2026_01_ARI_LAC
+1,61,Rest,Dak Prescott,DAL,pass_yds,shaky,263.5,-113.0,246.4,0.6,0.07,175.0,WIN,0.885,2026_01_DAL_NYG
+1,62,Rest,Xavier Worthy,KC,rec_yds,shaky,37.5,-113.0,32.1,0.598,0.068,18.0,WIN,0.885,2026_01_DEN_KC
+1,63,Rest,George Kittle,SF,rec_yds,shaky,33.5,-113.0,54.5,0.598,0.068,12.0,WIN,0.885,2026_01_SF_LA
+1,64,Rest,CeeDee Lamb,DAL,rec_yds,shaky,75.5,-113.0,62.5,0.598,0.068,44.0,WIN,0.885,2026_01_DAL_NYG
+1,65,Rest,Jonathon Brooks,CAR,rec,favourite,1.5,-114.0,0.4,0.598,0.065,1.0,WIN,0.877,2026_01_CHI_CAR
+1,66,Rest,Rome Odunze,CHI,rec_yds,shaky,38.5,-113.0,46.2,0.596,0.065,52.0,LOSS,-1.0,2026_01_CHI_CAR
+1,67,Rest,Bhayshul Tuten,JAX,rec_yds,shaky,10.5,-113.0,3.2,0.595,0.065,22.0,LOSS,-1.0,2026_01_CLE_JAX
+1,68,Rest,Kalif Raymond,CHI,rec,favourite,1.5,-114.0,0.8,0.595,0.062,8.0,LOSS,-1.0,2026_01_CHI_CAR
+1,69,Rest,Zay Flowers,BAL,rec_yds,shaky,63.5,-113.0,64.2,0.594,0.064,150.0,LOSS,-1.0,2026_01_BAL_IND
+1,70,Rest,Stefon Diggs,WAS,rec,favourite,3.5,116.0,3.5,0.594,0.131,4.0,LOSS,-1.0,2026_01_WAS_PHI
+1,71,Rest,Jaxson Dart,NYG,pass_yds,shaky,213.5,-113.0,216.1,0.594,0.064,230.0,LOSS,-1.0,2026_01_DAL_NYG
+1,72,Rest,James Cook III,BUF,rec,favourite,2.5,-106.0,1.8,0.593,0.078,3.0,LOSS,-1.0,2026_01_BUF_HOU
+1,73,Rest,Ryan Flournoy,DAL,rec_yds,shaky,27.5,-113.0,28.0,0.593,0.062,22.0,WIN,0.885,2026_01_DAL_NYG
+1,74,Rest,Dalton Kincaid,BUF,rec_yds,shaky,38.5,-113.0,24.7,0.591,0.061,130.0,LOSS,-1.0,2026_01_BUF_HOU
+1,75,Rest,Rachaad White,WAS,rush_yds,solid,22.5,-113.0,20.0,0.59,0.059,22.0,WIN,0.885,2026_01_WAS_PHI
+1,76,Rest,RJ Harvey,DEN,rec_yds,shaky,16.5,-113.0,16.2,0.589,0.059,23.0,LOSS,-1.0,2026_01_DEN_KC
+1,77,Rest,Khalil Shakir,BUF,rec_yds,shaky,36.5,-113.0,37.2,0.589,0.058,50.0,LOSS,-1.0,2026_01_BUF_HOU
+1,78,Rest,Sam Darnold,SEA,pass_yds,shaky,228.5,-113.0,242.3,0.588,0.058,13.0,WIN,0.885,2026_01_NE_SEA
+1,79,Rest,Harold Fannin Jr.,CLE,rec_yds,shaky,36.5,-113.0,45.5,0.588,0.057,21.0,WIN,0.885,2026_01_CLE_JAX
+1,80,Rest,David Montgomery,HOU,rush_yds,solid,54.5,-113.0,27.9,0.588,0.057,60.0,LOSS,-1.0,2026_01_BUF_HOU
+1,81,Rest,D'Andre Swift,CHI,rush_yds,solid,59.5,-113.0,60.8,0.588,0.057,124.0,LOSS,-1.0,2026_01_CHI_CAR
+1,82,Rest,Jayden Reed,GB,rec,favourite,3.5,112.0,2.0,0.588,0.116,3.0,WIN,1.12,2026_01_GB_MIN
+1,83,Rest,Breece Hall,NYJ,rec_yds,shaky,20.5,-113.0,16.1,0.588,0.057,16.0,WIN,0.885,2026_01_NYJ_TEN
+1,84,Rest,Bucky Irving,TB,rush_yds,solid,62.5,-113.0,61.3,0.587,0.057,45.0,WIN,0.885,2026_01_TB_CIN
+1,85,Rest,MarShawn Lloyd,GB,rec,favourite,1.5,118.0,0.8,0.587,0.128,0.0,WIN,1.18,2026_01_GB_MIN
+1,86,Rest,Jonathan Taylor,IND,rush_yds,solid,76.5,-113.0,66.1,0.587,0.056,98.0,LOSS,-1.0,2026_01_BAL_IND
+1,87,Rest,DJ Moore,BUF,rec_yds,shaky,47.5,-113.0,38.3,0.586,0.056,100.0,LOSS,-1.0,2026_01_BUF_HOU
+1,88,Rest,Isaiah Likely,NYG,rec_yds,shaky,36.5,-113.0,21.3,0.586,0.056,78.0,LOSS,-1.0,2026_01_DAL_NYG
+1,89,Rest,Jaylen Warren,PIT,rush_yds,solid,42.5,-113.0,58.4,0.586,0.056,46.0,LOSS,-1.0,2026_01_ATL_PIT
+1,90,Rest,Christian McCaffrey,SF,rec_yds,shaky,39.5,-113.0,33.4,0.586,0.055,20.0,WIN,0.885,2026_01_SF_LA
+1,91,Rest,Jaylen Waddle,DEN,rec,favourite,4.5,-104.0,3.9,0.585,0.076,1.0,WIN,0.962,2026_01_DEN_KC
+1,92,Rest,Braelon Allen,NYJ,rush_yds,solid,19.5,-113.0,16.8,0.585,0.055,40.0,LOSS,-1.0,2026_01_NYJ_TEN
+1,93,Rest,Baker Mayfield,TB,pass_yds,shaky,232.5,-113.0,230.1,0.585,0.054,216.0,WIN,0.885,2026_01_TB_CIN
+1,94,Rest,Javonte Williams,DAL,rush_yds,solid,72.5,-113.0,65.5,0.585,0.054,41.0,WIN,0.885,2026_01_DAL_NYG
+1,95,Rest,Rashid Shaheed,SEA,rec,favourite,2.5,-118.0,2.2,0.585,0.043,1.0,WIN,0.847,2026_01_NE_SEA
+1,96,Rest,Travis Etienne Jr.,NO,rush_yds,solid,57.5,-113.0,48.1,0.584,0.054,46.0,WIN,0.885,2026_01_NO_DET
+1,97,Rest,Kenneth Walker III,KC,rush_yds,solid,63.5,-113.0,49.8,0.584,0.053,173.0,LOSS,-1.0,2026_01_DEN_KC
+1,98,Rest,DeVonta Smith,PHI,rec_yds,shaky,64.5,-113.0,51.0,0.583,0.053,53.0,WIN,0.885,2026_01_WAS_PHI
+1,99,Rest,Pat Bryant,DEN,rec_yds,shaky,26.5,-113.0,20.8,0.583,0.053,42.0,LOSS,-1.0,2026_01_DEN_KC
+1,100,Rest,Derrick Henry,BAL,rec_yds,shaky,7.5,-113.0,8.3,0.583,0.052,19.0,LOSS,-1.0,2026_01_BAL_IND
+1,101,Rest,George Holani,SEA,rec,favourite,1.5,118.0,0.3,0.582,0.123,0.0,WIN,1.18,2026_01_NE_SEA
+1,102,Rest,Jacory Croskey-Merritt,WAS,rec_yds,shaky,5.5,-113.0,5.2,0.581,0.051,-7.0,WIN,0.885,2026_01_WAS_PHI
+1,103,Rest,Jalen Hurts,PHI,pass_yds,shaky,214.5,-113.0,226.4,0.581,0.05,203.0,WIN,0.885,2026_01_WAS_PHI
+1,104,Rest,Malik Washington,MIA,rec_yds,shaky,28.5,-114.0,19.8,0.581,0.048,53.0,LOSS,-1.0,2026_01_MIA_LV
+1,105,Rest,Woody Marks,HOU,rush_yds,solid,25.5,-113.0,40.8,0.58,0.05,42.0,LOSS,-1.0,2026_01_BUF_HOU
+1,106,Rest,Greg Dulcich,MIA,rec_yds,shaky,26.5,-114.0,23.2,0.58,0.048,18.0,WIN,0.877,2026_01_MIA_LV
+1,107,Rest,DJ Moore,BUF,rec,favourite,3.5,108.0,3.1,0.58,0.1,5.0,LOSS,-1.0,2026_01_BUF_HOU
+1,108,Rest,George Pickens,DAL,rec_yds,shaky,67.5,-113.0,61.5,0.579,0.048,28.0,WIN,0.885,2026_01_DAL_NYG
+1,109,Rest,Jake Ferguson,DAL,rec,favourite,3.5,-108.0,3.1,0.579,0.059,2.0,WIN,0.926,2026_01_DAL_NYG
+1,110,Rest,C.J. Stroud,HOU,pass_yds,shaky,223.5,-113.0,217.4,0.578,0.048,274.0,LOSS,-1.0,2026_01_BUF_HOU
+1,111,Rest,DeMario Douglas,NE,rec_yds,shaky,20.5,-113.0,18.0,0.578,0.048,20.0,WIN,0.885,2026_01_NE_SEA
+1,112,Rest,Geno Smith,NYJ,pass_yds,shaky,212.5,-113.0,197.5,0.578,0.048,215.0,LOSS,-1.0,2026_01_NYJ_TEN
+1,113,Rest,James Cook III,BUF,rec_yds,shaky,19.5,-113.0,13.8,0.577,0.047,12.0,WIN,0.885,2026_01_BUF_HOU
+1,114,Rest,Derrick Henry,BAL,rush_yds,solid,78.5,-113.0,85.8,0.577,0.047,144.0,LOSS,-1.0,2026_01_BAL_IND
+1,115,Rest,Rhamondre Stevenson,NE,rec_yds,shaky,23.5,-113.0,18.1,0.577,0.047,44.0,LOSS,-1.0,2026_01_NE_SEA
+1,116,Rest,Terry McLaurin,WAS,rec_yds,shaky,52.5,-113.0,49.8,0.577,0.047,14.0,WIN,0.885,2026_01_WAS_PHI
+1,117,Rest,Christian Watson,GB,rec_yds,shaky,56.5,-113.0,48.6,0.577,0.046,147.0,LOSS,-1.0,2026_01_GB_MIN
+1,118,Rest,Evan Engram,DEN,rec_yds,shaky,22.5,-113.0,22.0,0.577,0.046,43.0,LOSS,-1.0,2026_01_DEN_KC
+1,119,Rest,Caleb Douglas,MIA,rec_yds,shaky,27.5,-114.0,17.7,0.577,0.044,94.0,LOSS,-1.0,2026_01_MIA_LV
+1,120,Rest,J.K. Dobbins,DEN,rush_yds,solid,49.5,-113.0,57.1,0.576,0.046,36.0,WIN,0.885,2026_01_DEN_KC
+1,121,Rest,Caleb Williams,CHI,pass_yds,shaky,224.5,-113.0,225.9,0.576,0.045,269.0,LOSS,-1.0,2026_01_CHI_CAR
+1,122,Rest,Tucker Kraft,GB,rec_yds,shaky,44.5,-113.0,42.5,0.576,0.045,65.0,LOSS,-1.0,2026_01_GB_MIN
+1,123,Rest,MarShawn Lloyd,GB,rec_yds,shaky,10.5,-113.0,5.3,0.575,0.045,0.0,WIN,0.885,2026_01_GB_MIN
+1,124,Rest,Justice Hill,BAL,rush_yds,solid,8.5,-113.0,3.8,0.574,0.044,18.0,LOSS,-1.0,2026_01_BAL_IND
+1,125,Rest,Brenton Strange,JAX,rec_yds,shaky,36.5,-113.0,30.9,0.574,0.044,23.0,WIN,0.885,2026_01_CLE_JAX
+1,126,Rest,Chris Bell,MIA,rec_yds,shaky,17.5,-114.0,15.7,0.574,0.041,25.0,LOSS,-1.0,2026_01_MIA_LV
+1,127,Rest,Kyler Murray,MIN,pass_yds,shaky,216.5,-113.0,193.7,0.573,0.042,18.0,WIN,0.885,2026_01_GB_MIN
+1,128,Rest,Jacory Croskey-Merritt,WAS,rush_yds,solid,40.5,-113.0,45.4,0.572,0.042,63.0,LOSS,-1.0,2026_01_WAS_PHI
+1,129,Rest,Bucky Irving,TB,rec_yds,shaky,13.5,-113.0,16.3,0.572,0.042,48.0,LOSS,-1.0,2026_01_TB_CIN
+1,130,Rest,Jaylen Waddle,DEN,rec_yds,shaky,58.5,-113.0,47.0,0.572,0.041,2.0,WIN,0.885,2026_01_DEN_KC
+1,131,Rest,Dalton Schultz,HOU,rec_yds,shaky,34.5,-113.0,32.4,0.571,0.041,35.0,LOSS,-1.0,2026_01_BUF_HOU
+1,132,Rest,Tony Pollard,TEN,rec_yds,shaky,9.5,-113.0,10.6,0.571,0.04,-1.0,WIN,0.885,2026_01_NYJ_TEN
+1,133,Rest,Ja'Kobi Lane,BAL,rec,favourite,1.5,102.0,1.4,0.57,0.075,1.0,WIN,1.02,2026_01_BAL_IND
+1,134,Rest,Bhayshul Tuten,JAX,rec,favourite,1.5,102.0,0.5,0.57,0.075,1.0,WIN,1.02,2026_01_CLE_JAX
+1,135,Rest,Travis Etienne Jr.,NO,rec,favourite,2.5,104.0,1.8,0.567,0.077,7.0,LOSS,-1.0,2026_01_NO_DET
+1,136,Rest,DeMario Douglas,NE,rec,favourite,1.5,142.0,1.6,0.562,0.149,5.0,LOSS,-1.0,2026_01_NE_SEA
+1,137,Rest,Kyle Monangai,CHI,rec_yds,shaky,5.5,-106.0,9.1,0.556,0.041,24.0,LOSS,-1.0,2026_01_CHI_CAR
+1,138,Rest,Justin Jefferson,MIN,rec,favourite,5.5,112.0,4.8,0.553,0.082,8.0,LOSS,-1.0,2026_01_GB_MIN
+1,139,Rest,Cooper Kupp,SEA,rec,favourite,2.5,100.0,2.9,0.548,0.048,2.0,WIN,1.0,2026_01_NE_SEA
+1,140,Rest,Khalil Shakir,BUF,rec,favourite,3.5,-102.0,3.7,0.545,0.04,4.0,LOSS,-1.0,2026_01_BUF_HOU
+1,141,Rest,Jerry Jeudy,CLE,rec,favourite,2.5,116.0,3.4,0.544,0.081,2.0,WIN,1.16,2026_01_CLE_JAX
+1,142,Rest,Chig Okonkwo,WAS,rec,favourite,2.5,118.0,2.8,0.543,0.084,2.0,WIN,1.18,2026_01_WAS_PHI
+1,143,Rest,Ladd McConkey,LAC,rec,favourite,4.5,110.0,3.7,0.543,0.067,5.0,LOSS,-1.0,2026_01_ARI_LAC
+1,144,Rest,Terry McLaurin,WAS,rec,favourite,3.5,128.0,3.9,0.543,0.104,2.0,WIN,1.28,2026_01_WAS_PHI
+1,145,Rest,Jalen Coker,CAR,rec,favourite,3.5,104.0,3.1,0.541,0.051,8.0,LOSS,-1.0,2026_01_CHI_CAR
+1,146,Rest,Malik Washington,MIA,rec,favourite,2.5,118.0,2.1,0.539,0.081,3.0,LOSS,-1.0,2026_01_MIA_LV
+1,147,Rest,Evan Engram,DEN,rec,favourite,2.5,104.0,2.5,0.535,0.044,4.0,LOSS,-1.0,2026_01_DEN_KC
+1,148,Rest,George Pickens,DAL,rec,favourite,4.5,118.0,4.5,0.519,0.06,3.0,WIN,1.18,2026_01_DAL_NYG
+1,149,Rest,Kayshon Boutte,HOU,rec,favourite,1.5,112.0,1.9,0.515,0.043,1.0,WIN,1.12,2026_01_BUF_HOU
+1,150,Rest,J.K. Dobbins,DEN,rec,favourite,0.5,152.0,1.1,0.512,0.116,0.0,WIN,1.52,2026_01_DEN_KC
+1,151,Rest,Terrance Ferguson,LA,rec,favourite,1.5,118.0,1.2,0.512,0.053,0.0,WIN,1.18,2026_01_SF_LA
+1,152,Rest,Christian Watson,GB,rec,favourite,3.5,132.0,3.7,0.504,0.073,6.0,LOSS,-1.0,2026_01_GB_MIN
+1,153,Rest,Tucker Kraft,GB,rec,favourite,3.5,128.0,3.7,0.504,0.066,3.0,WIN,1.28,2026_01_GB_MIN
+1,154,Rest,Drake London,ATL,rec,favourite,4.5,120.0,4.4,0.503,0.049,2.0,WIN,1.2,2026_01_ATL_PIT
+1,155,Rest,Zay Flowers,BAL,rec,favourite,4.5,128.0,5.1,0.485,0.047,5.0,LOSS,-1.0,2026_01_BAL_IND
+1,156,Rest,Darren Waller,CAR,rec,favourite,1.5,140.0,1.4,0.485,0.069,2.0,LOSS,-1.0,2026_01_CHI_CAR
+1,157,Rest,Makai Lemon,PHI,rec,favourite,1.5,154.0,1.4,0.485,0.091,3.0,LOSS,-1.0,2026_01_WAS_PHI
+1,158,Rest,Rashod Bateman,BAL,rec,favourite,1.5,152.0,1.7,0.473,0.076,0.0,WIN,1.52,2026_01_BAL_IND
+2,1,Top 10,Quinshon Judkins,CLE,rec,favourite,2.5,-180.0,2.0,0.692,0.049,5.0,LOSS,-1.0,2026_02_CLE_TB
+2,2,Top 10,De'Von Achane,MIA,rec,favourite,4.5,-168.0,3.5,0.674,0.047,3.0,WIN,0.595,2026_02_MIA_SF
+2,3,Top 10,Malik Washington,MIA,rec,favourite,3.5,-130.0,2.8,0.656,0.091,4.0,LOSS,-1.0,2026_02_MIA_SF
+2,4,Top 10,Chris Bell,MIA,rec,favourite,1.5,100.0,1.2,0.639,0.139,0.0,WIN,1.0,2026_02_MIA_SF
+2,5,Top 10,Jordan Love,GB,pass_yds,shaky,254.5,-113.0,246.3,0.617,0.086,145.0,WIN,0.885,2026_02_GB_NYJ
+2,6,Top 10,Chuba Hubbard,CAR,rush_yds,solid,56.5,-113.0,35.2,0.593,0.063,53.0,WIN,0.885,2026_02_CAR_ATL
+2,7,Top 10,De'Von Achane,MIA,rush_yds,solid,58.5,-113.0,61.0,0.589,0.058,74.0,LOSS,-1.0,2026_02_MIA_SF
+2,8,Top 10,Harold Fannin Jr.,CLE,rec_yds,shaky,33.5,-113.0,38.7,0.587,0.057,54.0,LOSS,-1.0,2026_02_CLE_TB
+2,9,Top 10,David Montgomery,HOU,rush_yds,solid,63.5,-113.0,31.2,0.586,0.056,10.0,WIN,0.885,2026_02_CIN_HOU
+2,10,Top 10,DK Metcalf,PIT,rec_yds,shaky,59.5,-113.0,48.6,0.585,0.055,27.0,WIN,0.885,2026_02_PIT_NE
+2,11,Next 10,Travis Etienne Jr.,NO,rush_yds,solid,40.5,-113.0,43.1,0.584,0.054,25.0,WIN,0.885,2026_02_NO_BAL
+2,12,Next 10,Malik Willis,MIA,pass_yds,shaky,183.5,-113.0,190.9,0.583,0.052,197.0,LOSS,-1.0,2026_02_MIA_SF
+2,13,Next 10,Tyler Shough,NO,pass_yds,shaky,231.5,-113.0,249.7,0.582,0.051,252.0,LOSS,-1.0,2026_02_NO_BAL
+2,14,Next 10,Terrance Ferguson,LA,rec_yds,shaky,33.5,-113.0,12.3,0.581,0.05,54.0,LOSS,-1.0,2026_02_NYG_LA
+2,15,Next 10,Jerry Jeudy,CLE,rec,favourite,2.5,-114.0,3.5,0.58,0.048,0.0,WIN,0.877,2026_02_CLE_TB
+2,16,Next 10,Quinshon Judkins,CLE,rush_yds,solid,49.5,-113.0,48.1,0.577,0.047,21.0,WIN,0.885,2026_02_CLE_TB
+2,17,Next 10,MarShawn Lloyd,GB,rush_yds,solid,49.5,-113.0,44.9,0.574,0.044,20.0,WIN,0.885,2026_02_GB_NYJ
+2,18,Next 10,Makai Lemon,PHI,rec_yds,shaky,25.5,-113.0,22.5,0.574,0.044,14.0,WIN,0.885,2026_02_PHI_TEN
+2,19,Next 10,Carnell Tate,TEN,rec_yds,shaky,40.5,-113.0,36.6,0.573,0.042,27.0,WIN,0.885,2026_02_PHI_TEN
+2,20,Next 10,Jared Goff,DET,pass_yds,shaky,257.5,-113.0,244.0,0.573,0.042,327.0,LOSS,-1.0,2026_02_DET_BUF
+2,21,Rest,Joe Burrow,CIN,pass_yds,shaky,249.5,-113.0,254.9,0.572,0.042,207.0,WIN,0.885,2026_02_CIN_HOU
+2,22,Rest,Juwan Johnson,NO,rec,favourite,3.5,104.0,3.6,0.572,0.081,4.0,LOSS,-1.0,2026_02_NO_BAL
+2,23,Rest,Jayden Reed,GB,rec_yds,shaky,37.5,-113.0,23.9,0.571,0.041,4.0,WIN,0.885,2026_02_GB_NYJ
+2,24,Rest,Matthew Golden,GB,rec_yds,shaky,51.5,-113.0,35.9,0.571,0.041,58.0,LOSS,-1.0,2026_02_GB_NYJ
+2,25,Rest,Harold Fannin Jr.,CLE,rec,favourite,3.5,106.0,3.9,0.568,0.083,5.0,LOSS,-1.0,2026_02_CLE_TB
+2,26,Rest,DeVonta Smith,PHI,rec,favourite,4.5,102.0,4.0,0.565,0.07,10.0,LOSS,-1.0,2026_02_PHI_TEN
+2,27,Rest,Roman Wilson,PIT,rec,favourite,2.5,108.0,1.8,0.563,0.082,5.0,LOSS,-1.0,2026_02_PIT_NE
+2,28,Rest,Bryce Lance,NO,rec,favourite,1.5,100.0,2.5,0.563,0.063,1.0,WIN,1.0,2026_02_NO_BAL
+2,29,Rest,Denzel Boston,CLE,rec,favourite,2.5,100.0,3.1,0.562,0.062,5.0,LOSS,-1.0,2026_02_CLE_TB
+2,30,Rest,Devaughn Vele,NO,rec,favourite,3.5,106.0,4.2,0.56,0.075,5.0,LOSS,-1.0,2026_02_NO_BAL
+2,31,Rest,Jakobi Meyers,JAX,rec,favourite,3.5,100.0,3.7,0.558,0.058,1.0,WIN,1.0,2026_02_JAX_DEN
+2,32,Rest,Makai Lemon,PHI,rec,favourite,2.5,100.0,2.4,0.557,0.057,1.0,WIN,1.0,2026_02_PHI_TEN
+2,33,Rest,Quentin Johnston,LAC,rec,favourite,3.5,106.0,3.2,0.55,0.064,1.0,WIN,1.06,2026_02_LV_LAC
+2,34,Rest,Matthew Golden,GB,rec,favourite,3.5,128.0,2.9,0.55,0.111,4.0,LOSS,-1.0,2026_02_GB_NYJ
+2,35,Rest,Tucker Kraft,GB,rec,favourite,3.5,100.0,3.7,0.543,0.043,2.0,WIN,1.0,2026_02_GB_NYJ
+2,36,Rest,Garrett Wilson,NYJ,rec,favourite,5.5,100.0,4.8,0.543,0.043,5.0,WIN,1.0,2026_02_GB_NYJ
+2,37,Rest,Rico Dowdle,PIT,rec,favourite,2.5,100.0,2.3,0.541,0.041,2.0,WIN,1.0,2026_02_PIT_NE
+2,38,Rest,Josh Downs,IND,rec,favourite,3.5,128.0,3.0,0.538,0.099,7.0,LOSS,-1.0,2026_02_IND_KC
+2,39,Rest,Caleb Douglas,MIA,rec,favourite,2.5,128.0,4.7,0.536,0.097,2.0,WIN,1.28,2026_02_MIA_SF
+2,40,Rest,Jahan Dotson,ATL,rec,favourite,1.5,114.0,1.5,0.535,0.068,2.0,LOSS,-1.0,2026_02_CAR_ATL
+2,41,Rest,Bijan Robinson,ATL,rec,favourite,4.5,116.0,5.9,0.53,0.067,3.0,WIN,1.16,2026_02_CAR_ATL
+2,42,Rest,Jalen Nailor,LV,rec,favourite,2.5,112.0,2.0,0.524,0.052,1.0,WIN,1.12,2026_02_LV_LAC
+2,43,Rest,Luther Burden III,CHI,rec,favourite,3.5,128.0,3.3,0.523,0.084,3.0,WIN,1.28,2026_02_MIN_CHI
+2,44,Rest,Xavier Hutchinson,HOU,rec,favourite,2.5,118.0,2.4,0.521,0.062,3.0,LOSS,-1.0,2026_02_CIN_HOU
+2,45,Rest,Tee Higgins,CIN,rec,favourite,3.5,118.0,3.7,0.519,0.061,5.0,LOSS,-1.0,2026_02_CIN_HOU
+2,46,Rest,Kayshon Boutte,HOU,rec,favourite,2.5,128.0,2.1,0.512,0.073,3.0,LOSS,-1.0,2026_02_CIN_HOU
+2,47,Rest,Tre' Harris,LAC,rec,favourite,2.5,128.0,2.3,0.512,0.073,1.0,WIN,1.28,2026_02_LV_LAC
+2,48,Rest,Michael Mayer,LV,rec,favourite,4.5,128.0,3.7,0.511,0.072,3.0,WIN,1.28,2026_02_LV_LAC
+2,49,Rest,Noah Fant,NO,rec,favourite,1.5,140.0,1.9,0.51,0.093,0.0,WIN,1.4,2026_02_NO_BAL
+2,50,Rest,David Montgomery,HOU,rec,favourite,1.5,124.0,1.5,0.508,0.062,2.0,LOSS,-1.0,2026_02_CIN_HOU
+2,51,Rest,Evan Engram,DEN,rec,favourite,2.5,120.0,2.8,0.508,0.053,1.0,WIN,1.2,2026_02_JAX_DEN
+2,52,Rest,Demarcus Robinson,SF,rec,favourite,1.5,118.0,1.7,0.506,0.047,3.0,LOSS,-1.0,2026_02_MIA_SF
+2,53,Rest,Emeka Egbuka,TB,rec,favourite,3.5,118.0,3.9,0.506,0.047,3.0,WIN,1.18,2026_02_CLE_TB
+2,54,Rest,Travis Kelce,KC,rec,favourite,3.5,116.0,4.2,0.506,0.043,9.0,LOSS,-1.0,2026_02_IND_KC
+2,55,Rest,Rashod Bateman,BAL,rec,favourite,2.5,118.0,1.7,0.504,0.045,7.0,LOSS,-1.0,2026_02_NO_BAL
+2,56,Rest,Dalton Kincaid,BUF,rec,favourite,3.5,122.0,3.0,0.496,0.045,7.0,LOSS,-1.0,2026_02_DET_BUF
+2,57,Rest,Terry McLaurin,WAS,rec,favourite,3.5,132.0,3.6,0.479,0.048,2.0,WIN,1.32,2026_02_WAS_DAL
+2,58,Rest,Travis Etienne Jr.,NO,rec,favourite,1.5,136.0,3.0,0.476,0.052,2.0,LOSS,-1.0,2026_02_NO_BAL
+3,1,Top 10,Drew Sample,CIN,rec,favourite,1.5,-194.0,1.5,0.708,0.048,1.0,WIN,0.515,2026_03_CIN_PIT
+3,2,Top 10,Kendrick Bourne,ARI,rec,favourite,2.5,-118.0,2.2,0.599,0.057,2.0,WIN,0.847,2026_03_ARI_SF
+3,3,Top 10,Tyler Allgeier,ARI,rush_yds,solid,33.5,-113.0,25.0,0.594,0.064,-1.0,WIN,0.885,2026_03_ARI_SF
+3,4,Top 10,Jeremiyah Love,ARI,rec,favourite,2.5,-114.0,2.1,0.587,0.054,5.0,LOSS,-1.0,2026_03_ARI_SF
+3,5,Top 10,Tre' Harris,LAC,rec,favourite,2.5,108.0,2.3,0.538,0.057,6.0,LOSS,-1.0,2026_03_LAC_BUF
+3,6,Top 10,Jaylen Warren,PIT,rec,favourite,3.5,118.0,2.2,0.531,0.073,3.0,WIN,1.18,2026_03_CIN_PIT
+3,7,Top 10,Terrance Ferguson,LA,rec,favourite,3.5,128.0,2.5,0.503,0.064,1.0,WIN,1.28,2026_03_LA_DEN
+3,8,Top 10,Jordan Addison,MIN,rec,favourite,2.5,142.0,2.4,0.458,0.045,5.0,LOSS,-1.0,2026_03_MIN_TB
+4,1,Top 10,Tyjae Spears,TEN,rec_yds,shaky,12.5,-113.0,12.6,0.599,0.068,-1.0,WIN,0.885,2026_04_TEN_BAL
+4,2,Top 10,Tony Pollard,TEN,rec_yds,shaky,8.0,-113.0,9.7,0.597,0.066,2.0,WIN,0.885,2026_04_TEN_BAL
+4,3,Top 10,Gunnar Helm,TEN,rec,favourite,2.5,112.0,2.3,0.543,0.071,1.0,WIN,1.12,2026_04_TEN_BAL
+4,4,Top 10,Ladd McConkey,LAC,rec,favourite,3.5,128.0,3.4,0.513,0.074,0.0,WIN,1.28,2026_04_LAC_SEA
+4,5,Top 10,Wan'Dale Robinson,TEN,rec,favourite,3.5,128.0,4.7,0.498,0.059,3.0,WIN,1.28,2026_04_TEN_BAL
+4,6,Top 10,Quentin Johnston,LAC,rec,favourite,2.5,132.0,3.3,0.49,0.059,1.0,WIN,1.32,2026_04_LAC_SEA
+4,7,Top 10,Tory Horton,SEA,rec,favourite,0.5,182.0,2.1,0.431,0.077,1.0,LOSS,-1.0,2026_04_LAC_SEA
+5,1,Top 10,Will Shipley,PHI,rec,favourite,2.5,-118.0,1.3,0.587,0.046,1.0,WIN,0.847,2026_05_PHI_JAX
+5,2,Top 10,Will Shipley,PHI,rush_yds,solid,31.5,-113.0,18.9,0.578,0.048,6.0,WIN,0.885,2026_05_PHI_JAX
+5,3,Top 10,Dontayvion Wicks,PHI,rec,favourite,3.5,-108.0,3.0,0.578,0.059,5.0,LOSS,-1.0,2026_05_PHI_JAX
+5,4,Top 10,Dontayvion Wicks,PHI,rec_yds,shaky,46.5,-113.0,37.0,0.578,0.048,63.0,LOSS,-1.0,2026_05_PHI_JAX
+5,5,Top 10,Will Shipley,PHI,rec_yds,shaky,14.5,-113.0,8.5,0.578,0.048,7.0,WIN,0.885,2026_05_PHI_JAX
+5,6,Top 10,Makai Lemon,PHI,rec_yds,shaky,28.5,-113.0,22.5,0.578,0.048,43.0,LOSS,-1.0,2026_05_PHI_JAX
+5,7,Top 10,George Holani,SEA,rec,favourite,1.5,112.0,0.7,0.513,0.042,4.0,LOSS,-1.0,2026_05_SF_SEA
+5,8,Top 10,Kenny Gainwell,TB,rec,favourite,1.5,128.0,2.3,0.505,0.067,3.0,LOSS,-1.0,2026_05_TB_DAL
+5,9,Top 10,Emeka Egbuka,TB,rec,favourite,2.5,146.0,3.6,0.505,0.099,6.0,LOSS,-1.0,2026_05_TB_DAL
+5,10,Top 10,RJ Harvey,DEN,rec,favourite,3.5,122.0,3.3,0.501,0.05,0.0,WIN,1.22,2026_05_DEN_LAC
+5,11,Next 10,Cody White,LV,rec,favourite,1.5,134.0,1.2,0.495,0.068,2.0,LOSS,-1.0,2026_05_LV_NE
+5,12,Next 10,Emanuel Wilson,SEA,rec,favourite,1.5,128.0,1.0,0.495,0.057,2.0,LOSS,-1.0,2026_05_SF_SEA
+5,13,Next 10,Efton Chism III,NE,rec,favourite,1.5,128.0,1.4,0.495,0.057,5.0,LOSS,-1.0,2026_05_LV_NE
+5,14,Next 10,Keon Coleman,BUF,rec,favourite,2.5,134.0,3.0,0.488,0.06,1.0,WIN,1.34,2026_05_BUF_LA
+5,15,Next 10,Aaron Jones Sr.,MIN,rec,favourite,2.5,128.0,2.8,0.485,0.046,3.0,LOSS,-1.0,2026_05_MIN_NO
+5,16,Next 10,Olamide Zaccheaus,ATL,rec,favourite,0.5,164.0,1.4,0.485,0.106,0.0,WIN,1.64,2026_05_BAL_ATL
+5,17,Next 10,Jauan Jennings,MIN,rec,favourite,1.5,128.0,1.8,0.485,0.046,0.0,WIN,1.28,2026_05_MIN_NO
+5,18,Next 10,Jaylen Warren,PIT,rec,favourite,2.5,128.0,3.1,0.485,0.046,6.0,LOSS,-1.0,2026_05_IND_PIT
+5,19,Next 10,Chig Okonkwo,WAS,rec,favourite,2.5,142.0,2.5,0.485,0.072,4.0,LOSS,-1.0,2026_05_NYG_WAS
+5,20,Next 10,Devontez Walker,BAL,rec,favourite,0.5,168.0,1.0,0.485,0.112,2.0,LOSS,-1.0,2026_05_BAL_ATL
+5,21,Rest,Cam Skattebo,NYG,rec,favourite,1.5,152.0,2.0,0.485,0.088,2.0,LOSS,-1.0,2026_05_NYG_WAS
+5,22,Rest,Mike Evans,SF,rec,favourite,3.5,134.0,4.3,0.482,0.054,7.0,LOSS,-1.0,2026_05_SF_SEA
+5,23,Rest,Rashid Shaheed,SEA,rec,favourite,1.5,140.0,2.1,0.482,0.065,2.0,LOSS,-1.0,2026_05_SF_SEA
+5,24,Rest,Colby Parkinson,LA,rec,favourite,1.5,134.0,2.2,0.481,0.054,1.0,WIN,1.34,2026_05_BUF_LA
+5,25,Rest,Jordan Whittington,LA,rec,favourite,0.5,134.0,0.8,0.481,0.054,0.0,WIN,1.34,2026_05_BUF_LA
+5,26,Rest,Tyjae Spears,TEN,rec,favourite,1.5,136.0,1.9,0.477,0.053,9.0,LOSS,-1.0,2026_05_HOU_TEN

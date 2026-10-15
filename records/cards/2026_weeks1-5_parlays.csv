@@ -1,0 +1,22 @@
+leg1,leg2,price,chance,hit,profit,profit_no_boost,week
+#1 Noah Gray rec u1.5,#3 Mack Hollins rec u1.5,118,0.5670268699751733,false,-10.0,-10.0,1
+#2 Marvin Mims Jr. rec u1.5,#4 Denzel Boston rec_yds u25.5,186,0.5503856629147502,false,-10.0,-10.0,1
+#5 KC Concepcion Jr. rec_yds u33.5,#6 Jacory Croskey-Merritt rec u1.5,174,0.5308955539545286,false,-10.0,-10.0,1
+#7 KC Concepcion Jr. rec u3.5,#8 D'Andre Swift rec u2.5,161,0.5223979411803574,false,-10.0,-10.0,1
+#9 Jeremiyah Love rush_yds u31.5,#10 Hunter Henry rec u3.5,183,0.5034808742499556,false,-10.0,-10.0,1
+#1 Quinshon Judkins rec u2.5,#2 De'Von Achane rec u4.5,148,0.4667044312876917,false,-10.0,-10.0,2
+#3 Malik Washington rec u3.5,#5 Jordan Love pass_yds u254.5,233,0.40466819668049725,false,-10.0,-10.0,2
+#4 Chris Bell rec u1.5,#6 Chuba Hubbard rush_yds u56.5,277,0.3789164394010801,true,36.008849557522126,27.69911504424779,2
+#7 De'Von Achane rush_yds u58.5,#8 Harold Fannin Jr. rec_yds u33.5,255,0.3456289325328692,false,-10.0,-10.0,2
+#9 David Montgomery rush_yds u63.5,#10 DK Metcalf rec_yds u59.5,255,0.3429563570731108,true,33.189756441381476,25.53058187798575,2
+#1 Drew Sample rec u1.5,#2 Kendrick Bourne rec u2.5,180,0.42358259653327807,true,23.396819849729166,17.997553730560895,3
+#3 Tyler Allgeier rush_yds u33.5,#5 Tre' Harris rec u2.5,292,0.319628008932896,false,-10.0,-10.0,3
+#4 Jeremiyah Love rec u2.5,#6 Jaylen Warren rec u3.5,309,0.3118385538860133,false,-10.0,-10.0,3
+#7 Terrance Ferguson rec u3.5,#8 Jordan Addison rec u2.5,452,0.23017970337662613,false,-10.0,-10.0,3
+#1 Tyjae Spears rec_yds u12.5,#4 Ladd McConkey rec u3.5,330,0.3071533201754363,true,42.87008849557523,32.97699115044249,4
+#2 Tony Pollard rec_yds u8,#6 Quentin Johnston rec u2.5,337,0.2923613629355417,true,43.850265486725675,33.73097345132744,4
+#3 Gunnar Helm rec u2.5,#7 Tory Horton rec u0.5,498,0.23429980122142158,false,-10.0,-10.0,4
+#1 Will Shipley rec u2.5,#7 George Holani rec u1.5,292,0.30115689890611025,false,-10.0,-10.0,5
+#2 Will Shipley rush_yds u31.5,#8 Kenny Gainwell rec u1.5,330,0.2920484375152617,false,-10.0,-10.0,5
+#3 Dontayvion Wicks rec u3.5,#9 Emeka Egbuka rec u2.5,374,0.2920484375152617,false,-10.0,-10.0,5
+#4 Dontayvion Wicks rec_yds u46.5,#10 RJ Harvey rec u3.5,318,0.28955270959128826,false,-10.0,-10.0,5
