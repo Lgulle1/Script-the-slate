@@ -901,6 +901,18 @@ Test = tuned on 2024 and scored on 2025-26, plus tuned on 2025-26 and scored on 
 - Repeated in every test: rush-attempt unders hit 57-61%; rush-yard unders about 51%.
 Not tried yet: the model's own layer weights (needs the model re-run per setting), alternate lines, other books.
 
+## Everything per market, including the model's own layer weights (scripts/layer_parts.py, scripts/tune_layers.py; records/tuning/layers_*)
+
+The stored explain tables split every 2025/2026 prediction into additive feature contributions (they sum to the stored number; the market means are products of quantities,
+e.g. rush yards = carries x yards per carry). Grouped into five layers (injuries, opponent defence, recent form, team offence, role) and each scaled by 0-2x, the predictions
+can be rebuilt without re-running the model (rebuilt = stored to 1e-12 on all but a handful of rows). 2024 has no layer breakdown (base model only), so this part uses 2025-26:
+tuned on 2025 weeks 1-9 and scored on 2025 weeks 10-18 + 2026 weeks 1-5, and the reverse.
+- Per-market betting only: same data 59.1% hit +15.0%; test 726 bets, 51.2%, -3.0%.
+- Per-market betting + layer weights: same data 67.2% +30.7%; test 699 bets, 48.8%, -7.4%.
+- Everything per market (layers, mix, shift, edge, side, one filter): same data 71.9% hit +39.5%; test 634 bets, 49.8%, -5.5% [-13.8, +2.3].
+- Layer weights judged by accuracy (average miss vs the real stat) instead of betting: 140 settings; 14 improve both halves, by 0.0-0.4% (pass yards, recent form x0.5: 1.0% and 0.1%). The current layer weights are already about as accurate as these knobs allow.
+Conclusion: the more knobs per market, the better the fit to the tuned half and the worse the result on the other half. Nothing changed in the model.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming

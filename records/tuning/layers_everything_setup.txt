@@ -1,0 +1,7 @@
+pass_att: opponent x0, team_offense x2, role x0; model 50% / book 50%; shift -8%; edge >= 10%; both; filter: outdoors
+pass_cmp: opponent x2, team_offense x0.5; model 100% / book 0%; shift +0%; edge >= 8%; under; filter: none
+pass_yds: opponent x1.5, recent_form x0, team_offense x0.5; model 100% / book 0%; shift +0%; edge >= 6%; over; filter: dome
+rush_att: injuries x1.5, opponent x0.5; model 70% / book 30%; shift -4%; edge >= 10%; both; filter: game total >= 47.5
+rush_yds: opponent x2, recent_form x0, role x0.5; model 30% / book 70%; shift +4%; edge >= 8%; both; filter: none
+rec: injuries x0, opponent x0.5, recent_form x0.5, team_offense x2, role x2; model 30% / book 70%; shift +0%; edge >= 4%; over; filter: home
+rec_yds: injuries x0, opponent x0.5, recent_form x0.5, team_offense x0; model 70% / book 30%; shift -4%; edge >= 6%; over; filter: game total >= 47.5
