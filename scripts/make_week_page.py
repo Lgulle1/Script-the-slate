@@ -95,7 +95,26 @@ def main(argv=None):
     pl.DataFrame([dict(parlay=n, leg1=f"#{x['rank']} {x['player_name']} {x['market']} under {x['line']:g} ({x['price']:+.0f})", leg2=f"#{y['rank']} {y['player_name']} {y['market']} under {y['line']:g} ({y['price']:+.0f})",
                        price=p_["price"], boosted_price=p_["boosted_price"], picker_chance=round(p_["picker_chance"], 3), payout_on_10_boosted=p_["payout_on_10_boosted"])
                   for n, (p_, (x, y)) in enumerate(zip(par(P["parlays"]), P["parlays"]), 1)]).write_csv(D / f"{stem}_parlays.csv")
-    data = dict(meta=meta, parlays=par(P["parlays"]), legs=legs, liked=ranked,
+    # Mark 1 (the retired setup, shown on the switch): A = top 2 straight + #1/#2 parlay (was bet), B = top 8 straight + 4 parlays (tracked)
+    A = ST.card(rows, "A", player="player_name")
+    B = ST.card(rows, "B", player="player_name")
+    a_keys = {(r["player_name"], r["market"]) for r in A["singles"]}
+    b_keys = {(r["player_name"], r["market"]) for r in B["singles"]}
+    taken = {}
+    for r in ranked:
+        key = (r["player_name"], r["market"])
+        if key in a_keys:
+            r["status1"], r["why1"] = "Bet (A)", ""
+        elif key in b_keys:
+            r["status1"], r["why1"] = "Tracked (B)", "Ranks 3-8: in B, not bet"
+        elif taken.get(r["game_id"], 0) >= ST.SINGLES_CAPS["per_game"]:
+            r["status1"], r["why1"] = "Cut", "Three picks from this game already ranked above it"
+        else:
+            r["status1"], r["why1"] = "Watch", f"Rank {r['overall_rank']}: below the top 8"
+        taken[r["game_id"]] = taken.get(r["game_id"], 0) + 1
+    mark1 = dict(a_singles=[dict(r, rank=r["overall_rank"]) for r in A["singles"]], a_parlays=par(A["parlays"]),
+                 b_singles=[dict(r, rank=r["overall_rank"]) for r in B["singles"]], b_parlays=par(B["parlays"]))
+    data = dict(meta=meta, parlays=par(P["parlays"]), legs=legs, liked=ranked, mark1=mark1,
                 slots=sc.sort("slot_order", "kickoff").select("slot_order", "slot", "kickoff", "matchup", "game_id").to_dicts())
     html = TEMPLATE.replace("__DATA__", json.dumps(data, default=str)).replace("__WEEK__", str(a.week))
     out = D / f"{a.season}_wk{a.week:02d}_picks.html"
@@ -131,6 +150,13 @@ h2{font:700 1.5rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.0
 .lede{color:var(--muted);margin:.3rem 0 0;max-width:72ch}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
 .ticket{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:16px;display:grid;grid-template-columns:auto 1fr auto;gap:4px 14px;align-items:start;min-width:0}
+.switch{display:inline-flex;gap:4px;background:color-mix(in srgb,var(--turf-ink) 14%,transparent);padding:4px;border-radius:999px;justify-self:start}
+.switch button{font:700 .95rem/1 var(--display);letter-spacing:.05em;text-transform:uppercase;border:0;border-radius:999px;padding:.55rem 1rem;background:transparent;color:var(--turf-ink);cursor:pointer}
+.switch button[aria-pressed="true"]{background:var(--turf-ink);color:var(--turf)}
+.switch button:focus-visible{outline:2px solid var(--turf-ink);outline-offset:2px}
+.markwrap{display:grid;gap:22px}
+.markwrap[hidden]{display:none}
+.retired{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:.7rem .9rem;font-size:.92rem}
 .slip{background:var(--panel);border:2px solid var(--turf);border-radius:12px;padding:16px;display:grid;gap:10px;min-width:0}
 .slip-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
 .slip-head .n{font:800 1.6rem/1 var(--display);text-transform:uppercase;color:var(--turf);letter-spacing:.02em}
@@ -176,11 +202,37 @@ button:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
 
 <div class="wrap">
   <section class="hero">
-    <div class="eyebrow">Locked strategy · FanDuel · made before kickoff</div>
+    <div class="eyebrow" id="eyebrow"></div>
     <h1>Week __WEEK__ Picks</h1>
+    <div class="switch" role="group" aria-label="Setup">
+      <button type="button" data-m="2" aria-pressed="true">Mark 2 · current</button>
+      <button type="button" data-m="1" aria-pressed="false">Mark 1 · old A + B</button>
+    </div>
     <div class="sum" id="sum"></div>
-    <p>These are the bets: up to four 2-leg parlays, each with a 30% FanDuel profit boost. No straight bets. Place them in order: if you only have one boost, bet Parlay 1; two boosts, Parlays 1 and 2; and so on. No boost, no bet.</p>
+    <p id="herop"></p>
   </section>
+
+  <div class="markwrap" data-mark="1" hidden>
+  <p class="retired">Mark 1 is the old setup, retired on 2026-10-15. Same picker and same picks; only the betting rule differs. On seasons the picker never saw, its straight bets lost money (A's top 2: &minus;11%; B's top 8: &minus;2%) and A's single parlay returned +28%, against +50% for Mark 2's four parlays. Shown for comparison only.</p>
+  <section>
+    <h2>A: the straight bets</h2>
+    <p class="lede">The top 2 unders as straight bets. Same stake on each.</p>
+    <div class="grid" id="m1picks" style="margin-top:12px"></div>
+  </section>
+  <section class="panel">
+    <h2>A: the parlay</h2>
+    <p class="lede">#1 and #2 together, with the 30% profit boost.</p>
+    <div class="scroll" style="margin-top:10px"><table id="m1parlay"></table></div>
+  </section>
+  <section class="panel">
+    <h2>B: top 8 straight + 4 parlays</h2>
+    <p class="lede">The broader old version. B's four parlays are the same four parlays Mark 2 bets; B adds the eight straight bets.</p>
+    <div class="scroll" style="margin-top:10px"><table id="m1b"></table></div>
+    <div class="scroll" style="margin-top:10px"><table id="m1bparlays"></table></div>
+  </section>
+  </div>
+
+  <div class="markwrap" data-mark="2">
 
   <section>
     <h2>The parlays</h2>
@@ -203,6 +255,7 @@ button:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
       <div><b>Unders, proven roles</b>Unders only (overs lost money in every test). Players need 3+ games with their current team. Up to 3 legs per game, each player once.</div>
     </div>
   </section>
+  </div>
 
   <section class="panel">
     <h2>Everything else it liked, by kickoff</h2>
@@ -220,7 +273,46 @@ const fmtP = v => v > 0 ? "+" + Math.round(v) : String(Math.round(v));
 const pct = v => Math.round(100 * v) + "%";
 const unit = {"Receptions": "rec", "Receiving yds": "rec yds", "Rush yds": "rush yds", "Pass yds": "pass yds"};
 
-$("#sum").innerHTML = [`${DATA.parlays.length} boosted parlays`, "30% boost on each", "No straight bets", "Flat stake", "Unders only"].map(s => `<span>${s}</span>`).join("");
+const HERO = {
+  2: {eyebrow: "Mark 2 · locked strategy · FanDuel · made before kickoff",
+      sum: [`${DATA.parlays.length} boosted parlays`, "30% boost on each", "No straight bets", "Flat stake", "Unders only"],
+      p: "These are the bets: up to four 2-leg parlays, each with a 30% FanDuel profit boost. No straight bets. Place them in order: if you only have one boost, bet Parlay 1; two boosts, Parlays 1 and 2; and so on. No boost, no bet."},
+  1: {eyebrow: "Mark 1 · old A + B · retired 2026-10-15 · for comparison",
+      sum: [`A: ${DATA.mark1.a_singles.length} straight + ${DATA.mark1.a_parlays.length} parlay`, `B: ${DATA.mark1.b_singles.length} straight + ${DATA.mark1.b_parlays.length} parlays`, "Unders only"],
+      p: "The old setup: A bet the two strongest unders straight plus the same two as one boosted parlay; B tracked the top 8 straight and four parlays. Not what we bet now."}
+};
+let mark = 2;
+try { const m = localStorage.getItem("wk-mark"); if (m === "1" || m === "2") mark = +m; } catch (e) {}
+function setMark(m) {
+  mark = m;
+  try { localStorage.setItem("wk-mark", String(m)); } catch (e) {}
+  document.querySelectorAll(".switch button").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.m === m)));
+  document.querySelectorAll("[data-mark]").forEach(el => { el.hidden = +el.dataset.mark !== m; });
+  $("#eyebrow").textContent = HERO[m].eyebrow;
+  $("#sum").innerHTML = HERO[m].sum.map(s => `<span>${s}</span>`).join("");
+  $("#herop").textContent = HERO[m].p;
+  renderSlots();
+}
+document.querySelector(".switch").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setMark(+b.dataset.m); });
+
+const M1 = DATA.mark1;
+$("#m1picks").innerHTML = M1.a_singles.map((r, i) => `<article class="ticket">
+    <div class="rank">${i + 1}</div>
+    <div class="who">${r.player_name}<span class="team">${r.team ?? ""}</span></div>
+    <div class="price">${fmtP(r.price)}</div>
+    <div class="bet"><b>UNDER ${r.line}</b> ${r.market.toLowerCase()}</div>
+    <div class="meta">${r.matchup} · ${r.slot}, ${r.kickoff}</div>
+    <div class="why">
+      <div>Our model: <span class="num">${(+r.our_prediction).toFixed(1)}</span> ${unit[r.market] ?? ""} vs line <span class="num">${r.line}</span></div>
+      <div>Picker: <span class="num">${pct(r.picker_under_chance)}</span> to go under; the price needs <span class="num">${pct(r.needs)}</span></div>
+    </div>
+  </article>`).join("");
+const ptab = (list, label) => `<thead><tr><th>${label}</th><th>Leg 1</th><th>Leg 2</th><th class="num">Price</th><th class="num">Chance both hit</th><th class="num">Win on $10 with boost</th></tr></thead><tbody>` +
+  list.map((p, i) => `<tr><td><span class="boost">Parlay ${i + 1}</span></td>${p.legs.map(l => `<td>${l.player_name} under ${l.line} ${l.market.toLowerCase()} (${fmtP(l.price)})</td>`).join("")}<td class="num">${fmtP(p.price)}</td><td class="num">${pct(p.picker_chance)}</td><td class="num">$${(+p.payout_on_10_boosted).toFixed(2)}</td></tr>`).join("") + "</tbody>";
+$("#m1parlay").innerHTML = ptab(M1.a_parlays, "A parlay");
+$("#m1b").innerHTML = `<thead><tr><th class="num">#</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th>Kickoff</th></tr></thead><tbody>` +
+  M1.b_singles.map((r, i) => `<tr><td class="num">${i + 1}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${r.slot}</td></tr>`).join("") + "</tbody>";
+$("#m1bparlays").innerHTML = ptab(M1.b_parlays, "B parlay");
 
 const legHtml = r => `<div class="legrow">
     <div class="r">#${r.rank}</div>
@@ -241,15 +333,20 @@ $("#legs").innerHTML = `<thead><tr><th class="num">#</th><th>Parlay</th><th>Play
 
 const all = DATA.liked;
 const order = [...new Map(DATA.slots.map(s => [s.slot, s])).values()];
+function renderSlots() {
+const st = r => mark === 2 ? [r.status, r.why_not] : [r.status1, r.why1];
+const isBet = t => mark === 2 ? t.startsWith("Parlay") : t === "Bet (A)";
 $("#slots").innerHTML = order.map(s => {
   const games = DATA.slots.filter(g => g.slot === s.slot);
   const rows = all.filter(r => r.slot === s.slot).sort((a, b) => b.picker_under_chance - a.picker_under_chance);
   const head = `<div class="slothead"><h3>${s.slot}</h3><span class="games">${games.map(g => `${g.matchup} (${g.kickoff})`).join(" · ")}</span></div>`;
   if (!rows.length) return `<div class="slot">${head}<p class="none">Nothing in this slot rated as value.</p></div>`;
   return `<div class="slot">${head}<div class="scroll"><table><thead><tr><th>Status</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th>Why not taken</th></tr></thead><tbody>` +
-    rows.map(r => `<tr><td>${r.status.startsWith("Parlay") ? `<span class="tag bet">${r.status}</span>` : `<span class="tag">${r.status}</span>`}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${r.why_not || "On the card"}</td></tr>`).join("") +
+    rows.map(r => { const [t, why] = st(r); return `<tr><td>${isBet(t) ? `<span class="tag bet">${t}</span>` : `<span class="tag">${t}</span>`}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${why || "On the card"}</td></tr>`; }).join("") +
     `</tbody></table></div></div>`;
 }).join("");
+}
+setMark(mark);
 
 $("#foot").textContent = `Card made ${DATA.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")} from FanDuel prices at that time; lines may have moved since. The picker was retrained on every graded line before this week. Record of these parlays: hidden seasons 2021-2026 +50% per unit (positive all six); fully blind 2021-2023 +38%; replay 2024 wk 4 to 2026 wk 5 +69% (best case).`;
 </script>
