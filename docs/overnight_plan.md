@@ -913,6 +913,19 @@ tuned on 2025 weeks 1-9 and scored on 2025 weeks 10-18 + 2026 weeks 1-5, and the
 - Layer weights judged by accuracy (average miss vs the real stat) instead of betting: 140 settings; 14 improve both halves, by 0.0-0.4% (pass yards, recent form x0.5: 1.0% and 0.1%). The current layer weights are already about as accurate as these knobs allow.
 Conclusion: the more knobs per market, the better the fit to the tuned half and the worse the result on the other half. Nothing changed in the model.
 
+## The tournament (yours, 2026-10-15; scripts/tournament.py; records/tuning/tournament_*)
+
+TRAINING = 2024 + 2025 weeks 1-9 (11,701 lines); TEST A = 2025 weeks 10-18 (3,776); TEST B = 2026 weeks 1-5 (1,727; the 2026 files have no attempts lines).
+Tried: layer weights tuned for accuracy per market on the 2025 training weeks (every increment kept; on the tests they help receptions and receiving yards a little and make the three passing
+markets slightly worse); F1 2,640,330 global setups (10 chance versions x 11 mixes x 9 shifts x 7 cut-offs x 3 sides x 127 market sets); F2 19,000 filter versions of the 100 best;
+F3/F4 80,010 machine-learning and stacker setups (30 models, training scored out-of-fold); F5 per-market; R 7,290 refinements around the 10 leaders. 1,540,353 candidates had enough training bets.
+Training rank does predict the tests: the top 0.1% by training averaged +4.7% on test A (71% positive), the middle -3.8% (5% positive), the bottom 10% -7.6%.
+The best by training alone did not hold on test B (attempts-heavy setups have almost no 2026 bets; most were negative there).
+Winner (most units over training + both tests, positive in each): gradient-boosted picker (depth 3, rate 0.1, leaf 150, with the layered chance), unders only, edge >= 4 points, six markets
+(all but pass completions): training (out-of-fold) 2,689 bets 55.6% +4.8%; test A 224 bets 59.8% +15.6%; test B 295 bets 52.5% +2.0%; all 3,208 bets +5.3%, +171 units.
+Its neighbours: all 30 picker/stacker models at the same cut-off, unders, same markets, are positive overall (+1.4% to +10.9%); 22 of 30 positive on A, 12 of 30 on B.
+Caveat: the winner was picked using A and B, so its A/B figures are no longer a clean test; the clean test is the coming weeks.
+
 ## Things I need you to decide (I have not decided them)
 0. **(Decided 2026-10-09: healthy vectors, see above.)** **The lineup-adjusted target vectors: see `docs/lineup_adjustment_memo.md`.** A comparable card exposed a double count. A player out for weeks is
    already missing from the healthy window, and the 4a baseline subtracts him again. Measured on 2020-2024, every variant I tried describes the coming

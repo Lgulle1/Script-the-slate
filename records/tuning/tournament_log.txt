@@ -1,0 +1,114 @@
+lines: 17204 (training 11701, test A 3776, test B 1727)
+   train by market: [('pass_att', 653), ('pass_cmp', 658), ('pass_yds', 668), ('rec', 3752), ('rec_yds', 3902), ('rush_att', 894), ('rush_yds', 1174)]
+   A by market: [('pass_att', 226), ('pass_cmp', 232), ('pass_yds', 210), ('rec', 1265), ('rec_yds', 1208), ('rush_att', 254), ('rush_yds', 381)]
+   B by market: [('pass_yds', 114), ('rec', 840), ('rec_yds', 581), ('rush_yds', 192)]
+
+[L] layer weights tuned for accuracy on the 2025 training weeks (average miss before -> after):
+   pass_att  opponent x0.75, recent_form x1.25, team_offense x0, role x0  train 6.556->6.531  A 6.878->6.898  B 6.927->7.033
+   pass_cmp  opponent x1.25, recent_form x0.75, team_offense x0           train 4.343->4.276  A 4.918->5.011  B 4.764->4.868
+   pass_yds  opponent x0, recent_form x0.75, team_offense x0, role x0     train 55.826->53.872  A 62.493->64.120  B 61.512->61.556
+   rush_att  injuries x0.75, opponent x0.75, team_offense x0.75, role x2  train 3.301->3.289  A 3.553->3.567  B 3.438->3.469
+   rush_yds  opponent x1.5, team_offense x0.25, role x2                   train 20.895->20.838  A 20.918->20.948  B 19.696->19.652
+   rec       opponent x2, team_offense x1.25, role x1.75                  train 1.384->1.378  A 1.362->1.358  B 1.459->1.458
+   rec_yds   injuries x1.25, opponent x1.75                               train 17.852->17.814  A 18.088->18.075  B 19.371->19.283
+[F1] 2,640,330 global setups tried (1,488,537 with >= 300 training bets) in 25s
+[F2] 19,000 filtered setups tried on the 100 best F1 setups (2,508 with >= 150 training bets)
+[F3/F4] 80,010 machine-learning / stacker setups tried (30 models x cut-offs x sides x market sets); training scores are out-of-fold
+[F5] 3 per-market combinations
+
+TOTAL candidates tried: 1,533,063 with enough training bets (the grids themselves are larger; counts per family above)
+
+ROUND 1 - F1 global setup: top 10 by TRAINING return, and what they did on the two tests
+         train bets/hit/ROI |    test A (2025 wk10-18) |    test B (2026 wk1-5) | setup
+           307 61.9% +18.3% |          67 50.7%  -6.0% |         3 33.3% -37.2% | chance=layered | model 100%/book 0% | shift +0% | edge>=12% | under | pass_att,pass_yds,rush_att
+           307 61.9% +18.3% |          67 50.7%  -6.0% |         3 33.3% -37.2% | chance=layered | model 100%/book 0% | shift +2% | edge>=10% | under | pass_att,pass_yds,rush_att
+           307 61.9% +18.3% |          67 50.7%  -6.0% |         3 33.3% -37.2% | chance=layered | model 100%/book 0% | shift +4% | edge>=8% | under | pass_att,pass_yds,rush_att
+           366 61.5% +17.6% |          65 60.0% +11.3% |        27 37.0% -30.2% | chance=k600_c114 | model 40%/book 60% | shift -8% | edge>=12% | both | pass_att,pass_yds,rush_att,rush_yds
+           366 61.5% +17.6% |          65 60.0% +11.3% |        27 37.0% -30.2% | chance=k600_c114 | model 40%/book 60% | shift -8% | edge>=12% | under | pass_att,pass_yds,rush_att,rush_yds
+           366 61.5% +17.6% |          65 60.0% +11.3% |        27 37.0% -30.2% | chance=k600_c114 | model 40%/book 60% | shift -6% | edge>=10% | both | pass_att,pass_yds,rush_att,rush_yds
+           366 61.5% +17.6% |          65 60.0% +11.3% |        27 37.0% -30.2% | chance=k600_c114 | model 40%/book 60% | shift -6% | edge>=10% | under | pass_att,pass_yds,rush_att,rush_yds
+           366 61.5% +17.6% |          65 60.0% +11.3% |        27 37.0% -30.2% | chance=k600_c114 | model 40%/book 60% | shift -4% | edge>=8% | under | pass_att,pass_yds,rush_att,rush_yds
+           366 61.5% +17.6% |          65 60.0% +11.3% |        27 37.0% -30.2% | chance=k600_c114 | model 40%/book 60% | shift -2% | edge>=6% | under | pass_att,pass_yds,rush_att,rush_yds
+           366 61.5% +17.6% |          65 60.0% +11.3% |        27 37.0% -30.2% | chance=k600_c114 | model 40%/book 60% | shift +0% | edge>=4% | under | pass_att,pass_yds,rush_att,rush_yds
+
+ROUND 1 - F2 setup + filters: top 10 by TRAINING return, and what they did on the two tests
+         train bets/hit/ROI |    test A (2025 wk10-18) |    test B (2026 wk1-5) | setup
+           154 67.5% +29.3% |          24 54.2%  +2.3% |        19 31.6% -40.5% | chance=k600_c114 | model 40%/book 60% | shift -8% | edge>=12% | both | pass_att,pass_yds,rush_att,rush_yds | filters: line below market median
+           154 67.5% +29.3% |          24 54.2%  +2.3% |        19 31.6% -40.5% | chance=k600_c114 | model 40%/book 60% | shift -8% | edge>=12% | both | pass_att,pass_yds,rush_att,rush_yds | filters: model 5%+ under line & line belo
+           154 67.5% +29.3% |          24 54.2%  +2.3% |        19 31.6% -40.5% | chance=k600_c114 | model 40%/book 60% | shift -8% | edge>=12% | under | pass_att,pass_yds,rush_att,rush_yds | filters: line below market median
+           154 67.5% +29.3% |          24 54.2%  +2.3% |        19 31.6% -40.5% | chance=k600_c114 | model 40%/book 60% | shift -8% | edge>=12% | under | pass_att,pass_yds,rush_att,rush_yds | filters: model 5%+ under line & line bel
+           154 67.5% +29.3% |          24 54.2%  +2.3% |        19 31.6% -40.5% | chance=k600_c114 | model 40%/book 60% | shift -6% | edge>=10% | both | pass_att,pass_yds,rush_att,rush_yds | filters: line below market median
+           154 67.5% +29.3% |          24 54.2%  +2.3% |        19 31.6% -40.5% | chance=k600_c114 | model 40%/book 60% | shift -6% | edge>=10% | both | pass_att,pass_yds,rush_att,rush_yds | filters: model 5%+ under line & line belo
+           154 67.5% +29.3% |          24 54.2%  +2.3% |        19 31.6% -40.5% | chance=k600_c114 | model 40%/book 60% | shift -6% | edge>=10% | under | pass_att,pass_yds,rush_att,rush_yds | filters: line below market median
+           154 67.5% +29.3% |          24 54.2%  +2.3% |        19 31.6% -40.5% | chance=k600_c114 | model 40%/book 60% | shift -6% | edge>=10% | under | pass_att,pass_yds,rush_att,rush_yds | filters: model 5%+ under line & line bel
+           154 67.5% +29.3% |          24 54.2%  +2.3% |        19 31.6% -40.5% | chance=k600_c114 | model 40%/book 60% | shift -4% | edge>=8% | under | pass_att,pass_yds,rush_att,rush_yds | filters: line below market median
+           154 67.5% +29.3% |          24 54.2%  +2.3% |        19 31.6% -40.5% | chance=k600_c114 | model 40%/book 60% | shift -4% | edge>=8% | under | pass_att,pass_yds,rush_att,rush_yds | filters: model 5%+ under line & line belo
+
+ROUND 1 - F3 ML picker: top 10 by TRAINING return, and what they did on the two tests
+         train bets/hit/ROI |    test A (2025 wk10-18) |    test B (2026 wk1-5) | setup
+           312 58.7% +16.1% |           9 44.4%  +1.1% |        20 60.0% +41.8% | F3 boosted trees depth 4 rate 0.03 leaf 50 | edge>=10% | both | pass_att,pass_cmp,rush_att,rush_yds,rec
+           325 58.8% +15.7% |           9 44.4%  +1.1% |        20 60.0% +41.8% | F3 boosted trees depth 4 rate 0.03 leaf 50 | edge>=10% | under | pass_att,pass_cmp,pass_yds,rush_att,rush_yds,rec
+           313 60.4% +15.7% |           3 66.7% +29.2% |         5 40.0% -24.6% | F3 boosted trees depth 3 rate 0.1 leaf 50 +layers | edge>=12% | under | pass_att,rush_att,rush_yds,rec_yds
+           325 60.3% +15.3% |           3 66.7% +29.2% |         5 40.0% -24.6% | F3 boosted trees depth 3 rate 0.1 leaf 50 +layers | edge>=12% | under | pass_att,pass_cmp,rush_att,rush_yds,rec_yds
+           301 58.1% +15.3% |           9 44.4%  +1.1% |        20 60.0% +41.8% | F3 boosted trees depth 4 rate 0.03 leaf 50 | edge>=10% | both | pass_cmp,rush_att,rush_yds,rec
+           314 58.3% +14.9% |           9 44.4%  +1.1% |        20 60.0% +41.8% | F3 boosted trees depth 4 rate 0.03 leaf 50 | edge>=10% | under | pass_cmp,pass_yds,rush_att,rush_yds,rec
+           304 57.9% +14.9% |           9 44.4%  +1.1% |        20 60.0% +41.8% | F3 boosted trees depth 4 rate 0.03 leaf 50 | edge>=10% | both | pass_att,rush_att,rush_yds,rec
+           386 58.5% +14.7% |           9 44.4%  +1.1% |        20 60.0% +41.8% | F3 boosted trees depth 4 rate 0.03 leaf 50 | edge>=10% | under | pass_att,pass_cmp,rush_att,rush_yds,rec,rec_yds
+           317 58.0% +14.6% |           9 44.4%  +1.1% |        20 60.0% +41.8% | F3 boosted trees depth 4 rate 0.03 leaf 50 | edge>=10% | under | pass_att,pass_yds,rush_att,rush_yds,rec
+           356 59.6% +14.5% |           7 57.1% +10.9% |        13 30.8% -42.0% | F3 boosted trees depth 3 rate 0.03 leaf 50 | edge>=6% | under | pass_att,pass_cmp,pass_yds,rush_att,rec_yds
+
+ROUND 1 - F4 stacker: top 10 by TRAINING return, and what they did on the two tests
+         train bets/hit/ROI |    test A (2025 wk10-18) |    test B (2026 wk1-5) | setup
+           347 58.8% +16.1% |          41 41.5% -17.3% |        60 55.0% +19.0% | F4 logistic stacker C=0.01 +layers | edge>=4% | under | pass_att,pass_cmp,pass_yds,rush_att,rec
+           343 58.3% +15.8% |          29 37.9% -23.1% |        58 58.6% +27.3% | F4 logistic stacker C=0.01 | edge>=4% | under | pass_att,pass_cmp,pass_yds,rush_att,rec
+           325 58.5% +15.8% |          41 41.5% -17.3% |        59 54.2% +17.8% | F4 logistic stacker C=0.01 +layers | edge>=4% | under | pass_att,pass_cmp,rush_att,rec
+           345 58.6% +15.7% |          41 41.5% -17.3% |        60 55.0% +19.0% | F4 logistic stacker C=0.01 +layers | edge>=4% | under | pass_att,pass_yds,rush_att,rec
+           324 58.0% +15.6% |          29 37.9% -23.1% |        57 59.6% +29.6% | F4 logistic stacker C=0.01 | edge>=4% | under | pass_att,pass_cmp,rush_att,rec
+           341 58.1% +15.4% |          29 37.9% -23.1% |        58 58.6% +27.3% | F4 logistic stacker C=0.01 | edge>=4% | under | pass_att,pass_yds,rush_att,rec
+           323 58.2% +15.3% |          41 41.5% -17.3% |        59 54.2% +17.8% | F4 logistic stacker C=0.01 +layers | edge>=4% | under | pass_att,rush_att,rec
+           306 57.5% +15.2% |          27 37.0% -24.9% |        58 58.6% +27.3% | F4 logistic stacker C=0.01 | edge>=4% | under | pass_cmp,pass_yds,rush_att,rec
+           322 57.8% +15.1% |          29 37.9% -23.1% |        57 59.6% +29.6% | F4 logistic stacker C=0.01 | edge>=4% | under | pass_att,rush_att,rec
+           346 57.5% +14.8% |          33 36.4% -26.4% |        57 59.6% +29.6% | F4 logistic stacker C=0.01 | edge>=4% | both | pass_att,pass_cmp,rush_att,rec
+
+ROUND 1 - F5 per-market: top 10 by TRAINING return, and what they did on the two tests
+         train bets/hit/ROI |    test A (2025 wk10-18) |    test B (2026 wk1-5) | setup
+          2599 56.8%  +7.6% |         657 51.3%  -3.8% |       250 46.8% -10.3% | rank-1 setup per market: chance=k1200_c85 | model 40%/book 60% | shift -12% | edge>=8% | both | pass_att || chance=layered | model 100%/book 0% | shif
+          2588 56.7%  +7.6% |         663 50.8%  -4.6% |       253 47.8%  -8.4% | rank-2 setup per market: chance=k1200_c85 | model 40%/book 60% | shift -12% | edge>=8% | under | pass_att || chance=layered | model 90%/book 10% | shi
+          2656 56.7%  +7.4% |         697 50.8%  -4.7% |       255 47.8%  -8.4% | rank-3 setup per market: chance=k1200_c85 | model 40%/book 60% | shift -10% | edge>=6% | both | pass_att || chance=layered | model 50%/book 50% | shif
+   top 0.1% by training    :    1519 setups, average test-A return +4.71%, share positive on A 71%
+   top 1%                  :   15205 setups, average test-A return +2.98%, share positive on A 69%
+   top 10%                 :  152049 setups, average test-A return -0.06%, share positive on A 50%
+   middle                  :  152050 setups, average test-A return -3.77%, share positive on A 5%
+   bottom 10%              :  152050 setups, average test-A return -7.58%, share positive on A 7%
+
+ROUND 2: 32,572 setups are positive on training AND test A AND test B (or have no B bets)
+
+ROUND 2 leaders by total units over all three segments
+         train bets/hit/ROI |    test A (2025 wk10-18) |    test B (2026 wk1-5) | setup
+          2689 55.6%  +4.8% |         224 59.8% +15.6% |       295 52.5%  +2.0% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_att,pass_yds,rush_att,rush_yds,rec,rec_yds
+          2545 55.8%  +5.3% |         213 58.7% +13.4% |       295 52.5%  +2.0% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_yds,rush_att,rush_yds,rec,rec_yds
+          2808 55.2%  +4.3% |         230 60.4% +16.7% |       295 52.5%  +2.0% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_att,pass_cmp,pass_yds,rush_att,rush_yds,rec,rec_yds
+          2513 55.6%  +4.9% |         216 59.7% +15.6% |       278 52.5%  +2.1% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_att,rush_att,rush_yds,rec,rec_yds
+          2408 55.7%  +5.0% |         203 60.6% +17.3% |       295 52.5%  +2.0% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_att,pass_yds,rush_yds,rec,rec_yds
+          2664 55.4%  +4.6% |         219 59.4% +14.6% |       295 52.5%  +2.0% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_cmp,pass_yds,rush_att,rush_yds,rec,rec_yds
+          2369 55.9%  +5.4% |         205 58.5% +13.3% |       278 52.5%  +2.1% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | rush_att,rush_yds,rec,rec_yds
+          2264 56.0%  +5.5% |         192 59.4% +14.9% |       295 52.5%  +2.0% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_yds,rush_yds,rec,rec_yds
+          2632 55.3%  +4.3% |         222 60.4% +16.7% |       278 52.5%  +2.1% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_att,pass_cmp,rush_att,rush_yds,rec,rec_yds
+          2527 55.3%  +4.3% |         209 61.2% +18.4% |       295 52.5%  +2.0% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_att,pass_cmp,pass_yds,rush_yds,rec,rec_yds
+[R] 7,290 refined setups around 10 leaders
+
+ROUND 3 after refinement: leaders by total units over all three segments
+         train bets/hit/ROI |    test A (2025 wk10-18) |    test B (2026 wk1-5) | setup
+          2689 55.6%  +4.8% |         224 59.8% +15.6% |       295 52.5%  +2.0% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_att,pass_yds,rush_att,rush_yds,rec,rec_yds
+          2545 55.8%  +5.3% |         213 58.7% +13.4% |       295 52.5%  +2.0% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_yds,rush_att,rush_yds,rec,rec_yds
+          2808 55.2%  +4.3% |         230 60.4% +16.7% |       295 52.5%  +2.0% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_att,pass_cmp,pass_yds,rush_att,rush_yds,rec,rec_yds
+          2513 55.6%  +4.9% |         216 59.7% +15.6% |       278 52.5%  +2.1% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_att,rush_att,rush_yds,rec,rec_yds
+          2408 55.7%  +5.0% |         203 60.6% +17.3% |       295 52.5%  +2.0% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_att,pass_yds,rush_yds,rec,rec_yds
+          2664 55.4%  +4.6% |         219 59.4% +14.6% |       295 52.5%  +2.0% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_cmp,pass_yds,rush_att,rush_yds,rec,rec_yds
+          2369 55.9%  +5.4% |         205 58.5% +13.3% |       278 52.5%  +2.1% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | rush_att,rush_yds,rec,rec_yds
+          2264 56.0%  +5.5% |         192 59.4% +14.9% |       295 52.5%  +2.0% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_yds,rush_yds,rec,rec_yds
+          2734 55.3%  +4.9% |         762 54.5%  +2.4% |       398 52.8%  +0.6% | chance=layered | model 40.0%/book 60.0% | shift -3.0% | edge>=3.0% | both | pass_att,pass_cmp,rush_att,rush_yds,rec
+          2632 55.3%  +4.3% |         222 60.4% +16.7% |       278 52.5%  +2.1% | F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_att,pass_cmp,rush_att,rush_yds,rec,rec_yds
+
+WINNER (most units over training + both tests, positive in each): F3 boosted trees depth 3 rate 0.1 leaf 150 +layers | edge>=4% | under | pass_att,pass_yds,rush_att,rush_yds,rec,rec_yds
+   training 2689 bets 55.6% +4.8% | A 224 bets 59.8% +15.6% | B 295 bets 52.5% +2.0% | all 3208 bets +5.3%, +171.2 units
