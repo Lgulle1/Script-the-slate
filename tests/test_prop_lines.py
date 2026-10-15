@@ -149,3 +149,11 @@ def test_a_row_without_its_stamp_in_a_stamped_batch_is_rejected_not_stamped_now(
     rows = _rows({"captured_at": T0.isoformat()}, {"captured_at": None, "line": 80.5})
     r = _log(tmp_path, rows)
     assert (r.written, r.refused) == (1, 1) and "no capture time" in _read(tmp_path, "prop_lines_rejects.csv")["reason"][0]
+
+
+def test_a_roster_matches_the_name_inside_the_game_not_through_the_current_team(tmp_path):
+    roster = pl.DataFrame([dict(game_id="2026_07_BUF_LA", gsis_id="p_old", display_name="Puka Nacua", team="LA", position="WR"),
+                           dict(game_id="2026_07_BUF_LA", gsis_id="p_a", display_name="Twin Name", team="BUF", position="WR"), dict(game_id="2026_07_BUF_LA", gsis_id="p_b", display_name="Twin Name", team="LA", position="WR")])
+    rows = _rows({"player_name": "Puka Nacua"}, {"player_name": "Twin Name"}, {"player_name": "Nobody Atall"})
+    r = PL.log_prop_lines(rows, T0, tmp_path / "prop_lines_log.csv", SCHED, pl.DataFrame(schema=PLAYERS.schema), roster=roster)
+    assert (r.written, r.refused) == (1, 2) and _read(tmp_path)["player_id"].to_list() == ["p_old"]
