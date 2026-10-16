@@ -105,10 +105,10 @@ def hidden_preds(d, A, X, makers):
     return p
 
 
-def week_rows(d, A, p_over):
+def week_rows(d, A, p_over, min_edge=0.04):
     x = d.select("season", "week", "game_id", "player_id", "market", "history").with_columns(
         chance=pl.Series(1 - p_over), edge=pl.Series((1 - p_over) - A.be_u), dec=pl.Series(A.dec_u), won=pl.Series(1 - A.over_won))
-    x = x.filter(pl.col("market").is_in(FOUR) & (pl.col("edge") >= 0.04) & (pl.col("history") >= CF.MIN_HISTORY) & pl.col("won").is_not_nan() & pl.col("chance").is_not_nan())
+    x = x.filter(pl.col("market").is_in(FOUR) & (pl.col("edge") >= min_edge) & (pl.col("history") >= CF.MIN_HISTORY) & pl.col("won").is_not_nan() & pl.col("chance").is_not_nan())
     W = {}
     for r in x.sort("chance", descending=True).iter_rows(named=True):
         W.setdefault((r["season"], r["week"]), []).append(r)
