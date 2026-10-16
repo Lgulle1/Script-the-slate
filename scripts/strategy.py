@@ -4,6 +4,9 @@ P (bet, locked 2026-10-15): no straight bets; 2-leg boosted parlays in rank orde
              available, top pairs first; no boost, no parlay. Chosen on hidden-season tests (tournaments 3 and 4, blind 2021-2023).
 A (retired, tracked): singles = the top 2 unders; parlay = #1 + #2 (2 legs, different games; none that week if they share a game)
 B (tracked): singles = the top 8 unders; parlays = 2-leg in rank order from the top 8 (#1+#2, #3+#4, ...); its parlays are exactly P
+C3 (tracked candidate, 2026-10-16): 3-leg boosted parlays in rank order from the top 9 (3 a week); ideas batch 1: +65% on hidden seasons, 5 of 6 better, volatile
+S (tracked candidate, 2026-10-16): the picker with schedule inputs (scripts/schedule_picker.py): top 8 straight + 4 two-leg parlays from its own top 8;
+             ideas batch 1: parlays +54% on hidden seasons (4 of 6 better), straight bets +3.7%
 Ranking: the picker's chance the under hits, highest first, among qualifying picks (FanDuel market, edge >= 4 points, player with 3+ games for his team).
 Singles lists allow up to 3 picks per game and any number per player; parlay lists allow up to 3 per game and 1 per player (each the better rule by return per unit
 staked over the 38 replayed weeks). Stakes: 1 unit per single, 1 unit per parlay; parlays carry the 30% profit boost.
@@ -15,6 +18,8 @@ STRATEGIES = {
     "P": dict(name="Locked: 4 boosted parlays from the top 8", singles=0, parlay_from=8, role="bet"),
     "A": dict(name="Old A: top 2 + 1 parlay", singles=2, parlay_from=2, role="tracked"),
     "B": dict(name="Old B: top 8 + 4 parlays", singles=8, parlay_from=8, role="tracked"),
+    "C3": dict(name="Candidate: 3-leg parlays from the top 9", singles=0, parlay_from=9, legs=3, role="candidate"),
+    "S": dict(name="Candidate: schedule picker, top 8 + 4 parlays", singles=8, parlay_from=8, role="candidate", pool="schedule"),
 }
 SINGLES_CAPS = dict(per_game=3, per_player=None)
 PARLAY_CAPS = dict(per_game=3, per_player=1)
@@ -33,6 +38,27 @@ def top(rows: list, n: int, per_game=None, per_player=None, chance="picker_under
         p[r[player]] = p.get(r[player], 0) + 1
         if len(out) == n:
             break
+    return out
+
+
+def groups(legs: list, k: int = 2) -> list:
+    """k-leg parlays in rank order: each unused leg with the next unused legs from games not already in the parlay."""
+    if k == 2:
+        return pairs(legs)
+    used, out = set(), []
+    for i, a in enumerate(legs):
+        if i in used:
+            continue
+        grp, games = [i], {a["game_id"]}
+        for j in range(i + 1, len(legs)):
+            if j not in used and legs[j]["game_id"] not in games:
+                grp.append(j)
+                games.add(legs[j]["game_id"])
+                if len(grp) == k:
+                    break
+        if len(grp) == k:
+            used |= set(grp)
+            out.append(tuple(legs[t] for t in grp))
     return out
 
 
@@ -55,7 +81,7 @@ def card(rows: list, key: str, player="player_id") -> dict:
     s = STRATEGIES[key]
     singles = top(rows, s["singles"], SINGLES_CAPS["per_game"], SINGLES_CAPS["per_player"], player=player) if s["singles"] else []
     plegs = top(rows, s["parlay_from"], PARLAY_CAPS["per_game"], PARLAY_CAPS["per_player"], player=player)
-    return dict(singles=singles, parlays=pairs(plegs))
+    return dict(singles=singles, parlays=groups(plegs, s.get("legs", 2)))
 
 
 def single_profit(r) -> float | None:
@@ -64,8 +90,10 @@ def single_profit(r) -> float | None:
     return r["dec_u"] - 1 if r["won"] == 1 else -1.0
 
 
-def parlay_profit(a, b) -> float | None:
-    if a.get("won") is None or b.get("won") is None:
+def parlay_profit(*legs) -> float | None:
+    if any(l.get("won") is None for l in legs):
         return None
-    dec = a["dec_u"] * b["dec_u"]
-    return (dec - 1) * (1 + BOOST) if (a["won"] == 1 and b["won"] == 1) else -1.0
+    dec = 1.0
+    for l in legs:
+        dec *= l["dec_u"]
+    return (dec - 1) * (1 + BOOST) if all(l["won"] == 1 for l in legs) else -1.0

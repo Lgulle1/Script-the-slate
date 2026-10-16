@@ -10,6 +10,7 @@ import json
 import sys
 from pathlib import Path
 
+import numpy as np
 import polars as pl
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -21,6 +22,7 @@ ST = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ST)
 D = config.ROOT / "records" / "cards"
 POOL = config.PROCESSED_DIR / "replay_pool_uncapped.parquet"
+SPOOL = config.PROCESSED_DIR / "replay_pool_schedule.parquet"          # candidate S (scripts/schedule_picker.py)
 COMP_2026 = ["rush_att", "pass_att", "pass_cmp"]                     # Caesars stand-in lines in 2026: training only, never bet at FanDuel
 LABEL = {"rec": "Receptions", "rec_yds": "Receiving yds", "rush_yds": "Rush yds", "rush_att": "Rush attempts", "pass_yds": "Pass yds", "pass_att": "Pass attempts", "pass_cmp": "Pass completions"}
 
@@ -34,12 +36,16 @@ def leg(r) -> dict:
                 actual=r.get("actual"), won=r.get("won"), profit=ST.single_profit(r), chance=round(r["picker_under_chance"], 3))
 
 
-def ledger(rows: list, player="player_id") -> dict:
+def ledger(rows: list, player="player_id", srows: list | None = None) -> dict:
+    """Every strategy's singles and parlays for one week; candidate S picks from the schedule picker's rows (`srows`), skipped when there are none."""
     out = {}
-    for k in ST.STRATEGIES:
-        c = ST.card(rows, k, player=player)
+    for k, st in ST.STRATEGIES.items():
+        src = srows if st.get("pool") == "schedule" else rows
+        if src is None:
+            continue
+        c = ST.card(src, k, player=player)
         out[k] = dict(singles=[leg(r) for r in c["singles"]],
-                      parlays=[dict(legs=[leg(a), leg(b)], price=american(a["dec_u"] * b["dec_u"]), profit=ST.parlay_profit(a, b)) for a, b in c["parlays"]])
+                      parlays=[dict(legs=[leg(x) for x in par], price=american(float(np.prod([x["dec_u"] for x in par]))), profit=ST.parlay_profit(*par)) for par in c["parlays"]])
     return out
 
 
@@ -49,26 +55,42 @@ def main(argv=None):
     ap.add_argument("--season", type=int, default=2026)
     a = ap.parse_args(argv)
     p = pl.read_parquet(POOL).filter(~((pl.col("season") == 2026) & pl.col("market").is_in(COMP_2026)))
+    sp = pl.read_parquet(SPOOL).filter(~((pl.col("season") == 2026) & pl.col("market").is_in(COMP_2026))) if SPOOL.exists() else None
+    sweeks = {k: g.to_dicts() for k, g in sp.group_by("season", "week")} if sp is not None else {}
     weeks = []
     for (s, w), g in sorted(p.group_by("season", "week"), key=lambda t: t[0]):
-        weeks.append(dict(season=int(s), week=int(w), **ledger(g.to_dicts())))
+        weeks.append(dict(season=int(s), week=int(w), **ledger(g.to_dicts(), srows=sweeks.get((s, w), []) if sp is not None else None)))
     live = None
     f = D / f"{a.season}_wk{a.live_week:02d}_card.csv"
     if f.exists():
         c = pl.read_csv(f).with_columns(dec_u=pl.when(pl.col("price") > 0).then(1 + pl.col("price") / 100).otherwise(1 + 100 / -pl.col("price")),
                                         market=pl.col("market").replace({v: k for k, v in LABEL.items()}), won=pl.lit(None), actual=pl.lit(None))
-        live = dict(season=a.season, week=a.live_week, made_at=json.loads(f.with_name(f.stem + "_meta.json").read_text())["made_at_utc"], **ledger(c.to_dicts(), player="player_name"))
+        fs = D / f"{a.season}_wk{a.live_week:02d}_card_schedule.csv"
+        srows = None
+        if fs.exists():
+            srows = pl.read_csv(fs).with_columns(dec_u=pl.when(pl.col("price") > 0).then(1 + pl.col("price") / 100).otherwise(1 + 100 / -pl.col("price")),
+                                                 market=pl.col("market").replace({v: k for k, v in LABEL.items()}), won=pl.lit(None), actual=pl.lit(None)).to_dicts()
+        live = dict(season=a.season, week=a.live_week, made_at=json.loads(f.with_name(f.stem + "_meta.json").read_text())["made_at_utc"],
+                    **ledger(c.to_dicts(), player="player_name", srows=srows))
     blind = [w for f in sorted(D.glob("blind_*.json")) for w in json.loads(f.read_text())["four"]]
     for w in blind:                                                    # files written before P existed: P's parlays are exactly B's
         w.setdefault("P", dict(singles=[], parlays=w["B"]["parlays"]))
     t3 = config.ROOT / "records" / "tuning" / "tournament3_summary.json"
     hidden = json.loads(t3.read_text())["locked"] if t3.exists() else None
+    ib = config.ROOT / "records" / "tuning" / "ideas_batch1.json"
+    if hidden is not None and ib.exists():                            # the candidates' hidden-season results (ideas batch 1, same protocol)
+        o = json.loads(ib.read_text())
+        conv = lambda r: {y: dict(units=v["units"], bets=round(v["stake"])) for y, v in r["seasons"].items()}
+        hidden["candidate 3-leg"] = conv(o["rules"]["3-leg from top 9 (3 a week)"])
+        hidden["candidate schedule"] = conv(o["features"]["schedule"])
     data = dict(weeks=weeks, live=live, strategies={k: v["name"] for k, v in ST.STRATEGIES.items()}, roles={k: v["role"] for k, v in ST.STRATEGIES.items()},
                 blind=blind or None, blind_seasons=sorted({w["season"] for w in blind}), hidden=hidden)
     (D / "track_record.json").write_text(json.dumps(data, default=str))
     (D / "track_record.html").write_text(TEMPLATE.replace("__DATA__", json.dumps(data, default=str)))
     # console summary
     for k in ST.STRATEGIES:
+        if k not in weeks[0]:
+            continue
         s = [x for w in weeks for x in w[k]["singles"]]
         pr = [x for w in weeks for x in w[k]["parlays"]]
         su, pu = sum(x["profit"] for x in s), sum(x["profit"] for x in pr)
@@ -204,11 +226,11 @@ function stats(k, weeks) {
   return {n: s.length, sw, su, pn: p.length, pw, pu, all: su + pu, staked: s.length + p.length, up, weeks: weeks.length};
 }
 function strat(k, el) {
-  const bet = DATA.roles[k] === "bet";
+  const bet = DATA.roles[k] === "bet", cand = DATA.roles[k] === "candidate";
   const t = stats(k, DATA.weeks);
   const seasons = [2024, 2025, 2026].map(y => [y, stats(k, DATA.weeks.filter(w => w.season === y))]);
-  el.innerHTML = `<div class="strat-head"><h2>${DATA.strategies[k]}</h2><span class="badge ${bet ? "bet" : ""}">${bet ? "What we bet" : "Tracked, not bet"}</span></div>
-  ${bet ? "" : `<p class="lede" style="margin:0">Replaced on 2026-10-15 by the locked strategy above; kept here for comparison.</p>`}
+  el.innerHTML = `<div class="strat-head"><h2>${DATA.strategies[k]}</h2><span class="badge ${bet ? "bet" : ""}">${bet ? "What we bet" : cand ? "Candidate, tracked" : "Tracked, not bet"}</span></div>
+  ${bet ? "" : cand ? `<p class="lede" style="margin:0">Candidate since 2026-10-16: tracked with no money next to the locked strategy; it is considered for a switch only if live weeks keep backing up its hidden-season result.</p>` : `<p class="lede" style="margin:0">Replaced on 2026-10-15 by the locked strategy above; kept here for comparison.</p>`}
   <div class="tiles">
     <div class="tile"><span>Return per unit, all bets</span><b class="${cls(t.all)}">${fmtPct(t.all / t.staked)}</b><small>${fmtU(t.all)} units on ${t.staked} staked</small></div>
     ${t.n ? `<div class="tile"><span>Singles</span><b>${t.sw}–${t.n - t.sw}</b><small>${(100 * t.sw / t.n).toFixed(1)}% hit · <span class="${cls(t.su)}">${fmtPct(t.su / t.n)}</span></small></div>` : `<div class="tile"><span>Singles</span><b>None</b><small>no straight bets</small></div>`}
@@ -276,8 +298,9 @@ function ledger() {
   const res = (w, k) => { const v = tot(w, k), x = w[k]; const parts = [];
     if (x.singles.length) parts.push(`${x.singles.filter(q => q.won === 1).length}/${x.singles.length} singles`);
     parts.push(`${x.parlays.filter(q => q.profit > 0).length}/${x.parlays.length} parlays`);
-    return `<span class="res">${k === "P" ? "Locked" : k} <span class="${cls(v)}">${fmtU(v)}u</span> · ${parts.join(", ")}</span>`; };
-  $("#ledger").innerHTML = ws.map(w => `<details><summary><span class="wk">Week ${w.week}</span>${KEYS.map(k => res(w, k)).join("")}</summary><div class="weekbody">${KEYS.map(k => block(k, w)).join("")}</div></details>`).join("");
+    return `<span class="res">${k === "P" ? "Locked" : k === "S" ? "Sched" : k} <span class="${cls(v)}">${fmtU(v)}u</span> · ${parts.join(", ")}</span>`; };
+  $("#ledger").innerHTML = ws.map(w => { const ks = KEYS.filter(k => w[k]);
+    return `<details><summary><span class="wk">Week ${w.week}</span>${ks.map(k => res(w, k)).join("")}</summary><div class="weekbody">${ks.map(k => block(k, w)).join("")}</div></details>`; }).join("");
 }
 $("#seasons").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; season = +b.dataset.y; ledger(); });
 
@@ -286,7 +309,7 @@ function live() {
   const el = $("#live"); el.hidden = false;
   el.innerHTML = `<div class="strat-head"><h2>${L.season} week ${L.week}: pending</h2><span class="badge bet">Locked before kickoff</span></div>
   <p class="lede">Made ${L.made_at.replace("T", " ").replace("+00:00", " UTC")}. These grade into the record once the games are played.</p>
-  <div class="weekbody">${KEYS.map(k => block(k, L)).join("")}</div>`;
+  <div class="weekbody">${KEYS.filter(k => L[k]).map(k => block(k, L)).join("")}</div>`;
 }
 
 function blind() {
@@ -294,7 +317,8 @@ function blind() {
   const el = $("#blind"); el.hidden = false;
   const bs = DATA.blind_seasons;
   const row = (k, label, ws) => { const t = stats(k, ws); return `<tr><td>${label}</td><td>${DATA.strategies[k]}</td><td>${t.n ? `${t.sw}–${t.n - t.sw}` : "–"}</td><td class="num ${cls(t.su)}">${ratio(t.su, t.n)}</td><td>${t.pw}–${t.pn - t.pw}</td><td class="num ${cls(t.pu)}">${ratio(t.pu, t.pn)}</td><td class="num ${cls(t.all)}">${fmtU(t.all)}u (${ratio(t.all, t.staked)})</td><td class="num">${t.up} of ${t.weeks}</td></tr>`; };
-  const body = [...bs.map(y => KEYS.map(k => row(k, String(y), DATA.blind.filter(w => w.season === y))).join("")), KEYS.map(k => row(k, "<b>All blind</b>", DATA.blind)).join("")].join("");
+  const BK = KEYS.filter(k => DATA.blind.every(w => w[k]));
+  const body = [...bs.map(y => BK.map(k => row(k, String(y), DATA.blind.filter(w => w.season === y))).join("")), BK.map(k => row(k, "<b>All blind</b>", DATA.blind)).join("")].join("");
   el.innerHTML = `<div class="strat-head"><h2>Blind tests: ${bs.join(" and ")}</h2><span class="badge">Never used to choose anything</span></div>
   <p class="lede">The rules were locked first. For each blind season the picker learned only from later seasons (2023 from 2024&ndash;2026, 2022 from 2023&ndash;2026, 2021 from 2022&ndash;2026), then was applied unchanged to every week at FanDuel, in the four markets we bet now. These are the cleanest tests we have until live weeks build up.</p>
   <div class="scroll"><table><thead><tr><th>Season</th><th>Strategy</th><th>Singles</th><th class="num">Singles return</th><th>Parlays</th><th class="num">Parlay return</th><th class="num">All bets</th><th class="num">Weeks up</th></tr></thead><tbody>${body}</tbody></table></div>
@@ -304,13 +328,13 @@ function blind() {
 function hidden() {
   const H = DATA.hidden; if (!H) return;
   const el = $("#hidden"); el.hidden = false;
-  const rows = [["parlays top 8", "Locked: 4 boosted parlays from the top 8"], ["parlays top 2", "Old A's parlay (#1 + #2)"], ["singles top 2", "Old A's straight bets (top 2)"], ["singles top 8", "Old B's straight bets (top 8)"]];
+  const rows = [["parlays top 8", "Locked: 4 boosted parlays from the top 8"], ["candidate 3-leg", "Candidate: 3-leg parlays from the top 9"], ["candidate schedule", "Candidate: schedule picker, 4 parlays"], ["parlays top 2", "Old A's parlay (#1 + #2)"], ["singles top 2", "Old A's straight bets (top 2)"], ["singles top 8", "Old B's straight bets (top 8)"]].filter(([k]) => H[k]);
   const ys = Object.keys(H["parlays top 8"]);
   const cell = x => x.bets ? `<td class="num ${cls(x.units)}">${fmtPct(x.units / x.bets)}<br><small style="color:var(--muted)">${x.bets} bets</small></td>` : `<td class="num">–</td>`;
   const body = rows.map(([key, label]) => { const r = H[key]; const u = ys.reduce((a, y) => a + r[y].units, 0), b = ys.reduce((a, y) => a + r[y].bets, 0);
     return `<tr><td>${label}</td>${ys.map(y => cell(r[y])).join("")}${cell({units: u, bets: b})}</tr>`; }).join("");
   el.innerHTML = `<div class="strat-head"><h2>Hidden-season test, 2021&ndash;2026</h2><span class="badge">Tournament 3</span></div>
-  <p class="lede">Each season was hidden in turn: the picker was retrained on the other five seasons only, then the rules were applied to the hidden season. The locked parlays were positive in all six; the straight bets were not. Return per unit staked.</p>
+  <p class="lede">Each season was hidden in turn: the picker was retrained on the other five seasons only, then the rules were applied to the hidden season. The locked parlays were positive in all six; the straight bets were not. The two candidates (ideas batch 1) are shown on the same test. Return per unit staked.</p>
   <div class="scroll"><table><thead><tr><th>Rule</th>${ys.map(y => `<th class="num">${y}</th>`).join("")}<th class="num">All six</th></tr></thead><tbody>${body}</tbody></table></div>
   <p class="lede">Also tested: re-tuning the best rule from scratch for each hidden season (126,000 setups) returned +8% on the hidden seasons, and retraining the projection model 14 ways (tournament 4) did not beat the current model. The locked parlays were positive on all 14 projection models.</p>`;
 }

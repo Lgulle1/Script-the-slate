@@ -82,11 +82,15 @@ def main(argv=None):
         if key in in_top8:
             taken_game[r["game_id"]] = taken_game.get(r["game_id"], 0) + 1
             taken_player[r["player_name"]] = taken_player.get(r["player_name"], 0) + 1
-    def par(pairs):
+    def par(groups):
         out = []
-        for a_, b_ in pairs:
-            dec = a_["dec_u"] * b_["dec_u"]
-            out.append(dict(legs=[a_, b_], price=round((dec - 1) * 100) if dec >= 2 else round(-100 / (dec - 1)), picker_chance=a_["picker_under_chance"] * b_["picker_under_chance"],
+        for grp in groups:
+            dec = 1.0
+            ch = 1.0
+            for l in grp:
+                dec *= l["dec_u"]
+                ch *= l["picker_under_chance"]
+            out.append(dict(legs=list(grp), price=round((dec - 1) * 100) if dec >= 2 else round(-100 / (dec - 1)), picker_chance=ch,
                             payout_on_10_boosted=round(10 * (dec - 1) * (1 + ST.BOOST), 2), boosted_price=round((dec - 1) * (1 + ST.BOOST) * 100)))
         return out
     for i, r in enumerate(legs, 1):
@@ -114,7 +118,16 @@ def main(argv=None):
         taken[r["game_id"]] = taken.get(r["game_id"], 0) + 1
     mark1 = dict(a_singles=[dict(r, rank=r["overall_rank"]) for r in A["singles"]], a_parlays=par(A["parlays"]),
                  b_singles=[dict(r, rank=r["overall_rank"]) for r in B["singles"]], b_parlays=par(B["parlays"]))
-    data = dict(meta=meta, parlays=par(P["parlays"]), legs=legs, liked=ranked, mark1=mark1,
+    # tracked candidates (no money): C3 = 3-leg parlays from the top 9; S = the schedule picker's own top 8 + 4 parlays (scripts/schedule_picker.py)
+    C3 = ST.card(rows, "C3", player="player_name")
+    cand = dict(c3=par(C3["parlays"]), s_singles=[], s_parlays=[])
+    fs = D / f"{a.season}_wk{a.week:02d}_card_schedule.csv"
+    if fs.exists():
+        sr = pl.read_csv(fs).join(sc, on="game_id", how="left").with_columns(
+            dec_u=pl.when(pl.col("price") > 0).then(1 + pl.col("price") / 100).otherwise(1 + 100 / -pl.col("price"))).to_dicts()
+        S = ST.card(sr, "S", player="player_name")
+        cand["s_singles"], cand["s_parlays"] = S["singles"], par(S["parlays"])
+    data = dict(meta=meta, parlays=par(P["parlays"]), legs=legs, liked=ranked, mark1=mark1, cand=cand,
                 slots=sc.sort("slot_order", "kickoff").select("slot_order", "slot", "kickoff", "matchup", "game_id").to_dicts())
     html = TEMPLATE.replace("__DATA__", json.dumps(data, default=str)).replace("__WEEK__", str(a.week))
     out = D / f"{a.season}_wk{a.week:02d}_picks.html"
@@ -255,6 +268,18 @@ button:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
       <div><b>Unders, proven roles</b>Unders only (overs lost money in every test). Players need 3+ games with their current team. Up to 3 legs per game, each player once.</div>
     </div>
   </section>
+
+  <section class="panel">
+    <h2>Candidates: tracked, not bet</h2>
+    <p class="lede">Two ideas that beat the locked rule on hidden seasons but not by enough to switch yet. Recorded every week so live results can settle it. Do not place these.</p>
+    <h3 style="font:700 1.1rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.03em;margin:16px 0 4px">3-leg parlays from the top 9</h3>
+    <p class="lede" style="margin:0">Hidden seasons: +65% vs +50%, better in 5 of 6, but one season lost 73%.</p>
+    <div class="scroll" style="margin-top:8px"><table id="c3"></table></div>
+    <h3 style="font:700 1.1rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.03em;margin:18px 0 4px">Schedule picker (rest, short week, division, primetime, turf)</h3>
+    <p class="lede" style="margin:0">Hidden seasons: parlays +54% vs +50% (better in 4 of 6); its straight bets +3.7% where the locked picker's were &minus;1.6%.</p>
+    <div class="scroll" style="margin-top:8px"><table id="s8"></table></div>
+    <div class="scroll" style="margin-top:8px"><table id="sp"></table></div>
+  </section>
   </div>
 
   <section class="panel">
@@ -307,11 +332,15 @@ $("#m1picks").innerHTML = M1.a_singles.map((r, i) => `<article class="ticket">
       <div>Picker: <span class="num">${pct(r.picker_under_chance)}</span> to go under; the price needs <span class="num">${pct(r.needs)}</span></div>
     </div>
   </article>`).join("");
-const ptab = (list, label) => `<thead><tr><th>${label}</th><th>Leg 1</th><th>Leg 2</th><th class="num">Price</th><th class="num">Chance both hit</th><th class="num">Win on $10 with boost</th></tr></thead><tbody>` +
+const ptab = (list, label) => !list.length ? `<tbody><tr><td class="note">None this week.</td></tr></tbody>` : `<thead><tr><th>${label}</th>${list[0].legs.map((_, j) => `<th>Leg ${j + 1}</th>`).join("")}<th class="num">Price</th><th class="num">Chance all hit</th><th class="num">Win on $10 with boost</th></tr></thead><tbody>` +
   list.map((p, i) => `<tr><td><span class="boost">Parlay ${i + 1}</span></td>${p.legs.map(l => `<td>${l.player_name} under ${l.line} ${l.market.toLowerCase()} (${fmtP(l.price)})</td>`).join("")}<td class="num">${fmtP(p.price)}</td><td class="num">${pct(p.picker_chance)}</td><td class="num">$${(+p.payout_on_10_boosted).toFixed(2)}</td></tr>`).join("") + "</tbody>";
+const strTab = list => `<thead><tr><th class="num">#</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th>Kickoff</th></tr></thead><tbody>` +
+  list.map((r, i) => `<tr><td class="num">${i + 1}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${r.slot ?? ""}</td></tr>`).join("") + "</tbody>";
+$("#c3").innerHTML = ptab(DATA.cand.c3, "3-leg");
+$("#s8").innerHTML = DATA.cand.s_singles.length ? strTab(DATA.cand.s_singles) : `<tbody><tr><td class="note">Schedule picker card not built for this week.</td></tr></tbody>`;
+$("#sp").innerHTML = ptab(DATA.cand.s_parlays, "Sched parlay");
 $("#m1parlay").innerHTML = ptab(M1.a_parlays, "A parlay");
-$("#m1b").innerHTML = `<thead><tr><th class="num">#</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th>Kickoff</th></tr></thead><tbody>` +
-  M1.b_singles.map((r, i) => `<tr><td class="num">${i + 1}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${r.slot}</td></tr>`).join("") + "</tbody>";
+$("#m1b").innerHTML = strTab(M1.b_singles);
 $("#m1bparlays").innerHTML = ptab(M1.b_parlays, "B parlay");
 
 const legHtml = r => `<div class="legrow">
