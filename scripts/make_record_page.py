@@ -1,4 +1,4 @@
-"""The Track Record page (records/cards/track_record.html): the locked strategy P (4 boosted parlays from the top 8, bet) and the old strategies A and B
+"""The Track Record page (records/cards/track_record.html), one tab per Mark after an Overview that answers which Mark is best: the locked strategy P (4 boosted parlays from the top 8, bet) and the old strategies A and B
 (tracked) replayed week by week over 2024 week 4 - 2026 week 5, every pick and parlay graded, the blind seasons, the hidden-season test of tournament 3,
 plus the current week's picks (pending). Ledger also written to records/cards/track_record.json.
 
@@ -24,6 +24,7 @@ D = config.ROOT / "records" / "cards"
 POOL = config.PROCESSED_DIR / "replay_pool_uncapped.parquet"
 SPOOL = config.PROCESSED_DIR / "replay_pool_schedule.parquet"          # candidate S (scripts/schedule_picker.py)
 COMP_2026 = ["rush_att", "pass_att", "pass_cmp"]                     # Caesars stand-in lines in 2026: training only, never bet at FanDuel
+FOUR = ["rec", "rec_yds", "rush_yds", "pass_yds"]                     # the markets bet (records/cards/locked_setup.json), every season
 LABEL = {"rec": "Receptions", "rec_yds": "Receiving yds", "rush_yds": "Rush yds", "rush_att": "Rush attempts", "pass_yds": "Pass yds", "pass_att": "Pass attempts", "pass_cmp": "Pass completions"}
 
 
@@ -54,8 +55,8 @@ def main(argv=None):
     ap.add_argument("--live-week", type=int, default=6)
     ap.add_argument("--season", type=int, default=2026)
     a = ap.parse_args(argv)
-    p = pl.read_parquet(POOL).filter(~((pl.col("season") == 2026) & pl.col("market").is_in(COMP_2026)))
-    sp = pl.read_parquet(SPOOL).filter(~((pl.col("season") == 2026) & pl.col("market").is_in(COMP_2026))) if SPOOL.exists() else None
+    p = pl.read_parquet(POOL).filter(pl.col("market").is_in(FOUR))
+    sp = pl.read_parquet(SPOOL).filter(pl.col("market").is_in(FOUR)) if SPOOL.exists() else None
     sweeks = {k: g.to_dicts() for k, g in sp.group_by("season", "week")} if sp is not None else {}
     weeks = []
     for (s, w), g in sorted(p.group_by("season", "week"), key=lambda t: t[0]):
@@ -83,7 +84,8 @@ def main(argv=None):
         conv = lambda r: {y: dict(units=v["units"], bets=round(v["stake"])) for y, v in r["seasons"].items()}
         hidden["candidate 3-leg"] = conv(o["rules"]["3-leg from top 9 (3 a week)"])
         hidden["candidate schedule"] = conv(o["features"]["schedule"])
-    data = dict(weeks=weeks, live=live, strategies={k: v["name"] for k, v in ST.STRATEGIES.items()}, roles={k: v["role"] for k, v in ST.STRATEGIES.items()},
+    mc = config.ROOT / "records" / "tuning" / "mark_compare.json"      # Mark 2 vs Mark 3 head to head (scripts/compare_marks.py)
+    data = dict(weeks=weeks, live=live, compare=json.loads(mc.read_text()) if mc.exists() else None, strategies={k: v["name"] for k, v in ST.STRATEGIES.items()}, roles={k: v["role"] for k, v in ST.STRATEGIES.items()},
                 blind=blind or None, blind_seasons=sorted({w["season"] for w in blind}), hidden=hidden)
     (D / "track_record.json").write_text(json.dumps(data, default=str))
     (D / "track_record.html").write_text(TEMPLATE.replace("__DATA__", json.dumps(data, default=str)))
@@ -105,34 +107,52 @@ TEMPLATE = r"""<meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: the pending week, the evidence for the locked strategy (hidden seasons, blind seasons), each strategy's replay summary, running-units charts, then the week-by-week ledger. */
+/* Layout: a results book. Tabs across the top (Overview, Mark 2, Mark 1, Mark 3); the Overview answers "which Mark is best" first,
+   then each Mark's tab goes from its headline numbers down to every graded week. Same turf-green identity as the weekly picks page. */
 :root{
   --bg:#eef1f4; --panel:#ffffff; --ink:#141c24; --muted:#5a6672; --faint:#8a95a0; --rule:#d6dce2; --grid:#e6eaee;
   --turf:#17633f; --turf-ink:#ffffff; --turf-soft:#e2efe7; --win:#1b7a44; --win-bg:#e1f2e7; --loss:#b0392d; --loss-bg:#f8e3df; --chip:#eef3f8;
-  --series-1:#2a78d6; --series-2:#eb6834;
+  --test:#7a4e00; --test-bg:#fbefdc; --series-1:#2a78d6; --series-2:#eb6834;
   --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0f151b; --panel:#17202a; --ink:#e7ecf1; --muted:#98a4b0; --faint:#6d7884; --rule:#2a3540; --grid:#222c36;
   --turf:#58c08b; --turf-ink:#0c1a12; --turf-soft:#183023; --win:#6fd39c; --win-bg:#173125; --loss:#f08a7d; --loss-bg:#3a1f1c; --chip:#1d2833;
-  --series-1:#3987e5; --series-2:#d95926; color-scheme:dark}}
+  --test:#f0b35c; --test-bg:#33261a; --series-1:#3987e5; --series-2:#d95926; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f151b; --panel:#17202a; --ink:#e7ecf1; --muted:#98a4b0; --faint:#6d7884; --rule:#2a3540; --grid:#222c36;
   --turf:#58c08b; --turf-ink:#0c1a12; --turf-soft:#183023; --win:#6fd39c; --win-bg:#173125; --loss:#f08a7d; --loss-bg:#3a1f1c; --chip:#1d2833;
-  --series-1:#3987e5; --series-2:#d95926; color-scheme:dark}
+  --test:#f0b35c; --test-bg:#33261a; --series-1:#3987e5; --series-2:#d95926; color-scheme:dark}
 body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
 .wrap{max-width:1080px;margin:0 auto;display:grid;gap:22px}
+header{display:grid;gap:12px}
 header h1{font:800 clamp(2.4rem,7vw,3.6rem)/.95 var(--display);margin:0;text-transform:uppercase}
-header p{margin:.5rem 0 0;color:var(--muted);max-width:72ch}
-h2{font:700 1.45rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.03em;margin:0}
+header p{margin:0;color:var(--muted);max-width:72ch}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:2px solid var(--rule);padding-bottom:0}
+.tabs button{font:700 1rem/1 var(--display);letter-spacing:.05em;text-transform:uppercase;padding:.7rem 1rem .6rem;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;background:transparent;color:var(--muted);cursor:pointer;display:flex;gap:8px;align-items:center}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--turf)}
+.tabs button:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
+.role{font:600 .66rem/1 var(--body);letter-spacing:.08em;text-transform:uppercase;padding:.3rem .45rem;border-radius:5px;background:var(--chip);color:var(--muted)}
+.role.bet{background:var(--turf);color:var(--turf-ink)} .role.test{background:var(--test-bg);color:var(--test)}
+h2{font:700 1.45rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.03em;margin:0;text-wrap:balance}
+h3{font:700 1.1rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.03em;margin:0}
 .lede{color:var(--muted);margin:.3rem 0 0;max-width:74ch}
-.panel{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:18px;min-width:0}
-.panel.bet{border:2px solid var(--turf)}
-.strat{display:grid;gap:12px}
-.strat-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px}
-.badge{font:700 .72rem/1 var(--body);letter-spacing:.08em;text-transform:uppercase;padding:.35rem .55rem;border-radius:6px;background:var(--chip);color:var(--muted)}
-.badge.bet{background:var(--turf);color:var(--turf-ink)}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:18px;min-width:0;display:grid;gap:12px}
+.verdict{background:var(--turf);color:var(--turf-ink);border-radius:14px;padding:22px;display:grid;gap:10px}
+.verdict .eyebrow{font:600 .78rem/1 var(--body);letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+.verdict h2{font:800 clamp(1.8rem,5vw,2.8rem)/1 var(--display);text-transform:uppercase}
+.verdict p{margin:0;max-width:72ch;opacity:.95}
+.marks{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+.mark{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:16px;display:grid;gap:10px;align-content:start;min-width:0}
+.mark.is-bet{border:2px solid var(--turf)}
+.mark-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.mark-head b{font:800 1.6rem/1 var(--display);text-transform:uppercase}
+.mark p{margin:0;color:var(--muted);font-size:.9rem}
+.kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;font-size:.9rem}
+.kv span{color:var(--muted)} .kv b{font-family:var(--mono);font-weight:500;text-align:right}
+.open{justify-self:start;font:700 .9rem/1 var(--display);letter-spacing:.05em;text-transform:uppercase;padding:.55rem .8rem;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
+.open:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
 .tile{border:1px solid var(--rule);border-radius:10px;padding:10px 12px;min-width:0}
 .tile span{display:block;font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
 .tile b{display:block;font:700 1.7rem/1.1 var(--display);font-variant-numeric:tabular-nums}
@@ -141,13 +161,16 @@ h2{font:700 1.45rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.
 .scroll{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 th{font:600 .72rem/1.2 var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:.45rem .5rem;border-bottom:1px solid var(--rule);white-space:nowrap}
-td{padding:.45rem .5rem;border-bottom:1px solid var(--rule);white-space:nowrap;vertical-align:top}
+td{padding:.5rem .5rem;border-bottom:1px solid var(--rule);white-space:nowrap;vertical-align:top}
 td.num,th.num{text-align:right;font-family:var(--mono);font-size:.88rem}
+td small{color:var(--muted);font-family:var(--body)}
+.meter{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.meter i{display:block;width:90px;height:8px;border-radius:4px;background:var(--grid);position:relative;overflow:hidden}
+.meter i::after{content:"";position:absolute;inset:0 auto 0 0;width:var(--w);background:var(--turf)}
 .chip{display:inline-block;min-width:3.4em;text-align:center;font:600 .72rem/1 var(--body);padding:.3rem .45rem;border-radius:6px}
 .chip.w{background:var(--win-bg);color:var(--win)} .chip.l{background:var(--loss-bg);color:var(--loss)} .chip.p{background:var(--chip);color:var(--muted)}
 .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
-.chart{min-width:0}
-.chart h3{font:700 1.05rem/1 var(--display);text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px}
+.chart{min-width:0;max-width:640px}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin-bottom:4px}
 .legend i{display:inline-block;width:14px;height:2px;vertical-align:middle;margin-right:6px}
 svg{display:block;width:100%;height:auto;overflow:visible}
@@ -162,49 +185,22 @@ summary .wk{font:700 1rem/1 var(--display);letter-spacing:.03em;text-transform:u
 summary .res{font-family:var(--mono);font-size:.86rem}
 .weekbody{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;padding:6px 2px 14px}
 .weekbody h4{font:700 .95rem/1 var(--display);text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px}
-.filters{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
 .filters button{font:600 .9rem/1 var(--display);letter-spacing:.04em;padding:.45rem .8rem;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
 .filters button[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
 .filters button:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
+.note{background:var(--test-bg);color:var(--test);border-radius:10px;padding:.7rem .9rem;font-size:.92rem;margin:0}
 ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);display:grid;gap:.35rem;max-width:78ch}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 
 <div class="wrap">
 <header>
   <h1>Track Record</h1>
-  <p>Mark 2 is what we bet (locked 2026-10-15): no straight bets, up to 4 boosted 2-leg parlays a week from the picker's top unders, paired in rank order. Mark 1 (the old A and B) and Mark 3 (testing: the schedule picker) are tracked alongside it, not bet. Every strategy was replayed week by week from 2024 week 4 to 2026 week 5, with the picker retrained only on earlier weeks. 1 unit = one bet; parlays include the 30% boost.</p>
+  <p>Every betting setup we run, graded. Mark 2 is the one we bet; Mark 1 (the old rules) and Mark 3 (being tested) are tracked beside it with no money on them. 1 unit = one bet; parlays include the 30% FanDuel boost; FanDuel's four markets (receptions, receiving yards, rush yards, pass yards).</p>
+  <nav class="tabs" role="tablist" aria-label="Marks" id="tabs"></nav>
 </header>
-
-<section class="panel bet" id="live" hidden></section>
-
-<section class="panel" id="hidden" hidden></section>
-
-<section class="panel" id="blind" hidden></section>
-
-<div id="strats" style="display:grid;gap:22px"></div>
-
-<section class="panel">
-  <h2>Running units</h2>
-  <p class="lede">Units won so far, week by week, singles and parlays kept separate. Hover a week for its numbers.</p>
-  <div class="charts" id="charts" style="margin-top:12px"></div>
-</section>
-
-<section class="panel">
-  <h2>Every week</h2>
-  <p class="lede">Open a week to see every pick and parlay, for every strategy.</p>
-  <div class="filters" id="seasons" role="group" aria-label="Season"></div>
-  <div id="ledger"></div>
-</section>
-
-<section class="panel">
-  <h2>How to read this</h2>
-  <ul class="notes">
-    <li>38 weeks: 2024 weeks 4&ndash;18 (the line history starts in 2024), all 18 weeks of 2025, 2026 weeks 1&ndash;5. FanDuel markets only.</li>
-    <li>Each week only learned from earlier weeks. The rules themselves (unders, top 2 / top 8, the limits, the pairing) were chosen after looking at these weeks, so this is the best case. The hidden-season and blind tables above, and live weeks from week 6 on, are the clean tests.</li>
-    <li>The locked strategy's parlays are the same parlays old B made; it just drops the straight bets, which came out close to break-even on every clean test.</li>
-    <li>A week with no parlay for A means its #1 and #2 picks were in the same game.</li>
-  </ul>
-</section>
+<main id="view"></main>
 </div>
 
 <script>
@@ -214,135 +210,209 @@ const fmtU = v => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(2);
 const fmtPct = v => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(100 * v).toFixed(1) + "%";
 const fmtP = v => v > 0 ? "+" + v : String(v);
 const cls = v => v > 0 ? "pos" : v < 0 ? "neg" : "";
-const KEYS = Object.keys(DATA.strategies);
-const ratio = (a, b, f = fmtPct) => b ? f(a / b) : "–";
-const chip = (won, p) => won == null ? `<span class="chip p">PENDING</span>` : (p ?? won) > 0 || won === 1 ? `<span class="chip w">WIN</span>` : `<span class="chip l">LOSS</span>`;
+const ratio = (a, b) => b ? fmtPct(a / b) : "–";
+const chip = won => won == null ? `<span class="chip p">PENDING</span>` : won === 1 ? `<span class="chip w">WIN</span>` : `<span class="chip l">LOSS</span>`;
+const has = k => DATA.weeks.length && DATA.weeks[0][k];
+
+const MARKS = {
+  mark2: {label: "Mark 2", role: "Bet", rc: "bet", keys: ["P", "C3"], what: "Boosted 2-leg parlays from the picker's top unders (up to 4 a week). No straight bets.",
+          hidden: [["parlays top 8", "Mark 2 parlays"], ["candidate 3-leg", "Variant: 3-leg parlays from the top 9 (tracked)"]],
+          cmp: "mark2"},
+  mark1: {label: "Mark 1", role: "Tracked", rc: "", keys: ["A", "B"], what: "The old rules, same picks as Mark 2. A: top 2 straight + one parlay. B: top 8 straight + 4 parlays.",
+          hidden: [["parlays top 2", "A's parlay (#1 + #2)"], ["singles top 2", "A's straight bets (top 2)"], ["singles top 8", "B's straight bets (top 8)"], ["parlays top 8", "B's parlays (same as Mark 2's)"]]},
+  mark3: {label: "Mark 3", role: "Testing", rc: "test", keys: ["S"], what: "Mark 2's picker plus schedule inputs (rest, short week, division game, primetime, turf). Its own picks: top 8 straight + 4 parlays.",
+          hidden: [["candidate schedule", "Mark 3 parlays"]], cmp: "mark3"}
+};
+const ORDER = ["overview", "mark2", "mark1", "mark3"];
 
 function stats(k, weeks) {
-  const s = weeks.flatMap(w => w[k].singles), p = weeks.flatMap(w => w[k].parlays);
+  const ws = weeks.filter(w => w[k]);
+  const s = ws.flatMap(w => w[k].singles), p = ws.flatMap(w => w[k].parlays);
   const su = s.reduce((a, x) => a + x.profit, 0), pu = p.reduce((a, x) => a + x.profit, 0);
   const sw = s.filter(x => x.won === 1).length, pw = p.filter(x => x.profit > 0).length;
-  const up = weeks.filter(w => w[k].singles.reduce((a, x) => a + x.profit, 0) + w[k].parlays.reduce((a, x) => a + x.profit, 0) > 0).length;
-  return {n: s.length, sw, su, pn: p.length, pw, pu, all: su + pu, staked: s.length + p.length, up, weeks: weeks.length};
+  const up = ws.filter(w => w[k].singles.reduce((a, x) => a + x.profit, 0) + w[k].parlays.reduce((a, x) => a + x.profit, 0) > 0).length;
+  return {n: s.length, sw, su, pn: p.length, pw, pu, all: su + pu, staked: s.length + p.length, up, weeks: ws.length};
 }
-function strat(k, el) {
-  const bet = DATA.roles[k] === "bet", cand = DATA.roles[k] === "candidate";
-  const t = stats(k, DATA.weeks);
-  const seasons = [2024, 2025, 2026].map(y => [y, stats(k, DATA.weeks.filter(w => w.season === y))]);
-  el.innerHTML = `<div class="strat-head"><h2>${DATA.strategies[k]}</h2><span class="badge ${bet ? "bet" : ""}">${bet ? "What we bet" : cand ? "Candidate, tracked" : "Tracked, not bet"}</span></div>
-  ${bet ? "" : cand ? `<p class="lede" style="margin:0">Candidate since 2026-10-16: tracked with no money next to the locked strategy; it is considered for a switch only if live weeks keep backing up its hidden-season result.</p>` : `<p class="lede" style="margin:0">Replaced on 2026-10-15 by the locked strategy above; kept here for comparison.</p>`}
-  <div class="tiles">
-    <div class="tile"><span>Return per unit, all bets</span><b class="${cls(t.all)}">${fmtPct(t.all / t.staked)}</b><small>${fmtU(t.all)} units on ${t.staked} staked</small></div>
-    ${t.n ? `<div class="tile"><span>Singles</span><b>${t.sw}–${t.n - t.sw}</b><small>${(100 * t.sw / t.n).toFixed(1)}% hit · <span class="${cls(t.su)}">${fmtPct(t.su / t.n)}</span></small></div>` : `<div class="tile"><span>Singles</span><b>None</b><small>no straight bets</small></div>`}
-    <div class="tile"><span>Parlays (boosted)</span><b>${t.pw}–${t.pn - t.pw}</b><small>${(100 * t.pw / t.pn).toFixed(0)}% hit · <span class="${cls(t.pu)}">${fmtPct(t.pu / t.pn)}</span></small></div>
-    <div class="tile"><span>Weeks in profit</span><b>${t.up} of ${t.weeks}</b><small>singles + parlays together</small></div>
-  </div>
-  <div class="scroll"><table><thead><tr><th>Season</th><th class="num">Weeks</th><th>Singles</th><th class="num">Singles return</th><th>Parlays</th><th class="num">Parlay return</th><th class="num">All bets</th></tr></thead><tbody>` +
-  seasons.map(([y, s]) => `<tr><td>${y}</td><td class="num">${s.weeks}</td><td>${s.n ? `${s.sw}–${s.n - s.sw}` : "–"}</td><td class="num ${cls(s.su)}">${ratio(s.su, s.n)}</td><td>${s.pw}–${s.pn - s.pw}</td><td class="num ${cls(s.pu)}">${s.pn ? fmtPct(s.pu / s.pn) : "–"}</td><td class="num ${cls(s.all)}">${fmtU(s.all)}u (${ratio(s.all, s.staked)})</td></tr>`).join("") +
-  `</tbody></table></div>`;
+function hiddenTotal(key) {
+  const r = DATA.hidden && DATA.hidden[key]; if (!r) return null;
+  const v = Object.values(r); const u = v.reduce((a, x) => a + x.units, 0), b = v.reduce((a, x) => a + x.bets, 0);
+  return {u, b, pos: v.filter(x => x.units > 0).length, n: v.length};
+}
+function liveCount(keys) {
+  const L = DATA.live; if (!L) return null;
+  return keys.filter(k => L[k]).reduce((a, k) => a + L[k].singles.length + L[k].parlays.length, 0);
 }
 
+// ---------- overview
+function overview() {
+  const C = DATA.compare;
+  const rows = C ? [["Parlays · hidden seasons 2021–2026", C.hidden.parlays], ["Parlays · week-by-week replay 2024–2026", C.replay.parlays],
+                    ["Straight bets · hidden seasons", C.hidden.singles], ["Straight bets · replay", C.replay.singles]] : [];
+  const ahead = rows.filter(([, c]) => c.mark3.roi > c.mark2.roi).length;
+  const pp = rows.slice(0, 2).map(([, c]) => Math.round(100 * c.p_mark3_better));
+  const verdict = `<section class="verdict">
+    <div class="eyebrow">The answer so far</div>
+    <h2>Mark 2 is the bet. Mark 3 is ahead on ${ahead} of ${rows.length} tests.</h2>
+    <p>On the parlays we actually bet, Mark 3 returned more on both tests, but the chance it is truly better is ${pp[0]}% on hidden seasons and ${pp[1]}% on the replay: ahead, not proven. Its straight bets are the clearer gain. Live weeks from week 6 on decide it.</p>
+  </section>`;
+  const meter = p => `<div class="meter"><span>${Math.round(100 * p)}%</span><i style="--w:${Math.round(100 * p)}%"></i></div>`;
+  const h2h = `<section class="panel"><div><h2>Mark 2 vs Mark 3, head to head</h2><p class="lede">Same weeks, same rule, two pickers. "Chance Mark 3 is better" resamples the weeks thousands of times and counts how often Mark 3 comes out ahead; 50% would mean no difference.</p></div>
+    <div class="scroll"><table><thead><tr><th>Test</th><th class="num">Mark 2</th><th class="num">Mark 3</th><th class="num">Chance Mark 3 is better</th></tr></thead><tbody>` +
+    rows.map(([t, c]) => `<tr><td>${t}</td><td class="num ${cls(c.mark2.roi)}">${fmtPct(c.mark2.roi)}<br><small>${c.mark2.bets} bets</small></td><td class="num ${cls(c.mark3.roi)}">${fmtPct(c.mark3.roi)}<br><small>${c.mark3.bets} bets</small></td><td class="num">${meter(c.p_mark3_better)}</td></tr>`).join("") +
+    `</tbody></table></div></section>`;
+  const card = id => {
+    const M = MARKS[id];
+    const h = hiddenTotal(M.hidden[0][0]);
+    const keys = M.keys.filter(has);
+    const rep = keys.map(k => [k, stats(k, DATA.weeks)]);
+    const lc = liveCount(M.keys);
+    return `<article class="mark ${M.rc === "bet" ? "is-bet" : ""}">
+      <div class="mark-head"><b>${M.label}</b><span class="role ${M.rc}">${M.role}</span></div>
+      <p>${M.what}</p>
+      <div class="kv">
+        ${h ? `<span>Hidden seasons 2021–2026</span><b class="${cls(h.u)}">${ratio(h.u, h.b)}</b>` : ""}
+        ${rep.map(([k, t]) => `<span>Replay 2024–2026${{C3: " (3-leg variant)", A: " (A)", B: " (B)"}[k] ?? ""}</span><b class="${cls(t.all)}">${ratio(t.all, t.staked)}</b>`).join("")}
+        <span>Live, week ${DATA.live ? DATA.live.week : "–"}</span><b>${lc != null ? `${lc} bets pending` : "–"}</b>
+      </div>
+      <button type="button" class="open" data-go="${id}">Open ${M.label}</button>
+    </article>`;
+  };
+  return verdict + `<section class="marks" style="margin-top:22px">${["mark2", "mark1", "mark3"].map(card).join("")}</section>` + `<div style="margin-top:22px">${h2h}</div>` +
+    `<section class="panel" style="margin-top:22px"><h2>How to read this</h2><ul class="notes">
+      <li><b>Hidden seasons:</b> each season 2021–2026 was hidden in turn; the picker learned from the other five only. The fairest test we have.</li>
+      <li><b>Replay:</b> 2024 week 4 to 2026 week 5, the picker retrained every week on earlier weeks only, the way it runs live.</li>
+      <li><b>Blind 2021–2023:</b> Mark 1 and Mark 2's rules were fixed before those seasons were added, so they never shaped any rule.</li>
+      <li><b>Live:</b> from 2026 week 6. The rule says nothing switches until 8 live weeks are graded.</li></ul></section>`;
+}
+
+// ---------- one Mark
+function strat(k) {
+  const t = stats(k, DATA.weeks);
+  const seasons = [2024, 2025, 2026].map(y => [y, stats(k, DATA.weeks.filter(w => w.season === y))]);
+  return `<section class="panel"><div><h3>${DATA.strategies[k]}</h3><p class="lede">Replay, 2024 week 4 to 2026 week 5.</p></div>
+  <div class="tiles">
+    <div class="tile"><span>Return per unit</span><b class="${cls(t.all)}">${ratio(t.all, t.staked)}</b><small>${fmtU(t.all)} units on ${t.staked}</small></div>
+    ${t.n ? `<div class="tile"><span>Straight bets</span><b>${t.sw}–${t.n - t.sw}</b><small>${(100 * t.sw / t.n).toFixed(1)}% hit · <span class="${cls(t.su)}">${ratio(t.su, t.n)}</span></small></div>` : `<div class="tile"><span>Straight bets</span><b>None</b><small>parlays only</small></div>`}
+    <div class="tile"><span>Parlays (boosted)</span><b>${t.pw}–${t.pn - t.pw}</b><small>${t.pn ? (100 * t.pw / t.pn).toFixed(0) : 0}% hit · <span class="${cls(t.pu)}">${ratio(t.pu, t.pn)}</span></small></div>
+    <div class="tile"><span>Weeks in profit</span><b>${t.up} of ${t.weeks}</b><small>weeks with a bet</small></div>
+  </div>
+  <div class="scroll"><table><thead><tr><th>Season</th><th class="num">Weeks</th><th>Straight</th><th class="num">Straight return</th><th>Parlays</th><th class="num">Parlay return</th><th class="num">All bets</th></tr></thead><tbody>` +
+  seasons.map(([y, s]) => `<tr><td>${y}</td><td class="num">${s.weeks}</td><td>${s.n ? `${s.sw}–${s.n - s.sw}` : "–"}</td><td class="num ${cls(s.su)}">${ratio(s.su, s.n)}</td><td>${s.pw}–${s.pn - s.pw}</td><td class="num ${cls(s.pu)}">${ratio(s.pu, s.pn)}</td><td class="num ${cls(s.all)}">${fmtU(s.all)}u (${ratio(s.all, s.staked)})</td></tr>`).join("") +
+  `</tbody></table></div></section>`;
+}
+function hiddenTable(M) {
+  const H = DATA.hidden; const rows = M.hidden.filter(([k]) => H && H[k]); if (!rows.length) return "";
+  const ys = Object.keys(H[rows[0][0]]);
+  const cell = x => x && x.bets ? `<td class="num ${cls(x.units)}">${fmtPct(x.units / x.bets)}<br><small>${x.bets} bets</small></td>` : `<td class="num">–</td>`;
+  return `<section class="panel"><div><h3>Hidden seasons, 2021–2026</h3><p class="lede">Each season hidden in turn; the picker learned from the other five only. Return per unit staked.</p></div>
+    <div class="scroll"><table><thead><tr><th>Rule</th>${ys.map(y => `<th class="num">${y}</th>`).join("")}<th class="num">All six</th></tr></thead><tbody>` +
+    rows.map(([k, label]) => { const r = H[k], t = hiddenTotal(k); return `<tr><td>${label}</td>${ys.map(y => cell(r[y])).join("")}${cell({units: t.u, bets: t.b})}</tr>`; }).join("") +
+    `</tbody></table></div></section>`;
+}
+function blindTable(M) {
+  if (!DATA.blind) return "";
+  const keys = M.keys.filter(k => DATA.blind.every(w => w[k])); if (!keys.length) return "";
+  const bs = DATA.blind_seasons;
+  const row = (k, label, ws) => { const t = stats(k, ws); return `<tr><td>${label}</td><td>${k === "P" ? "Mark 2" : k}</td><td>${t.n ? `${t.sw}–${t.n - t.sw}` : "–"}</td><td class="num ${cls(t.su)}">${ratio(t.su, t.n)}</td><td>${t.pw}–${t.pn - t.pw}</td><td class="num ${cls(t.pu)}">${ratio(t.pu, t.pn)}</td><td class="num ${cls(t.all)}">${fmtU(t.all)}u (${ratio(t.all, t.staked)})</td></tr>`; };
+  const body = [...bs.map(y => keys.map(k => row(k, String(y), DATA.blind.filter(w => w.season === y))).join("")), keys.map(k => row(k, "<b>All blind</b>", DATA.blind)).join("")].join("");
+  return `<section class="panel"><div><h3>Blind seasons: ${bs.join(", ")}</h3><p class="lede">The rules were fixed before these seasons were added; the picker learned only from later seasons.</p></div>
+    <div class="scroll"><table><thead><tr><th>Season</th><th>Setup</th><th>Straight</th><th class="num">Straight return</th><th>Parlays</th><th class="num">Parlay return</th><th class="num">All bets</th></tr></thead><tbody>${body}</tbody></table></div></section>`;
+}
 function chart(k) {
   const W = 520, H = 220, m = {l: 44, r: 64, t: 10, b: 26};
   let cs = 0, cp = 0;
-  const pts = DATA.weeks.map((w, i) => { cs += w[k].singles.reduce((a, x) => a + x.profit, 0); cp += w[k].parlays.reduce((a, x) => a + x.profit, 0); return {i, w, s: cs, p: cp}; });
+  const pts = DATA.weeks.filter(w => w[k]).map((w, i) => { cs += w[k].singles.reduce((a, x) => a + x.profit, 0); cp += w[k].parlays.reduce((a, x) => a + x.profit, 0); return {i, w, s: cs, p: cp}; });
+  if (pts.length < 2) return {html: "", wire: () => {}};
   const ys = pts.flatMap(d => [d.s, d.p, 0]);
-  let lo = Math.min(...ys), hi = Math.max(...ys); const step = (hi - lo) > 30 ? 10 : 5; lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
+  let lo = Math.min(...ys), hi = Math.max(...ys); const step = (hi - lo) > 30 ? 10 : 5; lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step; if (hi === lo) hi = lo + step;
   const x = i => m.l + (W - m.l - m.r) * i / (pts.length - 1), y = v => m.t + (H - m.t - m.b) * (hi - v) / (hi - lo);
   const ticks = []; for (let v = lo; v <= hi; v += step) ticks.push(v);
   const line = key => pts.map((d, i) => `${i ? "L" : "M"}${x(d.i).toFixed(1)},${y(d[key]).toFixed(1)}`).join("");
-  const seasonStarts = pts.filter((d, i) => i === 0 || d.w.season !== pts[i - 1].w.season);
-  const last = pts[pts.length - 1];
-  const id = "c" + k;
-  const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Running units for strategy ${k}" id="${id}">
+  const starts = pts.filter((d, i) => i === 0 || d.w.season !== pts[i - 1].w.season);
+  const last = pts[pts.length - 1], id = "c" + k, single = pts.some(d => d.s !== 0);
+  const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Running units for ${DATA.strategies[k]}" id="${id}">
     ${ticks.map(v => `<line x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/><text x="${m.l - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--mono)">${v}</text>`).join("")}
     <line x1="${m.l}" x2="${W - m.r}" y1="${y(0)}" y2="${y(0)}" stroke="var(--faint)" stroke-width="1"/>
-    ${seasonStarts.map(d => `<text x="${x(d.i)}" y="${H - 6}" font-size="11" fill="var(--muted)" font-family="var(--body)">${d.w.season}</text>`).join("")}
+    ${starts.map(d => `<text x="${x(d.i)}" y="${H - 6}" font-size="11" fill="var(--muted)" font-family="var(--body)">${d.w.season}</text>`).join("")}
     <path d="${line("p")}" fill="none" stroke="var(--series-2)" stroke-width="2" stroke-linejoin="round"/>
-    <path d="${line("s")}" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-linejoin="round"/>
+    ${single ? `<path d="${line("s")}" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-linejoin="round"/>` : ""}
     <circle cx="${x(last.i)}" cy="${y(last.p)}" r="4" fill="var(--series-2)" stroke="var(--panel)" stroke-width="2"/>
-    <circle cx="${x(last.i)}" cy="${y(last.s)}" r="4" fill="var(--series-1)" stroke="var(--panel)" stroke-width="2"/>
     <text x="${x(last.i) + 8}" y="${y(last.p) + 4}" font-size="11" fill="var(--ink)" font-family="var(--mono)">${fmtU(last.p)}</text>
-    <text x="${x(last.i) + 8}" y="${y(last.s) + 4}" font-size="11" fill="var(--ink)" font-family="var(--mono)">${fmtU(last.s)}</text>
+    ${single ? `<circle cx="${x(last.i)}" cy="${y(last.s)}" r="4" fill="var(--series-1)" stroke="var(--panel)" stroke-width="2"/><text x="${x(last.i) + 8}" y="${y(last.s) + 4}" font-size="11" fill="var(--ink)" font-family="var(--mono)">${fmtU(last.s)}</text>` : ""}
     <line class="xh" x1="0" x2="0" y1="${m.t}" y2="${H - m.b}" stroke="var(--faint)" stroke-width="1" visibility="hidden"/>
     <rect x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="transparent" class="hit"/>
   </svg>`;
-  return {html: `<div class="chart"><h3>${DATA.strategies[k]}</h3><div class="legend"><span><i style="background:var(--series-1)"></i>Singles</span><span><i style="background:var(--series-2)"></i>Parlays</span></div><div class="chartbox">${svg}<div class="tip" hidden></div></div></div>`,
+  return {html: `<div class="chart"><h3>${DATA.strategies[k]}</h3><div class="legend">${single ? `<span><i style="background:var(--series-1)"></i>Straight bets</span>` : ""}<span><i style="background:var(--series-2)"></i>Parlays</span></div><div class="chartbox">${svg}<div class="tip" hidden></div></div></div>`,
     wire: () => {
-      const el = document.getElementById(id), box = el.parentElement, tip = box.querySelector(".tip"), xh = el.querySelector(".xh"), hit = el.querySelector(".hit");
-      const move = ev => { const r = el.getBoundingClientRect(); const px = (ev.clientX - r.left) * W / r.width; const i = Math.max(0, Math.min(pts.length - 1, Math.round((px - m.l) / (W - m.l - m.r) * (pts.length - 1)))); const d = pts[i];
+      const el = document.getElementById(id); if (!el) return;
+      const tip = el.parentElement.querySelector(".tip"), xh = el.querySelector(".xh"), hit = el.querySelector(".hit");
+      hit.addEventListener("pointermove", ev => { const r = el.getBoundingClientRect(); const px = (ev.clientX - r.left) * W / r.width; const i = Math.max(0, Math.min(pts.length - 1, Math.round((px - m.l) / (W - m.l - m.r) * (pts.length - 1)))); const d = pts[i];
         xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
         const ws = d.w[k].singles.reduce((a, q) => a + q.profit, 0), wp = d.w[k].parlays.reduce((a, q) => a + q.profit, 0);
-        tip.innerHTML = `<div><b>${d.w.season} week ${d.w.week}</b></div><div>This week: singles <b class="${cls(ws)}">${fmtU(ws)}</b>, parlays <b class="${cls(wp)}">${fmtU(wp)}</b></div><div>Running: singles <b>${fmtU(d.s)}</b>, parlays <b>${fmtU(d.p)}</b></div>`;
-        tip.hidden = false; const left = Math.min(r.width - 180, Math.max(0, x(i) * r.width / W + 12)); tip.style.left = left + "px"; tip.style.top = "8px"; };
-      hit.addEventListener("pointermove", move); hit.addEventListener("pointerleave", () => { tip.hidden = true; xh.setAttribute("visibility", "hidden"); });
+        tip.innerHTML = `<div><b>${d.w.season} week ${d.w.week}</b></div>${single ? `<div>Straight: <b class="${cls(ws)}">${fmtU(ws)}</b> (running ${fmtU(d.s)})</div>` : ""}<div>Parlays: <b class="${cls(wp)}">${fmtU(wp)}</b> (running ${fmtU(d.p)})</div>`;
+        tip.hidden = false; tip.style.left = Math.min(r.width - 180, Math.max(0, x(i) * r.width / W + 12)) + "px"; tip.style.top = "8px"; });
+      hit.addEventListener("pointerleave", () => { tip.hidden = true; xh.setAttribute("visibility", "hidden"); });
     }};
 }
-
-function legRow(r) { return `<tr><td>${r.player} <small style="color:var(--muted)">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${r.actual ?? "–"}</td><td>${chip(r.won)}</td><td class="num ${cls(r.profit ?? 0)}">${r.profit == null ? "–" : fmtU(r.profit)}</td></tr>`; }
+function legRow(r) { return `<tr><td>${r.player} <small>${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${r.actual ?? "–"}</td><td>${chip(r.won)}</td><td class="num ${cls(r.profit ?? 0)}">${r.profit == null ? "–" : fmtU(r.profit)}</td></tr>`; }
 function block(k, w) {
   const s = w[k].singles, p = w[k].parlays;
-  return `<div><h4>${DATA.strategies[k]}</h4>` + (s.length ? `<div class="scroll"><table><thead><tr><th>Single</th><th>Bet</th><th class="num">Price</th><th class="num">Actual</th><th>Result</th><th class="num">Units</th></tr></thead><tbody>${s.map(legRow).join("")}</tbody></table></div>` : "") +
+  return `<div><h4>${DATA.strategies[k]}</h4>` + (s.length ? `<div class="scroll"><table><thead><tr><th>Straight</th><th>Bet</th><th class="num">Price</th><th class="num">Actual</th><th>Result</th><th class="num">Units</th></tr></thead><tbody>${s.map(legRow).join("")}</tbody></table></div>` : "") +
     (p.length ? `<div class="scroll" style="margin-top:8px"><table><thead><tr><th>Parlay</th><th class="num">Price</th><th>Result</th><th class="num">Units</th></tr></thead><tbody>` +
       p.map(q => `<tr><td>${q.legs.map(l => `${l.player} u${l.line} ${l.market.toLowerCase()}`).join(" + ")}</td><td class="num">${fmtP(q.price)}</td><td>${q.profit == null ? chip(null) : chip(q.profit > 0 ? 1 : 0)}</td><td class="num ${cls(q.profit ?? 0)}">${q.profit == null ? "–" : fmtU(q.profit)}</td></tr>`).join("") + `</tbody></table></div>`
-      : `<p style="color:var(--muted);font-size:.86rem;margin:.5rem 0 0">No parlay: the top picks shared a game.</p>`) + `</div>`;
+      : `<p class="lede" style="font-size:.86rem">No parlay this week.</p>`) + `</div>`;
 }
-let season = 2026;
-function ledger() {
-  const bs = DATA.blind_seasons || [];
+function liveBlock(M) {
+  const L = DATA.live; if (!L) return "";
+  const keys = M.keys.filter(k => L[k]); if (!keys.length) return "";
+  return `<section class="panel ${M.rc === "bet" ? "" : ""}"><div><h3>${L.season} week ${L.week}: pending</h3><p class="lede">Made ${L.made_at.replace("T", " ").replace("+00:00", " UTC")} before kickoff. These grade into the record after the games.</p></div>
+    <div class="weekbody">${keys.map(k => block(k, L)).join("")}</div></section>`;
+}
+const SEASON = {};
+function ledger(id) {
+  const M = MARKS[id];
+  const bkeys = DATA.blind ? M.keys.filter(k => DATA.blind.every(w => w[k])) : [];
+  const bs = bkeys.length ? DATA.blind_seasons : [];
   const ys = [...bs, 2024, 2025, 2026];
-  $("#seasons").innerHTML = ys.map(y => `<button type="button" aria-pressed="${y === season}" data-y="${y}">${bs.includes(y) ? y + " (blind)" : y}</button>`).join("");
+  const season = SEASON[id] ?? 2026;
   const src = bs.includes(season) ? DATA.blind : DATA.weeks;
   const ws = src.filter(w => w.season === season).slice().reverse();
   const tot = (w, k) => w[k].singles.reduce((a, x) => a + x.profit, 0) + w[k].parlays.reduce((a, x) => a + x.profit, 0);
-  const res = (w, k) => { const v = tot(w, k), x = w[k]; const parts = [];
-    if (x.singles.length) parts.push(`${x.singles.filter(q => q.won === 1).length}/${x.singles.length} singles`);
-    parts.push(`${x.parlays.filter(q => q.profit > 0).length}/${x.parlays.length} parlays`);
-    return `<span class="res">${{P: "Mark 2", A: "Mark 1 A", B: "Mark 1 B", C3: "3-leg", S: "Mark 3"}[k] ?? k} <span class="${cls(v)}">${fmtU(v)}u</span> · ${parts.join(", ")}</span>`; };
-  $("#ledger").innerHTML = ws.map(w => { const ks = KEYS.filter(k => w[k]);
-    return `<details><summary><span class="wk">Week ${w.week}</span>${ks.map(k => res(w, k)).join("")}</summary><div class="weekbody">${ks.map(k => block(k, w)).join("")}</div></details>`; }).join("");
+  const res = (w, k) => { const x = w[k], parts = []; if (x.singles.length) parts.push(`${x.singles.filter(q => q.won === 1).length}/${x.singles.length} straight`); parts.push(`${x.parlays.filter(q => q.profit > 0).length}/${x.parlays.length} parlays`);
+    const v = tot(w, k); return `<span class="res">${M.keys.length > 1 ? k + " " : ""}<span class="${cls(v)}">${fmtU(v)}u</span> · ${parts.join(", ")}</span>`; };
+  return `<section class="panel"><div><h3>Every week</h3><p class="lede">Open a week to see every pick and parlay.</p></div>
+    <div class="filters" role="group" aria-label="Season">${ys.map(y => `<button type="button" aria-pressed="${y === season}" data-season="${y}">${bs.includes(y) ? y + " (blind)" : y}</button>`).join("")}</div>
+    <div>${ws.map(w => { const ks = M.keys.filter(k => w[k]); return `<details><summary><span class="wk">Week ${w.week}</span>${ks.map(k => res(w, k)).join("")}</summary><div class="weekbody">${ks.map(k => block(k, w)).join("")}</div></details>`; }).join("") || `<p class="lede">No weeks.</p>`}</div></section>`;
 }
-$("#seasons").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; season = +b.dataset.y; ledger(); });
-
-function live() {
-  const L = DATA.live; if (!L) return;
-  const el = $("#live"); el.hidden = false;
-  el.innerHTML = `<div class="strat-head"><h2>${L.season} week ${L.week}: pending</h2><span class="badge bet">Locked before kickoff</span></div>
-  <p class="lede">Made ${L.made_at.replace("T", " ").replace("+00:00", " UTC")}. These grade into the record once the games are played.</p>
-  <div class="weekbody">${KEYS.filter(k => L[k]).map(k => block(k, L)).join("")}</div>`;
-}
-
-function blind() {
-  if (!DATA.blind) return;
-  const el = $("#blind"); el.hidden = false;
-  const bs = DATA.blind_seasons;
-  const row = (k, label, ws) => { const t = stats(k, ws); return `<tr><td>${label}</td><td>${DATA.strategies[k]}</td><td>${t.n ? `${t.sw}–${t.n - t.sw}` : "–"}</td><td class="num ${cls(t.su)}">${ratio(t.su, t.n)}</td><td>${t.pw}–${t.pn - t.pw}</td><td class="num ${cls(t.pu)}">${ratio(t.pu, t.pn)}</td><td class="num ${cls(t.all)}">${fmtU(t.all)}u (${ratio(t.all, t.staked)})</td><td class="num">${t.up} of ${t.weeks}</td></tr>`; };
-  const BK = KEYS.filter(k => DATA.blind.every(w => w[k]));
-  const body = [...bs.map(y => BK.map(k => row(k, String(y), DATA.blind.filter(w => w.season === y))).join("")), BK.map(k => row(k, "<b>All blind</b>", DATA.blind)).join("")].join("");
-  el.innerHTML = `<div class="strat-head"><h2>Blind tests: ${bs.join(" and ")}</h2><span class="badge">Never used to choose anything</span></div>
-  <p class="lede">The rules were locked first. For each blind season the picker learned only from later seasons (2023 from 2024&ndash;2026, 2022 from 2023&ndash;2026, 2021 from 2022&ndash;2026), then was applied unchanged to every week at FanDuel, in the four markets we bet now. These are the cleanest tests we have until live weeks build up.</p>
-  <div class="scroll"><table><thead><tr><th>Season</th><th>Strategy</th><th>Singles</th><th class="num">Singles return</th><th>Parlays</th><th class="num">Parlay return</th><th class="num">All bets</th><th class="num">Weeks up</th></tr></thead><tbody>${body}</tbody></table></div>
-  <p class="lede">Across the blind seasons the straight bets came out close to break-even; the profit came from the boosted parlays (without the boost they were also close to break-even). That is why the locked strategy keeps only the four boosted parlays. Open a blind season under Every week below for each pick.</p>`;
+function markView(id) {
+  const M = MARKS[id];
+  const keys = M.keys.filter(has);
+  const intro = `<section class="panel"><div class="mark-head"><h2>${M.label}</h2><span class="role ${M.rc}">${M.role}</span></div><p class="lede" style="margin:0">${M.what}</p>
+    ${id === "mark3" && DATA.compare ? `<p class="note">Testing, not bet. Its straight bets were the first to come out positive on hidden seasons (${fmtPct(DATA.compare.hidden.singles.mark3.roi)} vs Mark 2's ${fmtPct(DATA.compare.hidden.singles.mark2.roi)}), and its parlays led on both tests. It becomes the bet only if live weeks back that up.</p>` : ""}
+    ${id === "mark1" ? `<p class="note">Retired as the bet on 2026-10-15 and still tracked. Its straight bets lost money on hidden seasons, and one parlay a week did worse than Mark 2's.</p>` : ""}</section>`;
+  const charts = keys.map(chart);
+  return {html: intro + liveBlock(M) + hiddenTable(M) + blindTable(M) + keys.map(strat).join("") +
+          (charts.some(c => c.html) ? `<section class="panel"><div><h3>Running units, replay</h3><p class="lede">Units won so far, week by week. Hover a week for its numbers.</p></div><div class="charts">${charts.map(c => c.html).join("")}</div></section>` : "") + ledger(id),
+          wire: () => charts.forEach(c => c.wire())};
 }
 
-function hidden() {
-  const H = DATA.hidden; if (!H) return;
-  const el = $("#hidden"); el.hidden = false;
-  const rows = [["parlays top 8", "Mark 2: boosted 2-leg parlays from the top 8"], ["candidate 3-leg", "Mark 2 variant: 3-leg parlays from the top 9"], ["candidate schedule", "Mark 3 (testing): schedule picker, 4 parlays"], ["parlays top 2", "Mark 1 A's parlay (#1 + #2)"], ["singles top 2", "Mark 1 A's straight bets (top 2)"], ["singles top 8", "Mark 1 B's straight bets (top 8)"]].filter(([k]) => H[k]);
-  const ys = Object.keys(H["parlays top 8"]);
-  const cell = x => x.bets ? `<td class="num ${cls(x.units)}">${fmtPct(x.units / x.bets)}<br><small style="color:var(--muted)">${x.bets} bets</small></td>` : `<td class="num">–</td>`;
-  const body = rows.map(([key, label]) => { const r = H[key]; const u = ys.reduce((a, y) => a + r[y].units, 0), b = ys.reduce((a, y) => a + r[y].bets, 0);
-    return `<tr><td>${label}</td>${ys.map(y => cell(r[y])).join("")}${cell({units: u, bets: b})}</tr>`; }).join("");
-  el.innerHTML = `<div class="strat-head"><h2>Hidden-season test, 2021&ndash;2026</h2><span class="badge">Tournament 3</span></div>
-  <p class="lede">Each season was hidden in turn: the picker was retrained on the other five seasons only, then the rules were applied to the hidden season. The locked parlays were positive in all six; the straight bets were not. The two candidates (ideas batch 1) are shown on the same test. Return per unit staked.</p>
-  <div class="scroll"><table><thead><tr><th>Rule</th>${ys.map(y => `<th class="num">${y}</th>`).join("")}<th class="num">All six</th></tr></thead><tbody>${body}</tbody></table></div>
-  <p class="lede">Also tested: re-tuning the best rule from scratch for each hidden season (126,000 setups) returned +8% on the hidden seasons, and retraining the projection model 14 ways (tournament 4) did not beat the current model. The locked parlays were positive on all 14 projection models.</p>`;
+// ---------- tabs
+let current = "overview";
+try { const t = localStorage.getItem("tr-tab"); if (ORDER.includes(t)) current = t; } catch (e) {}
+const h = location.hash.replace("#", ""); if (ORDER.includes(h)) current = h;
+function render() {
+  $("#tabs").innerHTML = ORDER.map(id => `<button type="button" role="tab" id="tab-${id}" aria-selected="${id === current}" data-tab="${id}">${id === "overview" ? "Overview" : MARKS[id].label}${id === "overview" ? "" : ` <span class="role ${MARKS[id].rc}">${MARKS[id].role}</span>`}</button>`).join("");
+  const v = $("#view");
+  if (current === "overview") { v.innerHTML = overview(); }
+  else { const r = markView(current); v.innerHTML = `<div style="display:grid;gap:22px">${r.html}</div>`; r.wire(); }
 }
-live(); hidden(); blind();
-$("#strats").innerHTML = KEYS.map(k => `<section class="panel strat${DATA.roles[k] === "bet" ? " bet" : ""}" id="strat${k}"></section>`).join("");
-KEYS.forEach(k => strat(k, $("#strat" + k)));
-const cs = KEYS.map(chart); $("#charts").innerHTML = cs.map(c => c.html).join(""); cs.forEach(c => c.wire());
-ledger();
+function go(id) { current = id; try { localStorage.setItem("tr-tab", id); } catch (e) {} render(); window.scrollTo({top: 0}); }
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-tab]"); if (t) return go(t.dataset.tab);
+  const o = e.target.closest("[data-go]"); if (o) return go(o.dataset.go);
+  const s = e.target.closest("[data-season]"); if (s) { SEASON[current] = +s.dataset.season; render(); }
+});
+render();
 </script>
 """
 

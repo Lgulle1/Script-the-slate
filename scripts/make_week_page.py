@@ -403,7 +403,7 @@ $("#slots").innerHTML = order.map(s => {
 }
 setMark(mark);
 
-$("#foot").textContent = `Card made ${DATA.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")} from FanDuel prices at that time; lines may have moved since. The picker was retrained on every graded line before this week. Record of these parlays: hidden seasons 2021-2026 +50% per unit (positive all six); fully blind 2021-2023 +38%; replay 2024 wk 4 to 2026 wk 5 +40% (picker trained only on earlier weeks).`;
+$("#foot").textContent = `Card made ${DATA.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")} from FanDuel prices at that time; lines may have moved since. The picker was retrained on every graded line before this week. Record of these parlays: hidden seasons 2021-2026 +50% per unit (positive all six); fully blind 2021-2023 +38%; replay 2024 wk 4 to 2026 wk 5 +51% (picker trained only on earlier weeks).`;
 </script>
 """
 
