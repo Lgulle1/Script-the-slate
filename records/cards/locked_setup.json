@@ -46,5 +46,14 @@
   "B singles": "293 bets, 188 won, +12.2%",
   "B parlays": "143, 65 hit, +69% (boosted)",
   "B all": "+30.7% per unit on 436 units"
+ },
+ "replay_rebuilt_2026-10-16": {
+  "why": "the first replay pool and the Oct 15 week 6 card were built before 2021-2023 joined the line study; retrained on all seasons the picker is far more cautious (about 5 FanDuel picks a week, not 35-60). Rebuilt both; the hidden-season and blind evidence already used the full-data picker.",
+  "P (locked)": "92 parlays, 27 hit, +39.9% per unit (was +69% on 143 in the first pool)",
+  "C3 (3-leg candidate)": "56 parlays, 7 hit, +33.6%",
+  "S (schedule candidate)": "parlays 107, 42 hit, +77%; singles 231, 128 won, +5.7%",
+  "old A": "+7.1% on 102 units",
+  "old B": "+15.7% on 297 units",
+  "week 6 card": "rebuilt 2026-10-16: 5 picks, 2 parlays (Kincaid u4.5 rec + Allen u2.5 rec; Cook u92.5 rush + Wan'Dale Robinson u3.5 rec); the Oct 15 card is kept as records/cards/2026_wk06_card_v1_20261015.csv"
  }
 }
