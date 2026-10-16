@@ -15,11 +15,11 @@ from __future__ import annotations
 
 BOOST = 0.30
 STRATEGIES = {
-    "P": dict(name="Locked: 4 boosted parlays from the top 8", singles=0, parlay_from=8, role="bet"),
-    "A": dict(name="Old A: top 2 + 1 parlay", singles=2, parlay_from=2, role="tracked"),
-    "B": dict(name="Old B: top 8 + 4 parlays", singles=8, parlay_from=8, role="tracked"),
-    "C3": dict(name="Candidate: 3-leg parlays from the top 9", singles=0, parlay_from=9, legs=3, role="candidate"),
-    "S": dict(name="Candidate: schedule picker, top 8 + 4 parlays", singles=8, parlay_from=8, role="candidate", pool="schedule"),
+    "P": dict(name="Mark 2 (bet): boosted 2-leg parlays from the top 8", singles=0, parlay_from=8, role="bet"),
+    "A": dict(name="Mark 1 A: top 2 + 1 parlay", singles=2, parlay_from=2, role="tracked"),
+    "B": dict(name="Mark 1 B: top 8 + 4 parlays", singles=8, parlay_from=8, role="tracked"),
+    "C3": dict(name="Mark 2 variant: 3-leg parlays from the top 9", singles=0, parlay_from=9, legs=3, role="candidate"),
+    "S": dict(name="Mark 3 (testing): schedule picker, top 8 + 4 parlays", singles=8, parlay_from=8, role="candidate", pool="schedule"),
 }
 SINGLES_CAPS = dict(per_game=3, per_player=None)
 PARLAY_CAPS = dict(per_game=3, per_player=1)

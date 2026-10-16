@@ -172,7 +172,7 @@ ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);display:grid;gap:.35rem
 <div class="wrap">
 <header>
   <h1>Track Record</h1>
-  <p>What we bet (locked 2026-10-15): no straight bets, up to 4 boosted 2-leg parlays a week from the picker's top 8 unders, paired in rank order. The old strategies A and B stay on the page for comparison. Every strategy was replayed week by week from 2024 week 4 to 2026 week 5, with the picker retrained only on earlier weeks. 1 unit = one bet; parlays include the 30% boost.</p>
+  <p>Mark 2 is what we bet (locked 2026-10-15): no straight bets, up to 4 boosted 2-leg parlays a week from the picker's top unders, paired in rank order. Mark 1 (the old A and B) and Mark 3 (testing: the schedule picker) are tracked alongside it, not bet. Every strategy was replayed week by week from 2024 week 4 to 2026 week 5, with the picker retrained only on earlier weeks. 1 unit = one bet; parlays include the 30% boost.</p>
 </header>
 
 <section class="panel bet" id="live" hidden></section>
@@ -298,7 +298,7 @@ function ledger() {
   const res = (w, k) => { const v = tot(w, k), x = w[k]; const parts = [];
     if (x.singles.length) parts.push(`${x.singles.filter(q => q.won === 1).length}/${x.singles.length} singles`);
     parts.push(`${x.parlays.filter(q => q.profit > 0).length}/${x.parlays.length} parlays`);
-    return `<span class="res">${k === "P" ? "Locked" : k === "S" ? "Sched" : k} <span class="${cls(v)}">${fmtU(v)}u</span> · ${parts.join(", ")}</span>`; };
+    return `<span class="res">${{P: "Mark 2", A: "Mark 1 A", B: "Mark 1 B", C3: "3-leg", S: "Mark 3"}[k] ?? k} <span class="${cls(v)}">${fmtU(v)}u</span> · ${parts.join(", ")}</span>`; };
   $("#ledger").innerHTML = ws.map(w => { const ks = KEYS.filter(k => w[k]);
     return `<details><summary><span class="wk">Week ${w.week}</span>${ks.map(k => res(w, k)).join("")}</summary><div class="weekbody">${ks.map(k => block(k, w)).join("")}</div></details>`; }).join("");
 }
@@ -328,7 +328,7 @@ function blind() {
 function hidden() {
   const H = DATA.hidden; if (!H) return;
   const el = $("#hidden"); el.hidden = false;
-  const rows = [["parlays top 8", "Locked: 4 boosted parlays from the top 8"], ["candidate 3-leg", "Candidate: 3-leg parlays from the top 9"], ["candidate schedule", "Candidate: schedule picker, 4 parlays"], ["parlays top 2", "Old A's parlay (#1 + #2)"], ["singles top 2", "Old A's straight bets (top 2)"], ["singles top 8", "Old B's straight bets (top 8)"]].filter(([k]) => H[k]);
+  const rows = [["parlays top 8", "Mark 2: boosted 2-leg parlays from the top 8"], ["candidate 3-leg", "Mark 2 variant: 3-leg parlays from the top 9"], ["candidate schedule", "Mark 3 (testing): schedule picker, 4 parlays"], ["parlays top 2", "Mark 1 A's parlay (#1 + #2)"], ["singles top 2", "Mark 1 A's straight bets (top 2)"], ["singles top 8", "Mark 1 B's straight bets (top 8)"]].filter(([k]) => H[k]);
   const ys = Object.keys(H["parlays top 8"]);
   const cell = x => x.bets ? `<td class="num ${cls(x.units)}">${fmtPct(x.units / x.bets)}<br><small style="color:var(--muted)">${x.bets} bets</small></td>` : `<td class="num">–</td>`;
   const body = rows.map(([key, label]) => { const r = H[key]; const u = ys.reduce((a, y) => a + r[y].units, 0), b = ys.reduce((a, y) => a + r[y].bets, 0);
