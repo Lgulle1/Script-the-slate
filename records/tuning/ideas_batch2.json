@@ -1,0 +1,253 @@
+{
+ "A_variability": {
+  "baseline": {
+   "seasons": {
+    "2021": {
+     "units": 26.26,
+     "stake": 59.0,
+     "roi": 0.4452
+    },
+    "2022": {
+     "units": 32.42,
+     "stake": 56.0,
+     "roi": 0.5789
+    },
+    "2023": {
+     "units": 9.58,
+     "stake": 64.0,
+     "roi": 0.1497
+    },
+    "2024": {
+     "units": 38.08,
+     "stake": 34.0,
+     "roi": 1.1199
+    },
+    "2025": {
+     "units": 10.89,
+     "stake": 25.0,
+     "roi": 0.4356
+    },
+    "2026": {
+     "units": 7.87,
+     "stake": 11.0,
+     "roi": 0.7152
+    }
+   },
+   "units": 125.09,
+   "stake": 249.0,
+   "roi": 0.5024,
+   "singles_top8_roi": -0.0157,
+   "three_leg_top9": {
+    "roi": 0.6523,
+    "stake": 150.0,
+    "seasons": {
+     "2021": 1.5523,
+     "2022": 0.9381,
+     "2023": -0.7286,
+     "2024": 1.2675,
+     "2025": 0.5349,
+     "2026": 1.3731
+    }
+   },
+   "seasons_beating_baseline": 0
+  },
+  "variability": {
+   "seasons": {
+    "2021": {
+     "units": 31.73,
+     "stake": 52.0,
+     "roi": 0.6102
+    },
+    "2022": {
+     "units": 29.94,
+     "stake": 57.0,
+     "roi": 0.5253
+    },
+    "2023": {
+     "units": -2.7,
+     "stake": 61.0,
+     "roi": -0.0443
+    },
+    "2024": {
+     "units": 1.9,
+     "stake": 25.0,
+     "roi": 0.0762
+    },
+    "2025": {
+     "units": -8.13,
+     "stake": 13.0,
+     "roi": -0.6251
+    },
+    "2026": {
+     "units": 6.98,
+     "stake": 8.0,
+     "roi": 0.872
+    }
+   },
+   "units": 59.72,
+   "stake": 216.0,
+   "roi": 0.2765,
+   "singles_top8_roi": -0.0114,
+   "three_leg_top9": {
+    "roi": 0.7878,
+    "stake": 131.0,
+    "seasons": {
+     "2021": 1.3227,
+     "2022": 0.7402,
+     "2023": -0.2865,
+     "2024": 2.4577,
+     "2025": 1.4026,
+     "2026": 0.692
+    }
+   },
+   "seasons_beating_baseline": 2
+  },
+  "schedule": {
+   "seasons": {
+    "2021": {
+     "units": 31.5,
+     "stake": 66.0,
+     "roi": 0.4772
+    },
+    "2022": {
+     "units": 26.85,
+     "stake": 53.0,
+     "roi": 0.5066
+    },
+    "2023": {
+     "units": 25.37,
+     "stake": 63.0,
+     "roi": 0.4027
+    },
+    "2024": {
+     "units": 23.24,
+     "stake": 43.0,
+     "roi": 0.5405
+    },
+    "2025": {
+     "units": 26.34,
+     "stake": 39.0,
+     "roi": 0.6754
+    },
+    "2026": {
+     "units": 17.42,
+     "stake": 13.0,
+     "roi": 1.34
+    }
+   },
+   "units": 150.73,
+   "stake": 277.0,
+   "roi": 0.5441,
+   "singles_top8_roi": 0.0366,
+   "three_leg_top9": {
+    "roi": 0.9357,
+    "stake": 179.0,
+    "seasons": {
+     "2021": 1.4248,
+     "2022": 1.2289,
+     "2023": -0.2645,
+     "2024": 1.6162,
+     "2025": 0.6549,
+     "2026": 1.45
+    }
+   },
+   "seasons_beating_baseline": 4
+  },
+  "schedule + variability": {
+   "seasons": {
+    "2021": {
+     "units": 37.51,
+     "stake": 57.0,
+     "roi": 0.658
+    },
+    "2022": {
+     "units": 18.24,
+     "stake": 53.0,
+     "roi": 0.3442
+    },
+    "2023": {
+     "units": 10.98,
+     "stake": 61.0,
+     "roi": 0.18
+    },
+    "2024": {
+     "units": 16.77,
+     "stake": 33.0,
+     "roi": 0.5082
+    },
+    "2025": {
+     "units": 5.08,
+     "stake": 28.0,
+     "roi": 0.1814
+    },
+    "2026": {
+     "units": 6.91,
+     "stake": 10.0,
+     "roi": 0.6906
+    }
+   },
+   "units": 95.49,
+   "stake": 242.0,
+   "roi": 0.3946,
+   "singles_top8_roi": 0.049,
+   "three_leg_top9": {
+    "roi": 0.586,
+    "stake": 154.0,
+    "seasons": {
+     "2021": 0.5885,
+     "2022": 0.0221,
+     "2023": 0.0846,
+     "2024": 1.198,
+     "2025": 1.7958,
+     "2026": 1.9671
+    }
+   },
+   "seasons_beating_baseline": 2
+  }
+ },
+ "B_books": {
+  "all_lines": [
+   {
+    "group": "FanDuel line above the others",
+    "lines": 194,
+    "under_hit": 0.5309278350515464,
+    "under_roi": -0.03536509014715245
+   },
+   {
+    "group": "FanDuel line below the others",
+    "lines": 454,
+    "under_hit": 0.4955947136563877,
+    "under_roi": -0.03641507568107086
+   },
+   {
+    "group": "level",
+    "lines": 1079,
+    "under_hit": 0.5162187210379982,
+    "under_roi": -0.05125517340861249
+   }
+  ],
+  "locked_legs": [
+   {
+    "group": "FanDuel line above the others",
+    "legs": 1,
+    "hit": 1.0,
+    "roi": 0.8
+   },
+   {
+    "group": "FanDuel line below the others",
+    "legs": 10,
+    "hit": 0.5,
+    "roi": 0.011486725663716824
+   },
+   {
+    "group": "level",
+    "legs": 14,
+    "hit": 0.5714285714285714,
+    "roi": 0.15249051833122634
+   }
+  ],
+  "coverage": {
+   "lines_2026_graded_with_consensus": 1727
+  }
+ }
+}
