@@ -254,17 +254,15 @@ function overview() {
   const C = DATA.compare;
   const rows = C ? [["Parlays · hidden seasons 2021–2026", C.hidden.parlays], ["Parlays · week-by-week replay 2024–2026", C.replay.parlays],
                     ["Straight bets · hidden seasons", C.hidden.singles], ["Straight bets · replay", C.replay.singles]] : [];
-  const ahead = rows.filter(([, c]) => c.mark3.roi > c.mark2.roi).length;
-  const pp = rows.slice(0, 2).map(([, c]) => Math.round(100 * c.p_mark3_better));
   const s3 = seededTotal("Mark 3") || [], s2 = seededTotal("Mark 2") || [];
   const pr = DATA.seeded && DATA.seeded["Mark 3"] && DATA.seeded["Mark 3"].p_better_than_mark2 ? Object.values(DATA.seeded["Mark 3"].p_better_than_mark2).map(x => Math.round(100 * x.parlays)) : [];
   const verdict = `<section class="verdict">
     <div class="eyebrow">The answer so far</div>
-    <h2>Mark 3 is the bet. It beat Mark 2 on every test.</h2>
-    <p>With the picker averaged over 5 random seeds, Mark 3's parlays returned ${s3.map(v => fmtPct(v)).join(" and ")} on seasons it never saw (two separate seed groups), against ${s2.map(v => fmtPct(v)).join(" and ")} for Mark 2: ${pr.join("% and ")}% likely to be truly better. Switched on 2026-10-16. Live weeks from week 6 on keep checking it.</p>
+    <h2>Mark 3 is the bet: clearly ahead on unseen seasons, level on the replay.</h2>
+    <p>With the picker averaged over 5 random seeds, Mark 3's parlays returned ${s3.map(v => fmtPct(v)).join(" and ")} on seasons it never saw (two separate seed groups), against ${s2.map(v => fmtPct(v)).join(" and ")} for Mark 2: ${pr.join("% and ")}% likely to be truly better. On the week-by-week replay (2024–2026, fewer weeks) the two came out level${C ? ` (${fmtPct(C.replay.parlays.mark3.roi)} vs ${fmtPct(C.replay.parlays.mark2.roi)})` : ""}. Mark 3 was not worse anywhere and its straight bets did better on both, so it is the bet since 2026-10-16; live weeks keep checking it.</p>
   </section>`;
   const meter = p => `<div class="meter"><span>${Math.round(100 * p)}%</span><i style="--w:${Math.round(100 * p)}%"></i></div>`;
-  const h2h = `<section class="panel"><div><h2>Mark 2 vs Mark 3, head to head</h2><p class="lede">Same weeks, same rule, two pickers. "Chance Mark 3 is better" resamples the weeks thousands of times and counts how often Mark 3 comes out ahead; 50% would mean no difference.</p></div>
+  const h2h = `<section class="panel"><div><h2>Mark 2 vs Mark 3, head to head</h2><p class="lede">Same weeks, same rule, two pickers, each averaged over 5 random seeds. "Chance Mark 3 is better" resamples the weeks thousands of times and counts how often Mark 3 comes out ahead; 50% would mean no difference.</p></div>
     <div class="scroll"><table><thead><tr><th>Test</th><th class="num">Mark 2</th><th class="num">Mark 3</th><th class="num">Chance Mark 3 is better</th></tr></thead><tbody>` +
     rows.map(([t, c]) => `<tr><td>${t}</td><td class="num ${cls(c.mark2.roi)}">${fmtPct(c.mark2.roi)}<br><small>${c.mark2.bets} bets</small></td><td class="num ${cls(c.mark3.roi)}">${fmtPct(c.mark3.roi)}<br><small>${c.mark3.bets} bets</small></td><td class="num">${meter(c.p_mark3_better)}</td></tr>`).join("") +
     `</tbody></table></div></section>`;
@@ -279,8 +277,8 @@ function overview() {
       <p>${M.what}</p>
       <div class="kv">
         ${sd ? `<span>Hidden seasons, 5-seed average</span><b class="${cls(sd[0])}">${sd.map(fmtPct).join(" / ")}</b>` : h ? `<span>Hidden seasons 2021–2026</span><b class="${cls(h.u)}">${ratio(h.u, h.b)}</b>` : ""}
-        ${rep.map(([k, t]) => `<span>Replay 2024–2026${{C3: " (3-leg variant)", A: " (A)", B: " (B)"}[k] ?? ""}</span><b class="${cls(t.all)}">${ratio(t.all, t.staked)}</b>`).join("")}
-        <span>Live, week ${DATA.live ? DATA.live.week : "–"}</span><b>${lc != null ? `${lc} bets pending` : "–"}</b>
+        ${rep.map(([k, t]) => `<span>Replay 2024–2026${{C3: " (3-leg variant)", SS: " (straight bets)", S: " (parlays)", A: " (A)", B: " (B)"}[k] ?? ""}</span><b class="${cls(t.all)}">${ratio(t.all, t.staked)}</b>`).join("")}
+        <span>Live, week ${DATA.live ? DATA.live.week : "–"}</span><b>${lc != null ? `${lc} bet${lc === 1 ? "" : "s"} pending` : "–"}</b>
       </div>
       <button type="button" class="open" data-go="${id}">Open ${M.label}</button>
     </article>`;

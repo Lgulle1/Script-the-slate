@@ -7,7 +7,8 @@
   "seed-averaged hidden seasons 2021-2026 (two seed groups)": "Mark 3 parlays +53.6% / +47.1%, Mark 2 +28.3% / +28.2%; P(Mark 3 better) 97% / 92%; straight bets Mark 3 +3.4% / +0.9% vs Mark 2 -1.9% / -2.3% (scripts/seed_ensembles.py)",
   "blind 2021-2023 (trained on later seasons, one seed)": "Mark 3 parlays +45.1%, Mark 2 +25.0%",
   "tried and rejected for Mark 3": "dropping primetime (+33%/+43%), adding travel (+46%/+33%), adding weather (+52%/+31%, and only known after kickoff), adding price movement (+23%, one seed)",
-  "tracked": "Mark 3 straight bets (SS), Mark 3 3-leg parlays from the top 9 (C3: +66%/+52%, swingier), Mark 2 (P), Mark 1 (A, B)"
+  "tracked": "Mark 3 straight bets (SS), Mark 3 3-leg parlays from the top 9 (C3: +66%/+52%, swingier), Mark 2 (P), Mark 1 (A, B)",
+  "seed-averaged replay 2024 wk 4 - 2026 wk 5": "parlays Mark 3 +20.6% on 88, Mark 2 +20.3% on 62 (level, P 48%); straight bets Mark 3 +0.4% vs Mark 2 -5.8% (scripts/compare_marks.py). The single-seed replay gap (+71% vs +51%) was seed luck."
  },
  "why_P": {
   "hidden seasons (tournament 3: picker retrained without the season, 2021-2026)": "+50.2% per unit on 249 parlays, positive in all 6 seasons (2021 +45%, 2022 +58%, 2023 +15%, 2024 +112%, 2025 +44%, 2026 +72%)",
