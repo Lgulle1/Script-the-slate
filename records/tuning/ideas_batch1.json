@@ -1,0 +1,642 @@
+{
+ "baseline": {
+  "seasons": {
+   "2021": {
+    "units": 26.26,
+    "stake": 59.0,
+    "roi": 0.4452
+   },
+   "2022": {
+    "units": 32.42,
+    "stake": 56.0,
+    "roi": 0.5789
+   },
+   "2023": {
+    "units": 9.58,
+    "stake": 64.0,
+    "roi": 0.1497
+   },
+   "2024": {
+    "units": 38.08,
+    "stake": 34.0,
+    "roi": 1.1199
+   },
+   "2025": {
+    "units": 10.89,
+    "stake": 25.0,
+    "roi": 0.4356
+   },
+   "2026": {
+    "units": 7.87,
+    "stake": 11.0,
+    "roi": 0.7152
+   }
+  },
+  "units": 125.09,
+  "stake": 249.0,
+  "roi": 0.5024,
+  "singles_top8_roi": -0.0157
+ },
+ "features": {
+  "schedule": {
+   "seasons": {
+    "2021": {
+     "units": 31.5,
+     "stake": 66.0,
+     "roi": 0.4772
+    },
+    "2022": {
+     "units": 26.85,
+     "stake": 53.0,
+     "roi": 0.5066
+    },
+    "2023": {
+     "units": 25.37,
+     "stake": 63.0,
+     "roi": 0.4027
+    },
+    "2024": {
+     "units": 23.24,
+     "stake": 43.0,
+     "roi": 0.5405
+    },
+    "2025": {
+     "units": 26.34,
+     "stake": 39.0,
+     "roi": 0.6754
+    },
+    "2026": {
+     "units": 17.42,
+     "stake": 13.0,
+     "roi": 1.34
+    }
+   },
+   "units": 150.73,
+   "stake": 277.0,
+   "roi": 0.5441,
+   "singles_top8_roi": 0.0366,
+   "seasons_beating_baseline": 4
+  },
+  "weather": {
+   "seasons": {
+    "2021": {
+     "units": 50.32,
+     "stake": 64.0,
+     "roi": 0.7863
+    },
+    "2022": {
+     "units": 19.07,
+     "stake": 35.0,
+     "roi": 0.5448
+    },
+    "2023": {
+     "units": 7.8,
+     "stake": 57.0,
+     "roi": 0.1369
+    },
+    "2024": {
+     "units": 43.07,
+     "stake": 45.0,
+     "roi": 0.9571
+    },
+    "2025": {
+     "units": 4.51,
+     "stake": 32.0,
+     "roi": 0.1411
+    },
+    "2026": {
+     "units": 13.52,
+     "stake": 14.0,
+     "roi": 0.9658
+    }
+   },
+   "units": 138.3,
+   "stake": 247.0,
+   "roi": 0.5599,
+   "singles_top8_roi": 0.063,
+   "seasons_beating_baseline": 2
+  },
+  "history": {
+   "seasons": {
+    "2021": {
+     "units": 10.27,
+     "stake": 58.0,
+     "roi": 0.1771
+    },
+    "2022": {
+     "units": 33.3,
+     "stake": 47.0,
+     "roi": 0.7085
+    },
+    "2023": {
+     "units": 22.11,
+     "stake": 58.0,
+     "roi": 0.3812
+    },
+    "2024": {
+     "units": 12.19,
+     "stake": 29.0,
+     "roi": 0.4204
+    },
+    "2025": {
+     "units": 2.12,
+     "stake": 20.0,
+     "roi": 0.1059
+    },
+    "2026": {
+     "units": 12.1,
+     "stake": 10.0,
+     "roi": 1.2095
+    }
+   },
+   "units": 92.08,
+   "stake": 222.0,
+   "roi": 0.4148,
+   "singles_top8_roi": 0.0051,
+   "seasons_beating_baseline": 3
+  },
+  "movement": {
+   "seasons": {
+    "2021": {
+     "units": 43.36,
+     "stake": 58.0,
+     "roi": 0.7475
+    },
+    "2022": {
+     "units": 22.8,
+     "stake": 52.0,
+     "roi": 0.4384
+    },
+    "2023": {
+     "units": -9.79,
+     "stake": 62.0,
+     "roi": -0.158
+    },
+    "2024": {
+     "units": 45.92,
+     "stake": 35.0,
+     "roi": 1.3121
+    },
+    "2025": {
+     "units": 18.19,
+     "stake": 29.0,
+     "roi": 0.6274
+    },
+    "2026": {
+     "units": 6.76,
+     "stake": 8.0,
+     "roi": 0.8446
+    }
+   },
+   "units": 127.23,
+   "stake": 244.0,
+   "roi": 0.5214,
+   "singles_top8_roi": 0.0091,
+   "seasons_beating_baseline": 4
+  },
+  "all": {
+   "seasons": {
+    "2021": {
+     "units": 43.9,
+     "stake": 66.0,
+     "roi": 0.6652
+    },
+    "2022": {
+     "units": 5.6,
+     "stake": 34.0,
+     "roi": 0.1647
+    },
+    "2023": {
+     "units": 9.55,
+     "stake": 58.0,
+     "roi": 0.1646
+    },
+    "2024": {
+     "units": 46.74,
+     "stake": 56.0,
+     "roi": 0.8347
+    },
+    "2025": {
+     "units": 23.53,
+     "stake": 41.0,
+     "roi": 0.574
+    },
+    "2026": {
+     "units": 7.94,
+     "stake": 13.0,
+     "roi": 0.6107
+    }
+   },
+   "units": 137.27,
+   "stake": 268.0,
+   "roi": 0.5122,
+   "singles_top8_roi": 0.0572,
+   "seasons_beating_baseline": 3
+  }
+ },
+ "rules": {
+  "3-leg from top 9 (3 a week)": {
+   "seasons": {
+    "2021": {
+     "units": 54.33,
+     "stake": 35.0,
+     "roi": 1.5523
+    },
+    "2022": {
+     "units": 31.89,
+     "stake": 34.0,
+     "roi": 0.9381
+    },
+    "2023": {
+     "units": -30.6,
+     "stake": 42.0,
+     "roi": -0.7286
+    },
+    "2024": {
+     "units": 25.35,
+     "stake": 20.0,
+     "roi": 1.2675
+    },
+    "2025": {
+     "units": 5.88,
+     "stake": 11.0,
+     "roi": 0.5349
+    },
+    "2026": {
+     "units": 10.98,
+     "stake": 8.0,
+     "roi": 1.3731
+    }
+   },
+   "units": 97.84,
+   "stake": 150.0,
+   "roi": 0.6523,
+   "seasons_beating_baseline": 5
+  },
+  "3-leg from top 12 (4 a week)": {
+   "seasons": {
+    "2021": {
+     "units": 71.84,
+     "stake": 47.0,
+     "roi": 1.5284
+    },
+    "2022": {
+     "units": 34.64,
+     "stake": 40.0,
+     "roi": 0.866
+    },
+    "2023": {
+     "units": -34.6,
+     "stake": 46.0,
+     "roi": -0.7522
+    },
+    "2024": {
+     "units": 25.35,
+     "stake": 20.0,
+     "roi": 1.2675
+    },
+    "2025": {
+     "units": 4.88,
+     "stake": 12.0,
+     "roi": 0.407
+    },
+    "2026": {
+     "units": 9.98,
+     "stake": 9.0,
+     "roi": 1.1094
+    }
+   },
+   "units": 112.09,
+   "stake": 174.0,
+   "roi": 0.6442,
+   "seasons_beating_baseline": 4
+  },
+  "2-leg from top 10 (5 a week)": {
+   "seasons": {
+    "2021": {
+     "units": 32.31,
+     "stake": 70.0,
+     "roi": 0.4616
+    },
+    "2022": {
+     "units": 42.83,
+     "stake": 65.0,
+     "roi": 0.6589
+    },
+    "2023": {
+     "units": 14.67,
+     "stake": 72.0,
+     "roi": 0.2038
+    },
+    "2024": {
+     "units": 36.08,
+     "stake": 36.0,
+     "roi": 1.0021
+    },
+    "2025": {
+     "units": 9.89,
+     "stake": 26.0,
+     "roi": 0.3804
+    },
+    "2026": {
+     "units": 18.49,
+     "stake": 13.0,
+     "roi": 1.4221
+    }
+   },
+   "units": 154.27,
+   "stake": 282.0,
+   "roi": 0.5471,
+   "seasons_beating_baseline": 4
+  },
+  "2-leg from top 12 (6 a week)": {
+   "seasons": {
+    "2021": {
+     "units": 42.85,
+     "stake": 76.0,
+     "roi": 0.5638
+    },
+    "2022": {
+     "units": 43.54,
+     "stake": 70.0,
+     "roi": 0.622
+    },
+    "2023": {
+     "units": 16.01,
+     "stake": 77.0,
+     "roi": 0.2079
+    },
+    "2024": {
+     "units": 36.08,
+     "stake": 36.0,
+     "roi": 1.0021
+    },
+    "2025": {
+     "units": 9.89,
+     "stake": 26.0,
+     "roi": 0.3804
+    },
+    "2026": {
+     "units": 17.49,
+     "stake": 14.0,
+     "roi": 1.2491
+    }
+   },
+   "units": 165.85,
+   "stake": 299.0,
+   "roi": 0.5547,
+   "seasons_beating_baseline": 4
+  },
+  "floor 60%": {
+   "seasons": {
+    "2021": {
+     "units": 0.71,
+     "stake": 7.0,
+     "roi": 0.1021
+    },
+    "2022": {
+     "units": 9.04,
+     "stake": 3.0,
+     "roi": 3.0141
+    },
+    "2025": {
+     "units": -2.0,
+     "stake": 2.0,
+     "roi": -1.0
+    }
+   },
+   "units": 7.76,
+   "stake": 12.0,
+   "roi": 0.6464,
+   "seasons_beating_baseline": 1
+  },
+  "floor 58%": {
+   "seasons": {
+    "2021": {
+     "units": 5.68,
+     "stake": 20.0,
+     "roi": 0.2841
+    },
+    "2022": {
+     "units": 14.23,
+     "stake": 20.0,
+     "roi": 0.7116
+    },
+    "2023": {
+     "units": -2.0,
+     "stake": 2.0,
+     "roi": -1.0
+    },
+    "2024": {
+     "units": -1.0,
+     "stake": 1.0,
+     "roi": -1.0
+    },
+    "2025": {
+     "units": 8.88,
+     "stake": 8.0,
+     "roi": 1.1102
+    },
+    "2026": {
+     "units": 2.11,
+     "stake": 2.0,
+     "roi": 1.0554
+    }
+   },
+   "units": 27.91,
+   "stake": 53.0,
+   "roi": 0.5265,
+   "seasons_beating_baseline": 3
+  },
+  "juice cap -150": {
+   "seasons": {
+    "2021": {
+     "units": 27.43,
+     "stake": 59.0,
+     "roi": 0.4648
+    },
+    "2022": {
+     "units": 33.69,
+     "stake": 56.0,
+     "roi": 0.6016
+    },
+    "2023": {
+     "units": 9.58,
+     "stake": 64.0,
+     "roi": 0.1497
+    },
+    "2024": {
+     "units": 38.08,
+     "stake": 34.0,
+     "roi": 1.1199
+    },
+    "2025": {
+     "units": 10.89,
+     "stake": 25.0,
+     "roi": 0.4356
+    },
+    "2026": {
+     "units": 7.87,
+     "stake": 11.0,
+     "roi": 0.7152
+    }
+   },
+   "units": 127.53,
+   "stake": 249.0,
+   "roi": 0.5122,
+   "seasons_beating_baseline": 2
+  },
+  "juice cap -135": {
+   "seasons": {
+    "2021": {
+     "units": 27.43,
+     "stake": 59.0,
+     "roi": 0.4648
+    },
+    "2022": {
+     "units": 33.69,
+     "stake": 56.0,
+     "roi": 0.6016
+    },
+    "2023": {
+     "units": 9.58,
+     "stake": 64.0,
+     "roi": 0.1497
+    },
+    "2024": {
+     "units": 43.1,
+     "stake": 34.0,
+     "roi": 1.2675
+    },
+    "2025": {
+     "units": 10.89,
+     "stake": 25.0,
+     "roi": 0.4356
+    },
+    "2026": {
+     "units": 7.87,
+     "stake": 11.0,
+     "roi": 0.7152
+    }
+   },
+   "units": 132.55,
+   "stake": 249.0,
+   "roi": 0.5323,
+   "seasons_beating_baseline": 3
+  },
+  "value rank": {
+   "seasons": {
+    "2021": {
+     "units": 36.76,
+     "stake": 57.0,
+     "roi": 0.6449
+    },
+    "2022": {
+     "units": 28.71,
+     "stake": 59.0,
+     "roi": 0.4865
+    },
+    "2023": {
+     "units": 19.16,
+     "stake": 63.0,
+     "roi": 0.3041
+    },
+    "2024": {
+     "units": 28.27,
+     "stake": 34.0,
+     "roi": 0.8315
+    },
+    "2025": {
+     "units": 8.03,
+     "stake": 24.0,
+     "roi": 0.3346
+    },
+    "2026": {
+     "units": 4.77,
+     "stake": 11.0,
+     "roi": 0.434
+    }
+   },
+   "units": 125.7,
+   "stake": 248.0,
+   "roi": 0.5068,
+   "seasons_beating_baseline": 2
+  },
+  "skip weeks 1-3": {
+   "seasons": {
+    "2021": {
+     "units": 10.43,
+     "stake": 47.0,
+     "roi": 0.2219
+    },
+    "2022": {
+     "units": 19.55,
+     "stake": 46.0,
+     "roi": 0.4249
+    },
+    "2023": {
+     "units": -14.05,
+     "stake": 53.0,
+     "roi": -0.2652
+    },
+    "2024": {
+     "units": 20.57,
+     "stake": 28.0,
+     "roi": 0.7346
+    },
+    "2025": {
+     "units": 13.89,
+     "stake": 22.0,
+     "roi": 0.6314
+    },
+    "2026": {
+     "units": 7.86,
+     "stake": 2.0,
+     "roi": 3.9308
+    }
+   },
+   "units": 58.25,
+   "stake": 198.0,
+   "roi": 0.2942,
+   "seasons_beating_baseline": 2
+  },
+  "sizing by value": {
+   "seasons": {
+    "2021": {
+     "units": 30.47,
+     "stake": 59.0,
+     "roi": 0.5165
+    },
+    "2022": {
+     "units": 34.85,
+     "stake": 56.0,
+     "roi": 0.6223
+    },
+    "2023": {
+     "units": 10.96,
+     "stake": 64.0,
+     "roi": 0.1712
+    },
+    "2024": {
+     "units": 38.6,
+     "stake": 34.0,
+     "roi": 1.1352
+    },
+    "2025": {
+     "units": 7.92,
+     "stake": 25.0,
+     "roi": 0.3166
+    },
+    "2026": {
+     "units": 8.63,
+     "stake": 11.0,
+     "roi": 0.7845
+    }
+   },
+   "units": 131.42,
+   "stake": 249.0,
+   "roi": 0.5278,
+   "seasons_beating_baseline": 5
+  }
+ }
+}
