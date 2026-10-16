@@ -1,12 +1,12 @@
 """The locked betting strategies (records/cards/locked_setup.json), as code shared by the track record and the weekly page.
 
-P (bet, locked 2026-10-15): no straight bets; 2-leg boosted parlays in rank order from the top 8 unders (#1+#2, #3+#4, ...): up to 4 a week, one per boost
+S (bet since 2026-10-16, "Mark 3"): the same parlay rule as P, on the schedule picker's picks (scripts/schedule_picker.py), picker averaged over 5 seeds.
+             Seed-averaged hidden seasons: +54% / +47% (two seed groups) vs Mark 2's +28% / +28%; P(better) 97% / 92% (scripts/seed_ensembles.py).
+SS (tracked): Mark 3's top 8 as straight bets. C3 (tracked): Mark 3's picks as 3-leg parlays from the top 9.
+P (Mark 2: bet 2026-10-15 to 2026-10-16, now tracked): no straight bets; 2-leg boosted parlays in rank order from the top 8 unders (#1+#2, #3+#4, ...): up to 4 a week, one per boost
              available, top pairs first; no boost, no parlay. Chosen on hidden-season tests (tournaments 3 and 4, blind 2021-2023).
 A (retired, tracked): singles = the top 2 unders; parlay = #1 + #2 (2 legs, different games; none that week if they share a game)
 B (tracked): singles = the top 8 unders; parlays = 2-leg in rank order from the top 8 (#1+#2, #3+#4, ...); its parlays are exactly P
-C3 (tracked candidate, 2026-10-16): 3-leg boosted parlays in rank order from the top 9 (3 a week); ideas batch 1: +65% on hidden seasons, 5 of 6 better, volatile
-S (tracked candidate, 2026-10-16): the picker with schedule inputs (scripts/schedule_picker.py): top 8 straight + 4 two-leg parlays from its own top 8;
-             ideas batch 1: parlays +54% on hidden seasons (4 of 6 better), straight bets +3.7%
 Ranking: the picker's chance the under hits, highest first, among qualifying picks (FanDuel market, edge >= 4 points, player with 3+ games for his team).
 Singles lists allow up to 3 picks per game and any number per player; parlay lists allow up to 3 per game and 1 per player (each the better rule by return per unit
 staked over the 38 replayed weeks). Stakes: 1 unit per single, 1 unit per parlay; parlays carry the 30% profit boost.
@@ -15,11 +15,12 @@ from __future__ import annotations
 
 BOOST = 0.30
 STRATEGIES = {
-    "P": dict(name="Mark 2 (bet): boosted 2-leg parlays from the top 8", singles=0, parlay_from=8, role="bet"),
+    "S": dict(name="Mark 3 (bet): boosted 2-leg parlays from the schedule picker's top 8", singles=0, parlay_from=8, role="bet", pool="schedule"),
+    "SS": dict(name="Mark 3 straight bets: the schedule picker's top 8 (tracked)", singles=8, parlay_from=0, role="tracked", pool="schedule"),
+    "C3": dict(name="Mark 3 variant: 3-leg parlays from the top 9 (tracked)", singles=0, parlay_from=9, legs=3, role="candidate", pool="schedule"),
+    "P": dict(name="Mark 2: boosted 2-leg parlays from the top 8 (tracked)", singles=0, parlay_from=8, role="tracked"),
     "A": dict(name="Mark 1 A: top 2 + 1 parlay", singles=2, parlay_from=2, role="tracked"),
     "B": dict(name="Mark 1 B: top 8 + 4 parlays", singles=8, parlay_from=8, role="tracked"),
-    "C3": dict(name="Mark 2 variant: 3-leg parlays from the top 9", singles=0, parlay_from=9, legs=3, role="candidate"),
-    "S": dict(name="Mark 3 (testing): schedule picker, top 8 + 4 parlays", singles=8, parlay_from=8, role="candidate", pool="schedule"),
 }
 SINGLES_CAPS = dict(per_game=3, per_player=None)
 PARLAY_CAPS = dict(per_game=3, per_player=1)
@@ -80,7 +81,7 @@ def card(rows: list, key: str, player="player_id") -> dict:
     """Singles and parlays of strategy `key` for one week's qualifying picks."""
     s = STRATEGIES[key]
     singles = top(rows, s["singles"], SINGLES_CAPS["per_game"], SINGLES_CAPS["per_player"], player=player) if s["singles"] else []
-    plegs = top(rows, s["parlay_from"], PARLAY_CAPS["per_game"], PARLAY_CAPS["per_player"], player=player)
+    plegs = top(rows, s["parlay_from"], PARLAY_CAPS["per_game"], PARLAY_CAPS["per_player"], player=player) if s["parlay_from"] else []
     return dict(singles=singles, parlays=groups(plegs, s.get("legs", 2)))
 
 

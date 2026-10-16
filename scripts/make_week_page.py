@@ -96,10 +96,6 @@ def main(argv=None):
         return out
     for r in top8:
         r["rank"] = r["overall_rank"]
-    # the bet list as a file: the locked parlays, in order (replaces week_card.py's older parlay list)
-    pl.DataFrame([dict(parlay=n, leg1=f"#{x['rank']} {x['player_name']} {x['market']} under {x['line']:g} ({x['price']:+.0f})", leg2=f"#{y['rank']} {y['player_name']} {y['market']} under {y['line']:g} ({y['price']:+.0f})",
-                       price=p_["price"], boosted_price=p_["boosted_price"], picker_chance=round(p_["picker_chance"], 3), payout_on_10_boosted=p_["payout_on_10_boosted"])
-                  for n, (p_, (x, y)) in enumerate(zip(par(P["parlays"]), P["parlays"]), 1)]).write_csv(D / f"{stem}_parlays.csv")
     # Mark 1 (the retired setup, shown on the switch): A = top 2 straight + #1/#2 parlay (was bet), B = top 8 straight + 4 parlays (tracked)
     A = ST.card(rows, "A", player="player_name")
     B = ST.card(rows, "B", player="player_name")
@@ -119,27 +115,40 @@ def main(argv=None):
         taken[r["game_id"]] = taken.get(r["game_id"], 0) + 1
     mark1 = dict(a_singles=[dict(r, rank=r["overall_rank"]) for r in A["singles"]], a_parlays=par(A["parlays"]),
                  b_singles=[dict(r, rank=r["overall_rank"]) for r in B["singles"]], b_parlays=par(B["parlays"]))
-    # Mark 2 variant, tracked: C3 = 3-leg parlays from the top 9
-    C3 = ST.card(rows, "C3", player="player_name")
-    cand = dict(c3=par(C3["parlays"]))
-    # Mark 3 (testing, tracked): the schedule picker's own picks (scripts/schedule_picker.py): top 8 straight + 4 parlays
-    mark3 = dict(singles=[], parlays=[], liked=[], built=False)
+    # Mark 3 (the bet since 2026-10-16): the schedule picker's own picks (scripts/schedule_picker.py): parlays S; tracked: straight bets SS, 3-leg variant C3
+    mark3 = dict(parlays=[], singles=[], legs=[], liked=[], c3=[], built=False)
     fs = D / f"{a.season}_wk{a.week:02d}_card_schedule.csv"
     if fs.exists():
         sr = pl.read_csv(fs).join(sc, on="game_id", how="left").with_columns(
             dec_u=pl.when(pl.col("price") > 0).then(1 + pl.col("price") / 100).otherwise(1 + 100 / -pl.col("price"))).to_dicts()
-        for r in sr:
-            r["needs"] = (-r["price"] / (-r["price"] + 100)) if r["price"] < 0 else 100 / (r["price"] + 100)
-        S = ST.card(sr, "S", player="player_name")
-        s_leg = {(r["player_name"], r["market"]): n for n, grp in enumerate(S["parlays"], 1) for r in grp}
-        s_single = {(r["player_name"], r["market"]): n for n, r in enumerate(S["singles"], 1)}
         sr = sorted(sr, key=lambda r: -r["picker_under_chance"])
         for i, r in enumerate(sr, 1):
+            r["needs"] = (-r["price"] / (-r["price"] + 100)) if r["price"] < 0 else 100 / (r["price"] + 100)
+            r["rank"] = r["overall_rank"] = i
+        S, SS, C3 = (ST.card(sr, k, player="player_name") for k in ("S", "SS", "C3"))
+        top8_3 = ST.top(sr, ST.STRATEGIES["S"]["parlay_from"], ST.PARLAY_CAPS["per_game"], ST.PARLAY_CAPS["per_player"], player="player_name")
+        s_leg = {(r["player_name"], r["market"]): n for n, grp in enumerate(S["parlays"], 1) for r in grp}
+        s_top = {(r["player_name"], r["market"]) for r in top8_3}
+        s_single = {(r["player_name"], r["market"]): n for n, r in enumerate(SS["singles"], 1)}
+        for r in sr:
             key = (r["player_name"], r["market"])
-            tags = ([f"Straight {s_single[key]}"] if key in s_single else []) + ([f"Parlay {s_leg[key]}"] if key in s_leg else [])
-            r["status3"], r["why3"] = (" + ".join(tags), "") if tags else ("Cut", "Same player already in a parlay, or below its top 8")
-        mark3 = dict(singles=S["singles"], parlays=par(S["parlays"]), liked=sr, built=True)
-    data = dict(meta=meta, parlays=par(P["parlays"]), legs=top8, liked=ranked, mark1=mark1, mark3=mark3, cand=cand,
+            if key in s_leg:
+                r["status3"], r["why3"] = f"Parlay {s_leg[key]}", ""
+            elif key in s_top:
+                r["status3"], r["why3"] = "Unpaired", "In the top 8 but no partner from a different game"
+            else:
+                r["status3"], r["why3"] = ("Straight (tracked)" if key in s_single else "Cut"), "Same player already in a parlay" if any(x["player_name"] == r["player_name"] for x in top8_3) else "Below its top 8"
+            r["status"] = r["status3"]
+        mark3 = dict(parlays=par(S["parlays"]), singles=SS["singles"], legs=top8_3, liked=sr, c3=par(C3["parlays"]), built=True)
+    # the bet list as a file: Mark 3's parlays in order (Mark 2's alongside, tracked)
+    def bet_csv(groups, f):
+        pl.DataFrame([dict(parlay=n, leg1=f"#{x['rank']} {x['player_name']} {x['market']} under {x['line']:g} ({x['price']:+.0f})", leg2=f"#{y['rank']} {y['player_name']} {y['market']} under {y['line']:g} ({y['price']:+.0f})",
+                           price=p_["price"], boosted_price=p_["boosted_price"], picker_chance=round(p_["picker_chance"], 3), payout_on_10_boosted=p_["payout_on_10_boosted"])
+                      for n, (p_, (x, y)) in enumerate(zip(par(groups), groups), 1)]).write_csv(f)
+    if mark3["built"]:
+        bet_csv(S["parlays"], D / f"{stem}_parlays.csv")
+    bet_csv(P["parlays"], D / f"{stem}_parlays_mark2.csv")
+    data = dict(meta=meta, parlays=par(P["parlays"]), legs=top8, liked=ranked, mark1=mark1, mark3=mark3,
                 slots=sc.sort("slot_order", "kickoff").select("slot_order", "slot", "kickoff", "matchup", "game_id").to_dicts())
     html = TEMPLATE.replace("__DATA__", json.dumps(data, default=str)).replace("__WEEK__", str(a.week))
     out = D / f"{a.season}_wk{a.week:02d}_picks.html"
@@ -230,9 +239,9 @@ button:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
     <div class="eyebrow" id="eyebrow"></div>
     <h1>Week __WEEK__ Picks</h1>
     <div class="switch" role="group" aria-label="Setup">
-      <button type="button" data-m="2" aria-pressed="true">Mark 2 · current</button>
+      <button type="button" data-m="3" aria-pressed="true">Mark 3 · the bet</button>
+      <button type="button" data-m="2" aria-pressed="false">Mark 2 · tracked</button>
       <button type="button" data-m="1" aria-pressed="false">Mark 1 · old A + B</button>
-      <button type="button" data-m="3" aria-pressed="false">Mark 3 · testing</button>
     </div>
     <div class="sum" id="sum"></div>
     <p id="herop"></p>
@@ -259,20 +268,35 @@ button:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
   </div>
 
   <div class="markwrap" data-mark="3" hidden>
-  <p class="retired">Mark 3 is being tested: tracked every week, not bet. It is Mark 2's picker with schedule inputs added (rest days for both teams, short week, division game, primetime, grass or turf), and it makes its own picks. On seasons it never saw its parlays returned +54% against Mark 2's +50% (better in 4 of 6); on the week-by-week replay +77% against +40%; and its straight bets came out ahead (+3.7% hidden, +5.7% replay) where Mark 2's did not. It becomes the bet only if live weeks back that up.</p>
   <section>
-    <h2>Mark 3 parlays</h2>
-    <p class="lede">Its own top 8 unders, paired in rank order, never two legs from one game, 30% boost. Not bet.</p>
+    <h2>The parlays</h2>
+    <p class="lede">Mark 3's top unders (up to 8 a week), paired in rank order (#1 with #2, #3 with #4, ...), never two legs from the same game. Same stake on each.</p>
     <div class="grid" id="m3slips" style="margin-top:12px"></div>
   </section>
   <section class="panel">
-    <h2>Mark 3 straight bets</h2>
-    <p class="lede">Its top 8 unders as straight bets (up to 3 per game). Tracked because its straight bets were the first to come out positive on hidden seasons.</p>
-    <div class="scroll" style="margin-top:10px"><table id="m3s"></table></div>
+    <h2 id="m3legsTitle">The legs</h2>
+    <p class="lede">Every pick that made Mark 3's top 8 this week (4+ points of edge, 3+ games with the team), with our stat model's number, the line, and the picker's chance it goes under against what the FanDuel price needs.</p>
+    <div class="scroll" style="margin-top:10px"><table id="m3legs"></table></div>
+  </section>
+  <section class="panel">
+    <h2>Why Mark 3</h2>
+    <div class="how">
+      <div><b>Same model, better picker</b>Mark 3 uses Mark 2's stat projections. Its picker also weighs rest days for both teams, short weeks, division games, primetime and grass or turf, so it picks partly different players.</div>
+      <div><b>Tested on unseen seasons</b>With the picker averaged over 5 random seeds, Mark 3's parlays returned +54% and +47% in two separate seed groups on seasons it never saw, against +28% for Mark 2; 97% and 92% likely to be truly better.</div>
+      <div><b>The boost is the edge</b>Parlays only: its straight bets were close to break-even (+1% to +3%). No boost, no bet.</div>
+      <div><b>Unders, proven roles</b>Unders only. Players need 3+ games with their current team. Up to 3 legs per game, each player once.</div>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Tracked, not bet</h2>
+    <p class="lede">Mark 3's top 8 as straight bets, and its picks as 3-leg parlays from the top 9 (seed-averaged hidden seasons +66% / +52%, but much swingier). Recorded every week. Do not place these.</p>
+    <div class="scroll" style="margin-top:8px"><table id="m3s"></table></div>
+    <div class="scroll" style="margin-top:8px"><table id="c3"></table></div>
   </section>
   </div>
 
-  <div class="markwrap" data-mark="2">
+  <div class="markwrap" data-mark="2" hidden>
+  <p class="retired">Mark 2 was the bet from 2026-10-15 to 2026-10-16 and is now tracked, not bet. Same stat projections as Mark 3; its picker leaves out the schedule inputs. Seed-averaged, its parlays returned +28% on unseen seasons against Mark 3's +47% to +54%.</p>
 
   <section>
     <h2>The parlays</h2>
@@ -287,20 +311,15 @@ button:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
   </section>
 
   <section class="panel">
-    <h2>Why this and not straight bets</h2>
+    <h2>Why Mark 2 was chosen</h2>
     <div class="how">
-      <div><b>Parlays only</b>On every season we hid from the picker (2021&ndash;2026), these four parlays a week returned +50% per unit and were positive in all six. Straight bets on the same picks came out about break-even.</div>
+      <div><b>Parlays only</b>On every season we hid from the picker (2021&ndash;2026) these parlays were positive. With one random seed they showed +50%; averaged over 5 seeds the true figure is about +28%. Straight bets on the same picks came out about break-even.</div>
       <div><b>The boost is the edge</b>Without the 30% boost the same parlays return about +1&ndash;3%. With it, the picks' small edge over FanDuel's prices turns into profit. No boost, no bet.</div>
       <div><b>Four, not one</b>One parlay a week (#1 + #2) returned +28% on hidden seasons and lost money on the fully blind 2021&ndash;2023; four a week returned +50% (+38% blind).</div>
       <div><b>Unders, proven roles</b>Unders only (overs lost money in every test). Players need 3+ games with their current team. Up to 3 legs per game, each player once.</div>
     </div>
   </section>
 
-  <section class="panel">
-    <h2>Variant tracked: 3-leg parlays</h2>
-    <p class="lede">The same picks as 3-leg parlays from the top 9. Hidden seasons: +65% against +50%, better in 5 of 6, but one season lost 73%; replay +34% against +40%. Tracked, not bet.</p>
-    <div class="scroll" style="margin-top:8px"><table id="c3"></table></div>
-  </section>
   </div>
 
   <section class="panel">
@@ -320,21 +339,21 @@ const pct = v => Math.round(100 * v) + "%";
 const unit = {"Receptions": "rec", "Receiving yds": "rec yds", "Rush yds": "rush yds", "Pass yds": "pass yds"};
 
 const HERO = {
-  2: {eyebrow: "Mark 2 · locked strategy · FanDuel · made before kickoff",
-      sum: [`${DATA.parlays.length} boosted parlays`, "30% boost on each", "No straight bets", "Flat stake", "Unders only"],
-      p: "These are the bets: up to four 2-leg parlays, each with a 30% FanDuel profit boost. No straight bets. Place them in order: if you only have one boost, bet Parlay 1; two boosts, Parlays 1 and 2; and so on. No boost, no bet."},
+  2: {eyebrow: "Mark 2 · tracked since 2026-10-16 · not bet",
+      sum: [`${DATA.parlays.length} parlays`, "Not bet", "Unders only"],
+      p: "The previous bet, kept for comparison: the same parlay rule on Mark 2's picker, which leaves out the schedule inputs. Do not place these."},
   1: {eyebrow: "Mark 1 · old A + B · retired 2026-10-15 · for comparison",
       sum: [`A: ${DATA.mark1.a_singles.length} straight + ${DATA.mark1.a_parlays.length} parlay`, `B: ${DATA.mark1.b_singles.length} straight + ${DATA.mark1.b_parlays.length} parlays`, "Unders only"],
       p: "The old setup: A bet the two strongest unders straight plus the same two as one boosted parlay; B tracked the top 8 straight and four parlays. Not what we bet now."},
-  3: {eyebrow: "Mark 3 · testing · schedule picker · tracked, not bet",
-      sum: [`${DATA.mark3.parlays.length} parlays`, `${DATA.mark3.singles.length} straight`, "Not bet", "Unders only"],
-      p: "Mark 2's picker plus schedule inputs (rest, short week, division, primetime, turf), making its own picks. Tracked every week to see whether it should replace Mark 2. Do not place these."}
+  3: {eyebrow: "Mark 3 · the bet · FanDuel · made before kickoff",
+      sum: [`${DATA.mark3.parlays.length} boosted parlays`, "30% boost on each", "No straight bets", "Flat stake", "Unders only"],
+      p: "These are the bets: up to four 2-leg parlays, each with a 30% FanDuel profit boost. No straight bets. Place them in order: if you only have one boost, bet Parlay 1; two boosts, Parlays 1 and 2; and so on. No boost, no bet."}
 };
-let mark = 2;
-try { const m = localStorage.getItem("wk-mark"); if (m === "1" || m === "2" || m === "3") mark = +m; } catch (e) {}
+let mark = 3;
+try { const m = localStorage.getItem("wk-mark-v3"); if (m === "1" || m === "2" || m === "3") mark = +m; } catch (e) {}
 function setMark(m) {
   mark = m;
-  try { localStorage.setItem("wk-mark", String(m)); } catch (e) {}
+  try { localStorage.setItem("wk-mark-v3", String(m)); } catch (e) {}
   document.querySelectorAll(".switch button").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.m === m)));
   document.querySelectorAll("[data-mark]").forEach(el => { el.hidden = +el.dataset.mark !== m; });
   $("#eyebrow").textContent = HERO[m].eyebrow;
@@ -360,7 +379,7 @@ const ptab = (list, label) => !list.length ? `<tbody><tr><td class="note">None t
   list.map((p, i) => `<tr><td><span class="boost">Parlay ${i + 1}</span></td>${p.legs.map(l => `<td>${l.player_name} under ${l.line} ${l.market.toLowerCase()} (${fmtP(l.price)})</td>`).join("")}<td class="num">${fmtP(p.price)}</td><td class="num">${pct(p.picker_chance)}</td><td class="num">$${(+p.payout_on_10_boosted).toFixed(2)}</td></tr>`).join("") + "</tbody>";
 const strTab = list => `<thead><tr><th class="num">#</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th>Kickoff</th></tr></thead><tbody>` +
   list.map((r, i) => `<tr><td class="num">${i + 1}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${r.slot ?? ""}</td></tr>`).join("") + "</tbody>";
-$("#c3").innerHTML = ptab(DATA.cand.c3, "3-leg");
+$("#c3").innerHTML = ptab(DATA.mark3.c3, "3-leg");
 $("#m3s").innerHTML = DATA.mark3.singles.length ? strTab(DATA.mark3.singles) : `<tbody><tr><td class="note">${DATA.mark3.built ? "No qualifying picks this week." : "Mark 3 card not built for this week."}</td></tr></tbody>`;
 $("#m1parlay").innerHTML = ptab(M1.a_parlays, "A parlay");
 $("#m1b").innerHTML = strTab(M1.b_singles);
@@ -379,17 +398,20 @@ const slips = list => list.length ? list.map((p, i) => `<article class="slip">
     <div class="slip-foot"><span>Both hit (picker): <b>${pct(p.picker_chance)}</b></span><span>$10 wins <b>$${(+p.payout_on_10_boosted).toFixed(2)}</b> with boost</span></div>
   </article>`).join("") : `<p class="none">No parlays this week.</p>`;
 $("#slips").innerHTML = slips(DATA.parlays);
-$("#m3slips").innerHTML = slips(DATA.mark3.parlays.map(p => ({...p, legs: p.legs.map((l, j) => ({...l, rank: DATA.mark3.liked.findIndex(x => x.player_name === l.player_name && x.market === l.market) + 1}))})));
+$("#m3slips").innerHTML = slips(DATA.mark3.parlays);
 $("#legsTitle").textContent = `The ${DATA.legs.length} legs`;
 
-$("#legs").innerHTML = `<thead><tr><th class="num">#</th><th>Parlay</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th class="num">Price needs</th><th>Kickoff</th></tr></thead><tbody>` +
-  DATA.legs.map(r => `<tr><td class="num">${r.rank}</td><td><span class="boost">${r.status}</span></td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}${r.our_prediction >= r.line ? " ⚠" : ""}</td><td class="num">${pct(r.picker_chance ?? r.picker_under_chance)}</td><td class="num">${pct(r.needs)}</td><td>${r.slot}</td></tr>`).join("") +
-  `</tbody>` + (DATA.legs.some(r => r.our_prediction >= r.line) ? `<caption style="caption-side:bottom;text-align:left;padding-top:8px;color:var(--muted);font-size:.85rem">⚠ Our stat model has this player above the line; the picker still takes the under on price and game setup.</caption>` : "");
+const legsTable = list => `<thead><tr><th class="num">#</th><th>Parlay</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th class="num">Price needs</th><th>Kickoff</th></tr></thead><tbody>` +
+  list.map(r => `<tr><td class="num">${r.rank}</td><td><span class="boost">${r.status}</span></td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}${r.our_prediction >= r.line ? " ⚠" : ""}</td><td class="num">${pct(r.picker_chance ?? r.picker_under_chance)}</td><td class="num">${pct(r.needs)}</td><td>${r.slot}</td></tr>`).join("") +
+  `</tbody>` + (list.some(r => r.our_prediction >= r.line) ? `<caption style="caption-side:bottom;text-align:left;padding-top:8px;color:var(--muted);font-size:.85rem">⚠ Our stat model has this player above the line; the picker still takes the under on price and game setup.</caption>` : "");
+$("#legs").innerHTML = legsTable(DATA.legs);
+$("#m3legs").innerHTML = DATA.mark3.legs.length ? legsTable(DATA.mark3.legs) : `<tbody><tr><td class="note">No qualifying picks this week.</td></tr></tbody>`;
+$("#m3legsTitle").textContent = `The ${DATA.mark3.legs.length} legs`;
 
 const order = [...new Map(DATA.slots.map(s => [s.slot, s])).values()];
 function renderSlots() {
 const st = r => mark === 2 ? [r.status, r.why_not] : mark === 1 ? [r.status1, r.why1] : [r.status3, r.why3];
-const isBet = t => mark === 2 ? t.startsWith("Parlay") : mark === 1 ? t === "Bet (A)" : /Parlay|Straight/.test(t);
+const isBet = t => mark === 1 ? t === "Bet (A)" : t.startsWith("Parlay");
 const all = mark === 3 ? DATA.mark3.liked : DATA.liked;
 $("#slots").innerHTML = order.map(s => {
   const games = DATA.slots.filter(g => g.slot === s.slot);
@@ -403,7 +425,7 @@ $("#slots").innerHTML = order.map(s => {
 }
 setMark(mark);
 
-$("#foot").textContent = `Card made ${DATA.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")} from FanDuel prices at that time; lines may have moved since. The picker was retrained on every graded line before this week. Record of these parlays: hidden seasons 2021-2026 +50% per unit (positive all six); fully blind 2021-2023 +38%; replay 2024 wk 4 to 2026 wk 5 +51% (picker trained only on earlier weeks).`;
+$("#foot").textContent = `Card made ${DATA.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")} from FanDuel prices at that time; lines may have moved since. The picker was retrained on every graded line before this week. Pickers averaged over 5 random seeds. Hidden seasons 2021-2026 (seed-averaged): Mark 3 parlays +54% / +47% in two seed groups, Mark 2 +28% / +28%. Full history on the Track Record.`;
 </script>
 """
 

@@ -1,6 +1,14 @@
 {
- "locked_at_utc": "2026-10-15 (revised again: parlays only, strategy P; replaces A as the bet)",
- "bet": "strategy P: no straight bets; 2-leg parlays in rank order from the picker's top 8 unders (#1+#2, #3+#4, #5+#6, #7+#8), never two legs from one game, each player once, up to 3 legs per game; up to 4 parlays a week, one per 30% FanDuel profit boost available, top pairs first; no boost, no parlay; 1 unit each",
+ "locked_at_utc": "2026-10-16 (switched: Mark 3 is the bet; Mark 2 tracked)",
+ "bet": "Mark 3 (strategy S): no straight bets; 2-leg parlays in rank order from the schedule picker's top 8 unders (#1+#2, #3+#4, ...), never two legs from one game, each player once, up to 3 legs per game; up to 4 a week, one per 30% FanDuel profit boost, top pairs first; no boost, no parlay; 1 unit each",
+ "picker": "Mark 2's picker inputs plus schedule inputs (rest days for both teams and the difference, short week, division game, primetime, grass/turf); six HGB versions x five seeds (1-5) averaged, retrained every week on every graded line before that week (scripts/card_fixes.py SEEDS, scripts/schedule_picker.py)",
+ "why_switch_2026-10-16": {
+  "seed problem": "one random seed moved hidden-season parlay returns from +20% to +50% for the same picker (scripts/mark3_tests.py); single-seed comparisons were partly noise",
+  "seed-averaged hidden seasons 2021-2026 (two seed groups)": "Mark 3 parlays +53.6% / +47.1%, Mark 2 +28.3% / +28.2%; P(Mark 3 better) 97% / 92%; straight bets Mark 3 +3.4% / +0.9% vs Mark 2 -1.9% / -2.3% (scripts/seed_ensembles.py)",
+  "blind 2021-2023 (trained on later seasons, one seed)": "Mark 3 parlays +45.1%, Mark 2 +25.0%",
+  "tried and rejected for Mark 3": "dropping primetime (+33%/+43%), adding travel (+46%/+33%), adding weather (+52%/+31%, and only known after kickoff), adding price movement (+23%, one seed)",
+  "tracked": "Mark 3 straight bets (SS), Mark 3 3-leg parlays from the top 9 (C3: +66%/+52%, swingier), Mark 2 (P), Mark 1 (A, B)"
+ },
  "why_P": {
   "hidden seasons (tournament 3: picker retrained without the season, 2021-2026)": "+50.2% per unit on 249 parlays, positive in all 6 seasons (2021 +45%, 2022 +58%, 2023 +15%, 2024 +112%, 2025 +44%, 2026 +72%)",
   "fully blind 2021-2023 (rule fixed before that data existed)": "+38% per unit on 179 parlays",
@@ -19,7 +27,6 @@
   "rush yards",
   "pass yards"
  ],
- "picker": "six gradient-boosted picker versions averaged (depth 2/3/4, rate 0.1, leaf 50/150), retrained every week on every graded line before that week; inputs: FanDuel prices, model chances (incl. tuned layers), model-vs-line gap, line, game total, spread, home/away, dome, week, market",
  "qualifies": "picker edge over the FanDuel break-even >= 4 points; player has 3+ games for his current team (per-game and per-player limits: see 'limits')",
  "rank": "by the picker's chance the under hits",
  "boost": "30% profit boost on each parlay where available",

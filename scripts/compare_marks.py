@@ -1,6 +1,6 @@
 """Mark 2 vs Mark 3, head to head (yours, 2026-10-16: "is Mark 3 better than Mark 2? should we make it active?").
 
-Same weeks, same rule (up to 4 boosted 2-leg parlays from the top 8; straight bets = top 8, for reference), two pickers: Mark 2 (locked) and Mark 3 (plus schedule
+Same weeks, same rule (up to 4 boosted 2-leg parlays from the top 8; straight bets = top 8, for reference), two pickers, each averaged over 5 seeds: Mark 2 and Mark 3 (plus schedule
 inputs). Two tests:
   hidden   2021-2026, each season's picks from a picker trained on the other five seasons (as tournament 3 / ideas batch 1)
   replay   2024 week 4 - 2026 week 5, the picker retrained every week on earlier weeks only (the replay pools)
@@ -81,7 +81,7 @@ def main():
     d = d.with_columns(history=pl.Series(T2.history_counts(d)))
     X = TN.feats(d, layered=True)
     sched, _ = IB.schedule_feats(d)
-    makers = CF.ensemble_makers()
+    makers = CF.ensemble_makers(CF.SEEDS)                              # seed-averaged, as the live picker
     h2 = weekly(IB.week_rows(d, A, IB.hidden_preds(d, A, X, makers)))
     h3 = weekly(IB.week_rows(d, A, IB.hidden_preds(d, A, np.hstack([X, sched]), makers)))
     out = {"hidden": {k: compare(h2, h3, k) for k in ("parlays", "singles")}}

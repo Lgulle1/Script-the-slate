@@ -26,10 +26,14 @@ OUTD = config.ROOT / "records" / "cards"
 MIN_HISTORY = 3
 
 
-def ensemble_makers():
+SEEDS = (1, 2, 3, 4, 5)       # live picker (2026-10-16): six versions x five seeds averaged; one seed moved hidden-season returns by +-15 points (seed_ensembles.py)
+
+
+def ensemble_makers(seeds=(7,)):
+    """The six picker versions (depth 2/3/4 x leaf 50/150), once per seed. Default: the single seed every study before 2026-10-16 used."""
     from sklearn.ensemble import HistGradientBoostingClassifier
-    return [lambda d=d, l=l: HistGradientBoostingClassifier(max_depth=d, learning_rate=0.1, max_iter=200, min_samples_leaf=l, l2_regularization=1.0, random_state=7)
-            for d in (2, 3, 4) for l in (50, 150)]
+    return [lambda d=d, l=l, s=s: HistGradientBoostingClassifier(max_depth=d, learning_rate=0.1, max_iter=200, min_samples_leaf=l, l2_regularization=1.0, random_state=s)
+            for s in seeds for d in (2, 3, 4) for l in (50, 150)]
 
 
 def history_counts(d: pl.DataFrame) -> np.ndarray:
@@ -46,7 +50,7 @@ def history_counts(d: pl.DataFrame) -> np.ndarray:
 def picks_for(d, A, X, season, week, ensemble):
     tr = np.flatnonzero(((d["season"] < season) | ((d["season"] == season) & (d["week"] < week))).to_numpy())
     te = np.flatnonzero(((d["season"] == season) & (d["week"] == week)).to_numpy())
-    makers = ensemble_makers() if ensemble else [WB.make]
+    makers = ensemble_makers(SEEDS) if ensemble else [WB.make]        # live cards and replay pools: seed-averaged
     p_over = np.mean([m().fit(X[tr], A.over_won[tr]).predict_proba(X[te])[:, 1] for m in makers], axis=0)
     p_under = 1 - p_over
     edge = p_under - A.be_u[te]

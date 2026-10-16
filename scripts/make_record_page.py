@@ -85,7 +85,8 @@ def main(argv=None):
         hidden["candidate 3-leg"] = conv(o["rules"]["3-leg from top 9 (3 a week)"])
         hidden["candidate schedule"] = conv(o["features"]["schedule"])
     mc = config.ROOT / "records" / "tuning" / "mark_compare.json"      # Mark 2 vs Mark 3 head to head (scripts/compare_marks.py)
-    data = dict(weeks=weeks, live=live, compare=json.loads(mc.read_text()) if mc.exists() else None, strategies={k: v["name"] for k, v in ST.STRATEGIES.items()}, roles={k: v["role"] for k, v in ST.STRATEGIES.items()},
+    se = config.ROOT / "records" / "tuning" / "seed_ensembles.json"    # seed-averaged hidden seasons (scripts/seed_ensembles.py)
+    data = dict(weeks=weeks, live=live, compare=json.loads(mc.read_text()) if mc.exists() else None, seeded=json.loads(se.read_text()) if se.exists() else None, strategies={k: v["name"] for k, v in ST.STRATEGIES.items()}, roles={k: v["role"] for k, v in ST.STRATEGIES.items()},
                 blind=blind or None, blind_seasons=sorted({w["season"] for w in blind}), hidden=hidden)
     (D / "track_record.json").write_text(json.dumps(data, default=str))
     (D / "track_record.html").write_text(TEMPLATE.replace("__DATA__", json.dumps(data, default=str)))
@@ -197,7 +198,7 @@ ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);display:grid;gap:.35rem
 <div class="wrap">
 <header>
   <h1>Track Record</h1>
-  <p>Every betting setup we run, graded. Mark 2 is the one we bet; Mark 1 (the old rules) and Mark 3 (being tested) are tracked beside it with no money on them. 1 unit = one bet; parlays include the 30% FanDuel boost; FanDuel's four markets (receptions, receiving yards, rush yards, pass yards).</p>
+  <p>Every betting setup we run, graded. Mark 3 is the one we bet (since 2026-10-16); Mark 2 (the previous bet) and Mark 1 (the old rules) are tracked beside it with no money on them. 1 unit = one bet; parlays include the 30% FanDuel boost; FanDuel's four markets (receptions, receiving yards, rush yards, pass yards).</p>
   <nav class="tabs" role="tablist" aria-label="Marks" id="tabs"></nav>
 </header>
 <main id="view"></main>
@@ -215,15 +216,20 @@ const chip = won => won == null ? `<span class="chip p">PENDING</span>` : won ==
 const has = k => DATA.weeks.length && DATA.weeks[0][k];
 
 const MARKS = {
-  mark2: {label: "Mark 2", role: "Bet", rc: "bet", keys: ["P", "C3"], what: "Boosted 2-leg parlays from the picker's top unders (up to 4 a week). No straight bets.",
-          hidden: [["parlays top 8", "Mark 2 parlays"], ["candidate 3-leg", "Variant: 3-leg parlays from the top 9 (tracked)"]],
-          cmp: "mark2"},
-  mark1: {label: "Mark 1", role: "Tracked", rc: "", keys: ["A", "B"], what: "The old rules, same picks as Mark 2. A: top 2 straight + one parlay. B: top 8 straight + 4 parlays.",
-          hidden: [["parlays top 2", "A's parlay (#1 + #2)"], ["singles top 2", "A's straight bets (top 2)"], ["singles top 8", "B's straight bets (top 8)"], ["parlays top 8", "B's parlays (same as Mark 2's)"]]},
-  mark3: {label: "Mark 3", role: "Testing", rc: "test", keys: ["S"], what: "Mark 2's picker plus schedule inputs (rest, short week, division game, primetime, turf). Its own picks: top 8 straight + 4 parlays.",
-          hidden: [["candidate schedule", "Mark 3 parlays"]], cmp: "mark3"}
+  mark3: {label: "Mark 3", role: "Bet", rc: "bet", keys: ["S", "SS", "C3"], seeded: "Mark 3",
+          what: "Boosted 2-leg parlays from the schedule picker's top unders (up to 4 a week). Same projections as Mark 2; the picker also weighs rest, short weeks, division games, primetime and turf. Its straight bets and 3-leg parlays are tracked, not bet.",
+          hidden: [["candidate schedule", "Mark 3 parlays, one seed"]]},
+  mark2: {label: "Mark 2", role: "Tracked", rc: "", keys: ["P"], seeded: "Mark 2",
+          what: "The previous bet (2026-10-15 to 2026-10-16): the same parlay rule on the picker without schedule inputs.",
+          hidden: [["parlays top 8", "Mark 2 parlays, one seed"]]},
+  mark1: {label: "Mark 1", role: "Tracked", rc: "", keys: ["A", "B"], what: "The old rules on Mark 2's picks. A: top 2 straight + one parlay. B: top 8 straight + 4 parlays.",
+          hidden: [["parlays top 2", "A's parlay (#1 + #2)"], ["singles top 2", "A's straight bets (top 2)"], ["singles top 8", "B's straight bets (top 8)"], ["parlays top 8", "B's parlays (same as Mark 2's)"]]}
 };
-const ORDER = ["overview", "mark2", "mark1", "mark3"];
+const ORDER = ["overview", "mark3", "mark2", "mark1"];
+function seededTotal(name) {
+  const S = DATA.seeded && DATA.seeded[name]; if (!S) return null;
+  return Object.entries(S).filter(([g]) => g.startsWith("seeds")).map(([g, v]) => v.parlays);
+}
 
 function stats(k, weeks) {
   const ws = weeks.filter(w => w[k]);
@@ -250,10 +256,12 @@ function overview() {
                     ["Straight bets · hidden seasons", C.hidden.singles], ["Straight bets · replay", C.replay.singles]] : [];
   const ahead = rows.filter(([, c]) => c.mark3.roi > c.mark2.roi).length;
   const pp = rows.slice(0, 2).map(([, c]) => Math.round(100 * c.p_mark3_better));
+  const s3 = seededTotal("Mark 3") || [], s2 = seededTotal("Mark 2") || [];
+  const pr = DATA.seeded && DATA.seeded["Mark 3"] && DATA.seeded["Mark 3"].p_better_than_mark2 ? Object.values(DATA.seeded["Mark 3"].p_better_than_mark2).map(x => Math.round(100 * x.parlays)) : [];
   const verdict = `<section class="verdict">
     <div class="eyebrow">The answer so far</div>
-    <h2>Mark 2 is the bet. Mark 3 is ahead on ${ahead} of ${rows.length} tests.</h2>
-    <p>On the parlays we actually bet, Mark 3 returned more on both tests, but the chance it is truly better is ${pp[0]}% on hidden seasons and ${pp[1]}% on the replay: ahead, not proven. Its straight bets are the clearer gain. Live weeks from week 6 on decide it.</p>
+    <h2>Mark 3 is the bet. It beat Mark 2 on every test.</h2>
+    <p>With the picker averaged over 5 random seeds, Mark 3's parlays returned ${s3.map(v => fmtPct(v)).join(" and ")} on seasons it never saw (two separate seed groups), against ${s2.map(v => fmtPct(v)).join(" and ")} for Mark 2: ${pr.join("% and ")}% likely to be truly better. Switched on 2026-10-16. Live weeks from week 6 on keep checking it.</p>
   </section>`;
   const meter = p => `<div class="meter"><span>${Math.round(100 * p)}%</span><i style="--w:${Math.round(100 * p)}%"></i></div>`;
   const h2h = `<section class="panel"><div><h2>Mark 2 vs Mark 3, head to head</h2><p class="lede">Same weeks, same rule, two pickers. "Chance Mark 3 is better" resamples the weeks thousands of times and counts how often Mark 3 comes out ahead; 50% would mean no difference.</p></div>
@@ -262,7 +270,7 @@ function overview() {
     `</tbody></table></div></section>`;
   const card = id => {
     const M = MARKS[id];
-    const h = hiddenTotal(M.hidden[0][0]);
+    const h = hiddenTotal(M.hidden[0][0]), sd = M.seeded ? seededTotal(M.seeded) : null;
     const keys = M.keys.filter(has);
     const rep = keys.map(k => [k, stats(k, DATA.weeks)]);
     const lc = liveCount(M.keys);
@@ -270,19 +278,20 @@ function overview() {
       <div class="mark-head"><b>${M.label}</b><span class="role ${M.rc}">${M.role}</span></div>
       <p>${M.what}</p>
       <div class="kv">
-        ${h ? `<span>Hidden seasons 2021–2026</span><b class="${cls(h.u)}">${ratio(h.u, h.b)}</b>` : ""}
+        ${sd ? `<span>Hidden seasons, 5-seed average</span><b class="${cls(sd[0])}">${sd.map(fmtPct).join(" / ")}</b>` : h ? `<span>Hidden seasons 2021–2026</span><b class="${cls(h.u)}">${ratio(h.u, h.b)}</b>` : ""}
         ${rep.map(([k, t]) => `<span>Replay 2024–2026${{C3: " (3-leg variant)", A: " (A)", B: " (B)"}[k] ?? ""}</span><b class="${cls(t.all)}">${ratio(t.all, t.staked)}</b>`).join("")}
         <span>Live, week ${DATA.live ? DATA.live.week : "–"}</span><b>${lc != null ? `${lc} bets pending` : "–"}</b>
       </div>
       <button type="button" class="open" data-go="${id}">Open ${M.label}</button>
     </article>`;
   };
-  return verdict + `<section class="marks" style="margin-top:22px">${["mark2", "mark1", "mark3"].map(card).join("")}</section>` + `<div style="margin-top:22px">${h2h}</div>` +
+  return verdict + `<section class="marks" style="margin-top:22px">${["mark3", "mark2", "mark1"].map(card).join("")}</section>` + `<div style="margin-top:22px">${h2h}</div>` +
     `<section class="panel" style="margin-top:22px"><h2>How to read this</h2><ul class="notes">
       <li><b>Hidden seasons:</b> each season 2021–2026 was hidden in turn; the picker learned from the other five only. The fairest test we have.</li>
+      <li><b>Seeds:</b> the picker has a random element; one seed moved returns by up to 15 points either way. Mark 2 and Mark 3 are compared averaged over 5 seeds, twice with different seeds, so a result counts only if it repeats.</li>
       <li><b>Replay:</b> 2024 week 4 to 2026 week 5, the picker retrained every week on earlier weeks only, the way it runs live.</li>
       <li><b>Blind 2021–2023:</b> Mark 1 and Mark 2's rules were fixed before those seasons were added, so they never shaped any rule.</li>
-      <li><b>Live:</b> from 2026 week 6. The rule says nothing switches until 8 live weeks are graded.</li></ul></section>`;
+      <li><b>Live:</b> from 2026 week 6. Mark 3 replaced Mark 2 on 2026-10-16 after the seed-averaged tests.</li></ul></section>`;
 }
 
 // ---------- one Mark
@@ -299,6 +308,14 @@ function strat(k) {
   <div class="scroll"><table><thead><tr><th>Season</th><th class="num">Weeks</th><th>Straight</th><th class="num">Straight return</th><th>Parlays</th><th class="num">Parlay return</th><th class="num">All bets</th></tr></thead><tbody>` +
   seasons.map(([y, s]) => `<tr><td>${y}</td><td class="num">${s.weeks}</td><td>${s.n ? `${s.sw}–${s.n - s.sw}` : "–"}</td><td class="num ${cls(s.su)}">${ratio(s.su, s.n)}</td><td>${s.pw}–${s.pn - s.pw}</td><td class="num ${cls(s.pu)}">${ratio(s.pu, s.pn)}</td><td class="num ${cls(s.all)}">${fmtU(s.all)}u (${ratio(s.all, s.staked)})</td></tr>`).join("") +
   `</tbody></table></div></section>`;
+}
+function seededTable(M) {
+  const S = M.seeded && DATA.seeded && DATA.seeded[M.seeded]; if (!S) return "";
+  const gs = Object.keys(S).filter(g => g.startsWith("seeds")); const ys = Object.keys(S[gs[0]].seasons);
+  const c = v => v == null ? `<td class="num">–</td>` : `<td class="num ${cls(v)}">${fmtPct(v)}</td>`;
+  return `<section class="panel"><div><h3>Hidden seasons, picker averaged over 5 seeds</h3><p class="lede">Each season hidden in turn; the picker learned from the other five only, averaged over 5 random seeds. Run twice with different seeds. Return per unit on the parlays (and straight bets, tracked).</p></div>
+    <div class="scroll"><table><thead><tr><th>Seed group</th>${ys.map(y => `<th class="num">${y}</th>`).join("")}<th class="num">Parlays, all six</th><th class="num">Straight bets</th></tr></thead><tbody>` +
+    gs.map(g => `<tr><td>${g}</td>${ys.map(y => c(S[g].seasons[y])).join("")}${c(S[g].parlays)}${c(S[g].singles)}</tr>`).join("") + `</tbody></table></div></section>`;
 }
 function hiddenTable(M) {
   const H = DATA.hidden; const rows = M.hidden.filter(([k]) => H && H[k]); if (!rows.length) return "";
@@ -388,10 +405,10 @@ function markView(id) {
   const M = MARKS[id];
   const keys = M.keys.filter(has);
   const intro = `<section class="panel"><div class="mark-head"><h2>${M.label}</h2><span class="role ${M.rc}">${M.role}</span></div><p class="lede" style="margin:0">${M.what}</p>
-    ${id === "mark3" && DATA.compare ? `<p class="note">Testing, not bet. Its straight bets were the first to come out positive on hidden seasons (${fmtPct(DATA.compare.hidden.singles.mark3.roi)} vs Mark 2's ${fmtPct(DATA.compare.hidden.singles.mark2.roi)}), and its parlays led on both tests. It becomes the bet only if live weeks back that up.</p>` : ""}
+    ${id === "mark2" ? `<p class="note">The bet from 2026-10-15 to 2026-10-16, now tracked. Its single-seed +50% on hidden seasons was a lucky seed; averaged over 5 seeds it is about +28%.</p>` : ""}
     ${id === "mark1" ? `<p class="note">Retired as the bet on 2026-10-15 and still tracked. Its straight bets lost money on hidden seasons, and one parlay a week did worse than Mark 2's.</p>` : ""}</section>`;
   const charts = keys.map(chart);
-  return {html: intro + liveBlock(M) + hiddenTable(M) + blindTable(M) + keys.map(strat).join("") +
+  return {html: intro + liveBlock(M) + seededTable(M) + hiddenTable(M) + blindTable(M) + keys.map(strat).join("") +
           (charts.some(c => c.html) ? `<section class="panel"><div><h3>Running units, replay</h3><p class="lede">Units won so far, week by week. Hover a week for its numbers.</p></div><div class="charts">${charts.map(c => c.html).join("")}</div></section>` : "") + ledger(id),
           wire: () => charts.forEach(c => c.wire())};
 }
