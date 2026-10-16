@@ -1,0 +1,493 @@
+{
+ "seeds": {
+  "7": {
+   "mark2": {
+    "parlays": 0.5024,
+    "parlay_stake": 249.0,
+    "seasons": {
+     "2021": 0.4452,
+     "2022": 0.5789,
+     "2023": 0.1497,
+     "2024": 1.1199,
+     "2025": 0.4356,
+     "2026": 0.7152
+    },
+    "singles": -0.0157
+   },
+   "mark3": {
+    "parlays": 0.5441,
+    "parlay_stake": 277.0,
+    "seasons": {
+     "2021": 0.4772,
+     "2022": 0.5066,
+     "2023": 0.4027,
+     "2024": 0.5405,
+     "2025": 0.6754,
+     "2026": 1.34
+    },
+    "singles": 0.0366,
+    "seasons_beating_mark3": 0
+   },
+   "p_parlays": 0.602,
+   "p_singles": 0.9135
+  },
+  "1": {
+   "mark2": {
+    "parlays": 0.1968,
+    "parlay_stake": 231.0,
+    "seasons": {
+     "2021": 0.2636,
+     "2022": 0.2906,
+     "2023": 0.1466,
+     "2024": 0.1414,
+     "2025": -0.4393,
+     "2026": 0.9517
+    },
+    "singles": -0.0563
+   },
+   "mark3": {
+    "parlays": 0.2422,
+    "parlay_stake": 258.0,
+    "seasons": {
+     "2021": 0.1124,
+     "2022": 0.4383,
+     "2023": 0.2164,
+     "2024": 0.4983,
+     "2025": -0.0935,
+     "2026": 0.2265
+    },
+    "singles": 0.005
+   },
+   "p_parlays": 0.63075,
+   "p_singles": 0.958
+  },
+  "2": {
+   "mark2": {
+    "parlays": 0.2734,
+    "parlay_stake": 255.0,
+    "seasons": {
+     "2021": 0.6266,
+     "2022": 0.1939,
+     "2023": 0.3664,
+     "2024": 0.3084,
+     "2025": -0.6791,
+     "2026": 0.5086
+    },
+    "singles": -0.0293
+   },
+   "mark3": {
+    "parlays": 0.4665,
+    "parlay_stake": 280.0,
+    "seasons": {
+     "2021": 0.5529,
+     "2022": 0.6404,
+     "2023": 0.5928,
+     "2024": 0.4447,
+     "2025": -0.05,
+     "2026": 0.1436
+    },
+    "singles": -0.0002
+   },
+   "p_parlays": 0.8925,
+   "p_singles": 0.784
+  },
+  "3": {
+   "mark2": {
+    "parlays": 0.4374,
+    "parlay_stake": 240.0,
+    "seasons": {
+     "2021": 0.2438,
+     "2022": 0.717,
+     "2023": 0.162,
+     "2024": 0.9827,
+     "2025": -0.218,
+     "2026": 0.6396
+    },
+    "singles": 0.0513
+   },
+   "mark3": {
+    "parlays": 0.338,
+    "parlay_stake": 268.0,
+    "seasons": {
+     "2021": 0.3452,
+     "2022": 0.5244,
+     "2023": -0.0807,
+     "2024": 0.5509,
+     "2025": 0.1456,
+     "2026": 1.2676
+    },
+    "singles": 0.0513
+   },
+   "p_parlays": 0.185,
+   "p_singles": 0.492
+  },
+  "4": {
+   "mark2": {
+    "parlays": 0.3593,
+    "parlay_stake": 280.0,
+    "seasons": {
+     "2021": 0.5324,
+     "2022": 0.7548,
+     "2023": -0.0248,
+     "2024": 0.464,
+     "2025": 0.0665,
+     "2026": 0.5441
+    },
+    "singles": -0.0012
+   },
+   "mark3": {
+    "parlays": 0.2567,
+    "parlay_stake": 302.0,
+    "seasons": {
+     "2021": 0.5223,
+     "2022": 0.4924,
+     "2023": 0.1292,
+     "2024": -0.1706,
+     "2025": -0.0243,
+     "2026": 0.9436
+    },
+    "singles": -0.0122
+   },
+   "p_parlays": 0.21025,
+   "p_singles": 0.36425
+  }
+ },
+ "rules": {
+  "edge 2, top 6, 2-leg": {
+   "mark2": 0.2671,
+   "mark3": 0.178,
+   "mark2_stake": 274.0,
+   "mark3_stake": 276.0
+  },
+  "edge 2, top 6, 3-leg": {
+   "mark2": 0.4167,
+   "mark3": 0.0851,
+   "mark2_stake": 154.0,
+   "mark3_stake": 150.0
+  },
+  "edge 2, top 8, 2-leg": {
+   "mark2": 0.2475,
+   "mark3": 0.2094,
+   "mark2_stake": 373.0,
+   "mark3_stake": 367.0
+  },
+  "edge 2, top 9, 3-leg": {
+   "mark2": 0.3672,
+   "mark3": 0.4485,
+   "mark2_stake": 261.0,
+   "mark3_stake": 254.0
+  },
+  "edge 2, top 10, 2-leg": {
+   "mark2": 0.275,
+   "mark3": 0.3049,
+   "mark2_stake": 463.0,
+   "mark3_stake": 460.0
+  },
+  "edge 2, top 10, 3-leg": {
+   "mark2": 0.3243,
+   "mark3": 0.4324,
+   "mark2_stake": 282.0,
+   "mark3_stake": 277.0
+  },
+  "edge 4, top 6, 2-leg": {
+   "mark2": 0.4804,
+   "mark3": 0.4893,
+   "mark2_stake": 203.0,
+   "mark3_stake": 227.0
+  },
+  "edge 4, top 6, 3-leg": {
+   "mark2": 0.6565,
+   "mark3": 0.7548,
+   "mark2_stake": 115.0,
+   "mark3_stake": 126.0
+  },
+  "edge 4, top 8, 2-leg": {
+   "mark2": 0.5024,
+   "mark3": 0.5441,
+   "mark2_stake": 249.0,
+   "mark3_stake": 277.0
+  },
+  "edge 4, top 9, 3-leg": {
+   "mark2": 0.6523,
+   "mark3": 0.9357,
+   "mark2_stake": 150.0,
+   "mark3_stake": 179.0
+  },
+  "edge 4, top 10, 2-leg": {
+   "mark2": 0.5471,
+   "mark3": 0.5883,
+   "mark2_stake": 282.0,
+   "mark3_stake": 310.0
+  },
+  "edge 4, top 10, 3-leg": {
+   "mark2": 0.701,
+   "mark3": 1.0653,
+   "mark2_stake": 159.0,
+   "mark3_stake": 188.0
+  },
+  "edge 6, top 6, 2-leg": {
+   "mark2": 0.69,
+   "mark3": 0.4303,
+   "mark2_stake": 62.0,
+   "mark3_stake": 77.0
+  },
+  "edge 6, top 6, 3-leg": {
+   "mark2": 0.4068,
+   "mark3": -0.5022,
+   "mark2_stake": 31.0,
+   "mark3_stake": 33.0
+  },
+  "edge 6, top 8, 2-leg": {
+   "mark2": 0.7058,
+   "mark3": 0.4369,
+   "mark2_stake": 65.0,
+   "mark3_stake": 85.0
+  },
+  "edge 6, top 9, 3-leg": {
+   "mark2": 0.2461,
+   "mark3": -0.3639,
+   "mark2_stake": 35.0,
+   "mark3_stake": 41.0
+  },
+  "edge 6, top 10, 2-leg": {
+   "mark2": 0.7028,
+   "mark3": 0.4039,
+   "mark2_stake": 68.0,
+   "mark3_stake": 87.0
+  },
+  "edge 6, top 10, 3-leg": {
+   "mark2": 0.5187,
+   "mark3": -0.3639,
+   "mark2_stake": 36.0,
+   "mark3_stake": 41.0
+  }
+ },
+ "blind": {
+  "mark2": {
+   "parlays": 0.2504,
+   "stake": 181.0,
+   "seasons": {
+    "2021": 0.4452,
+    "2022": 0.4549,
+    "2023": -0.0889
+   },
+   "singles": 0.0026
+  },
+  "mark3": {
+   "parlays": 0.4507,
+   "stake": 195.0,
+   "seasons": {
+    "2021": 0.4772,
+    "2022": 0.7574,
+    "2023": 0.1755
+   },
+   "singles": 0.0439
+  }
+ },
+ "markets": {
+  "rec": {
+   "mark2": {
+    "roi": -0.018695263620664718,
+    "bets": 417
+   },
+   "mark3": {
+    "roi": 0.035864636988358053,
+    "bets": 462
+   }
+  },
+  "rec_yds": {
+   "mark2": {
+    "roi": 0.11388450695433666,
+    "bets": 168
+   },
+   "mark3": {
+    "roi": 0.08141901162601747,
+    "bets": 210
+   }
+  },
+  "rush_yds": {
+   "mark2": {
+    "roi": -0.008577023100126157,
+    "bets": 127
+   },
+   "mark3": {
+    "roi": 0.06792515352218526,
+    "bets": 141
+   }
+  },
+  "pass_yds": {
+   "mark2": {
+    "roi": 0.26365642585949994,
+    "bets": 15
+   },
+   "mark3": {
+    "roi": 0.5824798207192247,
+    "bets": 18
+   }
+  }
+ },
+ "improve_mark3": {
+  "Mark 3 as it stands": {
+   "parlays": 0.5441,
+   "parlay_stake": 277.0,
+   "seasons": {
+    "2021": 0.4772,
+    "2022": 0.5066,
+    "2023": 0.4027,
+    "2024": 0.5405,
+    "2025": 0.6754,
+    "2026": 1.34
+   },
+   "singles": 0.0366,
+   "seasons_beating_mark3": 0
+  },
+  "without rest days": {
+   "parlays": 0.4928,
+   "parlay_stake": 259.0,
+   "seasons": {
+    "2021": 0.3474,
+    "2022": 0.4917,
+    "2023": 0.3832,
+    "2024": 0.822,
+    "2025": 0.0938,
+    "2026": 1.3898
+   },
+   "singles": -0.0382,
+   "p_better_than_mark3": 0.36175,
+   "seasons_beating_mark3": 2
+  },
+  "without short week": {
+   "parlays": 0.5441,
+   "parlay_stake": 277.0,
+   "seasons": {
+    "2021": 0.4772,
+    "2022": 0.5066,
+    "2023": 0.4027,
+    "2024": 0.5405,
+    "2025": 0.6754,
+    "2026": 1.34
+   },
+   "singles": 0.0366,
+   "p_better_than_mark3": 0.0,
+   "seasons_beating_mark3": 0
+  },
+  "without division game": {
+   "parlays": 0.5317,
+   "parlay_stake": 263.0,
+   "seasons": {
+    "2021": 0.3561,
+    "2022": 0.7448,
+    "2023": 0.449,
+    "2024": 0.4595,
+    "2025": 0.4725,
+    "2026": 1.2624
+   },
+   "singles": 0.0251,
+   "p_better_than_mark3": 0.4595,
+   "seasons_beating_mark3": 2
+  },
+  "without primetime": {
+   "parlays": 0.5802,
+   "parlay_stake": 271.0,
+   "seasons": {
+    "2021": 0.364,
+    "2022": 0.5117,
+    "2023": 0.2858,
+    "2024": 0.893,
+    "2025": 0.6362,
+    "2026": 2.0858
+   },
+   "singles": 0.0582,
+   "p_better_than_mark3": 0.6205,
+   "seasons_beating_mark3": 3
+  },
+  "without turf/grass": {
+   "parlays": 0.4837,
+   "parlay_stake": 266.0,
+   "seasons": {
+    "2021": 0.4251,
+    "2022": 0.5311,
+    "2023": 0.0312,
+    "2024": 0.8391,
+    "2025": 0.7037,
+    "2026": 1.0823
+   },
+   "singles": 0.0531,
+   "p_better_than_mark3": 0.3065,
+   "seasons_beating_mark3": 3
+  },
+  "plus travel": {
+   "parlays": 0.5398,
+   "parlay_stake": 272.0,
+   "seasons": {
+    "2021": 0.6175,
+    "2022": 0.6328,
+    "2023": 0.1779,
+    "2024": 0.8494,
+    "2025": 0.282,
+    "2026": 1.1319
+   },
+   "singles": 0.0427,
+   "p_better_than_mark3": 0.49575,
+   "seasons_beating_mark3": 3
+  },
+  "plus weather": {
+   "parlays": 0.6458,
+   "parlay_stake": 281.0,
+   "seasons": {
+    "2021": 0.816,
+    "2022": 0.139,
+    "2023": 0.4453,
+    "2024": 1.4915,
+    "2025": 0.2028,
+    "2026": 0.3457
+   },
+   "singles": 0.0807,
+   "p_better_than_mark3": 0.74825,
+   "seasons_beating_mark3": 3
+  },
+  "plus price movement": {
+   "parlays": 0.2311,
+   "parlay_stake": 266.0,
+   "seasons": {
+    "2021": 0.0726,
+    "2022": 0.1499,
+    "2023": 0.0963,
+    "2024": 0.821,
+    "2025": 0.3633,
+    "2026": -0.4457
+   },
+   "singles": 0.0314,
+   "p_better_than_mark3": 0.01075,
+   "seasons_beating_mark3": 1
+  },
+  "plus travel + weather": {
+   "parlays": 0.6638,
+   "parlay_stake": 283.0,
+   "seasons": {
+    "2021": 0.8663,
+    "2022": 0.4662,
+    "2023": 0.2775,
+    "2024": 1.166,
+    "2025": 0.5658,
+    "2026": 0.1663
+   },
+   "singles": 0.0987,
+   "p_better_than_mark3": 0.76325,
+   "seasons_beating_mark3": 2
+  },
+  "3-leg parlays from the top 9": {
+   "parlays": 0.9357,
+   "parlay_stake": 179.0,
+   "seasons": {
+    "2021": 1.4248,
+    "2022": 1.2289,
+    "2023": -0.2645,
+    "2024": 1.6162,
+    "2025": 0.6549,
+    "2026": 1.45
+   },
+   "seasons_beating_mark3": 4
+  }
+ }
+}
