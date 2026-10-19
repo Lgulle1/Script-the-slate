@@ -1,0 +1,86 @@
+{
+ "Mark 3": {
+  "seeds 1-5": {
+   "exam_parlays": 0.2945,
+   "exam_stake": 42.0,
+   "other_parlays": 0.7131,
+   "exam_singles": -0.0382,
+   "other_singles": 0.0629
+  },
+  "seeds 11-15": {
+   "exam_parlays": 0.384,
+   "exam_stake": 43.0,
+   "other_parlays": 0.5658,
+   "exam_singles": -0.117,
+   "other_singles": 0.0237
+  }
+ },
+ "Mark 3 + v3 chains vs line": {
+  "seeds 1-5": {
+   "exam_parlays": 0.4774,
+   "exam_stake": 48.0,
+   "other_parlays": 0.5043,
+   "exam_singles": 0.0165,
+   "other_singles": 0.1103
+  },
+  "seeds 11-15": {
+   "exam_parlays": 0.1059,
+   "exam_stake": 48.0,
+   "other_parlays": 0.432,
+   "exam_singles": -0.0188,
+   "other_singles": 0.0966
+  },
+  "p_better": {
+   "seeds 1-5 exam": {
+    "parlays": 0.67,
+    "singles": 0.67675
+   },
+   "seeds 1-5 2022-24": {
+    "parlays": 0.1715,
+    "singles": 0.812
+   },
+   "seeds 11-15 exam": {
+    "parlays": 0.26325,
+    "singles": 0.80025
+   },
+   "seeds 11-15 2022-24": {
+    "parlays": 0.27425,
+    "singles": 0.922
+   }
+  }
+ },
+ "Mark 3 + v3 chains vs projection": {
+  "seeds 1-5": {
+   "exam_parlays": 0.1546,
+   "exam_stake": 47.0,
+   "other_parlays": 0.5626,
+   "exam_singles": 0.0515,
+   "other_singles": 0.0719
+  },
+  "seeds 11-15": {
+   "exam_parlays": 0.9559,
+   "exam_stake": 45.0,
+   "other_parlays": 0.6272,
+   "exam_singles": 0.1709,
+   "other_singles": 0.0951
+  },
+  "p_better": {
+   "seeds 1-5 exam": {
+    "parlays": 0.39,
+    "singles": 0.78825
+   },
+   "seeds 1-5 2022-24": {
+    "parlays": 0.215,
+    "singles": 0.57975
+   },
+   "seeds 11-15 exam": {
+    "parlays": 0.89575,
+    "singles": 0.99875
+   },
+   "seeds 11-15 2022-24": {
+    "parlays": 0.6255,
+    "singles": 0.94275
+   }
+  }
+ }
+}

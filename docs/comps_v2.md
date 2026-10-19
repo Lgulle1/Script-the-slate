@@ -70,3 +70,24 @@ Chance of beating Mark 3 (paired week bootstrap), defense vs line: parlays exam 
 Singles exam 88% / 80%, 2022-24 68% / 93% -> better in all four cells. Defense + matchup: parlays worse (2022-24 1% / 13%).
 **Verdict:** parlays unchanged (Mark 3 stays the bet). The defense-vs-line input is the first change that improves STRAIGHT bets consistently
 (exam average about +5% vs -8%; 2022-24 about +10% vs +4%). Tracked from week 7 as a straight-bet candidate, not bet until live weeks agree.
+
+## Comps v3 (comps3/; 2026-10-19)
+Built to the spec: rich unit fingerprints (FTN 2022-2026 + participation 2016-2025: boxes, personnel, motion, play-action, RPO, coverage shells, man/zone,
+pressure, time to throw, routes; position defenses for TE / WR1 / RB receiving), lineup-aware profiles (each past game weighted by how many of tonight's
+players were on the field; a starter tonight counts as a starter: Penix's first start drops ATL pass continuity 0.76 -> 0.55, run stays 0.78), cosine
+top-8 chains (own, dfn with tonight's defenders, team with tonight's offense, league-wide triples, situation) with a relative bar (more similar than 90% of
+all pairings), case files (comps3/casefile.py). Bug fixed on the way: NaN first-game archetypes poisoned each week's z-scores (83% of WR profiles empty),
+so v2's player similarity had been off.
+
+Practice (2022-2023): individual chains 0.02-0.05 correlation; the situation chain stays the strongest for backs (0.116 vs projection).
+
+Exam (scripts/comps3_v3_exam.py, records/tuning/comps3_v3_exam.json; setups fixed before it ran):
+| setup | seeds | exam parlays | 2022-24 parlays | exam singles | 2022-24 singles |
+|---|---|---|---|---|---|
+| Mark 3 | 1-5 / 11-15 | +29.4% / +38.4% | +71.3% / +56.6% | -3.8% / -11.7% | +6.3% / +2.4% |
+| + v3 chains vs line | 1-5 / 11-15 | +47.7% / +10.6% | +50.4% / +43.2% | +1.7% / -1.9% | +11.0% / +9.7% |
+| + v3 chains vs projection | 1-5 / 11-15 | +15.5% / +95.6% | +56.3% / +62.7% | +5.1% / +17.1% | +7.2% / +9.5% |
+Chance better than Mark 3: vs line parlays 67/26 (exam), 17/27 (2022-24); singles 68/80, 81/92. vs projection parlays 39/90, 22/63; singles 79/99.9, 58/94.
+**Verdict.** Parlays: seed-dependent in every comps setup, never a pass; Mark 3 parlays stay as they are. Straights: all three comps setups tested
+(v2 defense vs line, v3 vs line, v3 vs projection) beat Mark 3's straights in all four cells each (12 of 12). The comps carry real information for straight
+bets. Best on the exam: v3 chains vs projection (exam singles about +11% vs -8%), chosen after seeing the exam, so it is tracked live before any money.
