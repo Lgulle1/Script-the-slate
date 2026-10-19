@@ -1,0 +1,304 @@
+<style>
+.lab { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: grid; gap: var(--cds-gap-lg); }
+.lab-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+.lab-head p { margin: var(--cds-gap-xs) 0 0; color: var(--color-fg-muted); max-width: 70ch; }
+.lab-take { color: var(--color-fg) !important; }
+.lab-tabs { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); }
+.lab-tab { font: inherit; background: none; border: 0; border-bottom: 2px solid transparent; padding: var(--cds-pad-xs) var(--cds-pad-sm); color: var(--color-fg-muted); cursor: pointer; }
+.lab-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); }
+.lab-tab:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+.lab-grid { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); }
+.lab-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; }
+.lab-card h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.lab-note { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); margin: var(--cds-gap-xs) 0 var(--cds-gap-md); max-width: 75ch; }
+.lab-chart { position: relative; min-height: 260px; }
+.lab-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; }
+.lab-tip .k { color: var(--cds-text-secondary); }
+.lab-tip .sw { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: .35rem; }
+.lab-wrap { overflow: auto; max-height: 34rem; }
+.lab table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: var(--cds-font-size-caption); }
+.lab th { position: sticky; top: 0; background: var(--color-panel); text-align: left; font-weight: var(--cds-font-weight-medium); padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.lab th button { font: inherit; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; }
+.lab td { padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+.lab td.num, .lab th.num { text-align: right; }
+.lab-pos { color: var(--color-ok); } .lab-neg { color: var(--color-bad); }
+.lab-ctrl { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; margin-bottom: var(--cds-gap-sm); }
+.lab-ctrl input, .lab-ctrl select { font: inherit; padding: var(--cds-pad-xs) var(--cds-pad-sm); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.lab-pill { display: inline-block; padding: 0 .45rem; border-radius: 999px; border: 1px solid var(--color-border-line); font-size: var(--cds-font-size-caption); }
+.lab-heat td.c { text-align: center; }
+.lab-plan ol { margin: 0; padding-left: 1.2rem; display: grid; gap: var(--cds-gap-sm); max-width: 75ch; }
+.lab-plan li b { font-weight: 600; }
+[data-dash-source-state=empty] { color: transparent; }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+.lab-fail { display: flex; align-items: center; justify-content: center; gap: .4rem; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); min-height: 120px; }
+.lab-fail::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+</style>
+
+<div class="lab">
+  <header class="lab-head">
+    <h1>Mark 4 Lab</h1>
+    <p class="lab-take" id="lab-take" data-source="headline" data-field="text">—</p>
+    <p>Goal: know these players better than FanDuel does. Every number here is against FanDuel's real prices. "Recency-weighted" means a bet counts half as much for every year back, so 2025 and 2026 count most. Marks 1, 2 and 3 are frozen and tracked; this page is where Mark 4 gets built.</p>
+  </header>
+
+  <nav class="lab-tabs" role="tablist" aria-label="Lab sections">
+    <button class="lab-tab" role="tab" id="tab-book" aria-controls="sec-book" aria-selected="true">The book</button>
+    <button class="lab-tab" role="tab" id="tab-spots" aria-controls="sec-spots" aria-selected="false">Blind spots</button>
+    <button class="lab-tab" role="tab" id="tab-marks" aria-controls="sec-marks" aria-selected="false">The Marks</button>
+    <button class="lab-tab" role="tab" id="tab-tests" aria-controls="sec-tests" aria-selected="false">Everything tested</button>
+    <button class="lab-tab" role="tab" id="tab-plan" aria-controls="sec-plan" aria-selected="false">Mark 4 plan</button>
+  </nav>
+
+  <section id="sec-book" role="tabpanel" aria-labelledby="tab-book">
+    <div class="lab-grid">
+      <div class="lab-card">
+        <h2 id="h-book-ret">Betting every line blind, by season</h2>
+        <p class="lab-note">Return per unit if you bet every under (or every over) at FanDuel's price. Unders lose a little, overs lose a lot: the book's juice is the bar every edge has to clear.</p>
+        <div class="lab-chart" id="book-ret" data-source="book"></div>
+      </div>
+      <div class="lab-card">
+        <h2 id="h-book-over">How often the over hit</h2>
+        <p class="lab-note">Share of lines that went over (pushes left out), by market and season. Under 50% means unders won more often; break-even at -110 needs 52.4% on your side.</p>
+        <div class="lab-wrap"><table class="lab-heat" id="book-heat"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-spots" role="tabpanel" aria-labelledby="tab-spots" hidden>
+    <div class="lab-card">
+      <h2 id="h-spots">Where FanDuel's line misses</h2>
+      <p class="lab-note">Every line 2021-2026 tagged with its situation, using only what was known before kickoff. "Shrunk" pulls small samples toward the normal return for that bet, because 33 situations x 3 market groups x 2 sides were tried and some will look good by chance. Trust a row more when the shrunk return is positive, it has volume, and most seasons were up. The bars show each season's return, 2021 to 2026.</p>
+      <div class="lab-ctrl">
+        <label>Markets <select id="f-group"><option value="">All groups</option><option>rushing</option><option>receiving</option><option>passing</option><option>all</option></select></label>
+        <label>Side <select id="f-side"><option value="">Both</option><option>under</option><option>over</option></select></label>
+        <label>Min bets <select id="f-min"><option value="30">30</option><option value="100" selected>100</option><option value="300">300</option><option value="1000">1,000</option></select></label>
+        <input id="f-q" type="search" placeholder="Search situations" aria-label="Search situations">
+      </div>
+      <div class="lab-wrap">
+        <table id="spots" data-source="spots" data-row-key="key">
+          <thead><tr>
+            <th data-field="situation"><button data-k="situation">Situation</button></th>
+            <th data-field="group"><button data-k="group">Markets</button></th>
+            <th data-field="side"><button data-k="side">Bet</button></th>
+            <th class="num" data-field="n"><button data-k="n">Bets</button></th>
+            <th class="num" data-field="hit"><button data-k="hit">Won</button></th>
+            <th class="num" data-field="roi"><button data-k="roi">Return</button></th>
+            <th class="num" data-field="roi_recency"><button data-k="roi_recency">Recency-wtd</button></th>
+            <th class="num" data-field="roi_shrunk"><button data-k="roi_shrunk" aria-sort="descending">Shrunk</button></th>
+            <th class="num" data-field="roi_2025_26"><button data-k="roi_2025_26">2025-26</button></th>
+            <th class="num" data-field="seasons_up"><button data-k="seasons_up">Seasons up</button></th>
+            <th>By season</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-marks" role="tabpanel" aria-labelledby="tab-marks" hidden>
+    <div class="lab-grid">
+      <div class="lab-card">
+        <h2 id="h-marks">Boosted parlay return by season (hidden seasons)</h2>
+        <p class="lab-note">Each season predicted by a picker that never saw it, two independent seed groups per Mark. Mark 1 is tracked live only. 2026 is weeks 1-6.</p>
+        <div class="lab-chart" id="marks-chart" data-source="marks"></div>
+      </div>
+      <div class="lab-card">
+        <h2 id="h-marks-rec">All seasons equal vs recency-weighted</h2>
+        <p class="lab-note">Recency-weighted: each season counts half as much per year back, 2026 counts for its 6 weeks of 18. This is how Mark 4 candidates will be judged.</p>
+        <div class="lab-wrap"><table id="marks-rec" data-source="marks_recency" data-row-key="setup">
+          <thead><tr><th data-field="setup">Mark</th><th class="num" data-field="equal">All seasons equal</th><th class="num" data-field="recency">Recency-weighted</th><th class="num" data-field="r2025">2025</th></tr></thead>
+          <tbody></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-tests" role="tabpanel" aria-labelledby="tab-tests" hidden>
+    <div class="lab-card">
+      <h2 id="h-tests">Everything tested so far</h2>
+      <p class="lab-note">Exam = 2025 plus 2026 weeks 1-6, seasons never used to choose anything. Two numbers = the two seed groups.</p>
+      <div class="lab-wrap"><table id="tests" data-source="tests" data-row-key="id">
+        <thead><tr><th data-field="id">#</th><th data-field="date">Date</th><th data-field="test">Test</th><th data-field="idea">Idea</th><th data-field="result">Result</th><th data-field="verdict">Verdict</th></tr></thead>
+        <tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="sec-plan" role="tabpanel" aria-labelledby="tab-plan" hidden>
+    <div class="lab-card lab-plan">
+      <h2 id="h-plan">Mark 4 plan</h2>
+      <p class="lab-note">Marks 1-3 stay frozen and tracked side by side. Mark 4 is judged recency-weighted and gets its own betting-strategy tournament.</p>
+      <ol>
+        <li><b>Lab page</b> (this page): every number visible, recency-weighted. Done, first version.</li>
+        <li><b>Blind-spot map</b>: where FanDuel's line misses, by situation. First pass done (Blind spots tab); more situations to add.</li>
+        <li><b>Book lag</b>: after a role change (a backup promoted, a QB change), how many games until FanDuel's line catches up.</li>
+        <li><b>Recency-weighted training</b>: the picker and projections learn mostly from the last one to two seasons.</li>
+        <li><b>Strategy tournament per model</b>: straights, parlays, 2 or 3 legs, markets, sides, edge cutoffs, boost use; each candidate keeps its own best.</li>
+        <li><b>Case files on every pick</b>: the comps and situations behind each number, shown on the card.</li>
+      </ol>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const pct = d3.format('+.1%'), pct0 = d3.format('.1%'), num = d3.format(',');
+  const cls = v => v == null || isNaN(v) ? '' : (v > 0 ? 'lab-pos' : v < 0 ? 'lab-neg' : '');
+  const N = v => (v === '' || v == null) ? null : Number(v);
+
+  // tabs
+  const tabs = [...document.querySelectorAll('.lab-tab')];
+  const show = (id) => {
+    tabs.forEach(t => { const on = t.id === id; t.setAttribute('aria-selected', on); document.getElementById(t.getAttribute('aria-controls')).hidden = !on; });
+    dash.setLink(id);
+    draw();
+  };
+  tabs.forEach(t => t.addEventListener('click', () => show(t.id)));
+  window.__labShowFromHash = () => { const h = location.hash.slice(1); if (tabs.some(t => t.id === h)) show(h); };
+
+  dash.calc('marks_recency', {
+    title: 'Mark returns: equal vs recency-weighted',
+    description: 'Per Mark and seed group: plain average of season returns, and the average with each season weighted 0.5 per year before 2026 (2026 weighted 6/18 for its six weeks).',
+    inputs: ['marks'],
+    fn: (marks) => {
+      const w = s => Math.pow(0.5, 2026 - s) * (s === 2026 ? 6 / 18 : 1);
+      const by = d3.group(marks, r => `${r.mark} (${r.seeds})`);
+      return [...by].map(([setup, rows]) => {
+        const rr = rows.map(r => ({ s: Number(r.season), v: Number(r.parlay_return) }));
+        const sw = d3.sum(rr, r => w(r.s));
+        const r25 = rr.find(r => r.s === 2025);
+        return { setup, equal: d3.mean(rr, r => r.v), recency: d3.sum(rr, r => w(r.s) * r.v) / sw, r2025: r25 ? r25.v : null };
+      });
+    }
+  });
+
+  dash.calc('headline', {
+    title: 'Headline',
+    description: 'One sentence: blind under return (recency-weighted, all markets) and how many situations beat the line after shrinkage with 100+ bets and most seasons up.',
+    inputs: ['spots'],
+    fn: (spots) => {
+      const base = spots.find(r => r.group === 'all' && r.situation === 'every line' && r.side === 'under');
+      const good = spots.filter(r => r.group !== 'all' && Number(r.roi_shrunk) > 0 && Number(r.n) >= 100 && Number(r.seasons_up) * 2 > Number(r.seasons));
+      const b = base ? Number(base.roi_recency) : NaN;
+      return [{ text: `Betting every under loses ${d3.format('.1%')(-b)} a unit at FanDuel's prices (recency-weighted). ${good.length} situations beat the line after shrinkage with 100+ bets and most seasons up: that is where Mark 4 starts.` }];
+    }
+  });
+
+  let sortKey = 'roi_shrunk', sortDir = -1;
+  document.querySelectorAll('#spots th button').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.k; sortDir = (k === sortKey) ? -sortDir : (['situation', 'group', 'side'].includes(k) ? 1 : -1); sortKey = k;
+    document.querySelectorAll('#spots th button').forEach(x => x.removeAttribute('aria-sort'));
+    b.setAttribute('aria-sort', sortDir > 0 ? 'ascending' : 'descending'); draw();
+  }));
+  ['f-group', 'f-side', 'f-min', 'f-q'].forEach(id => document.getElementById(id).addEventListener('input', () => draw()));
+
+  function fail(el, d) { el.innerHTML = ''; if (d.status === 'error' || d.status === 'connect') { const f = document.createElement('div'); f.className = 'lab-fail'; f.textContent = 'Failed to load'; el.appendChild(f); } }
+
+  function lineChart(el, series, opts) {
+    el.innerHTML = '';
+    const W = el.clientWidth || 600, H = 260, m = { t: 12, r: 12, b: 26, l: 44 };
+    const all = series.flatMap(s => s.pts);
+    const x = d3.scaleLinear(d3.extent(all, p => p.x), [m.l, W - m.r]);
+    const ext = d3.extent(all, p => p.y); const y = d3.scaleLinear([Math.min(0, ext[0]), Math.max(0, ext[1])], [H - m.b, m.t]).nice();
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    svg.append('g').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', d => y(d)).attr('y2', d => y(d)).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-reference)');
+    const ya = svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat(d3.format('.0%')).tickSize(0)).attr('font-size', null).attr('font-family', null);
+    ya.select('.domain').remove(); ya.selectAll('text').attr('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)');
+    const years = [...new Set(all.map(p => p.x))].sort();
+    const xa = svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickValues(years).tickFormat(d3.format('d')).tickSize(0)).attr('font-size', null).attr('font-family', null);
+    xa.select('.domain').attr('stroke', 'var(--cds-chart-axis)'); xa.selectAll('text').attr('fill', 'var(--color-fg-muted)').attr('dy', '1.1em').style('font-size', 'var(--cds-font-size-caption)');
+    const ln = d3.line().x(p => x(p.x)).y(p => y(p.y));
+    series.forEach((s, i) => {
+      svg.append('path').attr('d', ln(s.pts)).attr('fill', 'none').attr('stroke', s.color).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round').attr('stroke-dasharray', s.dash || null);
+      svg.append('g').selectAll('circle').data(s.pts).join('circle').attr('cx', p => x(p.x)).attr('cy', p => y(p.y)).attr('r', 3).attr('fill', s.color);
+    });
+    const tip = d3.select(el).append('div').attr('class', 'lab-tip').style('display', 'none');
+    svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+      .on('mousemove', (ev) => {
+        const [mx] = d3.pointer(ev); const xv = years.reduce((a, b) => Math.abs(x(b) - mx) < Math.abs(x(a) - mx) ? b : a);
+        tip.style('display', null).html('');
+        tip.append('div').attr('class', 'k').text(String(xv));
+        series.forEach(s => { const p = s.pts.find(q => q.x === xv); if (!p) return; const row = tip.append('div'); row.append('span').attr('class', 'sw').style('background', s.color); row.append('span').text(`${s.name}: ${pct(p.y)}`); });
+        const r = el.getBoundingClientRect(); const tw = tip.node().offsetWidth; let lx = x(xv) / W * r.width + 12; if (lx + tw > r.width) lx = x(xv) / W * r.width - tw - 12;
+        tip.style('left', `${Math.max(0, lx)}px`).style('top', '8px');
+      })
+      .on('mouseleave', () => tip.style('display', 'none'));
+    // legend
+    const lg = d3.select(el).append('div').attr('class', 'lab-note').style('margin', 'var(--cds-gap-xs) 0 0').style('display', 'flex').style('flex-wrap', 'wrap').style('gap', 'var(--cds-gap-sm)');
+    series.forEach(s => { const it = lg.append('span'); it.append('span').attr('class', 'sw').style('display', 'inline-block').style('width', '.6rem').style('height', '.6rem').style('border-radius', '2px').style('margin-right', '.35rem').style('background', s.color); it.append('span').text(s.name); });
+  }
+
+  function draw() {
+    // headline
+    const h = dash.data('headline'); const he = document.getElementById('lab-take');
+    he.textContent = h.status === 'ok' && h.data && h.data[0] ? h.data[0].text : '—';
+
+    // the book
+    const b = dash.data('book'); const be = document.getElementById('book-ret'); const heat = document.getElementById('book-heat');
+    if (b.status !== 'ok') { fail(be, b); heat.innerHTML = ''; }
+    else {
+      const rows = b.data.map(r => ({ ...r, season: Number(r.season), over_rate: N(r.over_rate), under_return: N(r.under_return), over_return: N(r.over_return), lines: N(r.lines) }));
+      const allm = rows.filter(r => r.market === 'All markets').sort((a, c) => a.season - c.season);
+      if (!document.getElementById('sec-book').hidden) lineChart(be, [
+        { name: 'Every under', color: dash.colors[0], pts: allm.map(r => ({ x: r.season, y: r.under_return })) },
+        { name: 'Every over', color: dash.colors[1], pts: allm.map(r => ({ x: r.season, y: r.over_return })) }]);
+      const seasons = [...new Set(rows.map(r => r.season))].sort();
+      const markets = ['All markets', ...[...new Set(rows.map(r => r.market))].filter(m => m !== 'All markets').sort()];
+      heat.innerHTML = '';
+      const thead = heat.createTHead().insertRow(); const th0 = document.createElement('th'); th0.textContent = 'Market'; thead.appendChild(th0);
+      seasons.forEach(s => { const th = document.createElement('th'); th.className = 'num'; th.textContent = s; thead.appendChild(th); });
+      const tb = heat.createTBody();
+      markets.forEach(m => {
+        const tr = tb.insertRow(); const td0 = tr.insertCell(); td0.textContent = m;
+        seasons.forEach(s => {
+          const r = rows.find(q => q.market === m && q.season === s); const td = tr.insertCell(); td.className = 'c';
+          td.setAttribute('data-source', 'book'); td.setAttribute('data-field', 'over_rate');
+          td.setAttribute('data-where', `season=${s}&market=${encodeURIComponent(m)}`);
+          if (r && r.over_rate != null) { td.textContent = pct0(r.over_rate); td.className = 'c ' + (r.over_rate < 0.476 ? 'lab-neg' : r.over_rate > 0.524 ? 'lab-pos' : ''); } else td.textContent = '—';
+        });
+      });
+    }
+
+    // blind spots
+    const sp = dash.data('spots'); const tbody = document.querySelector('#spots tbody');
+    if (sp.status !== 'ok') { tbody.innerHTML = ''; }
+    else {
+      const g = document.getElementById('f-group').value, side = document.getElementById('f-side').value, mn = Number(document.getElementById('f-min').value), q = document.getElementById('f-q').value.toLowerCase();
+      let rows = sp.data.filter(r => (!g || r.group === g) && (!side || r.side === side) && Number(r.n) >= mn && (!q || String(r.situation).toLowerCase().includes(q)));
+      const isText = ['situation', 'group', 'side'].includes(sortKey);
+      rows = rows.slice().sort((a, c) => { const A = isText ? a[sortKey] : N(a[sortKey]), C = isText ? c[sortKey] : N(c[sortKey]); if (A == null) return 1; if (C == null) return -1; return (A > C ? 1 : A < C ? -1 : 0) * sortDir; });
+      tbody.innerHTML = '';
+      rows.forEach(r => {
+        const tr = tbody.insertRow(); tr.setAttribute('data-key', r.key);
+        const add = (t, c) => { const td = tr.insertCell(); td.textContent = t; if (c) td.className = c; return td; };
+        add(r.situation); add(r.group); add(r.side); add(num(N(r.n)), 'num'); add(pct0(N(r.hit)), 'num');
+        add(pct(N(r.roi)), 'num ' + cls(N(r.roi))); add(pct(N(r.roi_recency)), 'num ' + cls(N(r.roi_recency)));
+        add(pct(N(r.roi_shrunk)), 'num ' + cls(N(r.roi_shrunk))); add(N(r.roi_2025_26) == null ? '—' : pct(N(r.roi_2025_26)), 'num ' + cls(N(r.roi_2025_26)));
+        add(`${r.seasons_up} of ${r.seasons}`, 'num');
+        const td = tr.insertCell(); const vals = [2021, 2022, 2023, 2024, 2025, 2026].map(y => ({ y, v: N(r['r' + y]), n: N(r['n' + y]) }));
+        const sw = 84, sh = 22, bw = 10, x0 = 2; const mx = Math.max(0.3, d3.max(vals, d => Math.abs(d.v || 0)));
+        const svg = d3.select(td).append('svg').attr('width', sw).attr('height', sh).attr('viewBox', `0 0 ${sw} ${sh}`);
+        svg.append('line').attr('x1', 0).attr('x2', sw).attr('y1', sh / 2).attr('y2', sh / 2).attr('stroke', 'var(--cds-chart-grid)');
+        vals.forEach((d, i) => { if (d.v == null || !d.n || d.n < 10) return; const hgt = Math.abs(d.v) / mx * (sh / 2 - 1); svg.append('rect').attr('x', x0 + i * (bw + 3)).attr('width', bw).attr('y', d.v >= 0 ? sh / 2 - hgt : sh / 2).attr('height', Math.max(1, hgt)).attr('rx', 2).attr('fill', d.v >= 0 ? 'var(--color-ok)' : 'var(--color-bad)').append('title').text(`${d.y}: ${pct(d.v)} on ${d.n}`); });
+      });
+    }
+
+    // marks
+    const mk = dash.data('marks'); const me = document.getElementById('marks-chart');
+    if (mk.status !== 'ok') fail(me, mk);
+    else if (!document.getElementById('sec-marks').hidden) {
+      const by = d3.group(mk.data, r => `${r.mark} (${r.seeds})`);
+      lineChart(me, [...by].sort().map(([k, rows], i) => ({ name: k, color: k.startsWith('Mark 3') ? dash.colors[0] : dash.colors[2], dash: k.includes('11-15') ? '4 3' : null,
+        pts: rows.map(r => ({ x: Number(r.season), y: Number(r.parlay_return) })).sort((a, c) => a.x - c.x) })));
+    }
+    const mr = dash.data('marks_recency'); const mtb = document.querySelector('#marks-rec tbody'); mtb.innerHTML = '';
+    if (mr.status === 'ok') mr.data.forEach(r => { const tr = mtb.insertRow(); const a = (t, c) => { const td = tr.insertCell(); td.textContent = t; if (c) td.className = c; }; a(r.setup); a(pct(r.equal), 'num ' + cls(r.equal)); a(pct(r.recency), 'num ' + cls(r.recency)); a(r.r2025 == null ? '—' : pct(r.r2025), 'num ' + cls(r.r2025)); });
+
+    // tests
+    const ts = dash.data('tests'); const ttb = document.querySelector('#tests tbody'); ttb.innerHTML = '';
+    if (ts.status === 'ok') ts.data.forEach(r => { const tr = ttb.insertRow(); ['id', 'date', 'test', 'idea', 'result', 'verdict'].forEach(k => { const td = tr.insertCell(); td.textContent = r[k]; if (k === 'verdict') { td.innerHTML = ''; const s = document.createElement('span'); s.className = 'lab-pill'; s.textContent = r[k]; td.appendChild(s); } }); });
+  }
+
+  dash.onData(draw);
+  window.__labShowFromHash();
+})();
+</script>

@@ -1,0 +1,11 @@
+id,date,test,idea,result,verdict
+0,2026-10-15,"Retrain the projection model (16 versions: objectives, tree sizes, windows, half-lives, injury/coach layers)",Better projections make better picks,None beat the base model reliably through the picker,Dropped
+1,2026-10-16,"Mark 3: picker + schedule inputs (rest, short week, division, primetime, surface)",Schedule context changes outcomes vs the line,Hidden-season parlays +47% to +54% vs Mark 2 +28% (seed-averaged); weekly replay level (+21% vs +20%),Became the bet (frozen as Mark 3)
+2,2026-10-19,Role weighting of projections (games weighted by teammate situation),Allen with Hall out: weight only same-role games,Mark 3 parlays 2021-24: +15% / +17% vs base +58% / +49%,Dropped
+3,2026-10-19,Played-hurt discount of projections,Coker: discount games played hurt; DNP = doubtful,Mark 3 parlays 2021-24: +28% / +31% vs base +58% / +49%,Dropped
+4,2026-10-19,Anytime touchdown model,Red-zone usage + game context vs FanDuel's TD price,Log loss 0.4368 vs book 0.4379 (same as the price); results swing wildly by season,No edge yet
+5,2026-10-19,"Comps v1 (original Phase 4c, rebuilt)",Five similarity searches as features,Lost to a zero shift at every threshold; shuffled comps scored the same,Parked (as before)
+6,2026-10-19,Comps v2 vs our projection,"Searches + role change/hurt, learned combiner","Practice: rush 0.089, receiving 0.056. Exam parlays +36% / +40% vs +29% / +38%, worse 2022-24; straights better",Parlays fail; straights better
+7,2026-10-19,Comps scored against the line (defense vs line),Defenses whose recent opponents beat their lines keep giving overs,Exam parlays +86% / +19% (coin flip); straights better in 4 of 4,Parlays fail; straights better
+8,2026-10-19,"Comps v3 (rich fingerprints, tonight's lineup, cosine top-8 chains)",Football-sense comps with continuity and injury-adjusted units,Exam parlays seed-dependent (+16% / +96%); straights better in 4 of 4 (exam +5% / +17% vs -4% / -12%),Parlays fail; straights better (track live)
+9,2026-10-19,Blind-spot map (33 situations vs FanDuel's line),Find what the book misprices,"Best shrunk: wind 15+ passing unders +5.2%, QB change passing unders +4.9%, wind receiving unders +4.7%",Feeds Mark 4
