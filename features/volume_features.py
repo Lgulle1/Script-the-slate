@@ -33,6 +33,7 @@ from features.weights import continuity_flags, continuity_weight
 
 OFFSEASON = float(config.OFFSEASON_GAP_GAMES)
 HALF_LIFE = float(config.RECENCY_HALF_LIFE_GAMES)
+ROLE_CTX = None   # features.role_features.RoleTables to add the role-context / played-hurt columns (off by default: nothing changes)
 FAMILY_CODE = {"QB": 0, "RB": 1, "WR": 2, "TE": 3}
 
 # quantity -> player-level spec. `stats` are the own-history columns averaged; `share` is the
@@ -199,9 +200,14 @@ def build_player_features(quantity, spec, player_log, team_log, team_volume, lin
         role[tuple(k)] = (_day(g["gameday"]), np.concatenate([[0.0], np.cumsum(n)]), np.concatenate([[0.0], np.cumsum(d)]))
 
     rows = []
+    rctx = ROLE_CTX
+    if rctx is not None:
+        from features import role_features as rf
     for k, g in base.partition_by("player_id", as_dict=True, maintain_order=True).items():
         pid = _key(k)
         n_rows = g.height
+        if rctx is not None:
+            Mv, Hv = rf.player_arrays(rctx, pid, g["game_id"].to_list())
         gd, season, week, tgn = _day(g["gameday"]), g["season"].to_numpy(), g["week"].to_numpy(), g["team_game_num"].to_numpy()
         teams_l, opp_l, fam_l = g["team"].to_list(), g["opponent"].to_list(), g["family"].to_list()
         elig_l = g["elig"].to_list()
@@ -245,6 +251,8 @@ def build_player_features(quantity, spec, player_log, team_log, team_volume, lin
                 if has_share:
                     r.update(rec_share=_wavg(w_rec, share[:j]), rc_share=_wavg(w_both, share[:j]))
                 r.update(last_val=float(label[j - 1]), w_mass=float(w_both.sum()), cont_mean_last3=float(w_cont[-3:].mean()))
+                if rctx is not None:
+                    r.update(rf.row_features(rctx, Mv, Hv, w_rec, j, i, X, stats, P))
                 sl = slice(max(0, j - 3), j)
                 dsum = lab_d[sl].sum()
                 r["last3_val"] = float(lab_n[sl].sum() / dsum) if dsum > 0 else np.nan
@@ -255,6 +263,8 @@ def build_player_features(quantity, spec, player_log, team_log, team_volume, lin
                 if has_share:
                     r.update(rec_share=np.nan, rc_share=np.nan)
                 r.update(last_val=np.nan, last3_val=np.nan, w_mass=0.0, cont_mean_last3=np.nan)
+                if rctx is not None:
+                    r.update(rf.empty_features(rctx, stats, P))
             d, cn, cd = role.get((opp_l[i], fam_l[i], int(slot[i])), (None, None, None))
             r["opp_role_mean"], r["opp_role_n"] = np.nan, 0
             if d is not None:

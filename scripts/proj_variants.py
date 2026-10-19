@@ -39,6 +39,9 @@ VARIANTS = {
     "half_life_3": dict(half_life=3),
     "half_life_12": dict(half_life=12),
     "injury": dict(layer="injury"),
+    "role_ctx": dict(role="ctx"),          # past games weighted by how similar the teammate situation was (a starter out or not)
+    "role_hurt": dict(role="hurt"),        # games played while Questionable / Doubtful at half weight
+    "role_both": dict(role="both"),
     "weather": dict(layer="weather"),
     "coach": dict(layer="coach"),
     "comps": dict(layer="comps"),
@@ -94,6 +97,9 @@ def _run(name):
     if v.get("half_life"):
         vf.HALF_LIFE = float(v["half_life"])
     data = bt.load_backtest_data()
+    if v.get("role"):
+        from features import role_features as rf
+        vf.ROLE_CTX = rf.build_tables(data.player_log, vf.week_cutoffs(data.team_log), rf.injury_lookup(), v["role"])
     extra = layer_inputs(v.get("layer"), data)
     vt = vf.load_feature_tables(data, **extra)
     et = efficiency.load_efficiency_tables(data, **extra)
