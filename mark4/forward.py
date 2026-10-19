@@ -100,6 +100,7 @@ def forward_preds(d, A, X, seeds, recency: bool, half_life=HALF_LIFE, seasons=SE
                 m.fit(X[tr][:, keep], A.over_won[tr].astype(int), sample_weight=w)
                 preds.append(m.predict_proba(X[te][:, keep])[:, 1])
             p[te] = np.mean(preds, axis=0)
+            print(f"   block {S} week {b0}+ done", flush=True)
     return p
 
 
