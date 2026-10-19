@@ -91,11 +91,12 @@ def forward_preds(d, A, X, seeds, recency: bool, half_life=HALF_LIFE, seasons=SE
             tr = graded & ((season < S) | ((season == S) & (week < b0)))
             t0 = S + (b0 - 1) / 18.0
             w = 0.5 ** ((t0 - t_row[tr]) / half_life) if recency else np.ones(tr.sum())
+            keep = ~np.all(np.isnan(X[tr]), axis=0)        # a column not built yet in the training years (comps before 2022) is left out
             preds = []
             for mk in makers:
                 m = mk()
-                m.fit(X[tr], A.over_won[tr].astype(int), sample_weight=w)
-                preds.append(m.predict_proba(X[te])[:, 1])
+                m.fit(X[tr][:, keep], A.over_won[tr].astype(int), sample_weight=w)
+                preds.append(m.predict_proba(X[te][:, keep])[:, 1])
             p[te] = np.mean(preds, axis=0)
     return p
 
