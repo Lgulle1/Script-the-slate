@@ -42,6 +42,10 @@ VARIANTS = {
     "role_ctx": dict(role="ctx"),          # past games weighted by how similar the teammate situation was (a starter out or not)
     "role_hurt": dict(role="hurt"),        # games played while Questionable / Doubtful at half weight
     "role_both": dict(role="both"),
+    "inj_comps": dict(layer="injury+comps"),      # whole of Phase 4, stacked on 4a (yours, 2026-10-19)
+    "inj_coach": dict(layer="injury+coach"),
+    "inj_weather": dict(layer="injury+weather"),
+    "inj_all": dict(layer="injury+comps+coach+weather"),
     "weather": dict(layer="weather"),
     "coach": dict(layer="coach"),
     "comps": dict(layer="comps"),
@@ -63,8 +67,14 @@ def windowed(pair, years):
 
 
 def layer_inputs(layer, data):
+    """`layer` may stack several, joined with '+' (e.g. injury+comps)."""
     if layer is None:
         return {}
+    if "+" in layer:
+        out = {}
+        for part in layer.split("+"):
+            out.update(layer_inputs(part, data))
+        return out
     if layer == "injury":
         from features import injury_features as inf
         return dict(injury=inf.build_injury_features(data))
