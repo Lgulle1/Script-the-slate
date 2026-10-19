@@ -130,6 +130,7 @@ def as_of(g: pl.DataFrame, sched: pl.DataFrame) -> pl.DataFrame:
 
 def standardize(a: pl.DataFrame) -> pl.DataFrame:
     """z against the same season and week's cross-section of fingerprints (offense and defense pooled per stat, so they share one scale)."""
+    a = a.with_columns([pl.col(s).fill_nan(None) for s in STATS])
     zs = [((pl.col(s) - pl.col(s).mean().over("season", "week")) / pl.col(s).std().over("season", "week")).alias(s) for s in STATS]
     return a.with_columns(zs)
 

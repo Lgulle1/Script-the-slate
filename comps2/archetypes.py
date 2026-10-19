@@ -96,6 +96,7 @@ def build() -> pl.DataFrame:
     a = pl.DataFrame(rows, schema=["player_id", "game_id", "weight_games", *ALL], orient="row", infer_schema_length=None)
     a = a.join(log, on=["player_id", "game_id"], how="left")
     # standardize inside the family, same season and week
+    a = a.with_columns([pl.col(s).fill_nan(None) for s in ALL])      # a first game (no history) is NaN: as null it no longer poisons the week's mean
     a = a.with_columns([((pl.col(s) - pl.col(s).mean().over("family", "season", "week")) / pl.col(s).std().over("family", "season", "week")).alias(s) for s in ALL])
     return a
 
