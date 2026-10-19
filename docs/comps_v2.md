@@ -32,3 +32,22 @@ Comps beat random pairing but lost to a zero shift at every threshold; no unit c
 - Learned similarity weights: pair-level residual co-movement explained by fingerprint distance is no larger than with shuffled residuals (R^2 ~ 1e-4);
   what structure exists sits in player-archetype features, not team units. One game's residual is mostly noise, which is why averaging a few similar games
   (v1) could not work and why v2 moves to one model trained on all games at once.
+
+## Residual model, practice (2022-2023; 2021 has no earlier comps)
+Locked structure: the search outputs (own, dfn, int, sit: shift and n_eff) + the situation + market, family, expectation. Practice: rush corr 0.089 (both
+seasons), over-rate lift top vs bottom fifth +12.8 points; receiving 0.056 / +7.9; passing 0.067 / +7.6. Adding raw fingerprints, archetypes and
+mismatch columns made every group worse (rush 0.054).
+
+## Final exam (2025 + 2026 weeks 1-6; records/tuning/comps2_exam.json; structure fixed before it ran)
+| setup | seeds | exam parlays | 2022-24 parlays | exam singles |
+|---|---|---|---|---|
+| Mark 3 | 1-5 | +29.4% (42) | +71.3% | -3.8% |
+| Mark 3 | 11-15 | +38.4% (43) | +56.6% | -11.7% |
+| + comps (all outputs) | 1-5 | +6.9% (49) | +44.9% | -5.4% |
+| + comps (all outputs) | 11-15 | +28.5% (58) | +48.0% | +5.1% |
+| + comps (shift + adjusted gap) | 1-5 | +36.4% (35) | +36.2% | -0.3% |
+| + comps (shift + adjusted gap) | 11-15 | +40.3% (42) | +24.1% | -0.9% |
+
+Chance of beating Mark 3 on the exam weeks (paired week bootstrap): all outputs, parlays 34% / 42%; shift + gap, parlays 59% / 52%, singles 63% / 87%.
+**Verdict: fails.** The lean version is level with Mark 3 on the exam (a coin flip) and well behind on 2022-2024; the full version is worse. The comps
+predict the residual a little (practice) but not enough to change which parlays win. Mark 3 stays as it is. Back to practice for the next structure.

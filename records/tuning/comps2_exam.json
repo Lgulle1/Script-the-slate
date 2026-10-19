@@ -1,0 +1,112 @@
+{
+ "Mark 3": {
+  "seeds 1-5": {
+   "exam_parlays": 0.2945,
+   "exam_stake": 42.0,
+   "other_parlays": 0.7131,
+   "seasons": {
+    "2021": 0.2548,
+    "2022": 0.8614,
+    "2023": 0.5599,
+    "2024": 0.7906,
+    "2025": -0.0078,
+    "2026": 1.0502
+   },
+   "exam_singles": -0.0382
+  },
+  "seeds 11-15": {
+   "exam_parlays": 0.384,
+   "exam_stake": 43.0,
+   "other_parlays": 0.5658,
+   "seasons": {
+    "2021": 0.2867,
+    "2022": 0.6353,
+    "2023": 0.5659,
+    "2024": 0.4718,
+    "2025": 0.2255,
+    "2026": 0.845
+   },
+   "exam_singles": -0.117
+  }
+ },
+ "Mark 3 + comps (all)": {
+  "seeds 1-5": {
+   "exam_parlays": 0.0693,
+   "exam_stake": 49.0,
+   "other_parlays": 0.4492,
+   "seasons": {
+    "2021": 0.4639,
+    "2022": 0.0308,
+    "2023": 0.5083,
+    "2024": 0.8893,
+    "2025": 0.0329,
+    "2026": 0.1817
+   },
+   "exam_singles": -0.0541
+  },
+  "seeds 11-15": {
+   "exam_parlays": 0.2847,
+   "exam_stake": 58.0,
+   "other_parlays": 0.4797,
+   "seasons": {
+    "2021": 0.3798,
+    "2022": 0.4555,
+    "2023": 0.3934,
+    "2024": 0.5994,
+    "2025": 0.1521,
+    "2026": 0.7017
+   },
+   "exam_singles": 0.0515
+  },
+  "p_better_than_mark3_exam": {
+   "seeds 1-5": {
+    "parlays": 0.335,
+    "singles": 0.46125
+   },
+   "seeds 11-15": {
+    "parlays": 0.4245,
+    "singles": 0.9075
+   }
+  }
+ },
+ "Mark 3 + comps (shift + adjusted gap)": {
+  "seeds 1-5": {
+   "exam_parlays": 0.3641,
+   "exam_stake": 35.0,
+   "other_parlays": 0.3616,
+   "seasons": {
+    "2021": 0.6781,
+    "2022": 0.7674,
+    "2023": 0.0141,
+    "2024": 0.4845,
+    "2025": 0.5411,
+    "2026": -0.0786
+   },
+   "exam_singles": -0.0033
+  },
+  "seeds 11-15": {
+   "exam_parlays": 0.4031,
+   "exam_stake": 42.0,
+   "other_parlays": 0.2412,
+   "seasons": {
+    "2021": 0.54,
+    "2022": 0.4159,
+    "2023": 0.0079,
+    "2024": 0.4638,
+    "2025": 0.2528,
+    "2026": 0.7384
+   },
+   "exam_singles": -0.0094
+  },
+  "p_better_than_mark3_exam": {
+   "seeds 1-5": {
+    "parlays": 0.58675,
+    "singles": 0.63475
+   },
+   "seeds 11-15": {
+    "parlays": 0.523,
+    "singles": 0.866
+   }
+  }
+ }
+}
