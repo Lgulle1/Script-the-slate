@@ -63,13 +63,16 @@ def frame():
         b = b.with_columns(dfn_line=pl.lit(None, pl.Float64))
     k = ["game_id", "player_id", "market"]
     S = d.select(k).join(b.select(*k, *SIT_COLS), on=k, how="left").select(SIT_COLS).cast(pl.Float64, strict=False).to_numpy()
+    from mark4 import book_lag as BL
+    ev = BL.event_nth()
+    E = d.select(k).join(ev, on=k, how="left").select(list(BL.EVENT_KEYS.values())).cast(pl.Float64).fill_null(0).to_numpy()
     comps = []
     for outcome in ("relc", "rline"):
         p = config.PROCESSED_DIR / f"comps3_chains_all_{outcome}.parquet"
         c = pl.read_parquet(p).select(*k, *[pl.col(x).alias(f"{x}_{outcome}") for x in COMP_COLS])
         comps.append(d.select(k).join(c, on=k, how="left").drop(k).to_numpy().astype(float))
     C = np.hstack(comps)
-    return d, A, X3, S, C
+    return d, A, X3, S, C, E
 
 
 def forward_preds(d, A, X, seeds, recency: bool, half_life=HALF_LIFE, seasons=SEASONS):
@@ -203,13 +206,15 @@ SETUPS = {
     "Mark 3 inputs + recency": dict(cols=("base",), recency=True),
     "Mark 4a: + situations, recency": dict(cols=("base", "sit"), recency=True),
     "Mark 4b: + situations + comps, recency": dict(cols=("base", "sit", "comps"), recency=True),
+    "Mark 4c: + situations + role-event games + comps, recency": dict(cols=("base", "sit", "events", "comps"), recency=True),
 }
 
 
 def main(names=None, seeds=(1, 2, 3)):
+    names = names or None
     t0 = time.time()
-    d, A, X3, S, C = frame()
-    blocks = dict(base=X3, sit=S, comps=C)
+    d, A, X3, S, C, E = frame()
+    blocks = dict(base=X3, sit=S, comps=C, events=E)
     print(f"frame {d.height} rows, base {X3.shape[1]}, situations {S.shape[1]}, comps {C.shape[1]} ({time.time() - t0:.0f}s)", flush=True)
     out = {}
     for name, cfg in SETUPS.items():
@@ -235,4 +240,4 @@ def main(names=None, seeds=(1, 2, 3)):
 if __name__ == "__main__":
     a = sys.argv[1:]
     seeds = tuple(int(x) for x in a[0].split(",")) if a else (1, 2, 3)
-    main(seeds=seeds)
+    main(names=a[1:] or None, seeds=seeds)

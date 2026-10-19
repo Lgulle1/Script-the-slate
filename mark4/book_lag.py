@@ -20,20 +20,41 @@ from mark4 import blindspots as BS
 OUT = config.ROOT / "records" / "lab" / "book_lag.csv"
 
 
+EVENT_KEYS = {"promoted back (rushing props)": "ev_back", "promoted receiver (receiving props)": "ev_recv", "QB change (receiving props)": "ev_qb_recv",
+              "QB change (passing props)": "ev_qb_pass"}
+
+
+def event_nth(d=None) -> pl.DataFrame:
+    """Per (game_id, player_id, market): which game of each role event the line falls in (0 = no event)."""
+    d = d if d is not None else BS.frame()
+    x = d.filter(pl.col("side") == "over").select("game_id", "player_id", "market", "gameday", "family", "vac_car", "vac_tgt", "own_car", "own_tgt", "qb_change")
+    out = x.select("game_id", "player_id", "market")
+    for name, cond in _events().items():
+        y = x.with_columns(ev=cond.fill_null(False)).sort("player_id", "market", "gameday")
+        y = y.with_columns(brk=(~pl.col("ev")).cum_sum().over("player_id", "market"))
+        y = y.with_columns(nth=pl.when(pl.col("ev")).then(pl.col("ev").cast(pl.Int32).cum_sum().over("player_id", "market", "brk")).otherwise(0))
+        out = out.join(y.select("game_id", "player_id", "market", pl.col("nth").alias(EVENT_KEYS[name])), on=["game_id", "player_id", "market"], how="left")
+    return out
+
+
+def _events():
+    rush = pl.col("market").is_in(["rush_att", "rush_yds"])
+    recv = pl.col("market").is_in(["rec", "rec_yds"])
+    return {
+        "promoted back (rushing props)": rush & (pl.col("family") == "RB") & (pl.col("vac_car") >= 0.25) & (pl.col("own_car") < 0.35),
+        "promoted receiver (receiving props)": recv & (pl.col("vac_tgt") >= 0.15) & (pl.col("own_tgt") < 0.18),
+        "QB change (receiving props)": recv & pl.col("qb_change"),
+        "QB change (passing props)": pl.col("market").is_in(["pass_att", "pass_cmp", "pass_yds"]) & pl.col("qb_change"),
+    }
+
+
 def main():
     d = BS.frame()
     ov = d.filter(pl.col("side") == "over").select("season", "game_id", "player_id", "market", "gameday", "family", "line", "actual", "won", "profit", "w",
                                                    "vac_car", "vac_tgt", "own_car", "own_tgt", "qb_change", "team", "prev4")
     un = d.filter(pl.col("side") == "under").select("game_id", "player_id", "market", under_won="won", under_profit="profit")
     x = ov.join(un, on=["game_id", "player_id", "market"], how="inner")
-    rush = pl.col("market").is_in(["rush_att", "rush_yds"])
-    recv = pl.col("market").is_in(["rec", "rec_yds"])
-    events = {
-        "promoted back (rushing props)": rush & (pl.col("family") == "RB") & (pl.col("vac_car") >= 0.25) & (pl.col("own_car") < 0.35),
-        "promoted receiver (receiving props)": recv & (pl.col("vac_tgt") >= 0.15) & (pl.col("own_tgt") < 0.18),
-        "QB change (receiving props)": recv & pl.col("qb_change"),
-        "QB change (passing props)": pl.col("market").is_in(["pass_att", "pass_cmp", "pass_yds"]) & pl.col("qb_change"),
-    }
+    events = _events()
     rows = []
     for name, cond in events.items():
         y = x.with_columns(ev=cond.fill_null(False)).sort("player_id", "market", "gameday")
