@@ -29,6 +29,7 @@ HERE = config.ROOT / "scripts"
 HALF_LIFE = 1.0
 BLOCKS = (1, 7, 13)
 SEASONS = (2022, 2023, 2024, 2025, 2026)
+MIN_PAST_STAKE, MIN_PAST_BETS = 30.0, 60     # a strategy is only chosen on a real past sample (2025 once picked one on 9 parlays)
 OUT = config.ROOT / "records" / "lab"
 
 
@@ -72,6 +73,7 @@ def frame():
         c = pl.read_parquet(p).select(*k, *[pl.col(x).alias(f"{x}_{outcome}") for x in COMP_COLS])
         comps.append(d.select(k).join(c, on=k, how="left").drop(k).to_numpy().astype(float))
     C = np.hstack(comps)
+    S, C = (np.where(np.isfinite(z), z, np.nan) for z in (S, C))      # a line over a last-4 average of 0 is inf
     return d, A, X3, S, C, E
 
 
@@ -184,7 +186,7 @@ def evaluate(d, A, p, label, fixed=None):
                 continue
             past = {k: v for k, v in r["seasons"].items() if k < S}
             stake = sum(season_rec_w(k, S) * v[1] for k, v in past.items())
-            if stake < 20:
+            if stake < MIN_PAST_STAKE or sum(v[1] for v in past.values()) < MIN_PAST_BETS:
                 continue
             roi = sum(season_rec_w(k, S) * v[0] for k, v in past.items()) / stake
             if roi > bs:
@@ -221,8 +223,12 @@ def main(names=None, seeds=(1, 2, 3)):
         if names and name not in names:
             continue
         X = np.hstack([blocks[c] for c in cfg["cols"]])
-        p = forward_preds(d, A, X, seeds, cfg["recency"])
-        np.save(OUT / f"forward_p_{name.split(':')[0].replace(' ', '_')}_{'-'.join(map(str, seeds))}.npy", p)
+        pf = OUT / f"forward_p_{name.split(':')[0].replace(' ', '_')}_{'-'.join(map(str, seeds))}.npy"
+        if pf.exists():
+            p = np.load(pf)
+        else:
+            p = forward_preds(d, A, X, seeds, cfg["recency"])
+            np.save(pf, p)
         res, chosen = evaluate(d, A, p, name)
         _, m3rule = evaluate(d, A, p, name, fixed=strat_name(dict(kind="mark3", n=8, edge=0.04, sides="under", markets="four")))
         out[name] = dict(chosen=chosen, summary=summarize(chosen), mark3_rule={str(k): v for k, v in m3rule.items()}, mark3_rule_summary=summarize(m3rule),
@@ -233,7 +239,10 @@ def main(names=None, seeds=(1, 2, 3)):
             print(f"   {s_}: {c['roi']:+.1%} on {c['staked']:.0f}  [{c['strategy']}]  (chosen on past {c['picked_on_past_roi']:+.1%})", flush=True)
         m3 = out[name]["mark3_rule_summary"]
         print(f"   Mark 3 rule on these picks: recency-weighted {m3['recency_roi']:+.1%}, units {m3['units']:+.1f}", flush=True)
-    (OUT / f"forward_{'-'.join(map(str, seeds))}.json").write_text(json.dumps(out, indent=1, default=str))
+    jf = OUT / f"forward_{'-'.join(map(str, seeds))}.json"
+    old = json.loads(jf.read_text()) if jf.exists() else {}
+    old.update(out)
+    jf.write_text(json.dumps(old, indent=1, default=str))
     return out
 
 
