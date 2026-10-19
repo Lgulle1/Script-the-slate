@@ -1,0 +1,5 @@
+key,setup,rule,recency_ret,units,staked
+Mark 3 (frozen) | Strategy chosen forward,Mark 3 (frozen),Strategy chosen forward,0.3253137573123401,60.48038930125039,220.0
+Mark 3 (frozen) | Mark 3's rule,Mark 3 (frozen),Mark 3's rule,0.28945533850519517,29.024871383205024,141.0
+Mark 4.0: recency-weighted picker | Strategy chosen forward,Mark 4.0: recency-weighted picker,Strategy chosen forward,0.5517957715857641,58.93124938274566,99.0
+Mark 4.0: recency-weighted picker | Mark 3's rule,Mark 4.0: recency-weighted picker,Mark 3's rule,0.36580091295974876,57.8798317748588,163.0

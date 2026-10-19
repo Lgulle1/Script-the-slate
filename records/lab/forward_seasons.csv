@@ -1,0 +1,17 @@
+setup,rule,season,ret,staked,units,strategy,key
+Mark 3 (frozen),Strategy chosen forward,2023,0.1507613706600407,70.0,10.553295946202848,4 boosted parlays (Mark 3 rule) | edge 2% | both | 7 markets,Mark 3 (frozen) | Strategy chosen forward | 2023
+Mark 3 (frozen),Strategy chosen forward,2024,0.32889830965036604,67.0,22.036186746574526,4 boosted parlays (Mark 3 rule) | edge 2% | under | 4 markets,Mark 3 (frozen) | Strategy chosen forward | 2024
+Mark 3 (frozen),Strategy chosen forward,2025,0.3075467610047433,65.0,19.990539465308316,4 boosted parlays (Mark 3 rule) | edge 2% | under | 7 markets,Mark 3 (frozen) | Strategy chosen forward | 2025
+Mark 3 (frozen),Strategy chosen forward,2026,0.43890928573137217,18.0,7.900367143164699,4 boosted parlays (Mark 3 rule) | edge 2% | under | 7 markets,Mark 3 (frozen) | Strategy chosen forward | 2026
+Mark 3 (frozen),Mark 3's rule,2023,0.41251650671817275,58.0,23.92595738965402,4 boosted parlays (Mark 3 rule) | edge 4% | under | 4 markets,Mark 3 (frozen) | Mark 3's rule | 2023
+Mark 3 (frozen),Mark 3's rule,2024,-0.06441908014926381,38.0,-2.447925045672025,4 boosted parlays (Mark 3 rule) | edge 4% | under | 4 markets,Mark 3 (frozen) | Mark 3's rule | 2024
+Mark 3 (frozen),Mark 3's rule,2025,-0.17808964391739454,34.0,-6.055047893191414,4 boosted parlays (Mark 3 rule) | edge 4% | under | 4 markets,Mark 3 (frozen) | Mark 3's rule | 2025
+Mark 3 (frozen),Mark 3's rule,2026,1.2365351756740404,11.0,13.601886932414445,4 boosted parlays (Mark 3 rule) | edge 4% | under | 4 markets,Mark 3 (frozen) | Mark 3's rule | 2026
+Mark 4.0: recency-weighted picker,Strategy chosen forward,2023,0.6010678260869566,23.0,13.824560000000002,4 boosted parlays (Mark 3 rule) | edge 6% | under | 7 markets,Mark 4.0: recency-weighted picker | Strategy chosen forward | 2023
+Mark 4.0: recency-weighted picker,Strategy chosen forward,2024,0.41142668406553595,33.0,13.577080574162686,4 boosted parlays (Mark 3 rule) | edge 6% | both | 4 markets,Mark 4.0: recency-weighted picker | Strategy chosen forward | 2024
+Mark 4.0: recency-weighted picker,Strategy chosen forward,2025,1.0544626467742209,27.0,28.47049146290396,4 boosted parlays (Mark 3 rule) | edge 6% | both | 4 markets,Mark 4.0: recency-weighted picker | Strategy chosen forward | 2025
+Mark 4.0: recency-weighted picker,Strategy chosen forward,2026,0.19119483410493843,16.0,3.059117345679015,4 boosted parlays (Mark 3 rule) | edge 6% | both | 7 markets,Mark 4.0: recency-weighted picker | Strategy chosen forward | 2026
+Mark 4.0: recency-weighted picker,Mark 3's rule,2023,0.40376212773821707,54.0,21.80315489786372,4 boosted parlays (Mark 3 rule) | edge 4% | under | 4 markets,Mark 4.0: recency-weighted picker | Mark 3's rule | 2023
+Mark 4.0: recency-weighted picker,Mark 3's rule,2024,0.30249054002621606,38.0,11.49464052099621,4 boosted parlays (Mark 3 rule) | edge 4% | under | 4 markets,Mark 4.0: recency-weighted picker | Mark 3's rule | 2024
+Mark 4.0: recency-weighted picker,Mark 3's rule,2025,0.30154021639466744,54.0,16.28317168531204,4 boosted parlays (Mark 3 rule) | edge 4% | under | 4 markets,Mark 4.0: recency-weighted picker | Mark 3's rule | 2025
+Mark 4.0: recency-weighted picker,Mark 3's rule,2026,0.4881685100404014,17.0,8.298864670686823,4 boosted parlays (Mark 3 rule) | edge 4% | under | 4 markets,Mark 4.0: recency-weighted picker | Mark 3's rule | 2026

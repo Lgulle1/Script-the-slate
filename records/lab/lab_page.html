@@ -42,14 +42,46 @@
   </header>
 
   <nav class="lab-tabs" role="tablist" aria-label="Lab sections">
-    <button class="lab-tab" role="tab" id="tab-book" aria-controls="sec-book" aria-selected="true">The book</button>
+    <button class="lab-tab" role="tab" id="tab-mark4" aria-controls="sec-mark4" aria-selected="true">Mark 4</button>
+    <button class="lab-tab" role="tab" id="tab-book" aria-controls="sec-book" aria-selected="false">The book</button>
     <button class="lab-tab" role="tab" id="tab-spots" aria-controls="sec-spots" aria-selected="false">Blind spots</button>
     <button class="lab-tab" role="tab" id="tab-marks" aria-controls="sec-marks" aria-selected="false">The Marks</button>
     <button class="lab-tab" role="tab" id="tab-tests" aria-controls="sec-tests" aria-selected="false">Everything tested</button>
     <button class="lab-tab" role="tab" id="tab-plan" aria-controls="sec-plan" aria-selected="false">Mark 4 plan</button>
   </nav>
 
-  <section id="sec-book" role="tabpanel" aria-labelledby="tab-book">
+  <section id="sec-mark4" role="tabpanel" aria-labelledby="tab-mark4">
+    <div class="lab-grid">
+      <div class="lab-card">
+        <h2 id="h-m4-sum">Mark 4 vs Mark 3, played forward</h2>
+        <p class="lab-note">Every season 2022-2026 bet the way it would have been live: the picker learns only from lines before each 6-week block, and the betting strategy for a season is chosen only from earlier seasons. Returns are recency-weighted (each season back counts half). Mark 3 is frozen; each Mark 4 version adds one layer and stays only if it beats the one before.</p>
+        <div class="lab-wrap"><table id="m4-sum" data-source="fwd_sum" data-row-key="key">
+          <thead><tr><th data-field="setup">Version</th><th data-field="rule">Betting rule</th><th class="num" data-field="recency_ret">Return (recency-wtd)</th><th class="num" data-field="units">Units won</th><th class="num" data-field="staked">Units bet</th></tr></thead>
+          <tbody></tbody></table></div>
+      </div>
+      <div class="lab-card">
+        <h2 id="h-m4-h2h">Head to head, week by week</h2>
+        <p class="lab-note">Same weeks, same rule; weeks resampled 4,000 times, recent weeks weighted more. "Chance better" is how often the Mark 4 version came out ahead. 95%+ is proof; around 70-80% is a lean.</p>
+        <div class="lab-wrap"><table id="m4-h2h" data-source="fwd_h2h" data-row-key="key">
+          <thead><tr><th data-field="challenger">Version</th><th data-field="rule">Betting rule</th><th class="num" data-field="mark3">Mark 3</th><th class="num" data-field="challenger_ret">Version</th><th class="num" data-field="p_better">Chance better</th><th class="num" data-field="weeks">Weeks</th></tr></thead>
+          <tbody></tbody></table></div>
+      </div>
+    </div>
+    <div class="lab-card" style="margin-top: var(--cds-gap-md)">
+      <h2 id="h-m4-seasons">Return by season (strategy chosen forward)</h2>
+      <p class="lab-note">Each season's return with the strategy the version picked from earlier seasons. Mark 3 is the grey line. Hover a season for every version's return.</p>
+      <div class="lab-chart" id="m4-chart" data-source="fwd_seasons"></div>
+    </div>
+    <div class="lab-card" style="margin-top: var(--cds-gap-md)">
+      <h2 id="h-lag">Book lag: does FanDuel catch up after a role change?</h2>
+      <p class="lab-note">For the 1st, 2nd, 3rd and 4th+ game of a role change: how the line compared with what happened, and the return of betting the over or the under. A promoted back's line is set too high for games 1-3 (unders win), then too low from game 4 (overs win). A new QB's first start: passing unders win.</p>
+      <div class="lab-wrap"><table id="lag" data-source="lag" data-row-key="key">
+        <thead><tr><th data-field="event">Role change</th><th data-field="game">Game</th><th class="num" data-field="lines">Lines</th><th class="num" data-field="actual_vs_line">Actual / line (median)</th><th class="num" data-field="over_hit">Over hit</th><th class="num" data-field="over_return_recency">Over return</th><th class="num" data-field="under_return_recency">Under return</th></tr></thead>
+        <tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="sec-book" role="tabpanel" aria-labelledby="tab-book" hidden>
     <div class="lab-grid">
       <div class="lab-card">
         <h2 id="h-book-ret">Betting every line blind, by season</h2>
@@ -227,7 +259,31 @@
     series.forEach(s => { const it = lg.append('span'); it.append('span').attr('class', 'sw').style('display', 'inline-block').style('width', '.6rem').style('height', '.6rem').style('border-radius', '2px').style('margin-right', '.35rem').style('background', s.color); it.append('span').text(s.name); });
   }
 
+  function drawMark4() {
+    const sm = dash.data('fwd_sum'); const st = document.querySelector('#m4-sum tbody'); st.innerHTML = '';
+    if (sm.status === 'ok') sm.data.forEach(r => { const tr = st.insertRow(); tr.setAttribute('data-key', r.key); const a = (t, c) => { const td = tr.insertCell(); td.textContent = t; if (c) td.className = c; };
+      a(r.setup); a(r.rule); a(pct(N(r.recency_ret)), 'num ' + cls(N(r.recency_ret))); a(d3.format('+.1f')(N(r.units)), 'num ' + cls(N(r.units))); a(d3.format(',.0f')(N(r.staked)), 'num'); });
+    const hh = dash.data('fwd_h2h'); const ht = document.querySelector('#m4-h2h tbody'); ht.innerHTML = '';
+    if (hh.status === 'ok') hh.data.forEach(r => { const tr = ht.insertRow(); tr.setAttribute('data-key', r.key); const a = (t, c) => { const td = tr.insertCell(); td.textContent = t; if (c) td.className = c; };
+      a(r.challenger); a(r.rule); a(pct(N(r.mark3)), 'num ' + cls(N(r.mark3))); a(pct(N(r.challenger_ret)), 'num ' + cls(N(r.challenger_ret)));
+      const p = N(r.p_better); a(pct0(p), 'num ' + (p >= 0.95 ? 'lab-pos' : p <= 0.05 ? 'lab-neg' : '')); a(num(N(r.weeks)), 'num'); });
+    const fs = dash.data('fwd_seasons'); const ce = document.getElementById('m4-chart');
+    if (fs.status !== 'ok') fail(ce, fs);
+    else if (!document.getElementById('sec-mark4').hidden) {
+      const rows = fs.data.filter(r => r.rule === 'Strategy chosen forward');
+      const by = d3.group(rows, r => r.setup);
+      const keys = [...by.keys()].sort((a, b) => (a.startsWith('Mark 3') ? -1 : b.startsWith('Mark 3') ? 1 : a.localeCompare(b)));
+      lineChart(ce, keys.map((k, i) => ({ name: k, color: k.startsWith('Mark 3') ? 'var(--cds-chart-muted)' : dash.colors[i % dash.colors.length],
+        pts: by.get(k).map(r => ({ x: Number(r.season), y: N(r.ret) })).sort((a, b) => a.x - b.x) })));
+    }
+    const lg = dash.data('lag'); const lt = document.querySelector('#lag tbody'); lt.innerHTML = '';
+    if (lg.status === 'ok') lg.data.forEach(r => { const tr = lt.insertRow(); tr.setAttribute('data-key', r.key); const a = (t, c) => { const td = tr.insertCell(); td.textContent = t; if (c) td.className = c; };
+      a(r.event); a(r.game); a(num(N(r.lines)), 'num'); a(d3.format('.2f')(N(r.actual_vs_line)), 'num'); a(pct0(N(r.over_hit)), 'num');
+      a(pct(N(r.over_return_recency)), 'num ' + cls(N(r.over_return_recency))); a(pct(N(r.under_return_recency)), 'num ' + cls(N(r.under_return_recency))); });
+  }
+
   function draw() {
+    drawMark4();
     // headline
     const h = dash.data('headline'); const he = document.getElementById('lab-take');
     he.textContent = h.status === 'ok' && h.data && h.data[0] ? h.data[0].text : '—';
