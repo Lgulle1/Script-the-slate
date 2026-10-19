@@ -33,7 +33,7 @@ def _load(name):
 
 T4, M3T = _load("tournament4"), _load("mark3_tests")
 IB, CM, TN, T2 = M3T.IB, M3T.CM, M3T.TN, M3T.T2
-TS, VD = T4.TS, T4.VD
+TS, VD = TN.TM.T, T4.VD      # the SEL switch must sit on the SAME module copy that TN.build() reads (T4.TS is another copy: every variant ran on base until 2026-10-19)
 GROUPS = {"seeds 1-5": (1, 2, 3, 4, 5), "seeds 11-15": (11, 12, 13, 14, 15)}
 JUDGE = (2021, 2022, 2023, 2024)
 
