@@ -59,3 +59,27 @@ def main(seeds="1-2-3"):
 
 if __name__ == "__main__":
     main()
+
+
+DET_NAMES = {"Mark 3 det": "Mark 3 (frozen inputs)", "Mark 4.0 det": "Mark 4.0: recency (1-season half-life)", "Mark 4d det": "Mark 4d: 4.0 + blind-spot score",
+             "Mark 4e det: + comps vs line": "Mark 4e: + comps vs the line", "Mark 4f det: + defense vs line": "Mark 4f: + defense vs line only",
+             "Mark 4g det: gentle recency (3-season half-life)": "Mark 4g: gentle recency (3-season)",
+             "Mark 4h det: comps vs line + gentle recency": "Mark 4h: comps vs line + gentle recency"}
+
+
+def det_table():
+    """The no-randomness comparison (records/lab/forward_0.json) as records/lab/det_summary.csv."""
+    res = json.loads((F.OUT / "forward_0.json").read_text())
+    rows = []
+    for k, v in res.items():
+        pw = v.get("power", {})
+        if not pw:
+            continue
+        bs = pw.get("logloss_gain_by_season", {})
+        rows.append(dict(version=DET_NAMES.get(k, k), logloss_gain=pw["logloss_gain"], ll_2025=bs.get("2025"), ll_2026=bs.get("2026"),
+                         top20_under=pw["top20_under"], top20_both=pw["top20_both"], bets=pw["top20_both_bets"],
+                         parlay_rule=v["mark3_rule_summary"]["recency_roi"], parlay_chosen=v["summary"]["recency_roi"]))
+    t = pl.DataFrame(rows)
+    t.write_csv(F.OUT / "det_summary.csv")
+    print(t)
+    return t
