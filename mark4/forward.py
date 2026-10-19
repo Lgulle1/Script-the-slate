@@ -246,6 +246,9 @@ SETUPS = {
     "Mark 3 det": dict(cols=("base",), recency=False, det=True),
     "Mark 4.0 det": dict(cols=("base",), recency=True, det=True),
     "Mark 4d det": dict(cols=("base", "spot"), recency=True, det=True),
+    "Mark 4e det: + comps vs line": dict(cols=("base", "comps_line"), recency=False, det=True),
+    "Mark 4f det: + defense vs line": dict(cols=("base", "dfn_line"), recency=False, det=True),
+    "Mark 4g det: gentle recency (3-season half-life)": dict(cols=("base",), recency=True, det=True, half_life=3.0),
 }
 
 
@@ -253,7 +256,7 @@ def main(names=None, seeds=(1, 2, 3)):
     names = names or None
     t0 = time.time()
     d, A, X3, S, C, E, P = frame()
-    blocks = dict(base=X3, sit=S, comps=C, events=E, spot=P)
+    blocks = dict(base=X3, sit=S, comps=C, events=E, spot=P, comps_line=C[:, 6:12], dfn_line=C[:, 6:7])
     print(f"frame {d.height} rows, base {X3.shape[1]}, situations {S.shape[1]}, comps {C.shape[1]} ({time.time() - t0:.0f}s)", flush=True)
     out = {}
     for name, cfg in SETUPS.items():
@@ -264,7 +267,7 @@ def main(names=None, seeds=(1, 2, 3)):
         if pf.exists():
             p = np.load(pf)
         else:
-            p = forward_preds(d, A, X, seeds, cfg["recency"], det=cfg.get("det", False))
+            p = forward_preds(d, A, X, seeds, cfg["recency"], det=cfg.get("det", False), half_life=cfg.get("half_life", HALF_LIFE))
             np.save(pf, p)
         res, chosen = evaluate(d, A, p, name)
         _, m3rule = evaluate(d, A, p, name, fixed=strat_name(dict(kind="mark3", n=8, edge=0.04, sides="under", markets="four")))
