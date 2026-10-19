@@ -51,3 +51,22 @@ mismatch columns made every group worse (rush 0.054).
 Chance of beating Mark 3 on the exam weeks (paired week bootstrap): all outputs, parlays 34% / 42%; shift + gap, parlays 59% / 52%, singles 63% / 87%.
 **Verdict: fails.** The lean version is level with Mark 3 on the exam (a coin flip) and well behind on 2022-2024; the full version is worse. The comps
 predict the residual a little (practice) but not enough to change which parlays win. Mark 3 stays as it is. Back to practice for the next structure.
+
+## Comps scored against the line (comps2/line_comps.py, scripts/comps3_exam.py; 2026-10-19)
+Practice (2022-2023, outcome = actual / line - 1): the defense's recent results vs the line, no similarity: receiving corr 0.079 (both seasons >= 0.078),
+over-rate lift +6.4 points; rushing 0.044 / +9.1. Similar offense-defense pairs vs the line (h 0.75): receiving 0.048. Own history and situations vs the
+line: flat or negative. Locked: two setups, fixed before the exam.
+
+| setup | seeds | exam parlays | 2022-24 parlays | exam singles | 2022-24 singles |
+|---|---|---|---|---|---|
+| Mark 3 | 1-5 | +29.4% | +71.3% | -3.8% | +6.3% |
+| Mark 3 | 11-15 | +38.4% | +56.6% | -11.7% | +2.4% |
+| + defense vs line + matchup vs line | 1-5 | +20.3% | +25.6% | +0.8% | +4.7% |
+| + defense vs line + matchup vs line | 11-15 | +32.9% | +31.4% | -4.3% | +7.7% |
+| + defense vs line | 1-5 | +86.3% | +42.0% | +10.5% | +9.2% |
+| + defense vs line | 11-15 | +18.5% | +65.6% | -0.8% | +10.5% |
+
+Chance of beating Mark 3 (paired week bootstrap), defense vs line: parlays exam 86% / 34%, 2022-24 10% / 70% -> seed-dependent, NOT a pass for parlays.
+Singles exam 88% / 80%, 2022-24 68% / 93% -> better in all four cells. Defense + matchup: parlays worse (2022-24 1% / 13%).
+**Verdict:** parlays unchanged (Mark 3 stays the bet). The defense-vs-line input is the first change that improves STRAIGHT bets consistently
+(exam average about +5% vs -8%; 2022-24 about +10% vs +4%). Tracked from week 7 as a straight-bet candidate, not bet until live weeks agree.

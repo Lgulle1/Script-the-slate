@@ -1,0 +1,134 @@
+{
+ "Mark 3": {
+  "seeds 1-5": {
+   "exam_parlays": 0.2945,
+   "exam_stake": 42.0,
+   "other_parlays": 0.7131,
+   "seasons": {
+    "2021": 0.2548,
+    "2022": 0.8614,
+    "2023": 0.5599,
+    "2024": 0.7906,
+    "2025": -0.0078,
+    "2026": 1.0502
+   },
+   "exam_singles": -0.0382,
+   "other_singles": 0.0629
+  },
+  "seeds 11-15": {
+   "exam_parlays": 0.384,
+   "exam_stake": 43.0,
+   "other_parlays": 0.5658,
+   "seasons": {
+    "2021": 0.2867,
+    "2022": 0.6353,
+    "2023": 0.5659,
+    "2024": 0.4718,
+    "2025": 0.2255,
+    "2026": 0.845
+   },
+   "exam_singles": -0.117,
+   "other_singles": 0.0237
+  }
+ },
+ "Mark 3 + defense vs line + matchup vs line": {
+  "seeds 1-5": {
+   "exam_parlays": 0.2032,
+   "exam_stake": 48.0,
+   "other_parlays": 0.2561,
+   "seasons": {
+    "2021": 0.3037,
+    "2022": 0.301,
+    "2023": 0.143,
+    "2024": 0.3507,
+    "2025": 0.3868,
+    "2026": -0.4944
+   },
+   "exam_singles": 0.0077,
+   "other_singles": 0.0471
+  },
+  "seeds 11-15": {
+   "exam_parlays": 0.329,
+   "exam_stake": 55.0,
+   "other_parlays": 0.3141,
+   "seasons": {
+    "2021": 0.3309,
+    "2022": 0.3215,
+    "2023": 0.1911,
+    "2024": 0.4437,
+    "2025": 0.2687,
+    "2026": 0.5702
+   },
+   "exam_singles": -0.0427,
+   "other_singles": 0.0774
+  },
+  "p_better": {
+   "seeds 1-5 exam": {
+    "parlays": 0.43925,
+    "singles": 0.6335
+   },
+   "seeds 1-5 2022-24": {
+    "parlays": 0.01025,
+    "singles": 0.39875
+   },
+   "seeds 11-15 exam": {
+    "parlays": 0.461,
+    "singles": 0.69975
+   },
+   "seeds 11-15 2022-24": {
+    "parlays": 0.12825,
+    "singles": 0.833
+   }
+  }
+ },
+ "Mark 3 + defense vs line": {
+  "seeds 1-5": {
+   "exam_parlays": 0.8627,
+   "exam_stake": 51.0,
+   "other_parlays": 0.4204,
+   "seasons": {
+    "2021": 0.4702,
+    "2022": 0.415,
+    "2023": 0.3552,
+    "2024": 0.5148,
+    "2025": 0.8583,
+    "2026": 0.8785
+   },
+   "exam_singles": 0.1048,
+   "other_singles": 0.0925
+  },
+  "seeds 11-15": {
+   "exam_parlays": 0.1853,
+   "exam_stake": 60.0,
+   "other_parlays": 0.656,
+   "seasons": {
+    "2021": 0.468,
+    "2022": 0.6092,
+    "2023": 0.5455,
+    "2024": 0.8228,
+    "2025": 0.3545,
+    "2026": -0.4915
+   },
+   "exam_singles": -0.0083,
+   "other_singles": 0.1055
+  },
+  "p_better": {
+   "seeds 1-5 exam": {
+    "parlays": 0.86325,
+    "singles": 0.88075
+   },
+   "seeds 1-5 2022-24": {
+    "parlays": 0.102,
+    "singles": 0.6825
+   },
+   "seeds 11-15 exam": {
+    "parlays": 0.34175,
+    "singles": 0.80425
+   },
+   "seeds 11-15 2022-24": {
+    "parlays": 0.69575,
+    "singles": 0.931
+   }
+  }
+ }
+}
