@@ -13,7 +13,8 @@ from mark4 import forward as F
 # internal setup names -> what the page calls them
 NAMES = {"Mark 3 (forward)": "Mark 3 (frozen)", "Mark 3 inputs + recency": "Mark 4.0: recency-weighted picker",
          "Mark 4a: + situations, recency": "Mark 4a: + blind-spot situations", "Mark 4b: + situations + comps, recency": "Mark 4b: + situations + comps",
-         "Mark 4c: + situations + role-event games + comps, recency": "Mark 4c: + situations + role-change games + comps"}
+         "Mark 4c: + situations + role-event games + comps, recency": "Mark 4c: + situations + role-change games + comps",
+         "Mark 4d: + blind-spot score, recency": "Mark 4d: 4.0 + blind-spot score"}
 
 
 def results(seeds="1-2-3"):

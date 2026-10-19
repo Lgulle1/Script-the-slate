@@ -74,7 +74,9 @@ def frame():
         comps.append(d.select(k).join(c, on=k, how="left").drop(k).to_numpy().astype(float))
     C = np.hstack(comps)
     S, C = (np.where(np.isfinite(z), z, np.nan) for z in (S, C))      # a line over a last-4 average of 0 is inf
-    return d, A, X3, S, C, E
+    sp = config.PROCESSED_DIR / "mark4_spot_score.parquet"
+    P = d.select(k).join(pl.read_parquet(sp), on=k, how="left").drop(k).to_numpy().astype(float) if sp.exists() else np.full((d.height, 1), np.nan)
+    return d, A, X3, S, C, E, P
 
 
 def forward_preds(d, A, X, seeds, recency: bool, half_life=HALF_LIFE, seasons=SEASONS):
@@ -210,14 +212,15 @@ SETUPS = {
     "Mark 4a: + situations, recency": dict(cols=("base", "sit"), recency=True),
     "Mark 4b: + situations + comps, recency": dict(cols=("base", "sit", "comps"), recency=True),
     "Mark 4c: + situations + role-event games + comps, recency": dict(cols=("base", "sit", "events", "comps"), recency=True),
+    "Mark 4d: + blind-spot score, recency": dict(cols=("base", "spot"), recency=True),
 }
 
 
 def main(names=None, seeds=(1, 2, 3)):
     names = names or None
     t0 = time.time()
-    d, A, X3, S, C, E = frame()
-    blocks = dict(base=X3, sit=S, comps=C, events=E)
+    d, A, X3, S, C, E, P = frame()
+    blocks = dict(base=X3, sit=S, comps=C, events=E, spot=P)
     print(f"frame {d.height} rows, base {X3.shape[1]}, situations {S.shape[1]}, comps {C.shape[1]} ({time.time() - t0:.0f}s)", flush=True)
     out = {}
     for name, cfg in SETUPS.items():
