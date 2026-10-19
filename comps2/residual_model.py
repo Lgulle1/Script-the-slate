@@ -40,13 +40,19 @@ def frame() -> pl.DataFrame:
                                              lexp=pl.col("expected").clip(0.1, None).log())
 
 
+def locked_columns() -> list:
+    """The structure fixed on the practice seasons 2022-2023 (2026-10-19, records/tuning/comps2_ladder.csv) BEFORE the exam: the search outputs and the
+    situation only. Adding the raw fingerprints, archetypes and mismatch columns made practice worse in every group (rush 0.054 vs 0.089)."""
+    return [f"{s}_{k}" for s in ("own", "dfn", "int", "sit") for k in ("shift", "neff")] + list(SI.SCALE) + ["mk", "fm", "lexp"]
+
+
 def columns(d: pl.DataFrame) -> list:
     return ([f"o_{s}" for s in FP.STATS] + [f"d_{s}" for s in FP.STATS] + [f"m_{s}" for s in FP.STATS] + [f"a_{s}" for s in AR.ALL]
             + list(SI.SCALE) + [f"{s}_{k}" for s in ("own", "dfn", "int", "sit") for k in ("shift", "neff")] + ["mk", "fm", "lexp"])
 
 
 def walk_forward(d: pl.DataFrame, seasons, params=PARAMS, cols=None) -> pl.DataFrame:
-    cols = cols or columns(d)
+    cols = cols or locked_columns()
     out = []
     for s in seasons:
         tr = d.filter((pl.col("season") < s) & (pl.col("season") >= 2021))
