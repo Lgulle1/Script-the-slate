@@ -14,6 +14,7 @@ import polars as pl
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import config
+from live import role_flags as RF
 
 D = config.ROOT / "records" / "cards"
 import importlib.util as _ilu
@@ -58,8 +59,11 @@ def main(argv=None):
     # the locked strategy (scripts/strategy.py): P is bet (parlays only)
     card = card.with_columns(dec_u=pl.when(pl.col("price") > 0).then(1 + pl.col("price") / 100).otherwise(1 + 100 / -pl.col("price")))
     rows = card.to_dicts()
+    FL, AGE = RF.teammate_flags(a.season, a.week), RF.data_age(a.season, a.week)       # who is out around each pick, and how old the injury report is
+    flags_of = lambda r: [RF.label(f) for f in FL.get(r["team"], []) if f["name"] != r["player_name"]]
     for r in rows:
         r["needs"] = (-r["price"] / (-r["price"] + 100)) if r["price"] < 0 else 100 / (r["price"] + 100)
+        r["flags"] = flags_of(r)
     P = ST.card(rows, "P", player="player_name")
     legs = [x for pr in P["parlays"] for x in pr]
     leg_of = {(r["player_name"], r["market"]): (n, j) for n, pr in enumerate(P["parlays"], 1) for j, r in enumerate(pr)}
@@ -125,6 +129,7 @@ def main(argv=None):
         for i, r in enumerate(sr, 1):
             r["needs"] = (-r["price"] / (-r["price"] + 100)) if r["price"] < 0 else 100 / (r["price"] + 100)
             r["rank"] = r["overall_rank"] = i
+            r["flags"] = flags_of(r)
         S, SS, C3 = (ST.card(sr, k, player="player_name") for k in ("S", "SS", "C3"))
         top8_3 = ST.top(sr, ST.STRATEGIES["S"]["parlay_from"], ST.PARLAY_CAPS["per_game"], ST.PARLAY_CAPS["per_player"], player="player_name")
         s_leg = {(r["player_name"], r["market"]): n for n, grp in enumerate(S["parlays"], 1) for r in grp}
@@ -148,7 +153,7 @@ def main(argv=None):
     if mark3["built"]:
         bet_csv(S["parlays"], D / f"{stem}_parlays.csv")
     bet_csv(P["parlays"], D / f"{stem}_parlays_mark2.csv")
-    data = dict(meta=meta, parlays=par(P["parlays"]), legs=top8, liked=ranked, mark1=mark1, mark3=mark3,
+    data = dict(meta=meta, age=AGE, parlays=par(P["parlays"]), legs=top8, liked=ranked, mark1=mark1, mark3=mark3,
                 slots=sc.sort("slot_order", "kickoff").select("slot_order", "slot", "kickoff", "matchup", "game_id").to_dicts())
     html = TEMPLATE.replace("__DATA__", json.dumps(data, default=str)).replace("__WEEK__", str(a.week))
     out = D / f"{a.season}_wk{a.week:02d}_picks.html"
@@ -200,6 +205,7 @@ h2{font:700 1.5rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.0
 .legrow .who{font-size:1.1rem}
 .legrow .bet{grid-column:2/4}
 .legrow .meta{grid-column:2/4}
+.legrow .flag{grid-column:2/4;margin:4px 0 0;padding:.35rem .5rem;font-size:.82rem}
 .slip-foot{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;color:var(--muted);padding-top:8px;border-top:1px solid var(--rule)}
 .slip-foot b{color:var(--ink);font-family:var(--mono);font-weight:600}
 .rank{grid-row:1/4;font:800 2.4rem/1 var(--display);color:var(--turf);min-width:1.4em}
@@ -391,6 +397,7 @@ const legHtml = r => `<div class="legrow">
     <div class="price">${fmtP(r.price)}</div>
     <div class="bet"><b>UNDER ${r.line}</b> ${r.market.toLowerCase()}</div>
     <div class="meta">${r.matchup} · ${r.slot}, ${r.kickoff}</div>
+    ${(r.flags || []).length ? `<div class="flag">⚠ Out around him: ${r.flags.join("; ")}. Check his role before betting.</div>` : ""}
   </div>`;
 const slips = list => list.length ? list.map((p, i) => `<article class="slip">
     <div class="slip-head"><span class="n">Parlay ${i + 1}</span><span class="odds">${fmtP(p.price)} <small class="note">→ ${fmtP(p.boosted_price)} boosted</small></span></div>
@@ -401,8 +408,8 @@ $("#slips").innerHTML = slips(DATA.parlays);
 $("#m3slips").innerHTML = slips(DATA.mark3.parlays);
 $("#legsTitle").textContent = `The ${DATA.legs.length} legs`;
 
-const legsTable = list => `<thead><tr><th class="num">#</th><th>Parlay</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th class="num">Price needs</th><th>Kickoff</th></tr></thead><tbody>` +
-  list.map(r => `<tr><td class="num">${r.rank}</td><td><span class="boost">${r.status}</span></td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}${r.our_prediction >= r.line ? " ⚠" : ""}</td><td class="num">${pct(r.picker_chance ?? r.picker_under_chance)}</td><td class="num">${pct(r.needs)}</td><td>${r.slot}</td></tr>`).join("") +
+const legsTable = list => `<thead><tr><th class="num">#</th><th>Parlay</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th class="num">Price needs</th><th>Kickoff</th><th>Teammates out</th></tr></thead><tbody>` +
+  list.map(r => `<tr><td class="num">${r.rank}</td><td><span class="boost">${r.status}</span></td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}${r.our_prediction >= r.line ? " ⚠" : ""}</td><td class="num">${pct(r.picker_chance ?? r.picker_under_chance)}</td><td class="num">${pct(r.needs)}</td><td>${r.slot}</td><td>${(r.flags || []).length ? "⚠ " + r.flags.join("; ") : "–"}</td></tr>`).join("") +
   `</tbody>` + (list.some(r => r.our_prediction >= r.line) ? `<caption style="caption-side:bottom;text-align:left;padding-top:8px;color:var(--muted);font-size:.85rem">⚠ Our stat model has this player above the line; the picker still takes the under on price and game setup.</caption>` : "");
 $("#legs").innerHTML = legsTable(DATA.legs);
 $("#m3legs").innerHTML = DATA.mark3.legs.length ? legsTable(DATA.mark3.legs) : `<tbody><tr><td class="note">No qualifying picks this week.</td></tr></tbody>`;
@@ -425,7 +432,8 @@ $("#slots").innerHTML = order.map(s => {
 }
 setMark(mark);
 
-$("#foot").textContent = `Card made ${DATA.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")} from FanDuel prices at that time; lines may have moved since. The picker was retrained on every graded line before this week. Pickers averaged over 5 random seeds. Hidden seasons 2021-2026 (seed-averaged): Mark 3 parlays +54% / +47% in two seed groups, Mark 2 +28% / +28%. Full history on the Track Record.`;
+const ageTxt = DATA.age && DATA.age.injuries_pulled_utc ? ` Injury report pulled ${DATA.age.injuries_pulled_utc.replace("T", " ").slice(0, 16)} UTC (${DATA.age.injuries_age_hours.toFixed(1)} hours before this page was built).` : "";
+$("#foot").textContent = `Card made ${DATA.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")} from FanDuel prices at that time; lines may have moved since.${ageTxt} The picker was retrained on every graded line before this week. Pickers averaged over 5 random seeds. Hidden seasons 2021-2026 (seed-averaged): Mark 3 parlays +54% / +47% in two seed groups, Mark 2 +28% / +28%. Full history on the Track Record.`;
 </script>
 """
 

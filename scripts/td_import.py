@@ -38,7 +38,9 @@ def load_files() -> pl.DataFrame:
         for pre in ("book_opening_", "selected_opening_"):
             if "fanduel_opening_odds" not in d.columns and f"{pre}odds" in d.columns:
                 d = d.rename({c: c.replace(pre, "fanduel_opening_") for c in d.columns if c.startswith(pre)})
-        d = d.filter((pl.col("market") == "touchdown-scored") & (pl.col("season_type") == "REG"))
+        d = d.filter(pl.col("market") == "touchdown-scored")
+        if "season_type" in d.columns:
+            d = d.filter(pl.col("season_type") == "REG")
         if "sportsbook" in d.columns:
             d = d.filter(pl.col("sportsbook") == "FanDuel")
         parts.append(d.select("season", "week", "away_team", "home_team", "selection", "american_odds", "game_start_utc", "line_updated_utc", "fanduel_opening_odds",
@@ -50,7 +52,7 @@ def main():
     d = load_files()
     print("anytime-TD rows in the files:", d.height)
     con = duckdb.connect(str(config.RAW_DUCKDB_PATH), read_only=True)
-    sched = con.execute("SELECT * FROM (SELECT DISTINCT ON (game_id) game_id, season, week, home_team, away_team FROM schedules ORDER BY game_id, pulled_at DESC)").pl()
+    sched = con.execute("SELECT * FROM (SELECT DISTINCT ON (game_id) game_id, season, week, home_team, away_team FROM schedules WHERE game_type = 'REG' ORDER BY game_id, pulled_at DESC)").pl()
     ps = con.execute("SELECT DISTINCT ON (player_id, season, week) player_id, season, week, rushing_tds, receiving_tds, special_teams_tds FROM player_stats "
                      "WHERE season_type = 'REG' ORDER BY player_id, season, week, pulled_at DESC").pl()
     con.close()
