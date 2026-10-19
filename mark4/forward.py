@@ -79,12 +79,20 @@ def frame():
     return d, A, X3, S, C, E, P
 
 
-def forward_preds(d, A, X, seeds, recency: bool, half_life=HALF_LIFE, seasons=SEASONS):
+def det_makers():
+    """The same six model shapes as Mark 3's picker (depth 2/3/4 x leaf 50/150) but with NO random hold-out: a fixed number of rounds, so the same data
+    always gives the same picks and a difference between two versions is never seed luck."""
+    from sklearn.ensemble import HistGradientBoostingClassifier
+    return [lambda d=d, l=l: HistGradientBoostingClassifier(max_depth=d, learning_rate=0.05, max_iter=120, min_samples_leaf=l, l2_regularization=1.0,
+                                                            early_stopping=False) for d in (2, 3, 4) for l in (50, 150)]
+
+
+def forward_preds(d, A, X, seeds, recency: bool, half_life=HALF_LIFE, seasons=SEASONS, det=False):
     season, week = d["season"].to_numpy(), d["week"].to_numpy()
     graded = ~np.isnan(A.over_won.astype(float))
     t_row = season + (week - 1) / 18.0
     p = np.full(d.height, np.nan)
-    makers = [m for s in seeds for m in M3T.makers(s)]
+    makers = det_makers() if det else [m for s in seeds for m in M3T.makers(s)]
     for S in seasons:
         for b0 in BLOCKS:
             te = (season == S) & (week >= b0) & (week < b0 + 6)
@@ -166,6 +174,27 @@ def strat_name(s):
     return f"{k} | edge {s['edge']:.0%} | {s['sides']} | {'4 markets' if s['markets'] == 'four' else '7 markets'}"
 
 
+def power_metrics(d, A, p, target=2026):
+    """High-power checks on every line (thousands, not ~200 parlays):
+      logloss_gain  recency-weighted log loss of the book's no-vig over chance minus the model's (positive = the model knows more than the price)
+      top20_under / top20_both  return of the top 20 straight bets a week (edge >= 0), unders only / either side."""
+    season = d["season"].to_numpy()
+    ok = ~np.isnan(p) & ~np.isnan(A.over_won.astype(float)) & ~np.isnan(A.fair_o.astype(float))
+    y = A.over_won[ok].astype(float)
+    pm, pb = np.clip(p[ok], 1e-4, 1 - 1e-4), np.clip(A.fair_o[ok].astype(float), 1e-4, 1 - 1e-4)
+    w = 0.5 ** ((target - season[ok]) / HALF_LIFE)
+    ll = lambda q: -(y * np.log(q) + (1 - y) * np.log(1 - q))
+    out = dict(logloss_gain=float((w * (ll(pb) - ll(pm))).sum() / w.sum()),
+               logloss_gain_by_season={int(s): float((ll(pb) - ll(pm))[season[ok] == s].mean()) for s in np.unique(season[ok])})
+    for sides in ("under", "both"):
+        per = run_strategy(weekly(candidates(d, A, p, sides), 0.0), "singles", 20)
+        st = sum(season_rec_w(s_, target) * v[1] for (s_, _), v in per.items())
+        un = sum(season_rec_w(s_, target) * v[0] for (s_, _), v in per.items())
+        out[f"top20_{sides}"] = un / st if st else None
+        out[f"top20_{sides}_bets"] = int(sum(v[1] for v in per.values()))
+    return out
+
+
 def season_rec_w(season, target):
     return 0.5 ** ((target - season) / HALF_LIFE)
 
@@ -214,6 +243,9 @@ SETUPS = {
     "Mark 4b: + situations + comps, recency": dict(cols=("base", "sit", "comps"), recency=True),
     "Mark 4c: + situations + role-event games + comps, recency": dict(cols=("base", "sit", "events", "comps"), recency=True),
     "Mark 4d: + blind-spot score, recency": dict(cols=("base", "spot"), recency=True),
+    "Mark 3 det": dict(cols=("base",), recency=False, det=True),
+    "Mark 4.0 det": dict(cols=("base",), recency=True, det=True),
+    "Mark 4d det": dict(cols=("base", "spot"), recency=True, det=True),
 }
 
 
@@ -232,12 +264,16 @@ def main(names=None, seeds=(1, 2, 3)):
         if pf.exists():
             p = np.load(pf)
         else:
-            p = forward_preds(d, A, X, seeds, cfg["recency"])
+            p = forward_preds(d, A, X, seeds, cfg["recency"], det=cfg.get("det", False))
             np.save(pf, p)
         res, chosen = evaluate(d, A, p, name)
         _, m3rule = evaluate(d, A, p, name, fixed=strat_name(dict(kind="mark3", n=8, edge=0.04, sides="under", markets="four")))
         out[name] = dict(chosen=chosen, summary=summarize(chosen), mark3_rule={str(k): v for k, v in m3rule.items()}, mark3_rule_summary=summarize(m3rule),
                          strategies={nm: {str(k): v for k, v in r["seasons"].items()} for nm, r in res.items()})
+        out[name]["power"] = power_metrics(d, A, p)
+        pw = out[name]["power"]
+        print(f"   POWER {name}: log-loss gain vs the book {pw['logloss_gain']:+.4f} | top-20 straights: unders {pw['top20_under']:+.1%} on {pw['top20_under_bets']}, "
+              f"either side {pw['top20_both']:+.1%} on {pw['top20_both_bets']} | by season {({k: round(v, 4) for k, v in pw['logloss_gain_by_season'].items()})}", flush=True)
         sm = out[name]["summary"]
         print(f"\n== {name} ({time.time() - t0:.0f}s): forward-chosen strategy, recency-weighted return {sm['recency_roi']:+.1%}, units {sm['units']:+.1f} on {sm['staked']:.0f}", flush=True)
         for s_, c in chosen.items():
