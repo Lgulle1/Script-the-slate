@@ -1,0 +1,18 @@
+season,group,situation,side,past_shrunk,past_bets
+2023,receiving,questionable / limited this week,under,0.032148018283249896,671
+2023,receiving,off a bye (10+ days),under,0.054012950784426264,970
+2023,rushing,team favored by 7+,under,0.024917264206984115,311
+2024,receiving,defense has been holding players under the line lately (bottom fifth),under,0.02250066796836792,1004
+2024,rushing,wind 15+ mph (outdoors),under,0.03829905666394429,219
+2025,passing,QB change this week (team),under,0.024494364701507634,207
+2025,rushing,"backup promoted: a back holding 25%+ of carries is out, his own share under 35%",under,0.03801000964929158,665
+2025,rushing,QB change this week (team),under,0.03514912387637112,598
+2025,rushing,defense has been holding players under the line lately (bottom fifth),under,0.04422761298583706,453
+2025,rushing,ev_back game 2,under,0.040457815628121015,174
+2026,passing,QB change this week (team),under,0.024736897255036677,320
+2026,passing,wind 15+ mph (outdoors),under,0.08320673819476691,286
+2026,passing,team underdog by 7+,under,0.06547057627945069,509
+2026,passing,ev_qb_pass game 1,under,0.020330235292708634,293
+2026,receiving,wind 15+ mph (outdoors),under,0.05837178148724617,1479
+2026,receiving,team underdog by 7+,under,0.045777678213087696,2953
+2026,rushing,defense has been holding players under the line lately (bottom fifth),under,0.022372234160057094,540
