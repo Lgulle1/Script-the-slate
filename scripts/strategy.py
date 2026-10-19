@@ -16,9 +16,9 @@ from __future__ import annotations
 BOOST = 0.30
 STRATEGIES = {
     "S": dict(name="Mark 3 (bet): boosted 2-leg parlays from the schedule picker's top 8", singles=0, parlay_from=8, role="bet", pool="schedule"),
-    "SS": dict(name="Mark 3 straight bets: the schedule picker's top 8 (tracked)", singles=8, parlay_from=0, role="tracked", pool="schedule"),
-    "C3": dict(name="Mark 3 variant: 3-leg parlays from the top 9 (tracked)", singles=0, parlay_from=9, legs=3, role="candidate", pool="schedule"),
-    "P": dict(name="Mark 2: boosted 2-leg parlays from the top 8 (tracked)", singles=0, parlay_from=8, role="tracked"),
+    "SS": dict(name="Mark 3 straight bets: the schedule picker's top 8", singles=8, parlay_from=0, role="tracked", pool="schedule"),
+    "C3": dict(name="Mark 3 variant: 3-leg parlays from the top 9", singles=0, parlay_from=9, legs=3, role="candidate", pool="schedule"),
+    "P": dict(name="Mark 2: boosted 2-leg parlays from the top 8", singles=0, parlay_from=8, role="tracked"),
     "A": dict(name="Mark 1 A: top 2 + 1 parlay", singles=2, parlay_from=2, role="tracked"),
     "B": dict(name="Mark 1 B: top 8 + 4 parlays", singles=8, parlay_from=8, role="tracked"),
 }
