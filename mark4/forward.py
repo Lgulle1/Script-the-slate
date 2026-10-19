@@ -249,6 +249,7 @@ SETUPS = {
     "Mark 4e det: + comps vs line": dict(cols=("base", "comps_line"), recency=False, det=True),
     "Mark 4f det: + defense vs line": dict(cols=("base", "dfn_line"), recency=False, det=True),
     "Mark 4g det: gentle recency (3-season half-life)": dict(cols=("base",), recency=True, det=True, half_life=3.0),
+    "Mark 4h det: comps vs line + gentle recency": dict(cols=("base", "comps_line"), recency=True, det=True, half_life=3.0),
 }
 
 
