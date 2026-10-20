@@ -59,7 +59,9 @@ def main():
     out = {}
     for nb in a.b:
         pb = load(nb)
-        out[nb] = dict(mark3_rule=boot(wa_rule, weekly_units(d, A, pb, m3)), chosen_strategy=boot(wa_ch, chosen_weeks(d, A, pb)))
+        st20 = dict(kind="singles", n=20, edge=0.0, sides="both", markets="all")
+        out[nb] = dict(mark3_rule=boot(wa_rule, weekly_units(d, A, pb, m3)), chosen_strategy=boot(wa_ch, chosen_weeks(d, A, pb)),
+                       top20_straights=boot(weekly_units(d, A, pa, st20), weekly_units(d, A, pb, st20)))
         print(nb, "vs", a.a, json.dumps(out[nb], indent=1))
     (F.OUT / f"compare_{a.seeds}.json").write_text(json.dumps(out, indent=1))
 
