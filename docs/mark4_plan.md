@@ -140,3 +140,21 @@ QB change, new team. A forward model (each 6-week block fitted on earlier games,
   qualifying legs a week). More qualifying legs: 2025 6.0 a week vs 3.9. Log loss vs the book: 2023 +0.59, 2024 +0.02, 2025 +0.75, 2026 +0.57.
 - Caution learned: the real-card mix results (e.g. +128.8u for 5/3/2/2) swing a lot when the leg pool changes slightly (Mark 4l reshuffles which
   legs go into the 5-leg: +113.6u at 0.25u, but +134.6u at 1u vs +243.9u). Those single-path numbers are fragile; all-combo is the steadier guide.
+
+### Edge hunt round 2 (2026-10-20): what survived the forward test and what did not
+Rule learned the hard way: a pattern that looks consistent across 6 seasons after slicing lines many ways is often luck; only a rule chosen from
+EARLIER seasons and then bet on the next one counts.
+- mark4/hunt.py (descriptive, every line 2021-26): overs are overpriced almost everywhere (every under about -2 to -3%, every over -7 to -9%).
+  Hot players (beating their lines) get overpriced (6/6 seasons); defenses whose opponents go under keep doing so (6/6); Thursday leans over (4/6).
+- Comps v5, comps of the BOOK's behaviour (mark4/context.py: kNN and gradient boosting on line context: line vs form, line jump, last game vs line,
+  player / defense record vs the line, role change, game script, price shape): forward, worse than the book's own price; betting their predicted errors
+  loses 3-4% (they mostly rediscover "overs a bit overpriced", which is smaller than the vig).
+- Shape (line vs his median of last 12): descriptively unders win when the line sits 5-30% above the median (receptions 6/6, rushing 4/5). Forward:
+  as a probability correction (Mark 4m) the weight chosen from earlier seasons is mostly 0 and log loss does not improve; as a rule (bet the unders of
+  groups profitable in earlier seasons) -4.3% on 3,832 bets. Look-back illusion. Not kept.
+- Promotion overreaction, cutoff chosen forward each season: games 1-3 +4.5% on 312 bets (3 of 5 seasons up; the 35% cutoff chosen every year);
+  game 1 only -1.7%. Smaller than the +7.2% picked with hindsight, still positive: kept in Mark 4l.
+- Kelly-style stakes per parlay (Mark 4l, 5/3/2/2 mix): same return per unit (+70-72%), more money in, worst run grows with it (fixed 18.7u on +106.8u;
+  quarter-Kelly-ish 35.7u on +256.1u). Stake size is a risk choice, not an edge.
+What still stands: Mark 4l (Mark 3 + 4h + FanDuel's price, + forward-tested promotion-overreaction unders), legs ranked by expected value, either side,
+all markets, boosted parlays built long-first. Mark 4l 5/3/2/2 at 0.25/0.5/1u: +106.8u on 151.8u 2022-26, up every season (+13, +22, +12, +25, +35).
