@@ -99,3 +99,20 @@ Simulated 18-week seasons (weeks resampled): with every season weighted equally,
 1 in 2.5. 2026 has been the best stretch by far, especially for 4-leg parlays (3 of its 6 weeks hit), so the recency-weighted numbers flatter the long parlays.
 Recommendation: G (or E): the 2-leg core keeps weekly hits, the 3- and 4-leg slots at a half and a quarter unit keep the long-parlay upside at a
 fraction of the swing; worst run about the same as Mark 3's. Size the unit to the bankroll so a 30u run is survivable (unit = bankroll / 75 to / 100).
+
+### Mix search (mark4/mix_search.py, records/lab/mix_search*.csv): 29,982 mixes, chosen forward
+Every split of the 4 boosts among 2/3/4/5-leg parlays, built long-first or short-first, plain parlays on top, stakes 0.25-1u per group.
+Honest test: before each season, the mix with the most recency-weighted units over EARLIER seasons is chosen and bet. Chosen forward, 2023-26:
++151u to +169u on 143-167u bet (+100%), vs +78.5u for 4 x 4-leg @ 1u and +43u for the earlier recommended mix. From 2024 on it picked the same
+family every year: **1 x 5-leg + 1 x 3-leg + 2 x 2-leg, built long-first** (the best expected-value legs go into the long parlay; the 2-leg parlays
+take the next legs, which are shorter-priced and hit 37% of the time vs 20% when built from the top legs).
+
+| mix (long-first) | won 2022-26 | return | worst losing run (all) | since 2025 | every season | simulated: lose a season | 1-in-20 bad season |
+|---|---|---|---|---|---|---|---|
+| 1 x 5-leg @ 1u + 1 x 3-leg @ 1u + 2 x 2-leg @ 1u | +243.9u | +121% | -12.4u | -2.0u | -10.3, +113.9, +2.1, +65.9, +72.3 | 9% | -6.4u |
+| 1 x 5-leg @ 0.5u + 1 x 3-leg @ 1u + 2 x 2-leg @ 1u | +179.4u | +103% | -8.6u | -2.0u | -1.3, +77.3, +10.6, +43.6, +49.2 | 5% | +0.2u |
+| **1 x 5-leg @ 0.25u + 1 x 3-leg @ 0.5u + 2 x 2-leg @ 1u** | **+128.8u** | **+98%** | **-5.8u** | **-1.5u** | **+12.2, +49.8, +6.3, +29.4, +31.1** | **2%** | **+5.1u** |
+| 4 x 4-leg @ 1u (reference) | +116.7u | +70% | -60.0u | -5.0u | +38.2, +15.5, -26.2, +14.5, +74.6 | 25% | -31.0u |
+Caveats: the 5-leg slot hit 3 times in 55 (one each in 2023, 2025, 2026), so its share of the profit rests on 3 hits; at 0.25-0.5u a cold run of
+5-leg parlays costs little. Mark 4i bet thinly in 2025 (about 4 qualifying legs a week: it leaned 70% on the book that season), so "since 2025"
+runs are measured on few bets. Simulated seasons with 2023 and 2026 (the two best) removed: the 0.25u version still loses only 9% of seasons.

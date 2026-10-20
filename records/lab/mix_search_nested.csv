@@ -1,0 +1,8 @@
+chooser,units,staked,picks,ret
+"search, cap 15u",169.3009661137904,167.0,2023: 1 x 3-leg @ 1u + 3 x 5-leg @ 1u + 4 x 2-leg plain @ 1u -> +43.4u on 50.0 | 2024: 1 x 5-leg @ 1u + 1 x 3-leg @ 1u + 2 x 2-leg @ 1u + 2 x 4-leg plain @ 1u -> -6.9u on 67.0 | 2025: 1 x 5-leg @ 1u + 1 x 3-leg @ 1u + 2 x 2-leg @ 1u + 4 x 2-leg plain @ 0.75u -> +65.9u on 14.0 | 2026: 1 x 5-leg @ 1u + 1 x 3-leg @ 1u + 2 x 2-leg @ 1u + 4 x 2-leg plain @ 1u -> +66.8u on 36.0,1.0137782402023376
+"search, cap 25u",151.356067537559,143.0,2023: 1 x 3-leg @ 1u + 3 x 5-leg @ 1u + 2 x 4-leg plain @ 1u -> +25.5u on 26.0 | 2024: 1 x 5-leg @ 1u + 1 x 3-leg @ 1u + 2 x 2-leg @ 1u + 2 x 4-leg plain @ 1u -> -6.9u on 67.0 | 2025: 1 x 5-leg @ 1u + 1 x 3-leg @ 1u + 2 x 2-leg @ 1u + 4 x 2-leg plain @ 1u -> +65.9u on 14.0 | 2026: 1 x 5-leg @ 1u + 1 x 3-leg @ 1u + 2 x 2-leg @ 1u + 4 x 2-leg plain @ 1u -> +66.8u on 36.0,1.0584340387241888
+"search, cap 1e+09u",151.356067537559,143.0,2023: 1 x 3-leg @ 1u + 3 x 5-leg @ 1u + 2 x 4-leg plain @ 1u -> +25.5u on 26.0 | 2024: 1 x 5-leg @ 1u + 1 x 3-leg @ 1u + 2 x 2-leg @ 1u + 2 x 4-leg plain @ 1u -> -6.9u on 67.0 | 2025: 1 x 5-leg @ 1u + 1 x 3-leg @ 1u + 2 x 2-leg @ 1u + 4 x 2-leg plain @ 1u -> +65.9u on 14.0 | 2026: 1 x 5-leg @ 1u + 1 x 3-leg @ 1u + 2 x 2-leg @ 1u + 4 x 2-leg plain @ 1u -> +66.8u on 36.0,1.0584340387241888
+fixed: 2 x 2-leg @ 1u + 1 x 3-leg @ 0.5u + 1 x 4-leg @ 0.25u,43.095926733585245,117.0,"",0.36834125413320723
+fixed: 4 x 2-leg @ 1u,42.35094244144144,168.0,"",0.2520889431038181
+fixed: 4 x 4-leg @ 1u,78.46952688033514,94.0,"",0.8347822008546292
+fixed: 2 x 2-leg @ 1u + 2 x 4-leg @ 0.25u,44.37631497354393,105.5,"",0.4206285779482837
