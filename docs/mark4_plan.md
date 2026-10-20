@@ -84,3 +84,18 @@ Straights alone still do not beat the vig enough to matter; the edge is in boost
   little, but bets break even (+2% at any edge, -0.5% at 2%+). Not added to the pool; kept for retest.
 - Rush + receiving yards: FanDuel has no such line in any of the exports, so it cannot be tested.
 - Anytime TD (scripts/td_model.py, earlier): the recalibrated book price alone beats the model's log loss. Not added.
+
+### Balancing return against losing streaks: stake by parlay length (mark4/portfolio.py, records/lab/portfolio.csv)
+Same Mark 4i legs; long parlays staked smaller. History 2022 to 2026 week 6, played week by week:
+| portfolio (4 boosts a week) | won | return per unit | worst losing run | parlays hit |
+|---|---|---|---|---|
+| A. 4 x 2-leg @ 1u | +38.2u | +16% | -22.0u | 49 of 240 |
+| B. 4 x 4-leg @ 1u | +116.7u | +70% | -60.0u | 11 of 166 |
+| C. 4 x 4-leg @ 0.25u | +29.2u | +70% | -15.0u | 11 of 166 |
+| E. 2 x 2-leg @ 1u + 2 x 4-leg @ 0.25u | +34.7u | +23% | -22.5u | 30 of 209 |
+| G. 2 x 2-leg @ 1u + 1 x 3-leg @ 0.5u + 1 x 4-leg @ 0.25u | +41.1u | +25% | -24.8u | 34 of 220 |
+| Mark 3 rule (frozen), for reference | +35.1u | +15% | -21.3u | |
+Simulated 18-week seasons (weeks resampled): with every season weighted equally, every card loses in about 1 season in 3-4; leaving 2026 out, about
+1 in 2.5. 2026 has been the best stretch by far, especially for 4-leg parlays (3 of its 6 weeks hit), so the recency-weighted numbers flatter the long parlays.
+Recommendation: G (or E): the 2-leg core keeps weekly hits, the 3- and 4-leg slots at a half and a quarter unit keep the long-parlay upside at a
+fraction of the swing; worst run about the same as Mark 3's. Size the unit to the bankroll so a 30u run is survivable (unit = bankroll / 75 to / 100).
