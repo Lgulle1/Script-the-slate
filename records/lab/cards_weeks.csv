@@ -76,6 +76,7 @@ Blend: 4 boosted 2-leg,2026,2,9.390080000000005,4.0
 Blend: 4 boosted 2-leg,2026,3,1.7080799999999998,4.0
 Blend: 4 boosted 2-leg,2026,4,18.952214912427024,4.0
 Blend: 4 boosted 2-leg,2026,5,-4.0,4.0
+Blend: 4 boosted 2-leg,2026,6,6.171924936080614,4.0
 Blend: 4 boosted 3-leg,2022,1,14.579744000000005,4.0
 Blend: 4 boosted 3-leg,2022,2,-4.0,4.0
 Blend: 4 boosted 3-leg,2022,3,4.902581818181819,4.0
@@ -153,6 +154,7 @@ Blend: 4 boosted 3-leg,2026,2,-4.0,4.0
 Blend: 4 boosted 3-leg,2026,3,-4.0,4.0
 Blend: 4 boosted 3-leg,2026,4,33.27693386889075,4.0
 Blend: 4 boosted 3-leg,2026,5,-4.0,4.0
+Blend: 4 boosted 3-leg,2026,6,6.313830350428635,4.0
 Mark 3 rule (frozen),2022,1,-3.0,3.0
 Mark 3 rule (frozen),2022,2,4.452326656394453,4.0
 Mark 3 rule (frozen),2022,3,-0.35726027397260207,4.0
@@ -230,6 +232,7 @@ Mark 3 rule (frozen),2026,2,-4.0,4.0
 Mark 3 rule (frozen),2026,3,1.7080799999999998,4.0
 Mark 3 rule (frozen),2026,4,9.644960000000003,2.0
 Mark 3 rule (frozen),2026,5,-1.0,1.0
+Mark 3 rule (frozen),2026,6,-1.0,1.0
 Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2022,1,3.312800000000001,4.0
 Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2022,2,-4.0,4.0
 Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2022,3,-4.0,4.0
@@ -302,6 +305,7 @@ Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2026,2,35.25901414400002,4.0
 Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2026,3,-4.0,4.0
 Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2026,4,6.5074483821263485,4.0
 Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2026,5,-3.0,3.0
+Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2026,6,-3.0,3.0
 Mark 4i: 4 boosted 2-leg,2022,1,8.420800000000002,4.0
 Mark 4i: 4 boosted 2-leg,2022,2,-4.0,4.0
 Mark 4i: 4 boosted 2-leg,2022,3,0.9614545454545462,4.0
@@ -374,6 +378,7 @@ Mark 4i: 4 boosted 2-leg,2026,2,9.911120000000004,4.0
 Mark 4i: 4 boosted 2-leg,2026,3,-4.0,4.0
 Mark 4i: 4 boosted 2-leg,2026,4,12.05016838212635,4.0
 Mark 4i: 4 boosted 2-leg,2026,5,0.3189756441381477,4.0
+Mark 4i: 4 boosted 2-leg,2026,6,-4.0,4.0
 Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2022,1,4.420800000000002,8.0
 Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2022,2,5.264422377622378,8.0
 Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2022,3,0.8941818181818193,8.0
@@ -446,6 +451,7 @@ Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2026,2,5.911120000000004,8.0
 Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2026,3,1.6892000000000005,8.0
 Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2026,4,12.54296838212635,8.0
 Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2026,5,0.3189756441381477,4.0
+Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2026,6,-0.5132110091743121,5.0
 Mark 4i: 4 boosted 2-leg + top 10 straights,2022,1,5.140800000000002,14.0
 Mark 4i: 4 boosted 2-leg + top 10 straights,2022,2,0.48741258741258786,14.0
 Mark 4i: 4 boosted 2-leg + top 10 straights,2022,3,-3.1260583190394504,14.0
@@ -518,6 +524,7 @@ Mark 4i: 4 boosted 2-leg + top 10 straights,2026,2,6.311120000000004,14.0
 Mark 4i: 4 boosted 2-leg + top 10 straights,2026,3,-0.0999999999999992,14.0
 Mark 4i: 4 boosted 2-leg + top 10 straights,2026,4,12.63016838212635,14.0
 Mark 4i: 4 boosted 2-leg + top 10 straights,2026,5,0.3189756441381477,4.0
+Mark 4i: 4 boosted 2-leg + top 10 straights,2026,6,-2.74256880733945,7.0
 Mark 4i: 4 boosted 3-leg,2022,1,14.579744000000005,4.0
 Mark 4i: 4 boosted 3-leg,2022,2,-4.0,4.0
 Mark 4i: 4 boosted 3-leg,2022,3,4.902581818181819,4.0
@@ -590,6 +597,7 @@ Mark 4i: 4 boosted 3-leg,2026,2,9.728019200000004,4.0
 Mark 4i: 4 boosted 3-leg,2026,3,-4.0,4.0
 Mark 4i: 4 boosted 3-leg,2026,4,20.371255662385323,4.0
 Mark 4i: 4 boosted 3-leg,2026,5,-2.0,2.0
+Mark 4i: 4 boosted 3-leg,2026,6,-3.0,3.0
 Mark 4i: 4 boosted 4-leg,2022,1,-4.0,4.0
 Mark 4i: 4 boosted 4-leg,2022,2,27.205816160000005,4.0
 Mark 4i: 4 boosted 4-leg,2022,3,-4.0,4.0
@@ -662,6 +670,7 @@ Mark 4i: 4 boosted 4-leg,2026,2,35.25901414400002,4.0
 Mark 4i: 4 boosted 4-leg,2026,3,-4.0,4.0
 Mark 4i: 4 boosted 4-leg,2026,4,18.73379661016949,4.0
 Mark 4i: 4 boosted 4-leg,2026,5,-2.0,2.0
+Mark 4i: 4 boosted 4-leg,2026,6,-2.0,2.0
 Mark 4i: top 10 straights only,2022,1,5.965925925925926,10.0
 Mark 4i: top 10 straights only,2022,2,-5.5340740740740735,10.0
 Mark 4i: top 10 straights only,2022,3,-0.6663842040312629,10.0
@@ -734,3 +743,4 @@ Mark 4i: top 10 straights only,2026,2,1.740000000000001,10.0
 Mark 4i: top 10 straights only,2026,3,1.1599999999999997,10.0
 Mark 4i: top 10 straights only,2026,4,6.953979728870104,10.0
 Mark 4i: top 10 straights only,2026,5,-1.8900884955752213,8.0
+Mark 4i: top 10 straights only,2026,6,2.807103323808091,10.0

@@ -1,0 +1,61 @@
+card,season,week,units,bets,key
+Blend: 4 boosted 2-leg,2026,1,-4.0,4.0,Blend: 4 boosted 2-leg|1
+Blend: 4 boosted 2-leg,2026,2,9.390080000000005,4.0,Blend: 4 boosted 2-leg|2
+Blend: 4 boosted 2-leg,2026,3,1.7080799999999998,4.0,Blend: 4 boosted 2-leg|3
+Blend: 4 boosted 2-leg,2026,4,18.952214912427024,4.0,Blend: 4 boosted 2-leg|4
+Blend: 4 boosted 2-leg,2026,5,-4.0,4.0,Blend: 4 boosted 2-leg|5
+Blend: 4 boosted 2-leg,2026,6,6.171924936080614,4.0,Blend: 4 boosted 2-leg|6
+Blend: 4 boosted 3-leg,2026,1,7.852400000000001,4.0,Blend: 4 boosted 3-leg|1
+Blend: 4 boosted 3-leg,2026,2,-4.0,4.0,Blend: 4 boosted 3-leg|2
+Blend: 4 boosted 3-leg,2026,3,-4.0,4.0,Blend: 4 boosted 3-leg|3
+Blend: 4 boosted 3-leg,2026,4,33.27693386889075,4.0,Blend: 4 boosted 3-leg|4
+Blend: 4 boosted 3-leg,2026,5,-4.0,4.0,Blend: 4 boosted 3-leg|5
+Blend: 4 boosted 3-leg,2026,6,6.313830350428635,4.0,Blend: 4 boosted 3-leg|6
+Mark 3 rule (frozen),2026,1,5.213913697235494,4.0,Mark 3 rule (frozen)|1
+Mark 3 rule (frozen),2026,2,-4.0,4.0,Mark 3 rule (frozen)|2
+Mark 3 rule (frozen),2026,3,1.7080799999999998,4.0,Mark 3 rule (frozen)|3
+Mark 3 rule (frozen),2026,4,9.644960000000003,2.0,Mark 3 rule (frozen)|4
+Mark 3 rule (frozen),2026,5,-1.0,1.0,Mark 3 rule (frozen)|5
+Mark 3 rule (frozen),2026,6,-1.0,1.0,Mark 3 rule (frozen)|6
+Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2026,1,28.626483200000006,4.0,Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg|1
+Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2026,2,35.25901414400002,4.0,Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg|2
+Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2026,3,-4.0,4.0,Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg|3
+Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2026,4,6.5074483821263485,4.0,Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg|4
+Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2026,5,-3.0,3.0,Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg|5
+Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg,2026,6,-3.0,3.0,Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg|6
+Mark 4i: 4 boosted 2-leg,2026,1,2.92072,4.0,Mark 4i: 4 boosted 2-leg|1
+Mark 4i: 4 boosted 2-leg,2026,2,9.911120000000004,4.0,Mark 4i: 4 boosted 2-leg|2
+Mark 4i: 4 boosted 2-leg,2026,3,-4.0,4.0,Mark 4i: 4 boosted 2-leg|3
+Mark 4i: 4 boosted 2-leg,2026,4,12.05016838212635,4.0,Mark 4i: 4 boosted 2-leg|4
+Mark 4i: 4 boosted 2-leg,2026,5,0.3189756441381477,4.0,Mark 4i: 4 boosted 2-leg|5
+Mark 4i: 4 boosted 2-leg,2026,6,-4.0,4.0,Mark 4i: 4 boosted 2-leg|6
+Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2026,1,7.62672,8.0,Mark 4i: 4 boosted 2-leg + 4 plain 2-leg|1
+Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2026,2,5.911120000000004,8.0,Mark 4i: 4 boosted 2-leg + 4 plain 2-leg|2
+Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2026,3,1.6892000000000005,8.0,Mark 4i: 4 boosted 2-leg + 4 plain 2-leg|3
+Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2026,4,12.54296838212635,8.0,Mark 4i: 4 boosted 2-leg + 4 plain 2-leg|4
+Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2026,5,0.3189756441381477,4.0,Mark 4i: 4 boosted 2-leg + 4 plain 2-leg|5
+Mark 4i: 4 boosted 2-leg + 4 plain 2-leg,2026,6,-0.5132110091743121,5.0,Mark 4i: 4 boosted 2-leg + 4 plain 2-leg|6
+Mark 4i: 4 boosted 2-leg + top 10 straights,2026,1,5.73072,14.0,Mark 4i: 4 boosted 2-leg + top 10 straights|1
+Mark 4i: 4 boosted 2-leg + top 10 straights,2026,2,6.311120000000004,14.0,Mark 4i: 4 boosted 2-leg + top 10 straights|2
+Mark 4i: 4 boosted 2-leg + top 10 straights,2026,3,-0.0999999999999992,14.0,Mark 4i: 4 boosted 2-leg + top 10 straights|3
+Mark 4i: 4 boosted 2-leg + top 10 straights,2026,4,12.63016838212635,14.0,Mark 4i: 4 boosted 2-leg + top 10 straights|4
+Mark 4i: 4 boosted 2-leg + top 10 straights,2026,5,0.3189756441381477,4.0,Mark 4i: 4 boosted 2-leg + top 10 straights|5
+Mark 4i: 4 boosted 2-leg + top 10 straights,2026,6,-2.74256880733945,7.0,Mark 4i: 4 boosted 2-leg + top 10 straights|6
+Mark 4i: 4 boosted 3-leg,2026,1,-4.0,4.0,Mark 4i: 4 boosted 3-leg|1
+Mark 4i: 4 boosted 3-leg,2026,2,9.728019200000004,4.0,Mark 4i: 4 boosted 3-leg|2
+Mark 4i: 4 boosted 3-leg,2026,3,-4.0,4.0,Mark 4i: 4 boosted 3-leg|3
+Mark 4i: 4 boosted 3-leg,2026,4,20.371255662385323,4.0,Mark 4i: 4 boosted 3-leg|4
+Mark 4i: 4 boosted 3-leg,2026,5,-2.0,2.0,Mark 4i: 4 boosted 3-leg|5
+Mark 4i: 4 boosted 3-leg,2026,6,-3.0,3.0,Mark 4i: 4 boosted 3-leg|6
+Mark 4i: 4 boosted 4-leg,2026,1,28.626483200000006,4.0,Mark 4i: 4 boosted 4-leg|1
+Mark 4i: 4 boosted 4-leg,2026,2,35.25901414400002,4.0,Mark 4i: 4 boosted 4-leg|2
+Mark 4i: 4 boosted 4-leg,2026,3,-4.0,4.0,Mark 4i: 4 boosted 4-leg|3
+Mark 4i: 4 boosted 4-leg,2026,4,18.73379661016949,4.0,Mark 4i: 4 boosted 4-leg|4
+Mark 4i: 4 boosted 4-leg,2026,5,-2.0,2.0,Mark 4i: 4 boosted 4-leg|5
+Mark 4i: 4 boosted 4-leg,2026,6,-2.0,2.0,Mark 4i: 4 boosted 4-leg|6
+Mark 4i: top 10 straights only,2026,1,1.2000000000000002,10.0,Mark 4i: top 10 straights only|1
+Mark 4i: top 10 straights only,2026,2,1.740000000000001,10.0,Mark 4i: top 10 straights only|2
+Mark 4i: top 10 straights only,2026,3,1.1599999999999997,10.0,Mark 4i: top 10 straights only|3
+Mark 4i: top 10 straights only,2026,4,6.953979728870104,10.0,Mark 4i: top 10 straights only|4
+Mark 4i: top 10 straights only,2026,5,-1.8900884955752213,8.0,Mark 4i: top 10 straights only|5
+Mark 4i: top 10 straights only,2026,6,2.807103323808091,10.0,Mark 4i: top 10 straights only|6
