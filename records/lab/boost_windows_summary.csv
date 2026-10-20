@@ -1,0 +1,25 @@
+version,selection,recency_ret,units,staked
+Mark 3 (frozen inputs),4 boosts + top 3 straights | edge 4% | under | 4 markets,0.057312892502517664,4.745652586316053,256.0
+Mark 3 (frozen inputs),4 boosts only | edge 4% | under | 4 markets,0.15528720017146966,4.125152485081169,120.0
+Mark 3 (frozen inputs),strategy chosen forward,0.13584825302055237,9.520882561964683,164.0
+Mark 4.0,4 boosts + top 3 straights | edge 4% | under | 4 markets,0.04478756184620266,23.148304282213367,289.0
+Mark 4.0,4 boosts only | edge 4% | under | 4 markets,-0.0013790576366562951,7.860699873389635,130.0
+Mark 4.0,strategy chosen forward,0.09677809317995188,21.402009627625926,225.0
+Mark 4d,4 boosts + top 3 straights | edge 4% | under | 4 markets,0.03156834966311054,30.856111091288955,297.0
+Mark 4d,4 boosts only | edge 4% | under | 4 markets,0.012473594318072701,22.520962880239978,137.0
+Mark 4d,strategy chosen forward,0.022778931950407477,7.233130633580614,163.0
+Mark 4e,4 boosts + top 3 straights | edge 4% | under | 4 markets,0.17771261692760962,42.64560713710369,285.0
+Mark 4e,4 boosts only | edge 4% | under | 4 markets,0.36623495039710763,39.44063924987388,134.0
+Mark 4e,strategy chosen forward,0.22764182974122127,11.4180934953095,146.0
+Mark 4f,4 boosts + top 3 straights | edge 4% | under | 4 markets,-0.046909178921646665,-17.3437789552149,283.0
+Mark 4f,4 boosts only | edge 4% | under | 4 markets,0.1365423473251255,7.96377023555573,138.0
+Mark 4f,strategy chosen forward,0.00031776155465697623,-2.9654777381061175,177.0
+Mark 4g,4 boosts + top 3 straights | edge 4% | under | 4 markets,0.1729980215925769,18.16150943917613,260.0
+Mark 4g,4 boosts only | edge 4% | under | 4 markets,0.4148336965976904,26.291587224633087,119.0
+Mark 4g,strategy chosen forward,0.0711134650748414,-5.833244579587814,146.0
+Mark 4h,4 boosts + top 3 straights | edge 4% | under | 4 markets,0.22234333436238493,43.38757069128021,302.0
+Mark 4h,4 boosts only | edge 4% | under | 4 markets,0.3008178473255462,37.58699175214023,143.0
+Mark 4h,strategy chosen forward,0.21675946209398436,26.139134969255768,163.0
+Nested: version + strategy chosen forward,Mark 4.0,0.13285677204831922,7.705692778802515,58.0
+Nested: version + strategy chosen forward,Mark 4d,0.004221091074575874,0.2279389180270972,54.0
+Nested: version + strategy chosen forward,Mark 4g,-0.0400206340500261,-15.858139802817291,64.0
