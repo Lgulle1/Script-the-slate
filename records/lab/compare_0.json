@@ -1,61 +1,21 @@
 {
- "Mark 4h det: comps vs line + gentle recency": {
+ "Mark 4h clean": {
   "mark3_rule": {
    "a": 0.4106802712007262,
-   "b": 0.5895270166794649,
-   "p_b_better": 0.762,
+   "b": 0.3533230693113015,
+   "p_b_better": 0.345,
    "weeks": 76
   },
   "chosen_strategy": {
    "a": 0.4712906859200913,
-   "b": 0.7251159918449422,
-   "p_b_better": 0.79975,
-   "weeks": 53
-  },
-  "top20_straights": {
-   "a": 0.005442484830996037,
-   "b": 0.030271420408112672,
-   "p_b_better": 0.78275,
-   "weeks": 77
-  }
- },
- "Mark 4e det: + comps vs line": {
-  "mark3_rule": {
-   "a": 0.4106802712007262,
-   "b": 0.4431334588425624,
-   "p_b_better": 0.56275,
-   "weeks": 77
-  },
-  "chosen_strategy": {
-   "a": 0.4712906859200913,
-   "b": 0.3013889080828549,
-   "p_b_better": 0.39225,
+   "b": 0.07271194342983035,
+   "p_b_better": 0.187,
    "weeks": 59
   },
   "top20_straights": {
    "a": 0.005442484830996037,
-   "b": 0.015069333562694333,
-   "p_b_better": 0.6655,
-   "weeks": 77
-  }
- },
- "Mark 4g det: gentle recency (3-season half-life)": {
-  "mark3_rule": {
-   "a": 0.4106802712007262,
-   "b": 0.5908655724115521,
-   "p_b_better": 0.891,
-   "weeks": 74
-  },
-  "chosen_strategy": {
-   "a": 0.4712906859200913,
-   "b": 0.5213921348056024,
-   "p_b_better": 0.6155,
-   "weeks": 58
-  },
-  "top20_straights": {
-   "a": 0.005442484830996037,
-   "b": 0.002918377514459745,
-   "p_b_better": 0.449,
+   "b": 0.04845059151231017,
+   "p_b_better": 0.974,
    "weeks": 77
   }
  }
