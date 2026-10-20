@@ -116,3 +116,27 @@ take the next legs, which are shorter-priced and hit 37% of the time vs 20% when
 Caveats: the 5-leg slot hit 3 times in 55 (one each in 2023, 2025, 2026), so its share of the profit rests on 3 hits; at 0.25-0.5u a cold run of
 5-leg parlays costs little. Mark 4i bet thinly in 2025 (about 4 qualifying legs a week: it leaned 70% on the book that season), so "since 2025"
 runs are measured on few bets. Simulated seasons with 2023 and 2026 (the two best) removed: the 0.25u version still loses only 9% of seasons.
+
+### Role-change engine (mark4/rolechange.py, 2026-10-20)
+Pre-game only (roster + final injury report, announced starting QBs, earlier usage). Per player-game: his carry / target share when playing, vacancy
+left by OUT regulars of his role, his rank among the available, competition, teammates back, games since he last played, game N of the vacancy,
+QB change, new team. A forward model (each 6-week block fitted on earlier games, 2018 on) predicts his new share.
+- New share: 5-7% more accurate than his old share (2019-2026, forward), in role-change games too.
+- As a full projection (share x team volume x efficiency) it is LESS accurate than FanDuel's line in every market, and betting its disagreements loses
+  about the vig: FanDuel's lines already move for role changes, and the engine leans over (60%) where overs lose.
+- **The edge: FanDuel overreacts to promotions.** Compare how far the line jumped (this line / his previous line) with how far the engine says his
+  role grows. Vacancy games 1-3, line moved 35%+ more than the role: under hits 58.0%, +7.2% (369 bets; game 1 only: 60.4%, +12.3% on 187, 5 of 6
+  seasons up). Dose-response: 10% overreaction -5%, 20% -1%, 35% +12% (game 1). Chasing the promotion (over) loses 10-15% everywhere.
+- Mark 4k (role inputs fed to the picker): worse log loss 2022-24 (diluted among 50 inputs). Not kept.
+- **Mark 4l = Mark 4i + overreaction unders** (the under's chance = the hit rate of such lines in earlier seasons only, shrunk with 100 lines; 54-56%).
+  All-combo boosted return by season, 2022-2026:
+  | legs | Mark 4i | Mark 4l |
+  |---|---|---|
+  | 2 | +14 +79 +9 +120 +63 | +16 +49 +20 +54 +57 |
+  | 3 | +18 +179 -22 +83 +88 | +20 +84 +25 +121 +72 |
+  | 4 | +27 +118 -52 +312 +122 | +28 +149 +27 +219 +76 |
+  | 5 | +43 +288 -79 +1177 +182 | +42 +166 +22 +279 +66 |
+  Mark 4l is positive in EVERY season at every parlay length (Mark 4i lost 2024 for 3-5 legs); fewer giant seasons (Mark 4i's 2025 rests on ~4
+  qualifying legs a week). More qualifying legs: 2025 6.0 a week vs 3.9. Log loss vs the book: 2023 +0.59, 2024 +0.02, 2025 +0.75, 2026 +0.57.
+- Caution learned: the real-card mix results (e.g. +128.8u for 5/3/2/2) swing a lot when the leg pool changes slightly (Mark 4l reshuffles which
+  legs go into the 5-leg: +113.6u at 0.25u, but +134.6u at 1u vs +243.9u). Those single-path numbers are fragile; all-combo is the steadier guide.

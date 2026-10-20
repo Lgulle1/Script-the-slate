@@ -252,6 +252,8 @@ SETUPS = {
     "Mark 4h det: comps vs line + gentle recency": dict(cols=("base", "comps_line"), recency=True, det=True, half_life=3.0),
     # 2026-10-20: the same, on inputs built only from what is known before kickoff (rosters / inactives / injury report / announced starting QB)
     "Mark 4h clean": dict(cols=("base", "comps_line"), recency=True, det=True, half_life=3.0),
+    # 2026-10-20: + the role-change engine (new role estimate, how far the line moved vs how far the role moved: the promotion overreaction)
+    "Mark 4k": dict(cols=("base", "comps_line", "role"), recency=True, det=True, half_life=3.0),
 }
 
 
@@ -260,6 +262,9 @@ def main(names=None, seeds=(1, 2, 3)):
     t0 = time.time()
     d, A, X3, S, C, E, P = frame()
     blocks = dict(base=X3, sit=S, comps=C, events=E, spot=P, comps_line=C[:, 6:12], dfn_line=C[:, 6:7])
+    if any("role" in cfg["cols"] for nm, cfg in SETUPS.items() if not names or nm in names):
+        from mark4 import rolechange as RC
+        blocks["role"] = RC.role_block(d)
     print(f"frame {d.height} rows, base {X3.shape[1]}, situations {S.shape[1]}, comps {C.shape[1]} ({time.time() - t0:.0f}s)", flush=True)
     out = {}
     for name, cfg in SETUPS.items():
