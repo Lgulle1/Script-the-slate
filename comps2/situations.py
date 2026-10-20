@@ -26,7 +26,14 @@ MIN_SHARE = 0.10         # a player owns a role from this share up
 OUT = config.PROCESSED_DIR / "comps2_situations.parquet"
 
 
-def team_shares() -> pl.DataFrame:
+def team_shares(pregame: bool = True) -> pl.DataFrame:
+    """pregame (default since 2026-10-20): a teammate's role counts as vacated when, before kickoff, he is not on the active roster or is listed Out /
+    Doubtful (comps2.pregame); before, it was "did not play", which is only known after the game."""
+    avail = {}
+    if pregame:
+        from comps2 import pregame as PG
+        for (se, wk, tm), g in PG.load().filter(pl.col("available")).group_by("season", "week", "team"):
+            avail[(int(se), int(wk), tm)] = set(g["gsis_id"].to_list())
     log = H.read_played_logs(max(config.BACKTEST_SEASONS) + 2)[0].select("player_id", "game_id", "team", "season", "week", "gameday", "family",
                                                                           "carries", "targets")
     log = log.with_columns(pl.col("carries").fill_null(0).cast(pl.Float64), pl.col("targets").fill_null(0).cast(pl.Float64))
@@ -39,9 +46,10 @@ def team_shares() -> pl.DataFrame:
         for gi, g in enumerate(gl):
             tg = t.filter(pl.col("game_id") == g)
             players = set(tg["player_id"].to_list())
+            present = avail.get((int(tg["season"][0]), int(tg["week"][0]), team), players) if pregame else players
             fam = dict(zip(tg["player_id"].to_list(), tg["family"].to_list()))
-            vac_car = sum(v[0] for p, v in own.items() if p not in players and v[2] == "RB" and v[0] >= MIN_SHARE and gi - last_seen.get(p, -99) <= 4)
-            vac_tgt = sum(v[1] for p, v in own.items() if p not in players and v[2] in ("WR", "TE", "RB") and v[1] >= MIN_SHARE and gi - last_seen.get(p, -99) <= 4)
+            vac_car = sum(v[0] for p, v in own.items() if p not in present and v[2] == "RB" and v[0] >= MIN_SHARE and gi - last_seen.get(p, -99) <= 4)
+            vac_tgt = sum(v[1] for p, v in own.items() if p not in present and v[2] in ("WR", "TE", "RB") and v[1] >= MIN_SHARE and gi - last_seen.get(p, -99) <= 4)
             for p in players:
                 o = own.get(p, (0.0, 0.0, fam[p]))
                 rows.append((g, team, p, float(vac_car), float(vac_tgt), float(o[0]), float(o[1]), int(gi - last_seen[p]) if p in last_seen else 99))

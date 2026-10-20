@@ -24,6 +24,7 @@ ON_FIELD = 0.20
 EXPECT_GAMES = 3
 DEFAULT_SHARE = 0.5
 STARTER, STARTER_SHARE = 0.60, 0.80
+REGULAR_GAMES = 4
 HALF_LIFE, SEASON_GAP, LOOKBACK, GAMMA = 8.0, 4.0, 3, 1.5
 GROUP = {**{p: "OL" for p in ("T", "G", "C", "OL", "OT", "C/G", "G/T", "G/C")}, "QB": "QB", **{p: "RB" for p in ("RB", "FB", "HB")}, "WR": "WR", "TE": "TE",
          **{p: "DL" for p in ("DE", "DT", "NT", "DL", "DT/D")}, **{p: "LB" for p in ("LB", "OLB", "ILB")}, **{p: "DB" for p in ("CB", "S", "FS", "SS", "DB")}}
@@ -45,12 +46,17 @@ def snaps() -> pl.DataFrame:
     return s.filter(pl.col("grp").is_not_null())
 
 
-def profiles(g: pl.DataFrame, s: pl.DataFrame, sched: pl.DataFrame) -> pl.DataFrame:
-    g = g.join(sched.select("game_id", "gameday", "season"), on="game_id", how="left")
+def profiles(g: pl.DataFrame, s: pl.DataFrame, sched: pl.DataFrame, avail: dict | None = None, starter_qb: dict | None = None) -> pl.DataFrame:
+    """avail: {(season, week, team): set of pfr ids available before kickoff} (comps2.pregame). When given (default since 2026-10-20), tonight's lineup is
+    built from pre-game information only: the regulars of the team's last REGULAR_GAMES games who are available, each at his usual share, and the top
+    available player of a position group inherits the share of an unavailable regular of that group (the Allen case). Without it, the old rule
+    (who actually played 20%+ of tonight's snaps, known only after the game)."""
+    g = g.join(sched.select("game_id", "gameday", "season", "week"), on="game_id", how="left")
     rows, ovl = [], []
     for (team, side), t in g.sort("gameday").group_by("team", "side", maintain_order=True):
         games = t["game_id"].to_list()
         seasons = t["season"].to_numpy().astype(int)
+        weeks = t["week"].to_numpy().astype(int)
         pos = np.arange(len(games)) + SEASON_GAP * (seasons - seasons.min())
         col = "off" if side == "off" else "dfn"
         st = s.filter(pl.col("team") == team).select("game_id", "pid", "grp", col)
@@ -73,18 +79,43 @@ def profiles(g: pl.DataFrame, s: pl.DataFrame, sched: pl.DataFrame) -> pl.DataFr
             if not len(prev):
                 rows.append((games[i], team, side, 0.0, 0.0, *[np.nan] * len(U.STATS)))
                 continue
-            on = M[i] >= ON_FIELD
             played = M[:i] > 0
-            # expected share: mean over his last EXPECT_GAMES appearances before g
             exp = np.full(M.shape[1], DEFAULT_SHARE)
-            for j in np.flatnonzero(on):
-                hist = M[:i, j][played[:, j]]
-                if len(hist):
-                    exp[j] = hist[-EXPECT_GAMES:].mean()
-                # a starter tonight (known at kickoff from the depth chart / inactives) counts as a starter even if his history is backup snaps:
-                # Penix's first start, Allen with Hall out
-                if M[i, j] >= STARTER:
-                    exp[j] = max(exp[j], STARTER_SHARE)
+            if avail is None:
+                on = M[i] >= ON_FIELD
+                for j in np.flatnonzero(on):
+                    hist = M[:i, j][played[:, j]]
+                    if len(hist):
+                        exp[j] = hist[-EXPECT_GAMES:].mean()
+                    if M[i, j] >= STARTER:
+                        exp[j] = max(exp[j], STARTER_SHARE)
+            else:
+                recent = (M[max(0, i - REGULAR_GAMES):i] >= ON_FIELD).any(0)
+                for j in np.flatnonzero(recent):
+                    hist = M[:i, j][played[:, j]]
+                    exp[j] = hist[-EXPECT_GAMES:].mean() if len(hist) else DEFAULT_SHARE
+                av = avail.get((int(seasons[i]), int(weeks[i]), team))
+                ok = np.array([p in av for p in pids]) if av is not None else np.ones(len(pids), bool)
+                on = recent & ok
+                # the announced starting QB (known days before kickoff): he is tonight's QB, at a starter's share, and nobody else is
+                qb = (starter_qb or {}).get((games[i], team)) if side == "off" else None
+                if qb is not None and qb in pix:
+                    isqb = np.array([grp.get(p) == "QB" for p in pids])
+                    on = on & ~isqb
+                    on[pix[qb]] = True
+                    exp[pix[qb]] = max(exp[pix[qb]], STARTER_SHARE)
+                # an unavailable regular's share passes to the top available player of his position group
+                for gname in set(grp.values()):
+                    ingrp = np.array([grp.get(p) == gname for p in pids])
+                    lost = exp[recent & ~ok & ingrp & (exp >= 0.5)].sum()
+                    cand = np.flatnonzero(on & ingrp)
+                    if lost > 0 and len(cand):
+                        top = cand[np.argmax(exp[cand])] if exp[cand].max() < STARTER_SHARE else None
+                        if top is None:
+                            cand2 = [c for c in cand if exp[c] < STARTER_SHARE]
+                            top = cand2[int(np.argmax(exp[cand2]))] if cand2 else None
+                        if top is not None:
+                            exp[top] = min(STARTER_SHARE, exp[top] + lost)
             rec = 0.5 ** ((pos[i] - pos[prev]) / HALF_LIFE)
             num = np.zeros(len(U.STATS))
             den = np.zeros(len(U.STATS))
@@ -116,7 +147,22 @@ def build() -> pl.DataFrame:
     sched = con.execute("SELECT * FROM (SELECT DISTINCT ON (game_id) game_id, season, week, gameday FROM schedules WHERE game_type = 'REG' ORDER BY game_id, pulled_at DESC)").pl()
     con.close()
     sched = sched.with_columns(pl.col("gameday").cast(pl.Utf8).str.slice(0, 10).str.to_date(strict=False), season=pl.col("season").cast(pl.Int32), week=pl.col("week").cast(pl.Int32))
-    return profiles(g.drop("season", "week"), snaps(), sched)
+    from comps2 import pregame as PG
+    avail = {}
+    for (se, wk, tm), x in PG.load().filter(pl.col("available") & pl.col("pfr_id").is_not_null()).group_by("season", "week", "team"):
+        avail[(int(se), int(wk), tm)] = set(x["pfr_id"].to_list())
+    roster = PG.load().select("gsis_id", "pfr_id").drop_nulls().unique("gsis_id")
+    g2p = dict(roster.iter_rows())
+    con = duckdb.connect(str(config.RAW_DUCKDB_PATH), read_only=True)
+    qbs = con.execute("""SELECT * FROM (SELECT DISTINCT ON (game_id) game_id, home_team, away_team, home_qb_id, away_qb_id FROM schedules
+                         WHERE game_type = 'REG' ORDER BY game_id, pulled_at DESC)""").fetchall()
+    con.close()
+    starter_qb = {}
+    for gid, ht, at, hq, aq in qbs:
+        for tm, q in ((ht, hq), (at, aq)):
+            if q in g2p:
+                starter_qb[(gid, tm)] = g2p[q]
+    return profiles(g.drop("season", "week"), snaps(), sched, avail, starter_qb)
 
 
 if __name__ == "__main__":

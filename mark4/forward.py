@@ -250,6 +250,8 @@ SETUPS = {
     "Mark 4f det: + defense vs line": dict(cols=("base", "dfn_line"), recency=False, det=True),
     "Mark 4g det: gentle recency (3-season half-life)": dict(cols=("base",), recency=True, det=True, half_life=3.0),
     "Mark 4h det: comps vs line + gentle recency": dict(cols=("base", "comps_line"), recency=True, det=True, half_life=3.0),
+    # 2026-10-20: the same, on inputs built only from what is known before kickoff (rosters / inactives / injury report / announced starting QB)
+    "Mark 4h clean": dict(cols=("base", "comps_line"), recency=True, det=True, half_life=3.0),
 }
 
 

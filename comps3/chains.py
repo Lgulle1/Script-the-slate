@@ -60,7 +60,13 @@ def frame() -> pl.DataFrame:
     arc = pl.read_parquet(config.PROCESSED_DIR / "comps2_archetypes.parquet").select("game_id", "player_id", *[pl.col(s).alias(f"a_{s}") for s in AR.ALL])
     from live import history as H
     log = H.read_played_logs(max(config.BACKTEST_SEASONS) + 2)[0]
-    qb = log.filter(pl.col("family") == "QB").sort("attempts", descending=True).unique(["game_id", "team"], keep="first").select("game_id", "team", qb_id="player_id")
+    # the announced starting QB of each team-game (schedules; known before kickoff), not who ended up throwing the most
+    import duckdb
+    con = duckdb.connect(str(config.RAW_DUCKDB_PATH), read_only=True)
+    sq = con.execute("""SELECT * FROM (SELECT DISTINCT ON (game_id) game_id, home_team, away_team, home_qb_id, away_qb_id FROM schedules
+                        WHERE game_type = 'REG' ORDER BY game_id, pulled_at DESC)""").pl()
+    con.close()
+    qb = pl.concat([sq.select("game_id", team="home_team", qb_id="home_qb_id"), sq.select("game_id", team="away_team", qb_id="away_qb_id")])
     e = e.join(off, on=["game_id", "team"], how="left").join(dfn, on=["game_id", "opponent"], how="left").join(arc, on=["game_id", "player_id"], how="left")
     e = e.join(qb, on=["game_id", "team"], how="left")
     return e.sort("gd", "game_id", "player_id", "market").with_row_index("rid")
