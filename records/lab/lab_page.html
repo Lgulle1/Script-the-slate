@@ -42,7 +42,8 @@
   </header>
 
   <nav class="lab-tabs" role="tablist" aria-label="Lab sections">
-    <button class="lab-tab" role="tab" id="tab-mark4" aria-controls="sec-mark4" aria-selected="true">Mark 4</button>
+    <button class="lab-tab" role="tab" id="tab-strat" aria-controls="sec-strat" aria-selected="true">Betting strategy</button>
+    <button class="lab-tab" role="tab" id="tab-mark4" aria-controls="sec-mark4" aria-selected="false">Mark 4 versions</button>
     <button class="lab-tab" role="tab" id="tab-book" aria-controls="sec-book" aria-selected="false">The book</button>
     <button class="lab-tab" role="tab" id="tab-spots" aria-controls="sec-spots" aria-selected="false">Blind spots</button>
     <button class="lab-tab" role="tab" id="tab-marks" aria-controls="sec-marks" aria-selected="false">The Marks</button>
@@ -50,7 +51,52 @@
     <button class="lab-tab" role="tab" id="tab-plan" aria-controls="sec-plan" aria-selected="false">Mark 4 plan</button>
   </nav>
 
-  <section id="sec-mark4" role="tabpanel" aria-labelledby="tab-mark4">
+  <section id="sec-strat" role="tabpanel" aria-labelledby="tab-strat">
+    <div class="lab-card" style="margin-bottom: var(--cds-gap-md)">
+      <h2 id="h-cards">Real weekly cards, played week by week (2022 to 2026 week 6)</h2>
+      <p class="lab-note">Each card bet every week exactly as it would have been live: legs ranked by the version, never two legs from one game, 1 unit per bet, the first 4 parlays a week take the 30% profit boost (one per boost window). Mark 4i = Mark 3 + Mark 4h + FanDuel's own price, mixed with weights chosen before each season from earlier seasons only. "Chance better" is how often the card beat Mark 3's frozen rule when weeks are resampled 4,000 times (recent weeks count more); 95%+ is proof.</p>
+      <div class="lab-wrap"><table id="cards" data-source="strat_cards" data-row-key="card">
+        <thead><tr><th data-field="card">Card</th><th class="num" data-field="ret_all">Return per unit</th><th class="num" data-field="ret_recency">Recency-weighted</th><th class="num" data-field="units">Units won</th><th class="num" data-field="bets">Bets</th><th class="num" data-field="seasons_up">Seasons up</th><th class="num" data-field="worst_drawdown">Worst drawdown</th><th class="num" data-field="chance_better">Chance better than Mark 3</th><th class="num" data-field="u2022">2022</th><th class="num" data-field="u2023">2023</th><th class="num" data-field="u2024">2024</th><th class="num" data-field="u2025">2025</th><th class="num" data-field="u2026">2026</th></tr></thead>
+        <tbody></tbody></table></div>
+    </div>
+    <div class="lab-card" style="margin-bottom: var(--cds-gap-md)">
+      <h2 id="h-h2h">Every parlay the pool could build: each version vs Mark 3's rule</h2>
+      <p class="lab-note">A parlay format scored by the average of EVERY parlay its top legs could make that week (different games), not the one or two it happened to build: the format's true expected return, measured on what actually happened, with far less luck. Legs ranked by expected value (chance x price), over or under whichever is better, all 7 markets. The Mark 3 rule rows rank by win chance instead (top 8 unders, 4% edge).</p>
+      <div class="lab-ctrl"><label>Boost <select id="f-boost"><option value="boosted">boosted</option><option value="no boost">no boost</option></select></label></div>
+      <div class="lab-wrap"><table id="h2h" data-source="strat_h2h" data-row-key="key">
+        <thead><tr><th data-field="version">Version</th><th data-field="rule">Leg ranking</th><th class="num" data-field="legs">Legs</th><th class="num" data-field="this">Return per unit</th><th class="num" data-field="mark3_rule">Mark 3 rule</th><th class="num" data-field="chance_better">Chance better</th><th class="num" data-field="seasons_up">Seasons up</th><th class="num" data-field="2022">2022</th><th class="num" data-field="2023">2023</th><th class="num" data-field="2024">2024</th><th class="num" data-field="2025">2025</th><th class="num" data-field="2026">2026</th></tr></thead>
+        <tbody></tbody></table></div>
+    </div>
+    <div class="lab-grid">
+      <div class="lab-card">
+        <h2 id="h-dials">Which way each setting points (boosted, every parlay averaged)</h2>
+        <p class="lab-note">Return per unit with one setting fixed and every other setting averaged over, recency-weighted. When all four versions agree, the setting is real, not luck: unders or either side beat overs; ranking by expected value or edge beats ranking by win chance; mixed markets beat same-market parlays; pools of 8-12 legs are best; more legs means more return per unit, and more swing.</p>
+        <div class="lab-wrap"><table id="dials" data-source="strat_dials" data-row-key="key">
+          <thead><tr><th data-field="dial">Setting</th><th data-field="value">Value</th><th class="num" data-field="Mark 3 det">Mark 3</th><th class="num" data-field="Mark 4h clean">Mark 4h</th><th class="num" data-field="Blend">Blend</th><th class="num" data-field="Mark 4i">Mark 4i</th></tr></thead>
+          <tbody></tbody></table></div>
+      </div>
+      <div class="lab-card">
+        <h2 id="h-2026">2026 week by week (units)</h2>
+        <p class="lab-note">The same cards, this season only.</p>
+        <div class="lab-wrap"><table id="w2026" data-source="strat_2026"><thead></thead><tbody></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-mark4" role="tabpanel" aria-labelledby="tab-mark4" hidden>
+    <div class="lab-card" style="margin-bottom: var(--cds-gap-md)">
+      <h2 id="h-det">Mark 4 versions with no randomness (the fair test)</h2>
+      <p class="lab-note">Random seeds moved results by 20-40 points, more than any model change, so every version is rebuilt with fixed models: same data, same picks every time. "Beats the book" is the log-loss gain over FanDuel's own no-vig price on every line (thousands of lines, so luck can't fake it): above zero means the model knows more than the price. Mark 4h (comps vs the line + gentle recency) is the current leader.</p>
+      <div class="lab-wrap"><table id="det" data-source="det_sum" data-row-key="version">
+        <thead><tr><th data-field="version">Version</th><th class="num" data-field="logloss_gain">Beats the book</th><th class="num" data-field="ll_2025">2025</th><th class="num" data-field="ll_2026">2026</th><th class="num" data-field="top20_under">Top-20 unders</th><th class="num" data-field="top20_both">Top-20 either side</th><th class="num" data-field="parlay_rule">Parlays, Mark 3 rule</th><th class="num" data-field="parlay_chosen">Parlays, chosen</th></tr></thead>
+        <tbody></tbody></table></div>
+      <h2 id="h-det-h2h" style="margin-top: var(--cds-gap-lg)">Chance each version beats Mark 3 (no randomness)</h2>
+      <p class="lab-note">Week by week, 4,000 resamples, recent weeks weighted more. 95%+ would be proof; Mark 4h is at 76-80% on all three, a consistent lean that only more weeks can confirm.</p>
+      <div class="lab-wrap"><table id="det-h2h" data-source="det_h2h" data-row-key="key">
+        <thead><tr><th data-field="version">Version</th><th data-field="measure">Measure</th><th class="num" data-field="mark3">Mark 3</th><th class="num" data-field="version_ret">Version</th><th class="num" data-field="p_better">Chance better</th><th class="num" data-field="weeks">Weeks</th></tr></thead>
+        <tbody></tbody></table></div>
+    </div>
+    <h2 id="h-seeded" style="font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0 0 var(--cds-gap-sm)">Earlier runs with random seeds (seeds 1-3)</h2>
     <div class="lab-grid">
       <div class="lab-card">
         <h2 id="h-m4-sum">Mark 4 vs Mark 3, played forward</h2>
@@ -84,8 +130,8 @@
   <section id="sec-book" role="tabpanel" aria-labelledby="tab-book" hidden>
     <div class="lab-grid">
       <div class="lab-card">
-        <h2 id="h-book-ret">Betting every line blind, by season</h2>
-        <p class="lab-note">Return per unit if you bet every under (or every over) at FanDuel's price. Unders lose a little, overs lose a lot: the book's juice is the bar every edge has to clear.</p>
+        <h2 id="h-book-ret">Blind baseline: no model, one side on every line</h2>
+        <p class="lab-note">Not a strategy: the bar. Return per unit if you bet every under (or every over) with no model at FanDuel's price. Unders lose a little, overs lose a lot. The models pick the side line by line; Mark 4 takes the over or the under on each line, whichever has the bigger edge.</p>
         <div class="lab-chart" id="book-ret" data-source="book"></div>
       </div>
       <div class="lab-card">
@@ -100,6 +146,7 @@
     <div class="lab-card">
       <h2 id="h-spots">Where FanDuel's line misses</h2>
       <p class="lab-note">Every line 2021-2026 tagged with its situation, using only what was known before kickoff. "Shrunk" pulls small samples toward the normal return for that bet, because 33 situations x 3 market groups x 2 sides were tried and some will look good by chance. Trust a row more when the shrunk return is positive, it has volume, and most seasons were up. The bars show each season's return, 2021 to 2026.</p>
+      <p class="lab-note"><b>Warning:</b> this table looks back over all seasons at once. Played forward (rules picked only from earlier seasons, then bet the next season), betting these situations on their own lost about 3% to 9% a unit in 2023-2026. They help only as an input to the picker (Mark 4d), not as bets by themselves.</p>
       <div class="lab-ctrl">
         <label>Markets <select id="f-group"><option value="">All groups</option><option>rushing</option><option>receiving</option><option>passing</option><option>all</option></select></label>
         <label>Side <select id="f-side"><option value="">Both</option><option>under</option><option>over</option></select></label>
@@ -220,7 +267,7 @@
     document.querySelectorAll('#spots th button').forEach(x => x.removeAttribute('aria-sort'));
     b.setAttribute('aria-sort', sortDir > 0 ? 'ascending' : 'descending'); draw();
   }));
-  ['f-group', 'f-side', 'f-min', 'f-q'].forEach(id => document.getElementById(id).addEventListener('input', () => draw()));
+  ['f-group', 'f-side', 'f-min', 'f-q', 'f-boost'].forEach(id => document.getElementById(id).addEventListener('input', () => draw()));
 
   function fail(el, d) { el.innerHTML = ''; if (d.status === 'error' || d.status === 'connect') { const f = document.createElement('div'); f.className = 'lab-fail'; f.textContent = 'Failed to load'; el.appendChild(f); } }
 
@@ -259,7 +306,47 @@
     series.forEach(s => { const it = lg.append('span'); it.append('span').attr('class', 'sw').style('display', 'inline-block').style('width', '.6rem').style('height', '.6rem').style('border-radius', '2px').style('margin-right', '.35rem').style('background', s.color); it.append('span').text(s.name); });
   }
 
+  function drawStrat() {
+    const u = d3.format('+.1f');
+    const add = (tr, t, c) => { const td = tr.insertCell(); td.textContent = t; if (c) td.className = c; };
+    const pc = p => p == null ? '—' : pct0(p);
+    const pcls = p => p == null ? '' : (p >= 0.95 ? 'lab-pos' : p <= 0.05 ? 'lab-neg' : '');
+    const c = dash.data('strat_cards'); const ct = document.querySelector('#cards tbody'); ct.innerHTML = '';
+    if (c.status === 'ok') c.data.forEach(r => { const tr = ct.insertRow(); add(tr, r.card); add(tr, pct(N(r.ret_all)), 'num ' + cls(N(r.ret_all))); add(tr, pct(N(r.ret_recency)), 'num ' + cls(N(r.ret_recency)));
+      add(tr, u(N(r.units)), 'num ' + cls(N(r.units))); add(tr, num(N(r.bets)), 'num'); add(tr, `${r.seasons_up} of ${r.seasons}`, 'num'); add(tr, d3.format('.1f')(N(r.worst_drawdown)) + 'u', 'num');
+      add(tr, pc(N(r.chance_better)), 'num ' + pcls(N(r.chance_better))); ['u2022', 'u2023', 'u2024', 'u2025', 'u2026'].forEach(k => add(tr, u(N(r[k])), 'num ' + cls(N(r[k])))); });
+    const h = dash.data('strat_h2h'); const ht = document.querySelector('#h2h tbody'); ht.innerHTML = '';
+    const fb = document.getElementById('f-boost').value;
+    if (h.status === 'ok') h.data.filter(r => r.boost === fb).forEach(r => { const tr = ht.insertRow(); tr.setAttribute('data-key', r.key); add(tr, r.version); add(tr, r.rule); add(tr, r.legs === '1' ? 'straights' : r.legs, 'num');
+      add(tr, pct(N(r.this)), 'num ' + cls(N(r.this))); add(tr, pct(N(r.mark3_rule)), 'num ' + cls(N(r.mark3_rule))); add(tr, pc(N(r.chance_better)), 'num ' + pcls(N(r.chance_better)));
+      add(tr, `${r.seasons_up} of 5`, 'num'); ['2022', '2023', '2024', '2025', '2026'].forEach(k => add(tr, N(r[k]) == null ? '—' : pct(N(r[k])), 'num ' + cls(N(r[k])))); });
+    const dl = dash.data('strat_dials'); const dt = document.querySelector('#dials tbody'); dt.innerHTML = '';
+    if (dl.status === 'ok') dl.data.forEach(r => { const tr = dt.insertRow(); tr.setAttribute('data-key', r.key); add(tr, r.dial); add(tr, r.value); ['Mark 3 det', 'Mark 4h clean', 'Blend', 'Mark 4i'].forEach(k => add(tr, pct(N(r[k])), 'num ' + cls(N(r[k])))); });
+    const w = dash.data('strat_2026'); const wt = document.getElementById('w2026'); wt.tHead.innerHTML = ''; wt.tBodies[0].innerHTML = '';
+    if (w.status === 'ok') {
+      const weeks = [...new Set(w.data.map(r => Number(r.week)))].sort((a, b) => a - b); const cards = [...new Set(w.data.map(r => r.card))];
+      const hr = wt.tHead.insertRow(); const th0 = document.createElement('th'); th0.textContent = 'Card'; hr.appendChild(th0);
+      weeks.forEach(k => { const th = document.createElement('th'); th.className = 'num'; th.textContent = 'Wk ' + k; hr.appendChild(th); });
+      const tt = document.createElement('th'); tt.className = 'num'; tt.textContent = 'Total'; hr.appendChild(tt);
+      cards.forEach(cd => { const tr = wt.tBodies[0].insertRow(); add(tr, cd); let tot = 0;
+        weeks.forEach(k => { const r = w.data.find(q => q.card === cd && Number(q.week) === k); const v = r ? N(r.units) : null; tot += v || 0;
+          const td = tr.insertCell(); td.className = 'num ' + cls(v); td.textContent = v == null ? '—' : u(v);
+          if (r) { td.setAttribute('data-source', 'strat_2026'); td.setAttribute('data-field', 'units'); td.setAttribute('data-where', `key=${encodeURIComponent(r.key)}`); } });
+        add(tr, u(tot), 'num ' + cls(tot)); });
+    }
+  }
+
   function drawMark4() {
+    const ll = d3.format('+.4f');
+    const ds = dash.data('det_sum'); const dt = document.querySelector('#det tbody'); dt.innerHTML = '';
+    if (ds.status === 'ok') ds.data.forEach(r => { const tr = dt.insertRow(); tr.setAttribute('data-key', r.version); const a = (t, c) => { const td = tr.insertCell(); td.textContent = t; if (c) td.className = c; };
+      a(r.version); a(ll(N(r.logloss_gain)), 'num ' + cls(N(r.logloss_gain))); a(N(r.ll_2025) == null ? '—' : ll(N(r.ll_2025)), 'num ' + cls(N(r.ll_2025)));
+      a(N(r.ll_2026) == null ? '—' : ll(N(r.ll_2026)), 'num ' + cls(N(r.ll_2026)));
+      ['top20_under', 'top20_both', 'parlay_rule', 'parlay_chosen'].forEach(k => a(pct(N(r[k])), 'num ' + cls(N(r[k])))); });
+    const dh = dash.data('det_h2h'); const dht = document.querySelector('#det-h2h tbody'); dht.innerHTML = '';
+    if (dh.status === 'ok') dh.data.forEach(r => { const tr = dht.insertRow(); tr.setAttribute('data-key', r.key); const a = (t, c) => { const td = tr.insertCell(); td.textContent = t; if (c) td.className = c; };
+      a(r.version); a(r.measure); a(pct(N(r.mark3)), 'num ' + cls(N(r.mark3))); a(pct(N(r.version_ret)), 'num ' + cls(N(r.version_ret)));
+      const p = N(r.p_better); a(pct0(p), 'num ' + (p >= 0.95 ? 'lab-pos' : p <= 0.05 ? 'lab-neg' : '')); a(num(N(r.weeks)), 'num'); });
     const sm = dash.data('fwd_sum'); const st = document.querySelector('#m4-sum tbody'); st.innerHTML = '';
     if (sm.status === 'ok') sm.data.forEach(r => { const tr = st.insertRow(); tr.setAttribute('data-key', r.key); const a = (t, c) => { const td = tr.insertCell(); td.textContent = t; if (c) td.className = c; };
       a(r.setup); a(r.rule); a(pct(N(r.recency_ret)), 'num ' + cls(N(r.recency_ret))); a(d3.format('+.1f')(N(r.units)), 'num ' + cls(N(r.units))); a(d3.format(',.0f')(N(r.staked)), 'num'); });
@@ -283,6 +370,7 @@
   }
 
   function draw() {
+    drawStrat();
     drawMark4();
     // headline
     const h = dash.data('headline'); const he = document.getElementById('lab-take');
