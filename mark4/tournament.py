@@ -31,14 +31,51 @@ BOOST, N_BOOSTS = F.ST.BOOST, 4
 SHRINK = 20.0
 
 
+MIX_WM = (0.0, 0.25, 0.5, 0.75, 1.0)            # weight of Mark 3 in the model blend (the rest Mark 4h)
+MIX_B = (0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0)       # weight of the model blend against FanDuel's no-vig price (the rest the book)
+
+
+def mark4i(d, A, verbose=False):
+    """Mark 4i (2026-10-20): p = b * (wm * Mark 3 + (1 - wm) * Mark 4h) + (1 - b) * the book's no-vig chance (the price at bet time, pre-kickoff rows
+    only). Both models are overconfident alone; leaning on the price fixes that, and it beats the book's log loss in every season 2022-2026.
+    wm and b are chosen per season from earlier seasons only (best recency-weighted log loss); 2022 has no past and gets the plain 50/50 blend."""
+    p3, p4 = np.load(F.OUT / "forward_p_Mark_3_det_0.npy"), np.load(F.OUT / "forward_p_Mark_4h_clean_0.npy")
+    fair, y, season = A.fair_o.astype(float), A.over_won.astype(float), d["season"].to_numpy()
+    ok = ~np.isnan(p3) & ~np.isnan(p4) & ~np.isnan(fair) & ~np.isnan(y)
+    cl = lambda q: np.clip(q, 1e-4, 1 - 1e-4)
+    ll = lambda q: -(y * np.log(cl(q)) + (1 - y) * np.log(1 - cl(q)))
+    out = (p3 + p4) / 2
+    picks = {}
+    for S in F.SEASONS[1:]:
+        past = ok & (season < S)
+        w = 0.5 ** ((S - season[past]) / F.HALF_LIFE)
+        best = max(itertools.product(MIX_WM, MIX_B),
+                   key=lambda c: (w * (ll(fair) - ll(c[1] * (c[0] * p3 + (1 - c[0]) * p4) + (1 - c[1]) * fair))[past]).sum())
+        wm, b = best
+        cur = season == S
+        q = b * (wm * p3 + (1 - wm) * p4) + (1 - b) * fair
+        out[cur] = np.where(np.isnan(fair[cur]), (wm * p3 + (1 - wm) * p4)[cur], q[cur])
+        picks[S] = dict(mark3_weight=wm, model_weight=b)
+    if verbose:
+        print("Mark 4i weights chosen forward:", picks)
+    return out, picks
+
+
 def load_p(version):
     if version == "Blend":
         return (np.load(F.OUT / "forward_p_Mark_3_det_0.npy") + np.load(F.OUT / "forward_p_Mark_4h_clean_0.npy")) / 2
+    if version == "Mark 4i":
+        d, A, *_ = F.frame()
+        return mark4i(d, A, verbose=True)[0]
     return np.load(F.OUT / f"forward_p_{version.replace(' ', '_')}_0.npy")
 
 
-def week_pools(d, A, p, sides, markets, edge):
-    """{(season, week): rows sorted by chance}, rows as tuples (chance, edge, dec, won, game_id, player_id, market)."""
+RANKS = {"chance": lambda r: -r[0], "edge": lambda r: -r[1], "ev": lambda r: -(r[0] * r[2] - 1)}
+
+
+def week_pools(d, A, p, sides, markets, edge, rank="chance"):
+    """{(season, week): rows sorted by `rank` (chance = Mark 3's rule, edge = chance minus break-even, ev = chance x decimal price - 1)},
+    rows as tuples (chance, edge, dec, won, game_id, player_id, market)."""
     eo, eu = p - A.be_o, (1 - p) - A.be_u
     if sides == "under":
         over = np.zeros(len(p), bool)
@@ -59,7 +96,7 @@ def week_pools(d, A, p, sides, markets, edge):
     for i in np.flatnonzero(ok):
         W.setdefault((int(season[i]), int(week[i])), []).append((ch[i], ed[i], dec[i], won[i], gid[i], pid[i], mk[i]))
     for k in W:
-        W[k].sort(key=lambda r: -r[0])
+        W[k].sort(key=RANKS[rank])
     return W
 
 
@@ -206,17 +243,17 @@ def run_combos(version):
     d, A, *_ = F.frame()
     p = load_p(version)
     rows = []
-    for sides, markets, edge in itertools.product(("under", "over", "both"), ("four", "all"), (0.0, 0.02, 0.04, 0.06)):
-        W = week_pools(d, A, p, sides, markets, edge)
+    for sides, markets, edge, rank in itertools.product(("under", "over", "both"), ("four", "all"), (0.0, 0.02, 0.04, 0.06), tuple(RANKS)):
+        W = week_pools(d, A, p, sides, markets, edge, rank)
         for m in (4, 6, 8, 12, 16):
             for s, v in score_straights(W, m).items():
-                rows.append(dict(sides=sides, markets=markets, edge=edge, depth=m, legs=1, mix="any", season=s, plain=v[0], boosted=v[0], weeks=v[2], staked=v[1]))
+                rows.append(dict(rank=rank, sides=sides, markets=markets, edge=edge, depth=m, legs=1, mix="any", season=s, plain=v[0], boosted=v[0], weeks=v[2], staked=v[1]))
             for k, mix in itertools.product((2, 3, 4, 5), ("any", "diff")):
                 if k > m:
                     continue
                 for s, v in combo_ev(W, k, m, mix).items():
-                    rows.append(dict(sides=sides, markets=markets, edge=edge, depth=m, legs=k, mix=mix, season=s, plain=v[0], boosted=v[1], weeks=v[2], staked=float(v[2])))
-        print(f"{version}: {sides} {markets} {edge} ({time.time() - t0:.0f}s)", flush=True)
+                    rows.append(dict(rank=rank, sides=sides, markets=markets, edge=edge, depth=m, legs=k, mix=mix, season=s, plain=v[0], boosted=v[1], weeks=v[2], staked=float(v[2])))
+        print(f"{version}: {sides} {markets} {edge} {rank} ({time.time() - t0:.0f}s)", flush=True)
     t = pl.DataFrame(rows).with_columns(version=pl.lit(version))
     t.write_parquet(F.OUT / f"combos_{version.replace(' ', '_')}.parquet")
     return t

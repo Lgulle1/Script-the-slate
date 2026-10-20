@@ -1,0 +1,18 @@
+{
+ "2023": {
+  "mark3_weight": 1.0,
+  "model_weight": 0.3
+ },
+ "2024": {
+  "mark3_weight": 0.75,
+  "model_weight": 0.4
+ },
+ "2025": {
+  "mark3_weight": 1.0,
+  "model_weight": 0.3
+ },
+ "2026": {
+  "mark3_weight": 1.0,
+  "model_weight": 0.5
+ }
+}

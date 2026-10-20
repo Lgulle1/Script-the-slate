@@ -1,0 +1,17 @@
+chooser,season,picked,units,staked,ret,past
+Mark 3 det,2023,Mark 3 det: 1 legs | depth 4 | under | four markets | edge 0.06 | mix any,1.1001421714750883,55.0,0.020002584935910697,0.0901057179228907
+Mark 3 det,2024,Mark 3 det: 5 legs | depth 8 | both | all markets | edge 0.02 | mix any,-3.5659016466162194,16.0,-0.22286885291351372,0.7532270343161038
+Mark 3 det,2025,Mark 3 det: 5 legs | depth 8 | over | four markets | edge 0.0 | mix any,8.158420969978957,8.0,1.0198026212473696,1.10697171215833
+Mark 3 det,2026,Mark 3 det: 5 legs | depth 16 | under | all markets | edge 0.02 | mix diff,1.8354004182924646,2.0,0.9177002091462323,0.8929540048585373
+Mark 4h clean,2023,Mark 4h clean: 1 legs | depth 16 | over | all markets | edge 0.06 | mix any,-4.667388771850112,65.0,-0.07180598110538633,0.1414226098000986
+Mark 4h clean,2024,Mark 4h clean: 5 legs | depth 12 | over | four markets | edge 0.0 | mix any,-1.60183885799727,14.0,-0.11441706128551929,1.0626446977376036
+Mark 4h clean,2025,Mark 4h clean: 5 legs | depth 8 | both | four markets | edge 0.02 | mix any,36.68589524158389,15.0,2.4457263494389263,0.9055938362649147
+Mark 4h clean,2026,Mark 4h clean: 5 legs | depth 8 | both | four markets | edge 0.02 | mix any,-4.0,4.0,-1.0,1.1893524086883698
+Blend,2023,Blend: 1 legs | depth 16 | under | four markets | edge 0.06 | mix any,0.7244003299006407,72.0,0.010061115693064455,0.09107679033446171
+Blend,2024,Blend: 3 legs | depth 4 | over | all markets | edge 0.0 | mix any,-1.1126273901695747,14.0,-0.07947338501211247,0.596848958170279
+Blend,2025,Blend: 5 legs | depth 12 | under | all markets | edge 0.02 | mix any,18.62191405362146,18.0,1.0345507807567478,0.9145534547024303
+Blend,2026,Blend: 5 legs | depth 16 | under | all markets | edge 0.02 | mix diff,-1.0,1.0,-1.0,1.1721142029120606
+any Mark,2023,Mark 4h clean: 1 legs | depth 16 | over | all markets | edge 0.06 | mix any,-4.667388771850112,65.0,-0.07180598110538633,0.1414226098000986
+any Mark,2024,Mark 4h clean: 5 legs | depth 12 | over | four markets | edge 0.0 | mix any,-1.60183885799727,14.0,-0.11441706128551929,1.0626446977376036
+any Mark,2025,Mark 3 det: 5 legs | depth 8 | over | four markets | edge 0.0 | mix any,8.158420969978957,8.0,1.0198026212473696,1.10697171215833
+any Mark,2026,Mark 4h clean: 5 legs | depth 8 | both | four markets | edge 0.02 | mix any,-4.0,4.0,-1.0,1.1893524086883698
