@@ -67,6 +67,16 @@ the price fixes it. wm and b are chosen before each season from earlier seasons 
 | Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg | +37.6% | +123.7% | 3/5 | 36u | +60.4u | 85% |
 | Mark 4i: top 10 straights only | +0.3% | +10.1% | 3/5 | 24.6u | +12.0u | 9% |
 
+Correction (2026-10-20): the "worst drawdown" column above is the worst drop WITHIN one season. Over the whole history (records/lab/strat_cards.csv):
+| card | worst losing run | when | bets in it | winning weeks |
+|---|---|---|---|---|
+| Mark 3 rule (frozen) | -21.3u | 2022 wk 12 to 2023 wk 15 (22 weeks) | 79 | 37 of 78 |
+| Mark 4i: 4 boosted 2-leg | -22.0u | 2022 wk 2 to 2023 wk 13 (30 weeks) | 110 | 35 of 73 |
+| Mark 4i: 4 boosted 3-leg | -25.1u | 2023 wk 18 to 2025 wk 9 (25 weeks) | 64 | 17 of 73 |
+| Mark 4i: 2 boosted 2-leg + 2 boosted 4-leg | -36.0u | 2022 wk 2 to 2022 wk 10 (9 weeks) | 36 | 24 of 73 |
+| Mark 4i: 4 boosted 4-leg | -60.0u | 2023 wk 3 to 2024 wk 14 (30 weeks) | 60, all lost | 11 of 73 |
+The 4-leg card's +116.7u rests on 11 winning weeks; it went 60 parlays without a hit. It is the highest return per unit and the least proven.
+
 Straights alone still do not beat the vig enough to matter; the edge is in boosted multi-leg parlays built from EV-ranked legs.
 
 ### Markets

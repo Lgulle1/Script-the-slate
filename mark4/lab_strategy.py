@@ -11,6 +11,20 @@ from mark4 import compare as CP
 from mark4 import forward as F
 
 
+def worst_run(x: pl.DataFrame) -> dict:
+    """The worst peak-to-trough drop of the running total over the WHOLE history (not per season), how long it lasted and how many bets it took."""
+    import numpy as np
+    x = x.sort("season", "week")
+    u, b, s, w = (x[c].to_numpy() for c in ("units", "bets", "season", "week"))
+    run = np.concatenate([[0.0], np.cumsum(u)])
+    peak = np.maximum.accumulate(run)
+    j = int((peak - run).argmax())
+    i = int(np.flatnonzero(run[:j + 1] == peak[j])[-1])
+    return dict(worst_run_units=float(peak[j] - run[j]), worst_run_weeks=j - i, worst_run_bets=float(b[i:j].sum()),
+                worst_run_from=f"{s[i]} wk {w[i]}" if i < len(s) else "", worst_run_to=f"{s[j - 1]} wk {w[j - 1]}" if j > 0 else "",
+                winning_weeks=int((u > 0).sum()), weeks=len(u))
+
+
 def main():
     # the all-combo head to head vs Mark 3's rule, boosted and plain
     C = []
@@ -48,6 +62,7 @@ def main():
         u2026=pl.col("units").filter(pl.col("season") == 2026).sum())
     s = s.with_columns(chance_better=pl.col("card").replace_strict(pb, default=None, return_dtype=pl.Float64))
     s = s.join(t.pivot(on="season", index="card", values="units").rename(lambda c: f"u{c}" if c.isdigit() else c), on="card")
+    s = s.join(pl.DataFrame([dict(card=c, **worst_run(x)) for (c,), x in wk.group_by("card")]), on="card")
     s.sort("ret_all", descending=True).write_csv(F.OUT / "strat_cards.csv")
     wk.filter(pl.col("season") == 2026).with_columns(key=pl.format("{}|{}", "card", "week")).write_csv(F.OUT / "strat_2026.csv")
     print(s.sort("ret_all", descending=True))
