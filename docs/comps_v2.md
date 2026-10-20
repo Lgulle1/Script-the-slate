@@ -91,3 +91,19 @@ Chance better than Mark 3: vs line parlays 67/26 (exam), 17/27 (2022-24); single
 **Verdict.** Parlays: seed-dependent in every comps setup, never a pass; Mark 3 parlays stay as they are. Straights: all three comps setups tested
 (v2 defense vs line, v3 vs line, v3 vs projection) beat Mark 3's straights in all four cells each (12 of 12). The comps carry real information for straight
 bets. Best on the exam: v3 chains vs projection (exam singles about +11% vs -8%), chosen after seeing the exam, so it is tracked live before any money.
+
+## Comps v4: player vs style matchups (2026-10-20, comps4/style.py)
+Play level, not whole games. Styles: man vs zone and two-high vs single-high (participation 2018-25), blitz (FTN 2022-26 / rushers), pressure, heavy box
+(run). Per player: targets / catches / receiving yards per on-field dropback by style value; QB completions / yards per dropback; back yards per carry vs
+heavy / light box. Per defense: recency-weighted style rates entering the game. Matchup multiplier = expected rate vs THIS defense's mix / vs a league mix.
+All pre-game, no fitting, so nothing leaks.
+
+Results:
+- Against FanDuel's line (30,090 lines 2021-26): no signal. Best-matchup quintile beats the book no more than the worst in any market; season
+  correlations flip sign (rec_yds +0.018, -0.001, +0.043, -0.017, -0.026).
+- Against the stat itself: corr(matchup, actual / projection) +0.02 receiving, ~0 passing and rushing; vs a receiver's own 6-game average, 0.000 over
+  18,378 games. FanDuel already shades its lines toward the matchup (corr with line / projection +0.03-0.04), slightly MORE than it predicts.
+- Are style traits real? Year-to-year stability of a receiver's split (100+ dropbacks each side, both seasons): man vs zone +0.24, pressure +0.22,
+  two-high +0.17, blitz +0.07, against +0.69 for his overall production. Defense style rates: +0.37 (man) to +0.56.
+Reading: the traits exist (they repeat), but they are small next to a player's overall level and next to one game's noise (a receiver's yards swing
+about 60% game to game; a matchup moves the expectation 2-5%), and the book already prices them. Not where a big edge is.
