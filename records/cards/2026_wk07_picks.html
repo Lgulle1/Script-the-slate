@@ -82,13 +82,22 @@ button:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
     <div class="eyebrow" id="eyebrow"></div>
     <h1>Week 7 Picks</h1>
     <div class="switch" role="group" aria-label="Setup">
-      <button type="button" data-m="3" aria-pressed="true">Mark 3 · the bet</button>
+      <button type="button" data-m="3" aria-pressed="true">Mark 3 · tracked</button>
       <button type="button" data-m="2" aria-pressed="false">Mark 2 · tracked</button>
       <button type="button" data-m="1" aria-pressed="false">Mark 1 · old A + B</button>
     </div>
     <div class="sum" id="sum"></div>
     <p id="herop"></p>
   </section>
+  <section class="panel" id="mark4">
+    <h2>Mark 4 · the bet</h2>
+    <p class="lede">Mark 4l: Mark 3's picker mixed 50/50 with FanDuel's own price (the 2026 weights, chosen from earlier seasons only), plus promotion-overreaction unders.
+    Legs ranked by expected value, over or under per leg, FanDuel lines only, never two legs of one game. One boost per parlay: 5-leg at a quarter unit, 3-leg at half a unit,
+    two 2-legs at a full unit, built long-first. 3 of 4 slots filled from this pull; the rest fill when more of FanDuel's markets are posted.
+    First pass on the Wednesday practice report: rebuilt before each boost window with fresh lines and the final injury report.</p>
+    <div class="grid" style="margin-top:14px"><div class="slip"><div class="slip-head"><span class="n">5-leg · 0.25u</span><span class="odds">+3097 → +4027 boosted</span></div><div class="legrow"><span class="r">1</span><span class="who">Konata Mumpfield<span class="team">LA</span></span><span class="price">-114</span><span class="bet"><b>Under 18.5</b> Receiving Yards</span><span class="meta">2026_07_LA_LV · chance 55.8% · edge +2.6%</span><p class="flag">Promotion overreaction: FanDuel raised this line far more than his role grew.</p></div><div class="legrow"><span class="r">2</span><span class="who">Kyle Williams<span class="team">NE</span></span><span class="price">-114</span><span class="bet"><b>Under 19.5</b> Receiving Yards</span><span class="meta">2026_07_NE_CHI · chance 55.8% · edge +2.6%</span><p class="flag">Promotion overreaction: FanDuel raised this line far more than his role grew.</p></div><div class="legrow"><span class="r">3</span><span class="who">Ja&#x27;Marr Chase<span class="team">CIN</span></span><span class="price">+128</span><span class="bet"><b>Under 6.5</b> Receptions</span><span class="meta">2026_07_CIN_BAL · chance 45.4% · edge +1.6%</span></div><div class="legrow"><span class="r">4</span><span class="who">Jahmyr Gibbs<span class="team">DET</span></span><span class="price">-114</span><span class="bet"><b>Under 93.5</b> Rushing Yards</span><span class="meta">2026_07_GB_DET · chance 55.1% · edge +1.8%</span></div><div class="legrow"><span class="r">5</span><span class="who">Jaylen Waddle<span class="team">DEN</span></span><span class="price">+112</span><span class="bet"><b>Under 4.5</b> Receptions</span><span class="meta">2026_07_DEN_ARI · chance 48.1% · edge +0.9%</span></div><div class="slip-foot"><span>chance <b>3.8%</b></span><span>expected value boosted <b>+55%</b></span><span><span class="boost">30% profit boost</span></span></div></div><div class="slip"><div class="slip-head"><span class="n">3-leg · 0.5u</span><span class="odds">+908 → +1180 boosted</span></div><div class="legrow"><span class="r">1</span><span class="who">Matthew Golden<span class="team">GB</span></span><span class="price">+118</span><span class="bet"><b>Under 4.5</b> Receptions</span><span class="meta">2026_07_GB_DET · chance 46.6% · edge +0.7%</span></div><div class="legrow"><span class="r">2</span><span class="who">Tyler Higbee<span class="team">LA</span></span><span class="price">+112</span><span class="bet"><b>Under 3.5</b> Receptions</span><span class="meta">2026_07_LA_LV · chance 47.9% · edge +0.7%</span></div><div class="legrow"><span class="r">3</span><span class="who">Germie Bernard<span class="team">PIT</span></span><span class="price">+118</span><span class="bet"><b>Under 4.5</b> Receptions</span><span class="meta">2026_07_PIT_NO · chance 46.1% · edge +0.3%</span></div><div class="slip-foot"><span>chance <b>10.3%</b></span><span>expected value boosted <b>+32%</b></span><span><span class="boost">30% profit boost</span></span></div></div><div class="slip"><div class="slip-head"><span class="n">2-leg #1 · 1u</span><span class="odds">+383 → +498 boosted</span></div><div class="legrow"><span class="r">1</span><span class="who">Sam LaPorta<span class="team">DET</span></span><span class="price">+112</span><span class="bet"><b>Under 4.5</b> Receptions</span><span class="meta">2026_07_GB_DET · chance 47.6% · edge +0.4%</span></div><div class="legrow"><span class="r">2</span><span class="who">Bijan Robinson<span class="team">ATL</span></span><span class="price">+128</span><span class="bet"><b>Under 3.5</b> Receptions</span><span class="meta">2026_07_SF_ATL · chance 43.9% · edge +0.0%</span></div><div class="slip-foot"><span>chance <b>20.9%</b></span><span>expected value boosted <b>+25%</b></span><span><span class="boost">30% profit boost</span></span></div></div></div>
+  </section>
+
 
   <div class="markwrap" data-mark="1" hidden>
   <p class="retired">Mark 1 is the old setup, retired as the bet on 2026-10-15 and still tracked every week. Same picker and same picks as Mark 2; only the betting rule differs. On seasons the picker never saw, its straight bets lost money (A's top 2: &minus;11%; B's top 8: &minus;2%) and A's single parlay returned +28%, against +50% for Mark 2's parlays. Not bet.</p>
@@ -188,9 +197,9 @@ const HERO = {
   1: {eyebrow: "Mark 1 · old A + B · retired 2026-10-15 · for comparison",
       sum: [`A: ${DATA.mark1.a_singles.length} straight + ${DATA.mark1.a_parlays.length} parlay`, `B: ${DATA.mark1.b_singles.length} straight + ${DATA.mark1.b_parlays.length} parlays`, "Unders only"],
       p: "The old setup: A bet the two strongest unders straight plus the same two as one boosted parlay; B tracked the top 8 straight and four parlays. Not what we bet now."},
-  3: {eyebrow: "Mark 3 · the bet · FanDuel · made before kickoff",
+  3: {eyebrow: "Mark 3 · tracked, not bet · FanDuel · made before kickoff",
       sum: [`${DATA.mark3.parlays.length} boosted parlays`, "30% boost on each", "No straight bets", "Flat stake", "Unders only"],
-      p: "These are the bets: up to four 2-leg parlays, each with a 30% FanDuel profit boost. No straight bets. Place them in order: if you only have one boost, bet Parlay 1; two boosts, Parlays 1 and 2; and so on. No boost, no bet."}
+      p: "Tracked, not bet: Mark 4 (above) is the bet from week 7. Mark 3 would bet up to four 2-leg parlays, each with a 30% FanDuel profit boost. No straight bets. Place them in order: if you only have one boost, bet Parlay 1; two boosts, Parlays 1 and 2; and so on. No boost, no bet."}
 };
 let mark = 3;
 try { const m = localStorage.getItem("wk-mark-v3"); if (m === "1" || m === "2" || m === "3") mark = +m; } catch (e) {}

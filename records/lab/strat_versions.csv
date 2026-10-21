@@ -1,0 +1,11 @@
+version,what,loglossgain_2022_26,allcombo_2_3_4_5_legs,status
+Mark 3 (frozen),"the old bet: Mark 3's picker, 2-leg unders by win chance",-2.23 / -0.18 / -0.96 / +1.18 / -0.35,+22% / +20% / +8% / +1%,"frozen, tracked"
+Mark 4h,"Mark 3 + comps vs the line + gentle recency, pre-game inputs only",-2.57 / -0.14 / -1.41 / +0.49 / +0.29,+19% / +24% / +31% / +43%,inside 4i
+Mark 4i,"Mark 3 + 4h + FanDuel's own price, weights chosen from earlier seasons",-2.01 / +0.52 / +0.17 / +0.76 / +0.36,+48% / +62% / +60% / +128%,base of 4l
+Mark 4j,"learned trust per situation (market, role change, comps, price move)",-1.73 / -0.24 / -0.37 / +0.97 / -0.45,-,dropped: chases noise
+Mark 4k,role-change engine fed into the picker,-4.4 / -0.5 / -2.1 / +0.2 / +0.8,-,dropped: diluted
+Mark 4l,Mark 4i + promotion-overreaction unders (hit rate from earlier seasons),-1.98 / +0.59 / +0.02 / +0.75 / +0.57,+36% / +60% / +91% / +89% (every season up),THE BET from week 7
+Mark 4m,Mark 4l + line-vs-median shape correction,-2.43 / +0.59 / -0.23 / +0.75 / +0.57,-,dropped: weight chosen forward was 0
+Comps v4,"player vs style matchups (man/zone, shells, blitz, pressure, box)",accuracy unchanged in every market,-,shelved: traits real (+0.24 yr/yr) but small and priced
+Comps v5,comps of the book's line behaviour (kNN / boosting),worse than the book,bets -3 to -4%,dropped
+Other books,"FanDuel vs 22 books and exchanges, 2026",market only +0.23 better than FanDuel,26 bets all season,FanDuel is not a soft outlier

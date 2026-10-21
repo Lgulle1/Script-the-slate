@@ -53,6 +53,20 @@
 
   <section id="sec-strat" role="tabpanel" aria-labelledby="tab-strat">
     <div class="lab-card" style="margin-bottom: var(--cds-gap-md)">
+      <h2 id="h-thisweek">This week's bet: Mark 4l, 2026 week 7 (first pass)</h2>
+      <p class="lab-note">Built Wednesday from FanDuel's first week 7 lines and the Wednesday practice report; rebuilt before each boost window with fresh lines and the final injury report. One boost per parlay: 5-leg at a quarter unit, 3-leg at half, two 2-legs at a full unit, built long-first, never two legs of one game. FanDuel had posted four markets, so 3 of 4 slots are filled.</p>
+      <div class="lab-wrap"><table id="w7card" data-source="strat_card_w7" data-row-key="key">
+        <thead><tr><th data-field="parlay">Parlay</th><th class="num" data-field="stake_units">Stake</th><th class="num" data-field="boosted_price">Boosted price</th><th data-field="player">Player</th><th data-field="market">Market</th><th data-field="side">Side</th><th class="num" data-field="line">Line</th><th class="num" data-field="price">Price</th><th class="num" data-field="chance">Chance</th><th class="num" data-field="edge">Edge</th><th data-field="overreaction_under">Overreaction under</th></tr></thead>
+        <tbody></tbody></table></div>
+    </div>
+    <div class="lab-card" style="margin-bottom: var(--cds-gap-md)">
+      <h2 id="h-versions">Every Mark 4 version and what it taught us</h2>
+      <p class="lab-note">"Beats the book" is the log-loss gain over FanDuel's own no-vig price per 1,000 lines, played forward, 2022 / 2023 / 2024 / 2025 / 2026 (positive = knows more than the price). "Every parlay" is the boosted return per unit of every 2-, 3-, 4- and 5-leg parlay its top 12 legs could build each week, 2022-2026. Ideas that only looked good with hindsight were dropped: a rule had to be chosen from earlier seasons and then win the next one.</p>
+      <div class="lab-wrap"><table id="versions" data-source="strat_versions" data-row-key="version">
+        <thead><tr><th data-field="version">Version</th><th data-field="what">What it is</th><th data-field="loglossgain_2022_26">Beats the book, by season</th><th data-field="allcombo_2_3_4_5_legs">Every parlay: 2 / 3 / 4 / 5 legs</th><th data-field="status">Status</th></tr></thead>
+        <tbody></tbody></table></div>
+    </div>
+    <div class="lab-card" style="margin-bottom: var(--cds-gap-md)">
       <h2 id="h-cards">Real weekly cards, played week by week (2022 to 2026 week 6)</h2>
       <p class="lab-note">Each card bet every week exactly as it would have been live: legs ranked by the version, never two legs from one game, 1 unit per bet, the first 4 parlays a week take the 30% profit boost (one per boost window). "Worst losing run" is the biggest drop from a high point of the running total over the whole history, how long it took to bottom out, and how many bets it took. Long parlays win rarely and big: the 4-leg card's whole profit came from 11 winning weeks out of 73. Mark 4i = Mark 3 + Mark 4h + FanDuel's own price, mixed with weights chosen before each season from earlier seasons only. "Chance better" is how often the card beat Mark 3's frozen rule when weeks are resampled 4,000 times (recent weeks count more); 95%+ is proof.</p>
       <div class="lab-wrap"><table id="cards" data-source="strat_cards" data-row-key="card">
@@ -311,6 +325,11 @@
     const add = (tr, t, c) => { const td = tr.insertCell(); td.textContent = t; if (c) td.className = c; };
     const pc = p => p == null ? '—' : pct0(p);
     const pcls = p => p == null ? '' : (p >= 0.95 ? 'lab-pos' : p <= 0.05 ? 'lab-neg' : '');
+    const wc = dash.data('strat_card_w7'); const wct = document.querySelector('#w7card tbody'); wct.innerHTML = '';
+    if (wc.status === 'ok') wc.data.forEach(r => { const tr = wct.insertRow(); tr.setAttribute('data-key', r.key); add(tr, r.parlay); add(tr, r.stake_units + 'u', 'num'); add(tr, '+' + r.boosted_price, 'num');
+      add(tr, `${r.player} (${r.team})`); add(tr, r.market); add(tr, r.side); add(tr, r.line, 'num'); add(tr, (N(r.price) > 0 ? '+' : '') + r.price, 'num'); add(tr, pct0(N(r.chance)), 'num'); add(tr, pct(N(r.edge)), 'num ' + cls(N(r.edge))); add(tr, r.overreaction_under === 'true' ? 'yes' : ''); });
+    const vs = dash.data('strat_versions'); const vst = document.querySelector('#versions tbody'); vst.innerHTML = '';
+    if (vs.status === 'ok') vs.data.forEach(r => { const tr = vst.insertRow(); add(tr, r.version); add(tr, r.what); add(tr, r.loglossgain_2022_26); add(tr, r.allcombo_2_3_4_5_legs); add(tr, r.status); });
     const c = dash.data('strat_cards'); const ct = document.querySelector('#cards tbody'); ct.innerHTML = '';
     if (c.status === 'ok') c.data.forEach(r => { const tr = ct.insertRow(); add(tr, r.card); add(tr, pct(N(r.ret_all)), 'num ' + cls(N(r.ret_all))); add(tr, pct(N(r.ret_recency)), 'num ' + cls(N(r.ret_recency)));
       add(tr, u(N(r.units)), 'num ' + cls(N(r.units))); add(tr, num(N(r.bets)), 'num'); add(tr, `${r.seasons_up} of ${r.seasons}`, 'num'); add(tr, '−' + d3.format('.1f')(N(r.worst_run_units)) + 'u', 'num lab-neg'); add(tr, `${r.worst_run_from} to ${r.worst_run_to}: ${r.worst_run_weeks} weeks, ${num(N(r.worst_run_bets))} bets`); add(tr, `${r.winning_weeks} of ${r.weeks}`, 'num');

@@ -215,7 +215,7 @@ ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);display:grid;gap:.35rem
 <div class="wrap">
 <header>
   <h1>Track Record</h1>
-  <p>Every betting setup we run, graded. Mark 3 is the one we bet (since 2026-10-16); Mark 2 (the previous bet) and Mark 1 (the old rules) are tracked beside it with no money on them. 1 unit = one bet; parlays include the 30% FanDuel boost; FanDuel's four markets (receptions, receiving yards, rush yards, pass yards).</p>
+  <p>Every betting setup we run, graded. Mark 4 (Mark 4l: Mark 3's picker mixed with FanDuel's price, plus promotion-overreaction unders, in 5/3/2/2 boosted parlays) is the bet from week 7 of 2026; its first graded week shows here after week 7 is played. Mark 3 (the bet 2026-10-16 to week 6), Mark 2 and Mark 1 are tracked beside it with no money on them. 1 unit = one bet; parlays include the 30% FanDuel boost; FanDuel's four markets (receptions, receiving yards, rush yards, pass yards).</p>
   <nav class="tabs" role="tablist" aria-label="Marks" id="tabs"></nav>
 </header>
 <main id="view"></main>
