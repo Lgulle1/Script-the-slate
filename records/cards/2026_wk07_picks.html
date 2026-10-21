@@ -1,0 +1,274 @@
+<meta charset="utf-8">
+<title>Week 7 Picks</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a bet slip. Big header, the four boosted parlays as tickets (the only bets), the eight legs with the model's numbers, then the rest of the slate by kickoff slot. */
+:root{
+  --bg:#eef1f4; --panel:#ffffff; --ink:#141c24; --muted:#5a6672; --rule:#d6dce2;
+  --turf:#17633f; --turf-ink:#ffffff; --turf-soft:#e2efe7; --warn:#9a5b00; --warn-soft:#fbefdc; --chip:#eef3f8;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f151b; --panel:#17202a; --ink:#e7ecf1; --muted:#98a4b0; --rule:#2a3540; --turf:#58c08b; --turf-ink:#0c1a12; --turf-soft:#183023; --warn:#f0b35c; --warn-soft:#33261a; --chip:#1d2833; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f151b; --panel:#17202a; --ink:#e7ecf1; --muted:#98a4b0; --rule:#2a3540; --turf:#58c08b; --turf-ink:#0c1a12; --turf-soft:#183023; --warn:#f0b35c; --warn-soft:#33261a; --chip:#1d2833; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1040px;margin:0 auto;display:grid;gap:22px}
+.hero{background:var(--turf);color:var(--turf-ink);border-radius:14px;padding:22px 22px 20px;display:grid;gap:10px}
+.hero .eyebrow{font:600 .78rem/1 var(--body);letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+.hero h1{font:800 clamp(2.6rem,8vw,4.4rem)/.95 var(--display);margin:0;text-transform:uppercase;letter-spacing:.01em}
+.hero .sum{display:flex;flex-wrap:wrap;gap:8px}
+.hero .sum span{font:600 .9rem/1 var(--body);background:color-mix(in srgb,var(--turf-ink) 16%,transparent);padding:.5rem .7rem;border-radius:999px}
+.hero p{margin:0;max-width:70ch;opacity:.92}
+h2{font:700 1.5rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.03em;margin:0}
+.lede{color:var(--muted);margin:.3rem 0 0;max-width:72ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.ticket{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:16px;display:grid;grid-template-columns:auto 1fr auto;gap:4px 14px;align-items:start;min-width:0}
+.switch{display:inline-flex;gap:4px;background:color-mix(in srgb,var(--turf-ink) 14%,transparent);padding:4px;border-radius:999px;justify-self:start}
+.switch button{font:700 .95rem/1 var(--display);letter-spacing:.05em;text-transform:uppercase;border:0;border-radius:999px;padding:.55rem 1rem;background:transparent;color:var(--turf-ink);cursor:pointer}
+.switch button[aria-pressed="true"]{background:var(--turf-ink);color:var(--turf)}
+.switch button:focus-visible{outline:2px solid var(--turf-ink);outline-offset:2px}
+.markwrap{display:grid;gap:22px}
+.markwrap[hidden]{display:none}
+.retired{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:.7rem .9rem;font-size:.92rem}
+.slip{background:var(--panel);border:2px solid var(--turf);border-radius:12px;padding:16px;display:grid;gap:10px;min-width:0}
+.slip-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.slip-head .n{font:800 1.6rem/1 var(--display);text-transform:uppercase;color:var(--turf);letter-spacing:.02em}
+.slip-head .odds{font:600 1.15rem/1 var(--mono)}
+.legrow{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:baseline;padding-top:8px;border-top:1px dashed var(--rule)}
+.legrow .r{font:800 1.3rem/1 var(--display);color:var(--turf);min-width:1.6em}
+.legrow .who{font-size:1.1rem}
+.legrow .bet{grid-column:2/4}
+.legrow .meta{grid-column:2/4}
+.legrow .flag{grid-column:2/4;margin:4px 0 0;padding:.35rem .5rem;font-size:.82rem}
+.slip-foot{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;color:var(--muted);padding-top:8px;border-top:1px solid var(--rule)}
+.slip-foot b{color:var(--ink);font-family:var(--mono);font-weight:600}
+.rank{grid-row:1/4;font:800 2.4rem/1 var(--display);color:var(--turf);min-width:1.4em}
+.who{font:700 1.25rem/1.15 var(--display);text-transform:uppercase;letter-spacing:.02em;min-width:0}
+.team{font:500 .8rem/1 var(--body);color:var(--muted);margin-left:.35rem;letter-spacing:.04em}
+.price{font:600 1.15rem/1 var(--mono);text-align:right}
+.bet{grid-column:2/4;font:600 1rem/1.3 var(--body)}
+.bet b{font-family:var(--display);font-size:1.2rem;letter-spacing:.03em;color:var(--turf)}
+.meta{grid-column:2/4;font-size:.84rem;color:var(--muted)}
+.why{grid-column:1/4;margin-top:8px;padding-top:10px;border-top:1px dashed var(--rule);font-size:.88rem;display:grid;gap:4px}
+.why .num{font-family:var(--mono)}
+.flag{grid-column:1/4;margin-top:6px;background:var(--warn-soft);color:var(--warn);border-radius:8px;padding:.45rem .6rem;font-size:.84rem}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:18px;min-width:0}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th{font:600 .72rem/1.2 var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:.5rem .55rem;border-bottom:1px solid var(--rule);white-space:nowrap}
+td{padding:.55rem .55rem;border-bottom:1px solid var(--rule);white-space:nowrap}
+td.num,th.num{text-align:right;font-family:var(--mono);font-size:.9rem}
+.boost{display:inline-block;font:700 .72rem/1 var(--body);letter-spacing:.06em;text-transform:uppercase;padding:.3rem .5rem;border-radius:6px;background:var(--turf);color:var(--turf-ink)}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
+.how div{border:1px solid var(--rule);border-radius:10px;padding:12px}
+.how b{display:block;font:700 1.05rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
+.slot{display:grid;gap:8px}
+.slot + .slot{margin-top:18px}
+.slothead{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline}
+.slothead h3{font:700 1.2rem/1 var(--display);text-transform:uppercase;letter-spacing:.04em;margin:0}
+.slothead .games{color:var(--muted);font-size:.86rem}
+.tag{display:inline-block;font:600 .7rem/1 var(--body);letter-spacing:.04em;text-transform:uppercase;padding:.28rem .45rem;border-radius:6px;background:var(--chip);color:var(--muted)}
+.tag.bet{background:var(--turf);color:var(--turf-ink)}
+.none{color:var(--muted);font-size:.9rem}
+small.note{color:var(--muted)}
+button:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
+</style>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1>Week 7 Picks</h1>
+    <div class="switch" role="group" aria-label="Setup">
+      <button type="button" data-m="3" aria-pressed="true">Mark 3 · the bet</button>
+      <button type="button" data-m="2" aria-pressed="false">Mark 2 · tracked</button>
+      <button type="button" data-m="1" aria-pressed="false">Mark 1 · old A + B</button>
+    </div>
+    <div class="sum" id="sum"></div>
+    <p id="herop"></p>
+  </section>
+
+  <div class="markwrap" data-mark="1" hidden>
+  <p class="retired">Mark 1 is the old setup, retired as the bet on 2026-10-15 and still tracked every week. Same picker and same picks as Mark 2; only the betting rule differs. On seasons the picker never saw, its straight bets lost money (A's top 2: &minus;11%; B's top 8: &minus;2%) and A's single parlay returned +28%, against +50% for Mark 2's parlays. Not bet.</p>
+  <section>
+    <h2>A: the straight bets</h2>
+    <p class="lede">The top 2 unders as straight bets. Same stake on each.</p>
+    <div class="grid" id="m1picks" style="margin-top:12px"></div>
+  </section>
+  <section class="panel">
+    <h2>A: the parlay</h2>
+    <p class="lede">#1 and #2 together, with the 30% profit boost.</p>
+    <div class="scroll" style="margin-top:10px"><table id="m1parlay"></table></div>
+  </section>
+  <section class="panel">
+    <h2>B: top 8 straight + 4 parlays</h2>
+    <p class="lede">The broader old version. B's four parlays are the same four parlays Mark 2 bets; B adds the eight straight bets.</p>
+    <div class="scroll" style="margin-top:10px"><table id="m1b"></table></div>
+    <div class="scroll" style="margin-top:10px"><table id="m1bparlays"></table></div>
+  </section>
+  </div>
+
+  <div class="markwrap" data-mark="3" hidden>
+  <section>
+    <h2>The parlays</h2>
+    <p class="lede">Mark 3's top unders (up to 8 a week), paired in rank order (#1 with #2, #3 with #4, ...), never two legs from the same game. Same stake on each.</p>
+    <div class="grid" id="m3slips" style="margin-top:12px"></div>
+  </section>
+  <section class="panel">
+    <h2 id="m3legsTitle">The legs</h2>
+    <p class="lede">Every pick that made Mark 3's top 8 this week (4+ points of edge, 3+ games with the team), with our stat model's number, the line, and the picker's chance it goes under against what the FanDuel price needs.</p>
+    <div class="scroll" style="margin-top:10px"><table id="m3legs"></table></div>
+  </section>
+  <section class="panel">
+    <h2>Why Mark 3</h2>
+    <div class="how">
+      <div><b>Same model, better picker</b>Mark 3 uses Mark 2's stat projections. Its picker also weighs rest days for both teams, short weeks, division games, primetime and grass or turf, so it picks partly different players.</div>
+      <div><b>Tested on unseen seasons</b>With the picker averaged over 5 random seeds, Mark 3's parlays returned +54% and +47% in two separate seed groups on seasons it never saw, against +28% for Mark 2; 97% and 92% likely to be truly better.</div>
+      <div><b>The boost is the edge</b>Parlays only: its straight bets were close to break-even (+1% to +3%). No boost, no bet.</div>
+      <div><b>Unders, proven roles</b>Unders only. Players need 3+ games with their current team. Up to 3 legs per game, each player once.</div>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Tracked, not bet</h2>
+    <p class="lede">Mark 3's top 8 as straight bets, and its picks as 3-leg parlays from the top 9 (seed-averaged hidden seasons +66% / +52%, but much swingier). Recorded every week. Do not place these.</p>
+    <div class="scroll" style="margin-top:8px"><table id="m3s"></table></div>
+    <div class="scroll" style="margin-top:8px"><table id="c3"></table></div>
+  </section>
+  </div>
+
+  <div class="markwrap" data-mark="2" hidden>
+  <p class="retired">Mark 2 was the bet from 2026-10-15 to 2026-10-16 and is now tracked, not bet. Same stat projections as Mark 3; its picker leaves out the schedule inputs. Seed-averaged, its parlays returned +28% on unseen seasons against Mark 3's +47% to +54%.</p>
+
+  <section>
+    <h2>The parlays</h2>
+    <p class="lede">The picker's top unders (up to 8 a week), paired in rank order (#1 with #2, #3 with #4, ...), never two legs from the same game. Same stake on each.</p>
+    <div class="grid" id="slips" style="margin-top:12px"></div>
+  </section>
+
+  <section class="panel">
+    <h2 id="legsTitle">The legs</h2>
+    <p class="lede">Every pick that qualified this week (4+ points of edge, 3+ games with the team), with our stat model's number, the line, and the picker's chance it goes under against what the FanDuel price needs. A pick with no partner from a different game is listed as unpaired.</p>
+    <div class="scroll" style="margin-top:10px"><table id="legs"></table></div>
+  </section>
+
+  <section class="panel">
+    <h2>Why Mark 2 was chosen</h2>
+    <div class="how">
+      <div><b>Parlays only</b>On every season we hid from the picker (2021&ndash;2026) these parlays were positive. With one random seed they showed +50%; averaged over 5 seeds the true figure is about +28%. Straight bets on the same picks came out about break-even.</div>
+      <div><b>The boost is the edge</b>Without the 30% boost the same parlays return about +1&ndash;3%. With it, the picks' small edge over FanDuel's prices turns into profit. No boost, no bet.</div>
+      <div><b>Four, not one</b>One parlay a week (#1 + #2) returned +28% on hidden seasons and lost money on the fully blind 2021&ndash;2023; four a week returned +50% (+38% blind).</div>
+      <div><b>Unders, proven roles</b>Unders only (overs lost money in every test). Players need 3+ games with their current team. Up to 3 legs per game, each player once.</div>
+    </div>
+  </section>
+
+  </div>
+
+  <section class="panel">
+    <h2>Everything else it liked, by kickoff</h2>
+    <p class="lede">Every under the picker rated as good value this week, grouped by time slot, with the reason it is not a bet. Bets are marked so you can see the whole slot.</p>
+    <div id="slots" style="margin-top:14px"></div>
+  </section>
+
+  <p><small class="note" id="foot"></small></p>
+</div>
+
+<script>
+const DATA = {"meta": {"made_at_utc": "2026-10-21T13:47:32+00:00", "season": 2026, "week": 7, "version": "A + B + C, locked setup (records/cards/locked_setup.json)", "picks": 2, "trained_on": "every graded line before the week", "comp_book_for_attempts": "Caesars"}, "age": {"injuries_pulled_utc": "2026-10-21T13:40:12.203634", "injuries_age_hours": 0.16586393055555554, "depth_pulled_utc": null, "depth_age_hours": null}, "parlays": [{"legs": [{"rank": 1, "tier": "Bet", "player_name": "Jaylen Waddle", "team": "DEN", "market": "Receptions", "line": 4.5, "book": "FanDuel", "price": 112.0, "our_prediction": 4.0, "picker_under_chance": 0.516, "edge": 0.045, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_DEN_ARI", "weekday": "Sunday", "gametime": "16:05", "away_team": "DEN", "home_team": "ARI", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:05 PM ET", "matchup": "DEN @ ARI", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 1, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}, {"rank": 2, "tier": "Bet", "player_name": "Tyler Higbee", "team": "LA", "market": "Receptions", "line": 3.5, "book": "FanDuel", "price": 112.0, "our_prediction": 3.3, "picker_under_chance": 0.515, "edge": 0.043, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_LA_LV", "weekday": "Sunday", "gametime": "16:25", "away_team": "LA", "home_team": "LV", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "LA @ LV", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 2, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}], "price": 349, "picker_chance": 0.26574000000000003, "payout_on_10_boosted": 45.43, "boosted_price": 454}], "legs": [{"rank": 1, "tier": "Bet", "player_name": "Jaylen Waddle", "team": "DEN", "market": "Receptions", "line": 4.5, "book": "FanDuel", "price": 112.0, "our_prediction": 4.0, "picker_under_chance": 0.516, "edge": 0.045, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_DEN_ARI", "weekday": "Sunday", "gametime": "16:05", "away_team": "DEN", "home_team": "ARI", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:05 PM ET", "matchup": "DEN @ ARI", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 1, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}, {"rank": 2, "tier": "Bet", "player_name": "Tyler Higbee", "team": "LA", "market": "Receptions", "line": 3.5, "book": "FanDuel", "price": 112.0, "our_prediction": 3.3, "picker_under_chance": 0.515, "edge": 0.043, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_LA_LV", "weekday": "Sunday", "gametime": "16:25", "away_team": "LA", "home_team": "LV", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "LA @ LV", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 2, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}], "liked": [{"rank": 1, "tier": "Bet", "player_name": "Jaylen Waddle", "team": "DEN", "market": "Receptions", "line": 4.5, "book": "FanDuel", "price": 112.0, "our_prediction": 4.0, "picker_under_chance": 0.516, "edge": 0.045, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_DEN_ARI", "weekday": "Sunday", "gametime": "16:05", "away_team": "DEN", "home_team": "ARI", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:05 PM ET", "matchup": "DEN @ ARI", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 1, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}, {"rank": 2, "tier": "Bet", "player_name": "Tyler Higbee", "team": "LA", "market": "Receptions", "line": 3.5, "book": "FanDuel", "price": 112.0, "our_prediction": 3.3, "picker_under_chance": 0.515, "edge": 0.043, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_LA_LV", "weekday": "Sunday", "gametime": "16:25", "away_team": "LA", "home_team": "LV", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "LA @ LV", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 2, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}], "mark1": {"a_singles": [{"rank": 1, "tier": "Bet", "player_name": "Jaylen Waddle", "team": "DEN", "market": "Receptions", "line": 4.5, "book": "FanDuel", "price": 112.0, "our_prediction": 4.0, "picker_under_chance": 0.516, "edge": 0.045, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_DEN_ARI", "weekday": "Sunday", "gametime": "16:05", "away_team": "DEN", "home_team": "ARI", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:05 PM ET", "matchup": "DEN @ ARI", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 1, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}, {"rank": 2, "tier": "Bet", "player_name": "Tyler Higbee", "team": "LA", "market": "Receptions", "line": 3.5, "book": "FanDuel", "price": 112.0, "our_prediction": 3.3, "picker_under_chance": 0.515, "edge": 0.043, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_LA_LV", "weekday": "Sunday", "gametime": "16:25", "away_team": "LA", "home_team": "LV", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "LA @ LV", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 2, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}], "a_parlays": [{"legs": [{"rank": 1, "tier": "Bet", "player_name": "Jaylen Waddle", "team": "DEN", "market": "Receptions", "line": 4.5, "book": "FanDuel", "price": 112.0, "our_prediction": 4.0, "picker_under_chance": 0.516, "edge": 0.045, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_DEN_ARI", "weekday": "Sunday", "gametime": "16:05", "away_team": "DEN", "home_team": "ARI", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:05 PM ET", "matchup": "DEN @ ARI", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 1, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}, {"rank": 2, "tier": "Bet", "player_name": "Tyler Higbee", "team": "LA", "market": "Receptions", "line": 3.5, "book": "FanDuel", "price": 112.0, "our_prediction": 3.3, "picker_under_chance": 0.515, "edge": 0.043, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_LA_LV", "weekday": "Sunday", "gametime": "16:25", "away_team": "LA", "home_team": "LV", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "LA @ LV", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 2, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}], "price": 349, "picker_chance": 0.26574000000000003, "payout_on_10_boosted": 45.43, "boosted_price": 454}], "b_singles": [{"rank": 1, "tier": "Bet", "player_name": "Jaylen Waddle", "team": "DEN", "market": "Receptions", "line": 4.5, "book": "FanDuel", "price": 112.0, "our_prediction": 4.0, "picker_under_chance": 0.516, "edge": 0.045, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_DEN_ARI", "weekday": "Sunday", "gametime": "16:05", "away_team": "DEN", "home_team": "ARI", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:05 PM ET", "matchup": "DEN @ ARI", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 1, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}, {"rank": 2, "tier": "Bet", "player_name": "Tyler Higbee", "team": "LA", "market": "Receptions", "line": 3.5, "book": "FanDuel", "price": 112.0, "our_prediction": 3.3, "picker_under_chance": 0.515, "edge": 0.043, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_LA_LV", "weekday": "Sunday", "gametime": "16:25", "away_team": "LA", "home_team": "LV", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "LA @ LV", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 2, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}], "b_parlays": [{"legs": [{"rank": 1, "tier": "Bet", "player_name": "Jaylen Waddle", "team": "DEN", "market": "Receptions", "line": 4.5, "book": "FanDuel", "price": 112.0, "our_prediction": 4.0, "picker_under_chance": 0.516, "edge": 0.045, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_DEN_ARI", "weekday": "Sunday", "gametime": "16:05", "away_team": "DEN", "home_team": "ARI", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:05 PM ET", "matchup": "DEN @ ARI", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 1, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}, {"rank": 2, "tier": "Bet", "player_name": "Tyler Higbee", "team": "LA", "market": "Receptions", "line": 3.5, "book": "FanDuel", "price": 112.0, "our_prediction": 3.3, "picker_under_chance": 0.515, "edge": 0.043, "best_book": "FanDuel", "best_price": 112.0, "books_quoting": 1, "gameday": "2026-10-25", "game_id": "2026_07_LA_LV", "weekday": "Sunday", "gametime": "16:25", "away_team": "LA", "home_team": "LV", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "LA @ LV", "dec_u": 2.12, "needs": 0.4716981132075472, "flags": [], "overall_rank": 2, "status": "Parlay 1", "why_not": "", "status1": "Bet (A)", "why1": ""}], "price": 349, "picker_chance": 0.26574000000000003, "payout_on_10_boosted": 45.43, "boosted_price": 454}]}, "mark3": {"parlays": [{"legs": [{"player_name": "Jahmyr Gibbs", "team": "DET", "market": "Rush yds", "line": 93.5, "price": -114.0, "our_prediction": 75.0, "picker_under_chance": 0.602, "edge": 0.069, "game_id": "2026_07_GB_DET", "weekday": "Sunday", "gametime": "16:25", "away_team": "GB", "home_team": "DET", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "GB @ DET", "dec_u": 1.8771929824561404, "needs": 0.5327102803738317, "rank": 1, "overall_rank": 1, "flags": [], "status3": "Parlay 1", "why3": "", "status": "Parlay 1"}, {"player_name": "Jaylen Waddle", "team": "DEN", "market": "Receptions", "line": 4.5, "price": 112.0, "our_prediction": 4.0, "picker_under_chance": 0.521, "edge": 0.049, "game_id": "2026_07_DEN_ARI", "weekday": "Sunday", "gametime": "16:05", "away_team": "DEN", "home_team": "ARI", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:05 PM ET", "matchup": "DEN @ ARI", "dec_u": 2.12, "needs": 0.4716981132075472, "rank": 2, "overall_rank": 2, "flags": [], "status3": "Parlay 1", "why3": "", "status": "Parlay 1"}], "price": 298, "picker_chance": 0.313642, "payout_on_10_boosted": 38.74, "boosted_price": 387}, {"legs": [{"player_name": "Tyler Higbee", "team": "LA", "market": "Receptions", "line": 3.5, "price": 112.0, "our_prediction": 3.3, "picker_under_chance": 0.516, "edge": 0.044, "game_id": "2026_07_LA_LV", "weekday": "Sunday", "gametime": "16:25", "away_team": "LA", "home_team": "LV", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "LA @ LV", "dec_u": 2.12, "needs": 0.4716981132075472, "rank": 3, "overall_rank": 3, "flags": [], "status3": "Parlay 2", "why3": "", "status": "Parlay 2"}, {"player_name": "Matthew Golden", "team": "GB", "market": "Receptions", "line": 4.5, "price": 118.0, "our_prediction": 4.4, "picker_under_chance": 0.503, "edge": 0.044, "game_id": "2026_07_GB_DET", "weekday": "Sunday", "gametime": "16:25", "away_team": "GB", "home_team": "DET", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "GB @ DET", "dec_u": 2.1799999999999997, "needs": 0.45871559633027525, "rank": 4, "overall_rank": 4, "flags": [], "status3": "Parlay 2", "why3": "", "status": "Parlay 2"}], "price": 362, "picker_chance": 0.259548, "payout_on_10_boosted": 47.08, "boosted_price": 471}], "singles": [{"player_name": "Jahmyr Gibbs", "team": "DET", "market": "Rush yds", "line": 93.5, "price": -114.0, "our_prediction": 75.0, "picker_under_chance": 0.602, "edge": 0.069, "game_id": "2026_07_GB_DET", "weekday": "Sunday", "gametime": "16:25", "away_team": "GB", "home_team": "DET", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "GB @ DET", "dec_u": 1.8771929824561404, "needs": 0.5327102803738317, "rank": 1, "overall_rank": 1, "flags": [], "status3": "Parlay 1", "why3": "", "status": "Parlay 1"}, {"player_name": "Jaylen Waddle", "team": "DEN", "market": "Receptions", "line": 4.5, "price": 112.0, "our_prediction": 4.0, "picker_under_chance": 0.521, "edge": 0.049, "game_id": "2026_07_DEN_ARI", "weekday": "Sunday", "gametime": "16:05", "away_team": "DEN", "home_team": "ARI", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:05 PM ET", "matchup": "DEN @ ARI", "dec_u": 2.12, "needs": 0.4716981132075472, "rank": 2, "overall_rank": 2, "flags": [], "status3": "Parlay 1", "why3": "", "status": "Parlay 1"}, {"player_name": "Tyler Higbee", "team": "LA", "market": "Receptions", "line": 3.5, "price": 112.0, "our_prediction": 3.3, "picker_under_chance": 0.516, "edge": 0.044, "game_id": "2026_07_LA_LV", "weekday": "Sunday", "gametime": "16:25", "away_team": "LA", "home_team": "LV", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "LA @ LV", "dec_u": 2.12, "needs": 0.4716981132075472, "rank": 3, "overall_rank": 3, "flags": [], "status3": "Parlay 2", "why3": "", "status": "Parlay 2"}, {"player_name": "Matthew Golden", "team": "GB", "market": "Receptions", "line": 4.5, "price": 118.0, "our_prediction": 4.4, "picker_under_chance": 0.503, "edge": 0.044, "game_id": "2026_07_GB_DET", "weekday": "Sunday", "gametime": "16:25", "away_team": "GB", "home_team": "DET", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "GB @ DET", "dec_u": 2.1799999999999997, "needs": 0.45871559633027525, "rank": 4, "overall_rank": 4, "flags": [], "status3": "Parlay 2", "why3": "", "status": "Parlay 2"}, {"player_name": "Ja'Marr Chase", "team": "CIN", "market": "Receptions", "line": 6.5, "price": 128.0, "our_prediction": 5.9, "picker_under_chance": 0.499, "edge": 0.061, "game_id": "2026_07_CIN_BAL", "weekday": "Sunday", "gametime": "13:00", "away_team": "CIN", "home_team": "BAL", "slot_order": 2, "slot": "Sunday 1 PM", "kickoff": "1:00 PM ET", "matchup": "CIN @ BAL", "dec_u": 2.2800000000000002, "needs": 0.43859649122807015, "rank": 5, "overall_rank": 5, "flags": [], "status3": "Unpaired", "why3": "In the top 8 but no partner from a different game", "status": "Unpaired"}, {"player_name": "Jahmyr Gibbs", "team": "DET", "market": "Receptions", "line": 4.5, "price": 128.0, "our_prediction": 4.6, "picker_under_chance": 0.495, "edge": 0.056, "game_id": "2026_07_GB_DET", "weekday": "Sunday", "gametime": "16:25", "away_team": "GB", "home_team": "DET", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "GB @ DET", "dec_u": 2.2800000000000002, "needs": 0.43859649122807015, "rank": 6, "overall_rank": 6, "flags": [], "status3": "Straight (tracked)", "why3": "Same player already in a parlay", "status": "Straight (tracked)"}], "legs": [{"player_name": "Jahmyr Gibbs", "team": "DET", "market": "Rush yds", "line": 93.5, "price": -114.0, "our_prediction": 75.0, "picker_under_chance": 0.602, "edge": 0.069, "game_id": "2026_07_GB_DET", "weekday": "Sunday", "gametime": "16:25", "away_team": "GB", "home_team": "DET", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "GB @ DET", "dec_u": 1.8771929824561404, "needs": 0.5327102803738317, "rank": 1, "overall_rank": 1, "flags": [], "status3": "Parlay 1", "why3": "", "status": "Parlay 1"}, {"player_name": "Jaylen Waddle", "team": "DEN", "market": "Receptions", "line": 4.5, "price": 112.0, "our_prediction": 4.0, "picker_under_chance": 0.521, "edge": 0.049, "game_id": "2026_07_DEN_ARI", "weekday": "Sunday", "gametime": "16:05", "away_team": "DEN", "home_team": "ARI", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:05 PM ET", "matchup": "DEN @ ARI", "dec_u": 2.12, "needs": 0.4716981132075472, "rank": 2, "overall_rank": 2, "flags": [], "status3": "Parlay 1", "why3": "", "status": "Parlay 1"}, {"player_name": "Tyler Higbee", "team": "LA", "market": "Receptions", "line": 3.5, "price": 112.0, "our_prediction": 3.3, "picker_under_chance": 0.516, "edge": 0.044, "game_id": "2026_07_LA_LV", "weekday": "Sunday", "gametime": "16:25", "away_team": "LA", "home_team": "LV", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "LA @ LV", "dec_u": 2.12, "needs": 0.4716981132075472, "rank": 3, "overall_rank": 3, "flags": [], "status3": "Parlay 2", "why3": "", "status": "Parlay 2"}, {"player_name": "Matthew Golden", "team": "GB", "market": "Receptions", "line": 4.5, "price": 118.0, "our_prediction": 4.4, "picker_under_chance": 0.503, "edge": 0.044, "game_id": "2026_07_GB_DET", "weekday": "Sunday", "gametime": "16:25", "away_team": "GB", "home_team": "DET", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "GB @ DET", "dec_u": 2.1799999999999997, "needs": 0.45871559633027525, "rank": 4, "overall_rank": 4, "flags": [], "status3": "Parlay 2", "why3": "", "status": "Parlay 2"}, {"player_name": "Ja'Marr Chase", "team": "CIN", "market": "Receptions", "line": 6.5, "price": 128.0, "our_prediction": 5.9, "picker_under_chance": 0.499, "edge": 0.061, "game_id": "2026_07_CIN_BAL", "weekday": "Sunday", "gametime": "13:00", "away_team": "CIN", "home_team": "BAL", "slot_order": 2, "slot": "Sunday 1 PM", "kickoff": "1:00 PM ET", "matchup": "CIN @ BAL", "dec_u": 2.2800000000000002, "needs": 0.43859649122807015, "rank": 5, "overall_rank": 5, "flags": [], "status3": "Unpaired", "why3": "In the top 8 but no partner from a different game", "status": "Unpaired"}], "liked": [{"player_name": "Jahmyr Gibbs", "team": "DET", "market": "Rush yds", "line": 93.5, "price": -114.0, "our_prediction": 75.0, "picker_under_chance": 0.602, "edge": 0.069, "game_id": "2026_07_GB_DET", "weekday": "Sunday", "gametime": "16:25", "away_team": "GB", "home_team": "DET", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "GB @ DET", "dec_u": 1.8771929824561404, "needs": 0.5327102803738317, "rank": 1, "overall_rank": 1, "flags": [], "status3": "Parlay 1", "why3": "", "status": "Parlay 1"}, {"player_name": "Jaylen Waddle", "team": "DEN", "market": "Receptions", "line": 4.5, "price": 112.0, "our_prediction": 4.0, "picker_under_chance": 0.521, "edge": 0.049, "game_id": "2026_07_DEN_ARI", "weekday": "Sunday", "gametime": "16:05", "away_team": "DEN", "home_team": "ARI", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:05 PM ET", "matchup": "DEN @ ARI", "dec_u": 2.12, "needs": 0.4716981132075472, "rank": 2, "overall_rank": 2, "flags": [], "status3": "Parlay 1", "why3": "", "status": "Parlay 1"}, {"player_name": "Tyler Higbee", "team": "LA", "market": "Receptions", "line": 3.5, "price": 112.0, "our_prediction": 3.3, "picker_under_chance": 0.516, "edge": 0.044, "game_id": "2026_07_LA_LV", "weekday": "Sunday", "gametime": "16:25", "away_team": "LA", "home_team": "LV", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "LA @ LV", "dec_u": 2.12, "needs": 0.4716981132075472, "rank": 3, "overall_rank": 3, "flags": [], "status3": "Parlay 2", "why3": "", "status": "Parlay 2"}, {"player_name": "Matthew Golden", "team": "GB", "market": "Receptions", "line": 4.5, "price": 118.0, "our_prediction": 4.4, "picker_under_chance": 0.503, "edge": 0.044, "game_id": "2026_07_GB_DET", "weekday": "Sunday", "gametime": "16:25", "away_team": "GB", "home_team": "DET", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "GB @ DET", "dec_u": 2.1799999999999997, "needs": 0.45871559633027525, "rank": 4, "overall_rank": 4, "flags": [], "status3": "Parlay 2", "why3": "", "status": "Parlay 2"}, {"player_name": "Ja'Marr Chase", "team": "CIN", "market": "Receptions", "line": 6.5, "price": 128.0, "our_prediction": 5.9, "picker_under_chance": 0.499, "edge": 0.061, "game_id": "2026_07_CIN_BAL", "weekday": "Sunday", "gametime": "13:00", "away_team": "CIN", "home_team": "BAL", "slot_order": 2, "slot": "Sunday 1 PM", "kickoff": "1:00 PM ET", "matchup": "CIN @ BAL", "dec_u": 2.2800000000000002, "needs": 0.43859649122807015, "rank": 5, "overall_rank": 5, "flags": [], "status3": "Unpaired", "why3": "In the top 8 but no partner from a different game", "status": "Unpaired"}, {"player_name": "Jahmyr Gibbs", "team": "DET", "market": "Receptions", "line": 4.5, "price": 128.0, "our_prediction": 4.6, "picker_under_chance": 0.495, "edge": 0.056, "game_id": "2026_07_GB_DET", "weekday": "Sunday", "gametime": "16:25", "away_team": "GB", "home_team": "DET", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "GB @ DET", "dec_u": 2.2800000000000002, "needs": 0.43859649122807015, "rank": 6, "overall_rank": 6, "flags": [], "status3": "Straight (tracked)", "why3": "Same player already in a parlay", "status": "Straight (tracked)"}], "c3": [{"legs": [{"player_name": "Jahmyr Gibbs", "team": "DET", "market": "Rush yds", "line": 93.5, "price": -114.0, "our_prediction": 75.0, "picker_under_chance": 0.602, "edge": 0.069, "game_id": "2026_07_GB_DET", "weekday": "Sunday", "gametime": "16:25", "away_team": "GB", "home_team": "DET", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "GB @ DET", "dec_u": 1.8771929824561404, "needs": 0.5327102803738317, "rank": 1, "overall_rank": 1, "flags": [], "status3": "Parlay 1", "why3": "", "status": "Parlay 1"}, {"player_name": "Jaylen Waddle", "team": "DEN", "market": "Receptions", "line": 4.5, "price": 112.0, "our_prediction": 4.0, "picker_under_chance": 0.521, "edge": 0.049, "game_id": "2026_07_DEN_ARI", "weekday": "Sunday", "gametime": "16:05", "away_team": "DEN", "home_team": "ARI", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:05 PM ET", "matchup": "DEN @ ARI", "dec_u": 2.12, "needs": 0.4716981132075472, "rank": 2, "overall_rank": 2, "flags": [], "status3": "Parlay 1", "why3": "", "status": "Parlay 1"}, {"player_name": "Tyler Higbee", "team": "LA", "market": "Receptions", "line": 3.5, "price": 112.0, "our_prediction": 3.3, "picker_under_chance": 0.516, "edge": 0.044, "game_id": "2026_07_LA_LV", "weekday": "Sunday", "gametime": "16:25", "away_team": "LA", "home_team": "LV", "slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "LA @ LV", "dec_u": 2.12, "needs": 0.4716981132075472, "rank": 3, "overall_rank": 3, "flags": [], "status3": "Parlay 2", "why3": "", "status": "Parlay 2"}], "price": 744, "picker_chance": 0.16183927199999998, "payout_on_10_boosted": 96.68, "boosted_price": 967}], "built": true}, "slots": [{"slot_order": 0, "slot": "Thursday Night", "kickoff": "8:15 PM ET", "matchup": "NE @ CHI", "game_id": "2026_07_NE_CHI"}, {"slot_order": 1, "slot": "Sunday Morning (London)", "kickoff": "9:30 AM ET", "matchup": "PIT @ NO", "game_id": "2026_07_PIT_NO"}, {"slot_order": 2, "slot": "Sunday 1 PM", "kickoff": "1:00 PM ET", "matchup": "CIN @ BAL", "game_id": "2026_07_CIN_BAL"}, {"slot_order": 2, "slot": "Sunday 1 PM", "kickoff": "1:00 PM ET", "matchup": "CLE @ TEN", "game_id": "2026_07_CLE_TEN"}, {"slot_order": 2, "slot": "Sunday 1 PM", "kickoff": "1:00 PM ET", "matchup": "IND @ MIN", "game_id": "2026_07_IND_MIN"}, {"slot_order": 2, "slot": "Sunday 1 PM", "kickoff": "1:00 PM ET", "matchup": "MIA @ NYJ", "game_id": "2026_07_MIA_NYJ"}, {"slot_order": 2, "slot": "Sunday 1 PM", "kickoff": "1:00 PM ET", "matchup": "NYG @ HOU", "game_id": "2026_07_NYG_HOU"}, {"slot_order": 2, "slot": "Sunday 1 PM", "kickoff": "1:00 PM ET", "matchup": "SF @ ATL", "game_id": "2026_07_SF_ATL"}, {"slot_order": 2, "slot": "Sunday 1 PM", "kickoff": "1:00 PM ET", "matchup": "TB @ CAR", "game_id": "2026_07_TB_CAR"}, {"slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:05 PM ET", "matchup": "DEN @ ARI", "game_id": "2026_07_DEN_ARI"}, {"slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "GB @ DET", "game_id": "2026_07_GB_DET"}, {"slot_order": 3, "slot": "Sunday 4 PM", "kickoff": "4:25 PM ET", "matchup": "LA @ LV", "game_id": "2026_07_LA_LV"}, {"slot_order": 4, "slot": "Sunday Night", "kickoff": "8:20 PM ET", "matchup": "KC @ SEA", "game_id": "2026_07_KC_SEA"}, {"slot_order": 5, "slot": "Monday Night", "kickoff": "8:15 PM ET", "matchup": "DAL @ PHI", "game_id": "2026_07_DAL_PHI"}]};
+const $ = s => document.querySelector(s);
+const fmtP = v => v > 0 ? "+" + Math.round(v) : String(Math.round(v));
+const pct = v => Math.round(100 * v) + "%";
+const unit = {"Receptions": "rec", "Receiving yds": "rec yds", "Rush yds": "rush yds", "Pass yds": "pass yds"};
+
+const HERO = {
+  2: {eyebrow: "Mark 2 · tracked since 2026-10-16 · not bet",
+      sum: [`${DATA.parlays.length} parlays`, "Not bet", "Unders only"],
+      p: "The previous bet, kept for comparison: the same parlay rule on Mark 2's picker, which leaves out the schedule inputs. Do not place these."},
+  1: {eyebrow: "Mark 1 · old A + B · retired 2026-10-15 · for comparison",
+      sum: [`A: ${DATA.mark1.a_singles.length} straight + ${DATA.mark1.a_parlays.length} parlay`, `B: ${DATA.mark1.b_singles.length} straight + ${DATA.mark1.b_parlays.length} parlays`, "Unders only"],
+      p: "The old setup: A bet the two strongest unders straight plus the same two as one boosted parlay; B tracked the top 8 straight and four parlays. Not what we bet now."},
+  3: {eyebrow: "Mark 3 · the bet · FanDuel · made before kickoff",
+      sum: [`${DATA.mark3.parlays.length} boosted parlays`, "30% boost on each", "No straight bets", "Flat stake", "Unders only"],
+      p: "These are the bets: up to four 2-leg parlays, each with a 30% FanDuel profit boost. No straight bets. Place them in order: if you only have one boost, bet Parlay 1; two boosts, Parlays 1 and 2; and so on. No boost, no bet."}
+};
+let mark = 3;
+try { const m = localStorage.getItem("wk-mark-v3"); if (m === "1" || m === "2" || m === "3") mark = +m; } catch (e) {}
+function setMark(m) {
+  mark = m;
+  try { localStorage.setItem("wk-mark-v3", String(m)); } catch (e) {}
+  document.querySelectorAll(".switch button").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.m === m)));
+  document.querySelectorAll("[data-mark]").forEach(el => { el.hidden = +el.dataset.mark !== m; });
+  $("#eyebrow").textContent = HERO[m].eyebrow;
+  $("#sum").innerHTML = HERO[m].sum.map(s => `<span>${s}</span>`).join("");
+  $("#herop").textContent = HERO[m].p;
+  renderSlots();
+}
+document.querySelector(".switch").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setMark(+b.dataset.m); });
+
+const M1 = DATA.mark1;
+$("#m1picks").innerHTML = M1.a_singles.map((r, i) => `<article class="ticket">
+    <div class="rank">${i + 1}</div>
+    <div class="who">${r.player_name}<span class="team">${r.team ?? ""}</span></div>
+    <div class="price">${fmtP(r.price)}</div>
+    <div class="bet"><b>UNDER ${r.line}</b> ${r.market.toLowerCase()}</div>
+    <div class="meta">${r.matchup} · ${r.slot}, ${r.kickoff}</div>
+    <div class="why">
+      <div>Our model: <span class="num">${(+r.our_prediction).toFixed(1)}</span> ${unit[r.market] ?? ""} vs line <span class="num">${r.line}</span></div>
+      <div>Picker: <span class="num">${pct(r.picker_under_chance)}</span> to go under; the price needs <span class="num">${pct(r.needs)}</span></div>
+    </div>
+  </article>`).join("");
+const ptab = (list, label) => !list.length ? `<tbody><tr><td class="note">None this week.</td></tr></tbody>` : `<thead><tr><th>${label}</th>${list[0].legs.map((_, j) => `<th>Leg ${j + 1}</th>`).join("")}<th class="num">Price</th><th class="num">Chance all hit</th><th class="num">Win on $10 with boost</th></tr></thead><tbody>` +
+  list.map((p, i) => `<tr><td><span class="boost">Parlay ${i + 1}</span></td>${p.legs.map(l => `<td>${l.player_name} under ${l.line} ${l.market.toLowerCase()} (${fmtP(l.price)})</td>`).join("")}<td class="num">${fmtP(p.price)}</td><td class="num">${pct(p.picker_chance)}</td><td class="num">$${(+p.payout_on_10_boosted).toFixed(2)}</td></tr>`).join("") + "</tbody>";
+const strTab = list => `<thead><tr><th class="num">#</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th>Kickoff</th></tr></thead><tbody>` +
+  list.map((r, i) => `<tr><td class="num">${i + 1}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${r.slot ?? ""}</td></tr>`).join("") + "</tbody>";
+$("#c3").innerHTML = ptab(DATA.mark3.c3, "3-leg");
+$("#m3s").innerHTML = DATA.mark3.singles.length ? strTab(DATA.mark3.singles) : `<tbody><tr><td class="note">${DATA.mark3.built ? "No qualifying picks this week." : "Mark 3 card not built for this week."}</td></tr></tbody>`;
+$("#m1parlay").innerHTML = ptab(M1.a_parlays, "A parlay");
+$("#m1b").innerHTML = strTab(M1.b_singles);
+$("#m1bparlays").innerHTML = ptab(M1.b_parlays, "B parlay");
+
+const legHtml = r => `<div class="legrow">
+    <div class="r">#${r.rank}</div>
+    <div class="who">${r.player_name}<span class="team">${r.team ?? ""}</span></div>
+    <div class="price">${fmtP(r.price)}</div>
+    <div class="bet"><b>UNDER ${r.line}</b> ${r.market.toLowerCase()}</div>
+    <div class="meta">${r.matchup} · ${r.slot}, ${r.kickoff}</div>
+    ${(r.flags || []).length ? `<div class="flag">⚠ Out around him: ${r.flags.join("; ")}. Check his role before betting.</div>` : ""}
+  </div>`;
+const slips = list => list.length ? list.map((p, i) => `<article class="slip">
+    <div class="slip-head"><span class="n">Parlay ${i + 1}</span><span class="odds">${fmtP(p.price)} <small class="note">→ ${fmtP(p.boosted_price)} boosted</small></span></div>
+    ${p.legs.map(legHtml).join("")}
+    <div class="slip-foot"><span>Both hit (picker): <b>${pct(p.picker_chance)}</b></span><span>$10 wins <b>$${(+p.payout_on_10_boosted).toFixed(2)}</b> with boost</span></div>
+  </article>`).join("") : `<p class="none">No parlays this week.</p>`;
+$("#slips").innerHTML = slips(DATA.parlays);
+$("#m3slips").innerHTML = slips(DATA.mark3.parlays);
+$("#legsTitle").textContent = `The ${DATA.legs.length} legs`;
+
+const legsTable = list => `<thead><tr><th class="num">#</th><th>Parlay</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th class="num">Price needs</th><th>Kickoff</th><th>Teammates out</th></tr></thead><tbody>` +
+  list.map(r => `<tr><td class="num">${r.rank}</td><td><span class="boost">${r.status}</span></td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}${r.our_prediction >= r.line ? " ⚠" : ""}</td><td class="num">${pct(r.picker_chance ?? r.picker_under_chance)}</td><td class="num">${pct(r.needs)}</td><td>${r.slot}</td><td>${(r.flags || []).length ? "⚠ " + r.flags.join("; ") : "–"}</td></tr>`).join("") +
+  `</tbody>` + (list.some(r => r.our_prediction >= r.line) ? `<caption style="caption-side:bottom;text-align:left;padding-top:8px;color:var(--muted);font-size:.85rem">⚠ Our stat model has this player above the line; the picker still takes the under on price and game setup.</caption>` : "");
+$("#legs").innerHTML = legsTable(DATA.legs);
+$("#m3legs").innerHTML = DATA.mark3.legs.length ? legsTable(DATA.mark3.legs) : `<tbody><tr><td class="note">No qualifying picks this week.</td></tr></tbody>`;
+$("#m3legsTitle").textContent = `The ${DATA.mark3.legs.length} legs`;
+
+const order = [...new Map(DATA.slots.map(s => [s.slot, s])).values()];
+function renderSlots() {
+const st = r => mark === 2 ? [r.status, r.why_not] : mark === 1 ? [r.status1, r.why1] : [r.status3, r.why3];
+const isBet = t => mark === 1 ? t === "Bet (A)" : t.startsWith("Parlay");
+const all = mark === 3 ? DATA.mark3.liked : DATA.liked;
+$("#slots").innerHTML = order.map(s => {
+  const games = DATA.slots.filter(g => g.slot === s.slot);
+  const rows = all.filter(r => r.slot === s.slot).sort((a, b) => b.picker_under_chance - a.picker_under_chance);
+  const head = `<div class="slothead"><h3>${s.slot}</h3><span class="games">${games.map(g => `${g.matchup} (${g.kickoff})`).join(" · ")}</span></div>`;
+  if (!rows.length) return `<div class="slot">${head}<p class="none">Nothing in this slot rated as value.</p></div>`;
+  return `<div class="slot">${head}<div class="scroll"><table><thead><tr><th>Status</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Our model</th><th class="num">Picker chance</th><th>Why not taken</th></tr></thead><tbody>` +
+    rows.map(r => { const [t, why] = st(r); return `<tr><td>${isBet(t) ? `<span class="tag bet">${t}</span>` : `<span class="tag">${t}</span>`}</td><td>${r.player_name} <small class="note">${r.team ?? ""}</small></td><td>Under ${r.line} ${r.market.toLowerCase()}</td><td class="num">${fmtP(r.price)}</td><td class="num">${(+r.our_prediction).toFixed(1)}</td><td class="num">${pct(r.picker_under_chance)}</td><td>${why || "On the card"}</td></tr>`; }).join("") +
+    `</tbody></table></div></div>`;
+}).join("");
+}
+setMark(mark);
+
+const ageTxt = DATA.age && DATA.age.injuries_pulled_utc ? ` Injury report pulled ${DATA.age.injuries_pulled_utc.replace("T", " ").slice(0, 16)} UTC (${DATA.age.injuries_age_hours.toFixed(1)} hours before this page was built).` : "";
+$("#foot").textContent = `Card made ${DATA.meta.made_at_utc.replace("T", " ").replace("+00:00", " UTC")} from FanDuel prices at that time; lines may have moved since.${ageTxt} The picker was retrained on every graded line before this week. Pickers averaged over 5 random seeds. Hidden seasons 2021-2026 (seed-averaged): Mark 3 parlays +54% / +47% in two seed groups, Mark 2 +28% / +28%. Full history on the Track Record.`;
+</script>

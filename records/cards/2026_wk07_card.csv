@@ -1,0 +1,3 @@
+rank,tier,player_name,team,market,line,book,price,our_prediction,picker_under_chance,edge,best_book,best_price,books_quoting,gameday,game_id
+1,Bet,Jaylen Waddle,DEN,Receptions,4.5,FanDuel,112.0,4.0,0.516,0.045,FanDuel,112.0,1,2026-10-25,2026_07_DEN_ARI
+2,Bet,Tyler Higbee,LA,Receptions,3.5,FanDuel,112.0,3.3,0.515,0.043,FanDuel,112.0,1,2026-10-25,2026_07_LA_LV

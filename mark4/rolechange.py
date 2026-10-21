@@ -52,7 +52,11 @@ def usage() -> pl.DataFrame:
 
 
 def roles(ps: pl.DataFrame, tg: pl.DataFrame) -> pl.DataFrame:
-    """Pre-game role features for every player-game (players who played), built team by team in game order."""
+    """Pre-game role features for every player-game (players who played), built team by team in game order. For the next unplayed week (live,
+    2026-10-21) a row per player with a recent role on the team, usage left empty, so the engine can score upcoming games."""
+    played_games = set(ps["game_id"].unique().to_list())
+    nxt = tg.filter(~pl.col("game_id").is_in(list(played_games)) & (pl.col("season") == tg["season"].max()))
+    upcoming = set(nxt.filter(pl.col("week") == nxt["week"].min())["game_id"].to_list()) if nxt.height else set()
     from comps2 import pregame as PG
     av = {}
     for (se, wk, tm), x in PG.load().group_by("season", "week", "team"):
@@ -110,6 +114,23 @@ def roles(ps: pl.DataFrame, tg: pl.DataFrame) -> pl.DataFrame:
                                      receiving_yards=r["receiving_yards"], team_car=r["team_car"], team_tgt=r["team_tgt"]))
                 hist.append({r["player_id"]: (r["car_sh"], r["tgt_sh"]) for r in cur.iter_rows(named=True)})
                 team_vol.append((float(cur["team_car"][0]), float(cur["team_tgt"][0])))
+            elif gid in upcoming:
+                avail_role = {p: r for p, r in role.items() if (avail is None or p in avail) and p not in out}
+                for p in [q for q in role if played4.get(q, 0) > 0 and (avail is None or q in avail) and q not in out]:
+                    oc, ot = role[p]
+                    others_c = sorted([v[0] for q, v in avail_role.items() if q != p], reverse=True)
+                    others_t = sorted([v[1] for q, v in avail_role.items() if q != p], reverse=True)
+                    since = next((k for k, h in enumerate(reversed(hist), 1) if p in h), 99)
+                    ps_ = pos.get(p, "")
+                    rows.append(dict(game_id=gid, player_id=p, team=team, season=int(se), week=int(wk), gameday=gd, own_car=oc, own_tgt=ot,
+                                     played_recent=float(played4.get(p, 0)), since_last=float(since), vac_car=vac_car, vac_tgt=vac_tgt,
+                                     rank_car=float(1 + sum(v > oc for v in others_c)), rank_tgt=float(1 + sum(v > ot for v in others_t)),
+                                     comp_car=float(sum(others_c[:2])), comp_tgt=float(sum(others_t[:3])),
+                                     back_car=float(sum(v[0] for q, v in back.items() if q != p)), back_tgt=float(sum(v[1] for q, v in back.items() if q != p)),
+                                     vac_nth=float(vac_streak), qb_change=qb_change, new_team=float(gi - first_game.get(p, gi) < 2 and gi > 2),
+                                     is_rb=float(ps_ in ("RB", "FB")), is_wr=float(ps_ == "WR"), is_te=float(ps_ == "TE"),
+                                     team_car_pg=car_pg, team_tgt_pg=tgt_pg, car_sh=None, tgt_sh=None, carries=None, targets=None, receptions=None,
+                                     rushing_yards=None, receiving_yards=None, team_car=None, team_tgt=None))
             prev_qb = qb if qb is not None else prev_qb
     return pl.DataFrame(rows, infer_schema_length=None)
 

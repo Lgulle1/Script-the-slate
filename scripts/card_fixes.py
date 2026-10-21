@@ -57,7 +57,8 @@ def history_counts(d: pl.DataFrame) -> np.ndarray:
 
 
 def picks_for(d, A, X, season, week, ensemble):
-    tr = np.flatnonzero(((d["season"] < season) | ((d["season"] == season) & (d["week"] < week))).to_numpy())
+    # graded lines only: a line whose player did not play (void) has no result (2026-10-21: week 6's voided lines reached week 7's training rows)
+    tr = np.flatnonzero((((d["season"] < season) | ((d["season"] == season) & (d["week"] < week))).to_numpy()) & ~np.isnan(A.over_won.astype(float)))
     te = np.flatnonzero(((d["season"] == season) & (d["week"] == week)).to_numpy())
     makers = (deterministic_makers() if LIVE_DETERMINISTIC else ensemble_makers(SEEDS)) if ensemble else [WB.make]   # live cards and replay pools
     p_over = np.mean([m().fit(X[tr], A.over_won[tr]).predict_proba(X[te])[:, 1] for m in makers], axis=0)
