@@ -5,7 +5,7 @@
   1. refresh the data and store the live predictions (run_weekly.py --refresh): new injury report, new inactives, new lines for games that have not started;
   2. stop if the injury report is older than MAX_AGE_HOURS (the refresh must have worked) and print who is out around the teams playing;
   3. warn if FanDuel lines for the week in prop_lines_log.csv are older than LINES_WARN_HOURS (send fresh ones);
-  4. build Mark 2's card (week_card.py), Mark 3's card (schedule_picker.py), the week page and the Track Record.
+  4. build Mark 2's card (week_card.py), Mark 3's card (schedule_picker.py), Mark 4's card (mark4/live.py, the bet), the week page and the Track Record.
 Run it again the morning of the games, after the inactive lists (about 90 minutes before kickoff): the page says how old the injury report is.
 """
 import argparse
@@ -62,7 +62,9 @@ def main():
         print(f"\nNO FanDuel lines for week {a.week} in the log: import the week's file first (scripts/import_bettingpros.py).")
     run([py, "scripts/week_card.py", "--season", str(a.season), "--week", str(a.week), "--books", str(a.books)])
     run([py, "scripts/schedule_picker.py", "--season", str(a.season), "--week", str(a.week)])
+    run([py, "-m", "mark4.live", "--season", str(a.season), "--week", str(a.week)])          # Mark 4: the bet from 2026 week 7
     run([py, "scripts/make_week_page.py", "--season", str(a.season), "--week", str(a.week)])
+    run([py, "scripts/week_page_mark4.py", "--season", str(a.season), "--week", str(a.week)])
     run([py, "scripts/make_record_page.py", "--season", str(a.season), "--live-week", str(a.week)])
     print("\ndone: records/cards/%d_wk%02d_picks.html and track_record.html" % (a.season, a.week))
 
