@@ -158,3 +158,19 @@ EARLIER seasons and then bet on the next one counts.
   quarter-Kelly-ish 35.7u on +256.1u). Stake size is a risk choice, not an edge.
 What still stands: Mark 4l (Mark 3 + 4h + FanDuel's price, + forward-tested promotion-overreaction unders), legs ranked by expected value, either side,
 all markets, boosted parlays built long-first. Mark 4l 5/3/2/2 at 0.25/0.5/1u: +106.8u on 151.8u 2022-26, up every season (+13, +22, +12, +25, +35).
+
+### Reusing legs and adding straights (mark4/reuse.py, records/lab/reuse_live.csv, 2026-10-22)
+The PM's question: put the best legs in a short parlay too, or bet them straight, instead of using each leg once. Same Mark 4l legs, the live card's
+own construction, 2022 to 2026 week 6:
+| strategy | won | bet | return | worst run | chance better than now |
+|---|---|---|---|---|---|
+| now: 5/3/2/2, each leg once | +101.3u | 151.8u | +67% | 18.7u | - |
+| 5-leg's top 2 also as a 2-leg | +79.9u | 174.8u | +46% | 14.8u | 2% |
+| nested (5-leg, its top 3, top 2, legs 3+4) | +54.8u | 187.8u | +29% | 30.2u | 0% |
+| now + every card leg straight @ 0.5u | +108.2u | 513.2u | +21% | 24.7u | 0% |
+| now + every card leg straight @ 1u | +115.1u | 874.8u | +13% | 31.5u | 0% |
+| 5-leg + its legs straight, no other parlays | +4.4u | 345.2u | +1% | 20.7u | 0% |
+Reusing legs puts several boosts on the same few outcomes; straights earn only the legs' 1-3% edge without the boost (+7 to +14u on 360-720 more units bet).
+The 4 boosts are worth the most spread over different legs. Kept: each leg once. Also learned: building the same card a slightly different way (one leg
+per game across the whole card vs per parlay) moved the history from +101u to +38u, so these single-path numbers are fragile.
+Week page: a unit box (1 unit = $X) shows each parlay's stake in dollars and what it wins with the boost.

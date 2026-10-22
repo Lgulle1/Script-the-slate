@@ -37,10 +37,12 @@ def main(argv=None):
             rows.append(f'<div class="legrow"><span class="r">{n}</span><span class="who">{e(r["player"])}<span class="team">{e(str(r["team"]))}</span></span>'
                         f'<span class="price">{r["price"]:+d}</span><span class="bet"><b>{e(r["side"].upper())} {r["line"]:g}</b> {e(r["market"].lower())}</span>'
                         f'<span class="meta">{e(r["game"])} · {e(str(r["gameday"]))} · chance {r["chance"]:.1%} · edge {r["edge"]:+.1%}</span>{flag}</div>')
-        slips.append(f'<div class="slip"><div class="slip-head"><span class="n">{e(pid)} · {r0["stake_units"]:g}u</span>'
+        dec = (1 + r0["parlay_price"] / 100) if r0["parlay_price"] > 0 else (1 + 100 / -r0["parlay_price"])
+        bdec = 1 + (dec - 1) * 1.3
+        slips.append(f'<div class="slip" data-u="{r0["stake_units"]}" data-bdec="{bdec:.6f}"><div class="slip-head"><span class="n">{e(pid)} · {r0["stake_units"]:g}u</span>'
                      f'<span class="odds">{r0["parlay_price"]:+d} → {r0["boosted_price"]:+d}</span></div>{"".join(rows)}'
                      f'<div class="slip-foot"><span>chance all hit <b>{r0["parlay_chance"]:.1%}</b></span><span>expected value with the boost <b>{r0["parlay_ev_boosted"]:+.0%}</b></span>'
-                     f'<span><span class="boost">30% profit boost</span></span></div></div>')
+                     f'<span><span class="boost">30% profit boost</span></span></div><div class="unitline"></div></div>')
     n_filled = card["parlay"].n_unique()
     mlabel = {"rec": "receptions", "rec_yds": "receiving yards", "rush_yds": "rushing yards", "pass_yds": "passing yards", "rush_att": "rushing attempts", "pass_att": "passing attempts", "pass_cmp": "passing completions"}
     legrows = "".join(f'<tr><td>{"<span class=\'tag bet\'>On the card</span>" if (r["player"], float(r["line"])) in set(zip(card["player"].to_list(), [float(x) for x in card["line"].to_list()])) else "<span class=\'tag\'>Edge, not used</span>"}</td>'
@@ -56,8 +58,38 @@ def main(argv=None):
     <p class="lede">One boost per parlay: the 5-leg at a quarter unit, the 3-leg at half a unit, the two 2-legs at a full unit. Built long-first from the legs with the most
     expected value (over or under, whichever is better), FanDuel's own lines only, never two legs of one game. Place each in the boost window before its first game.
     {n_filled} of 4 filled from this pull; the rest fill when FanDuel posts more markets.</p>
+    <div class="unitbox"><label for="unit">1 unit =</label> <span class="dollar">$</span><input id="unit" type="number" inputmode="decimal" min="0" step="1" value="10" aria-describedby="unitsum"><span id="unitsum" class="unitsum"></span></div>
     <div class="grid" style="margin-top:14px">{"".join(slips)}</div>
   </section>
+  <style>
+  .unitbox{{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:14px;background:var(--turf-soft);border-radius:10px;padding:12px 14px}}
+  .unitbox label{{font:700 1.15rem/1 var(--display);text-transform:uppercase;letter-spacing:.04em}}
+  .unitbox .dollar{{font:600 1.1rem/1 var(--mono)}}
+  .unitbox input{{font:600 1.15rem/1 var(--mono);width:7em;padding:.45rem .55rem;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink)}}
+  .unitbox input:focus-visible{{outline:2px solid var(--turf);outline-offset:2px}}
+  .unitsum{{font-size:.92rem;color:var(--ink)}}
+  .unitline{{background:var(--turf-soft);border-radius:8px;padding:.55rem .7rem;font:600 1rem/1.35 var(--body)}}
+  .unitline b{{font-family:var(--mono)}}
+  </style>
+  <script>
+  (() => {{
+    const inp = document.getElementById("unit");
+    const money = v => "$" + (Math.round(v * 100) / 100).toLocaleString(undefined, {{minimumFractionDigits: 2, maximumFractionDigits: 2}});
+    try {{ const v = localStorage.getItem("unit-dollars"); if (v) inp.value = v; }} catch (e) {{}}
+    function upd() {{
+      const u = Math.max(0, parseFloat(inp.value) || 0);
+      try {{ localStorage.setItem("unit-dollars", String(u)); }} catch (e) {{}}
+      let tot = 0, win = 0;
+      document.querySelectorAll(".slip[data-u]").forEach(el => {{
+        const stake = u * parseFloat(el.dataset.u), profit = stake * (parseFloat(el.dataset.bdec) - 1);
+        tot += stake; win += profit;
+        el.querySelector(".unitline").innerHTML = `Bet <b>${{money(stake)}}</b> with the boost · if it hits: wins <b>${{money(profit)}}</b>, pays back <b>${{money(stake + profit)}}</b>`;
+      }});
+      document.getElementById("unitsum").innerHTML = `Total to bet this week: <b>${{money(tot)}}</b> · if every parlay hits: <b>+${{money(win)}}</b>`;
+    }}
+    inp.addEventListener("input", upd); upd();
+  }})();
+  </script>
   <section class="panel">
     <h2>Mark 4 · every leg with an edge</h2>
     <p class="lede">{legs_all_note} Chance = Mark 4l (Mark 3's picker mixed 50/50 with FanDuel's no-vig price, the 2026 weights chosen from earlier seasons only; promotion-overreaction
