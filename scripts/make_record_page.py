@@ -2,7 +2,7 @@
 (tracked) replayed week by week over 2024 week 4 - 2026 week 5, every pick and parlay graded, the blind seasons, the hidden-season test of tournament 3,
 plus the current week's picks (pending). Ledger also written to records/cards/track_record.json.
 
-  python scripts/make_record_page.py [--live-week 6]
+  python scripts/make_record_page.py [--live-week 7]     # live record: every week from 2026 week 6 to --live-week
 """
 import argparse
 import importlib.util
@@ -106,16 +106,29 @@ def mark4_weeks() -> dict:
 
 
 def mark4_live(season: int, week: int):
+    """The live Mark 4 card (mark4/live.py), graded leg by leg on its own side; a parlay is settled once a leg loses or every leg is in."""
     f = D / f"{season}_wk{week:02d}_card_mark4.csv"
     if not f.exists():
         return None
-    c = pl.read_csv(f)
+    sys.path.insert(0, str(config.ROOT))
+    from mark4 import live as LV, tournament as T
+    MK = {v: k for k, v in LV.MARKET_LABEL.items()}
+    c = pl.read_csv(f).with_columns(player_name=pl.col("player"), game_id=pl.col("game"), market=pl.col("market").replace(MK), actual=pl.lit(None, dtype=pl.Float64),
+                                    won=pl.lit(None, dtype=pl.Float64))
+    c = grade(c, season).with_columns(won=pl.when(pl.col("actual").is_null()).then(None)
+                                      .when(pl.col("side") == "Over").then((pl.col("actual") > pl.col("line")).cast(pl.Float64))
+                                      .otherwise((pl.col("actual") < pl.col("line")).cast(pl.Float64)))
     pars = []
     for (pid,), g in c.group_by("parlay", maintain_order=True):
         r0 = g.row(0, named=True)
-        pars.append(dict(legs=[dict(player=r["player"], team=r["team"], market=r["market"], line=r["line"], side=r["side"], price=int(r["price"]), actual=None, won=None,
-                                    profit=None, chance=r["chance"]) for r in g.iter_rows(named=True)], price=int(r0["parlay_price"]), stake=float(r0["stake_units"]), profit=None))
-    return dict(singles=[], parlays=pars)
+        ws = g["won"].to_list()
+        stake, dec = float(r0["stake_units"]), float(np.prod([1 + p / 100 if p > 0 else 1 + 100 / -p for p in g["price"].to_list()]))
+        profit = -stake if 0.0 in ws else (stake * (dec - 1) * (1 + T.BOOST) if all(w == 1.0 for w in ws) else None)
+        pars.append(dict(legs=[dict(player=r["player"], team=r["team"], market=LABEL.get(r["market"], r["market"]), line=r["line"], side=r["side"], price=int(r["price"]),
+                                    actual=r["actual"], won=r["won"], profit=None, chance=r["chance"]) for r in g.iter_rows(named=True)],
+                         price=int(r0["parlay_price"]), stake=stake, profit=profit))
+    meta = f.with_name(f.stem + "_meta.json")
+    return dict(singles=[], parlays=pars, made_at=json.loads(meta.read_text())["made_at_utc"] if meta.exists() else None)
 
 
 def main(argv=None):
@@ -133,21 +146,25 @@ def main(argv=None):
     for w in weeks:
         if m4:
             w["M4"] = m4.get((w["season"], w["week"]), dict(singles=[], parlays=[]))
-    live = None
-    f = D / f"{a.season}_wk{a.live_week:02d}_card.csv"
-    if f.exists():
+    live = []                                                          # every live week so far, live week 1 (2026 week 6) to --live-week
+    for wk in range(LIVE_FIRST_WEEK, a.live_week + 1):
+        f = D / f"{a.season}_wk{wk:02d}_card.csv"
+        if not f.exists():
+            continue
         c = grade(pl.read_csv(f).with_columns(dec_u=pl.when(pl.col("price") > 0).then(1 + pl.col("price") / 100).otherwise(1 + 100 / -pl.col("price")),
                                               market=pl.col("market").replace({v: k for k, v in LABEL.items()}), won=pl.lit(None, dtype=pl.Float64), actual=pl.lit(None, dtype=pl.Float64)), a.season)
-        fs = D / f"{a.season}_wk{a.live_week:02d}_card_schedule.csv"
+        fs = D / f"{a.season}_wk{wk:02d}_card_schedule.csv"
         srows = None
         if fs.exists():
             srows = grade(pl.read_csv(fs).with_columns(dec_u=pl.when(pl.col("price") > 0).then(1 + pl.col("price") / 100).otherwise(1 + 100 / -pl.col("price")),
                                                        market=pl.col("market").replace({v: k for k, v in LABEL.items()}), won=pl.lit(None, dtype=pl.Float64), actual=pl.lit(None, dtype=pl.Float64)), a.season).to_dicts()
-        live = dict(season=a.season, week=a.live_week, live_no=a.live_week - LIVE_FIRST_WEEK + 1, made_at=json.loads(f.with_name(f.stem + "_meta.json").read_text())["made_at_utc"],
-                    **ledger(c.to_dicts(), player="player_name", srows=srows))
-        m4l = mark4_live(a.season, a.live_week)
+        L = dict(season=a.season, week=wk, live_no=wk - LIVE_FIRST_WEEK + 1, made_at=json.loads(f.with_name(f.stem + "_meta.json").read_text())["made_at_utc"],
+                 **ledger(c.to_dicts(), player="player_name", srows=srows))
+        m4l = mark4_live(a.season, wk)
         if m4l is not None:
-            live["M4"] = m4l
+            L["M4"] = m4l
+        live.append(L)
+    live = live or None
     blind = [w for f in sorted(D.glob("blind_*.json")) for w in json.loads(f.read_text())["four"]]
     for w in blind:                                                    # files written before P existed: P's parlays are exactly B's
         w.setdefault("P", dict(singles=[], parlays=w["B"]["parlays"]))
@@ -324,13 +341,13 @@ function hiddenTotal(key) {
 }
 const KLABEL = {S: "parlays", SS: "straight bets", C3: "3-leg", P: "parlays", A: "A", B: "B"};
 function liveLine(k) {
-  const L = DATA.live; if (!L || !L[k]) return null;
-  const t = stats(k, [L]), open = L[k].singles.length + L[k].parlays.length - t.n - t.pn;
+  const Ls = (DATA.live || []).filter(L => L[k]); if (!Ls.length) return null;
+  const t = stats(k, Ls), open = Ls.reduce((a, L) => a + L[k].singles.length + L[k].parlays.length, 0) - t.n - t.pn;
   const parts = [];
   if (t.n) parts.push(`${t.sw}–${t.n - t.sw} straight`);
   if (t.pn) parts.push(`${t.pw}–${t.pn - t.pw} parlays`);
   if (open) parts.push(`${open} pending`);
-  return {text: parts.join(", ") || "none", units: t.all, settled: t.staked};
+  return {text: parts.join(", ") || "none", units: t.all, settled: t.staked, weeks: Ls.map(L => L.week)};
 }
 
 // ---------- overview
@@ -363,23 +380,23 @@ function overview() {
       <div class="kv">
         ${sd ? `<span>Hidden seasons, 5-seed average</span><b class="${cls(sd[0])}">${sd.map(fmtPct).join(" / ")}</b>` : h ? `<span>Hidden seasons 2021–2026</span><b class="${cls(h.u)}">${ratio(h.u, h.b)}</b>` : ""}
         ${rep.map(([k, t]) => `<span>Replay 2024–2026${{C3: " (3-leg variant)", SS: " (straight bets)", S: " (parlays)", A: " (A)", B: " (B)"}[k] ?? ""}</span><b class="${cls(t.all)}">${ratio(t.all, t.staked)}</b>`).join("")}
-        ${lives.map(([k, v]) => `<span>Live week 1${lives.length > 1 ? ` (${KLABEL[k]})` : ""}</span><b class="${cls(v.units)}">${v.text}${v.settled ? ` · ${fmtU(v.units)}u` : ""}</b>`).join("") || `<span>Live</span><b>–</b>`}
+        ${lives.map(([k, v]) => `<span>Live (week${v.weeks.length > 1 ? "s" : ""} ${v.weeks.join(", ")})${lives.length > 1 ? ` (${KLABEL[k]})` : ""}</span><b class="${cls(v.units)}">${v.text}${v.settled ? ` · ${fmtU(v.units)}u` : ""}</b>`).join("") || `<span>Live</span><b>–</b>`}
       </div>
       <button type="button" class="open" data-go="${id}">Open ${M.label}</button>
     </article>`;
   };
   const liveRows = ["mark4", "mark3", "mark2", "mark1"].flatMap(id => MARKS[id].keys.map(k => [MARKS[id].label, k, liveLine(k)])).filter(r => r[2]);
-  const livePanel = DATA.live ? `<section class="panel" style="margin-top:22px"><div><h2>Live record</h2><p class="lede">Live week 1 is NFL week 6 (${DATA.live.made_at.slice(0, 10)}): the first card made before the games. Return per unit staked, 1 unit = one bet.</p></div>
-    <div class="scroll"><table><thead><tr><th>Setup</th><th>Result</th><th class="num">Units</th><th class="num">Return per unit</th></tr></thead><tbody>` +
-    liveRows.map(([m, k, v]) => `<tr><td>${DATA.strategies[k]}</td><td>${v.text}</td><td class="num ${cls(v.units)}">${v.settled ? fmtU(v.units) : "–"}</td><td class="num ${cls(v.units)}">${v.settled ? fmtPct(v.units / v.settled) : "–"}</td></tr>`).join("") +
+  const livePanel = DATA.live ? `<section class="panel" style="margin-top:22px"><div><h2>Live record</h2><p class="lede">Every card made before its games, from NFL week 6 (live week 1, ${DATA.live[0].made_at.slice(0, 10)}). Mark 4 is live from week 7. Return per unit staked; a pending bet counts once it is settled.</p></div>
+    <div class="scroll"><table><thead><tr><th>Setup</th><th>Weeks</th><th>Result</th><th class="num">Units</th><th class="num">Return per unit</th></tr></thead><tbody>` +
+    liveRows.map(([m, k, v]) => `<tr><td>${DATA.strategies[k]}${k === "M4" ? ` <span class="role bet">Bet</span>` : ""}</td><td>${v.weeks.join(", ")}</td><td>${v.text}</td><td class="num ${cls(v.units)}">${v.settled ? fmtU(v.units) : "–"}</td><td class="num ${cls(v.units)}">${v.settled ? fmtPct(v.units / v.settled) : "–"}</td></tr>`).join("") +
     `</tbody></table></div></section>` : "";
-  return verdict + livePanel + `<section class="marks" style="margin-top:22px">${["mark3", "mark2", "mark1"].map(card).join("")}</section>` + `<div style="margin-top:22px">${h2h}</div>` +
+  return verdict + livePanel + `<section class="marks" style="margin-top:22px">${["mark4", "mark3", "mark2", "mark1"].map(card).join("")}</section>` + `<div style="margin-top:22px">${h2h}</div>` +
     `<section class="panel" style="margin-top:22px"><h2>How to read this</h2><ul class="notes">
       <li><b>Hidden seasons:</b> each season 2021–2026 was hidden in turn; the picker learned from the other five only. The fairest test we have.</li>
       <li><b>Seeds:</b> the picker has a random element; one seed moved returns by up to 15 points either way. Mark 2 and Mark 3 are compared averaged over 5 seeds, twice with different seeds, so a result counts only if it repeats.</li>
       <li><b>Replay:</b> 2024 week 4 to 2026 week 5, the picker retrained every week on earlier weeks only, the way it runs live.</li>
       <li><b>Blind 2021–2023:</b> Mark 1 and Mark 2's rules were fixed before those seasons were added, so they never shaped any rule.</li>
-      <li><b>Live:</b> from 2026 week 6. Mark 3 replaced Mark 2 on 2026-10-16 after the seed-averaged tests.</li></ul></section>`;
+      <li><b>Live:</b> from 2026 week 6. Mark 3 replaced Mark 2 on 2026-10-16 after the seed-averaged tests; Mark 4 replaced Mark 3 as the bet from week 7. Every live week stays on the page.</li></ul></section>`;
 }
 
 // ---------- one Mark
@@ -468,11 +485,12 @@ function block(k, w) {
       : `<p class="lede" style="font-size:.86rem">No parlay this week.</p>`) + `</div>`;
 }
 function liveBlock(M) {
-  const L = DATA.live; if (!L) return "";
-  const keys = M.keys.filter(k => L[k]); if (!keys.length) return "";
-  const open = keys.some(k => L[k].singles.some(x => x.won == null) || L[k].parlays.some(x => x.profit == null));
-  return `<section class="panel"><div><h3>Live week ${L.live_no} (${L.season} week ${L.week}): ${open ? "partly graded" : "final"}</h3><p class="lede">Card made ${L.made_at.replace("T", " ").replace("+00:00", " UTC")}, before kickoff. The first week of the live record: no rule or setting was chosen after seeing it.</p></div>
+  return (DATA.live || []).slice().reverse().map(L => {
+    const keys = M.keys.filter(k => L[k]); if (!keys.length) return "";
+    const open = keys.some(k => L[k].singles.some(x => x.won == null) || L[k].parlays.some(x => x.profit == null));
+    return `<section class="panel"><div><h3>Live week ${L.live_no} (${L.season} week ${L.week}): ${open ? "partly graded" : "final"}</h3><p class="lede">Card made ${((keys.includes("M4") && L.M4.made_at) || L.made_at).replace("T", " ").replace("+00:00", " UTC")}, before kickoff${L.live_no === 1 ? ". The first week of the live record: no rule or setting was chosen after seeing it" : ""}.</p></div>
     <div class="weekbody">${keys.map(k => block(k, L)).join("")}</div></section>`;
+  }).join("");
 }
 const SEASON = {};
 function ledger(id) {

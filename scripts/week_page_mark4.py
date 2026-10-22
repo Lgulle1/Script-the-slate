@@ -44,6 +44,16 @@ def main(argv=None):
                      f'<div class="slip-foot"><span>chance all hit <b>{r0["parlay_chance"]:.1%}</b></span><span>expected value with the boost <b>{r0["parlay_ev_boosted"]:+.0%}</b></span>'
                      f'<span><span class="boost">30% profit boost</span></span></div><div class="unitline"></div></div>')
     n_filled = card["parlay"].n_unique()
+    # when the card's inputs were pulled: FanDuel lines in the log, the injury report in the database
+    import duckdb
+    lg = pl.read_csv(config.ROOT / "records" / "lines" / "prop_lines_log.csv", infer_schema_length=0).filter(
+        (pl.col("book") == "FanDuel") & pl.col("game_id").str.starts_with(f"{a.season}_{a.week:02d}_"))
+    lines_at = str(lg["captured_at"].max())[:16].replace("T", " ") + " UTC" if lg.height else "unknown"
+    con = duckdb.connect(str(config.RAW_DUCKDB_PATH), read_only=True)
+    inj = con.execute("SELECT max(pulled_at) FROM injuries WHERE season = ? AND week = ?", [a.season, a.week]).fetchone()[0]
+    con.close()
+    inj_at = str(inj)[:16] + " UTC" if inj else "unknown"
+    asof = f"FanDuel lines from {lines_at}; injury report pulled {inj_at}"
     mlabel = {"rec": "receptions", "rec_yds": "receiving yards", "rush_yds": "rushing yards", "pass_yds": "passing yards", "rush_att": "rushing attempts", "pass_att": "passing attempts", "pass_cmp": "passing completions"}
     legrows = "".join(f'<tr><td>{"<span class=\'tag bet\'>On the card</span>" if (r["player"], float(r["line"])) in set(zip(card["player"].to_list(), [float(x) for x in card["line"].to_list()])) else "<span class=\'tag\'>Edge, not used</span>"}</td>'
                       f'<td>{e(r["player"])} <small class="note">{e(str(r["team"]))}</small></td><td>{e(r["side"])} {r["line"]:g} {e(mlabel.get(r["market"], r["market"]))}</td><td class="num">{int(r["price"]):+d}</td>'
@@ -58,10 +68,13 @@ def main(argv=None):
     <p class="lede">One boost per parlay: the 5-leg at a quarter unit, the 3-leg at half a unit, the two 2-legs at a full unit. Built long-first from the legs with the most
     expected value (over or under, whichever is better), FanDuel's own lines only, never two legs of one game. Place each in the boost window before its first game.
     {n_filled} of 4 filled from this pull; the rest fill when FanDuel posts more markets.</p>
+    <p class="lede"><b>Built on: {asof}.</b> If a line or price on FanDuel no longer matches the card, send a fresh pull before betting.</p>
     <div class="unitbox"><label for="unit">1 unit =</label> <span class="dollar">$</span><input id="unit" type="number" inputmode="decimal" min="0" step="1" value="10" aria-describedby="unitsum"><span id="unitsum" class="unitsum"></span></div>
     <div class="grid" style="margin-top:14px">{"".join(slips)}</div>
   </section>
   <style>
+  .markwrap,.markwrap>section{{min-width:0}}
+  .switch{{flex-wrap:wrap}} .switch button{{white-space:nowrap}}
   .unitbox{{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:14px;background:var(--turf-soft);border-radius:10px;padding:12px 14px}}
   .unitbox label{{font:700 1.15rem/1 var(--display);text-transform:uppercase;letter-spacing:.04em}}
   .unitbox .dollar{{font:600 1.1rem/1 var(--mono)}}
@@ -112,7 +125,7 @@ def main(argv=None):
                   '<button type="button" data-m="4" aria-pressed="true">Mark 4 · the bet</button>\n      <button type="button" data-m="3" aria-pressed="false">Mark 3 · tracked</button>')
     i = s.index('  <div class="markwrap" data-mark="1"')
     s = s[:i] + wrap4 + s[i:]
-    hero4 = (f'  4: {{eyebrow: "Mark 4 · the bet · FanDuel · first pass {a.season} week {a.week}",\n'
+    hero4 = (f'  4: {{eyebrow: "Mark 4 · the bet · FanDuel · {a.season} week {a.week}",\n'
              f'      sum: {json.dumps([f"{n_filled} boosted parlays", "5-leg 0.25u · 3-leg 0.5u · 2-leg 1u", "Over or under per leg", "No straight bets"])},\n'
              '      p: "These are the bets: one 30% profit boost per parlay. Rebuilt before each boost window with fresh FanDuel lines and the final injury report: use the latest version of this page."},\n')
     s = s.replace("const HERO = {\n", "const HERO = {\n" + hero4)

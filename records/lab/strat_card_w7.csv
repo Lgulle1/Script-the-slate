@@ -1,11 +1,11 @@
 n,parlay,stake_units,legs,parlay_price,boosted_price,parlay_chance,parlay_ev_boosted,player,team,market,side,line,price,chance,edge,ev,overreaction_under,game,gameday,key
-0,5-leg,0.25,5,3097,4027,0.0375,0.549,Konata Mumpfield,LA,Receiving Yards,Under,18.5,-114,0.558,0.026,0.048,true,2026_07_LA_LV,2026-10-25,5-leg|0
-1,5-leg,0.25,5,3097,4027,0.0375,0.549,Kyle Williams,NE,Receiving Yards,Under,19.5,-114,0.558,0.026,0.048,true,2026_07_NE_CHI,2026-10-22,5-leg|1
-2,5-leg,0.25,5,3097,4027,0.0375,0.549,Ja'Marr Chase,CIN,Receptions,Under,6.5,128,0.454,0.016,0.036,false,2026_07_CIN_BAL,2026-10-25,5-leg|2
-3,5-leg,0.25,5,3097,4027,0.0375,0.549,Jahmyr Gibbs,DET,Rushing Yards,Under,93.5,-114,0.551,0.018,0.034,false,2026_07_GB_DET,2026-10-25,5-leg|3
-4,5-leg,0.25,5,3097,4027,0.0375,0.549,Jaylen Waddle,DEN,Receptions,Under,4.5,112,0.481,0.009,0.02,false,2026_07_DEN_ARI,2026-10-25,5-leg|4
-5,3-leg,0.5,3,908,1180,0.1028,0.315,Matthew Golden,GB,Receptions,Under,4.5,118,0.466,0.007,0.015,false,2026_07_GB_DET,2026-10-25,3-leg|5
-6,3-leg,0.5,3,908,1180,0.1028,0.315,Tyler Higbee,LA,Receptions,Under,3.5,112,0.479,0.007,0.015,false,2026_07_LA_LV,2026-10-25,3-leg|6
-7,3-leg,0.5,3,908,1180,0.1028,0.315,Germie Bernard,PIT,Receptions,Under,4.5,118,0.461,0.003,0.005,false,2026_07_PIT_NO,2026-10-25,3-leg|7
-8,2-leg #1,1.0,2,383,498,0.2088,0.25,Sam LaPorta,DET,Receptions,Under,4.5,112,0.476,0.004,0.009,false,2026_07_GB_DET,2026-10-25,2-leg #1|8
-9,2-leg #1,1.0,2,383,498,0.2088,0.25,Bijan Robinson,ATL,Receptions,Under,3.5,128,0.439,0.0,0.0,false,2026_07_SF_ATL,2026-10-25,2-leg #1|9
+0,5-leg,0.25,5,3097,4027,0.0376,0.551,Konata Mumpfield,LA,Receiving Yards,Under,18.5,-114,0.558,0.026,0.048,true,2026_07_LA_LV,2026-10-25,5-leg|0
+1,5-leg,0.25,5,3097,4027,0.0376,0.551,Kyle Williams,NE,Receiving Yards,Under,19.5,-114,0.558,0.026,0.048,true,2026_07_NE_CHI,2026-10-22,5-leg|1
+2,5-leg,0.25,5,3097,4027,0.0376,0.551,Ja'Marr Chase,CIN,Receptions,Under,6.5,128,0.455,0.016,0.037,false,2026_07_CIN_BAL,2026-10-25,5-leg|2
+3,5-leg,0.25,5,3097,4027,0.0376,0.551,Jahmyr Gibbs,DET,Rushing Yards,Under,93.5,-114,0.551,0.018,0.034,false,2026_07_GB_DET,2026-10-25,5-leg|3
+4,5-leg,0.25,5,3097,4027,0.0376,0.551,Jaylen Waddle,DEN,Receptions,Under,4.5,112,0.481,0.009,0.02,false,2026_07_DEN_ARI,2026-10-25,5-leg|4
+5,3-leg,0.5,3,908,1180,0.1042,0.333,Matthew Golden,GB,Receptions,Under,4.5,118,0.472,0.013,0.029,false,2026_07_GB_DET,2026-10-25,3-leg|5
+6,3-leg,0.5,3,908,1180,0.1042,0.333,Tyler Higbee,LA,Receptions,Under,3.5,112,0.479,0.007,0.015,false,2026_07_LA_LV,2026-10-25,3-leg|6
+7,3-leg,0.5,3,908,1180,0.1042,0.333,Germie Bernard,PIT,Receptions,Under,4.5,118,0.461,0.003,0.005,false,2026_07_PIT_NO,2026-10-25,3-leg|7
+8,2-leg #1,1.0,2,383,498,0.2089,0.25,Sam LaPorta,DET,Receptions,Under,4.5,112,0.476,0.004,0.009,false,2026_07_GB_DET,2026-10-25,2-leg #1|8
+9,2-leg #1,1.0,2,383,498,0.2089,0.25,Bijan Robinson,ATL,Receptions,Under,3.5,128,0.439,0.0,0.001,false,2026_07_SF_ATL,2026-10-25,2-leg #1|9

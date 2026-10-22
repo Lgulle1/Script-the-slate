@@ -28,7 +28,7 @@ def worst_run(x: pl.DataFrame) -> dict:
 def main():
     # the all-combo head to head vs Mark 3's rule, boosted and plain
     C = []
-    for v in R.VERSIONS:
+    for v in (*R.VERSIONS, "Mark 4l"):                     # Mark 4l (the bet from 2026 week 7) has no all-combo grid file, so it is in the head to head only
         for legs in (1, 2, 3, 4, 5):
             C.append((v, dict(rank="ev", sides="both", markets="all", edge=0.0, depth=12 if legs > 1 else 10, legs=legs, mix="any")))
         C.append((v, R.MARK3_RULE))

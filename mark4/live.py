@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime, timezone
 
 import numpy as np
 import polars as pl
@@ -95,6 +96,8 @@ def main(argv=None):
     out = pl.DataFrame(card)
     path = OUTD / f"{a.season}_wk{a.week:02d}_card_mark4.csv"
     out.write_csv(path)
+    path.with_name(path.stem + "_meta.json").write_text(json.dumps(dict(made_at_utc=datetime.now(timezone.utc).isoformat(timespec="seconds"), season=a.season, week=a.week,
+                                                                        version="Mark 4l", plan=PLAN, weights=w), indent=1))
     elig.drop("i").write_csv(OUTD / f"{a.season}_wk{a.week:02d}_legs_mark4.csv")
     print(f"Mark 4l, {a.season} week {a.week}: {rows.height} FanDuel lines scored, {elig.height} with an edge (weights: Mark 3 {w['mark3_weight']}, model {w['model_weight']} vs the book), "
           f"{int(rows['overreaction'].sum())} promotion-overreaction lines")

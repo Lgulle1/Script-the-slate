@@ -1,7 +1,7 @@
 """Real weekly cards, played week by week (2026-10-20): what a card would actually have made, hits and misses, not the all-combo average.
 
 A card: up to 4 boosted parlays (one per boost window; the 30% profit boost), optionally more plain parlays and straights, built from the week's legs
-ranked by the version's rule, never two legs of one game, a player at most once a week. 1 unit per bet. Per season: units, units bet, return, worst
+ranked by the version's rule, never two legs of one game, a player at most once a week. 1 unit per bet unless the plan gives a stake (the live 5/3/2/2 card); bets = units staked. Per season: units, units bet, return, worst
 drawdown (peak-to-trough of the running total, in units), weeks in profit.
 
   python -m mark4.cards      # writes records/lab/cards.csv and cards_weeks.csv
@@ -26,6 +26,10 @@ CARDS = {
     "Mark 4i: top 10 straights only": ("Mark 4i", dict(rank="ev", sides="both", markets="all", edge=0.0), [], 10),
     "Blend: 4 boosted 2-leg": ("Blend", dict(rank="ev", sides="both", markets="all", edge=0.0), [(2, 4, True)], 0),
     "Blend: 4 boosted 3-leg": ("Blend", dict(rank="ev", sides="both", markets="all", edge=0.0), [(3, 4, True)], 0),
+    # the live card (mark4/live.py PLAN): 5-leg @ 0.25u, 3-leg @ 0.5u, 2 x 2-leg @ 1u, all boosted; "bets" counts units staked
+    "Mark 4l: 5/3/2/2 (the bet)": ("Mark 4l", dict(rank="ev", sides="both", markets="all", edge=0.0), [(5, 1, True, .25), (3, 1, True, .5), (2, 2, True, 1.0)], 0),
+    "Mark 4i: 5/3/2/2": ("Mark 4i", dict(rank="ev", sides="both", markets="all", edge=0.0), [(5, 1, True, .25), (3, 1, True, .5), (2, 2, True, 1.0)], 0),
+    "Mark 4l: 4 boosted 2-leg": ("Mark 4l", dict(rank="ev", sides="both", markets="all", edge=0.0), [(2, 4, True)], 0),
 }
 
 
@@ -34,7 +38,8 @@ def play_week(rows, plan, straights):
     legs = T.pool(rows, 40)
     used = set()
     u = n = 0.0
-    for k, c, boosted in plan:
+    for k, c, boosted, *stake in plan:
+        stake = stake[0] if stake else 1.0
         free = [r for i, r in enumerate(legs) if i not in used]
         pars = T.build(free, k, c, "rank", "any")
         for par in pars:
@@ -42,8 +47,8 @@ def play_week(rows, plan, straights):
                 used.add(next(i for i, x in enumerate(legs) if x is r))
             win = all(r[3] == 1 for r in par)
             gain = float(np.prod([r[2] for r in par])) - 1
-            u += gain * (1 + T.BOOST if boosted else 1.0) if win else -1.0
-            n += 1
+            u += stake * (gain * (1 + T.BOOST if boosted else 1.0) if win else -1.0)
+            n += stake
     if straights:
         for r in [r for i, r in enumerate(legs) if i not in used][:straights]:
             u += (r[2] - 1) if r[3] == 1 else -1.0
@@ -57,7 +62,8 @@ def main():
     rows, weeks = [], []
     for name, (v, spec, plan, st) in CARDS.items():
         if v not in P:
-            P[v] = T.load_p(v)
+            P[v] = T.load_p(v).copy()
+            P[v][d["season"].to_numpy() < 2022] = np.nan             # every card on the same seasons, 2022 on (Mark 4l's file also carries 2021)
         W = T.week_pools(d, A, P[v], spec["sides"], spec["markets"], spec["edge"], spec["rank"])
         for (s, w) in sorted(W):
             u, n = play_week(W[(s, w)], plan, st)
