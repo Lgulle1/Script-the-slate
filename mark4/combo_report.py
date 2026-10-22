@@ -142,7 +142,9 @@ def head_to_head(candidates, boosted=True):
     import numpy as np
     from mark4 import forward as F, tournament as T
     d, A, *_ = F.frame()
-    P = {v: T.load_p(v) for v in {"Mark 3 det", *(v for v, _ in candidates)}}
+    P = {v: T.load_p(v).copy() for v in {"Mark 3 det", *(v for v, _ in candidates)}}
+    for v in P:
+        P[v][d["season"].to_numpy() < 2022] = np.nan                 # every version on 2022 on (Mark 4l's file also carries 2021)
     base = week_results(d, A, P["Mark 3 det"], MARK3_RULE, boosted)
     rows = []
     for v, spec in candidates:

@@ -4,13 +4,13 @@ Blend: 4 boosted 2-leg,2026,2,9.390080000000005,4.0,Blend: 4 boosted 2-leg|2
 Blend: 4 boosted 2-leg,2026,3,1.7080799999999998,4.0,Blend: 4 boosted 2-leg|3
 Blend: 4 boosted 2-leg,2026,4,18.952214912427024,4.0,Blend: 4 boosted 2-leg|4
 Blend: 4 boosted 2-leg,2026,5,-4.0,4.0,Blend: 4 boosted 2-leg|5
-Blend: 4 boosted 2-leg,2026,6,6.171924936080614,4.0,Blend: 4 boosted 2-leg|6
+Blend: 4 boosted 2-leg,2026,6,1.9360999999999997,4.0,Blend: 4 boosted 2-leg|6
 Blend: 4 boosted 3-leg,2026,1,7.852400000000001,4.0,Blend: 4 boosted 3-leg|1
 Blend: 4 boosted 3-leg,2026,2,-4.0,4.0,Blend: 4 boosted 3-leg|2
 Blend: 4 boosted 3-leg,2026,3,-4.0,4.0,Blend: 4 boosted 3-leg|3
 Blend: 4 boosted 3-leg,2026,4,33.27693386889075,4.0,Blend: 4 boosted 3-leg|4
 Blend: 4 boosted 3-leg,2026,5,-4.0,4.0,Blend: 4 boosted 3-leg|5
-Blend: 4 boosted 3-leg,2026,6,6.313830350428635,4.0,Blend: 4 boosted 3-leg|6
+Blend: 4 boosted 3-leg,2026,6,-4.0,4.0,Blend: 4 boosted 3-leg|6
 Mark 3 rule (frozen),2026,1,5.213913697235494,4.0,Mark 3 rule (frozen)|1
 Mark 3 rule (frozen),2026,2,-4.0,4.0,Mark 3 rule (frozen)|2
 Mark 3 rule (frozen),2026,3,1.7080799999999998,4.0,Mark 3 rule (frozen)|3
@@ -53,9 +53,27 @@ Mark 4i: 4 boosted 4-leg,2026,3,-4.0,4.0,Mark 4i: 4 boosted 4-leg|3
 Mark 4i: 4 boosted 4-leg,2026,4,18.73379661016949,4.0,Mark 4i: 4 boosted 4-leg|4
 Mark 4i: 4 boosted 4-leg,2026,5,-2.0,2.0,Mark 4i: 4 boosted 4-leg|5
 Mark 4i: 4 boosted 4-leg,2026,6,-2.0,2.0,Mark 4i: 4 boosted 4-leg|6
+Mark 4i: 5/3/2/2,2026,1,2.6179999999999994,2.75,Mark 4i: 5/3/2/2|1
+Mark 4i: 5/3/2/2,2026,2,6.795836800000004,2.75,Mark 4i: 5/3/2/2|2
+Mark 4i: 5/3/2/2,2026,3,2.7880399999999987,2.75,Mark 4i: 5/3/2/2|3
+Mark 4i: 5/3/2/2,2026,4,15.844904067796612,2.75,Mark 4i: 5/3/2/2|4
+Mark 4i: 5/3/2/2,2026,5,-0.75,0.75,Mark 4i: 5/3/2/2|5
+Mark 4i: 5/3/2/2,2026,6,3.7828256880733946,1.75,Mark 4i: 5/3/2/2|6
 Mark 4i: top 10 straights only,2026,1,1.2000000000000002,10.0,Mark 4i: top 10 straights only|1
 Mark 4i: top 10 straights only,2026,2,1.740000000000001,10.0,Mark 4i: top 10 straights only|2
 Mark 4i: top 10 straights only,2026,3,1.1599999999999997,10.0,Mark 4i: top 10 straights only|3
 Mark 4i: top 10 straights only,2026,4,6.953979728870104,10.0,Mark 4i: top 10 straights only|4
 Mark 4i: top 10 straights only,2026,5,-1.8900884955752213,8.0,Mark 4i: top 10 straights only|5
 Mark 4i: top 10 straights only,2026,6,2.807103323808091,10.0,Mark 4i: top 10 straights only|6
+Mark 4l: 4 boosted 2-leg,2026,1,2.1201592920353995,4.0,Mark 4l: 4 boosted 2-leg|1
+Mark 4l: 4 boosted 2-leg,2026,2,1.2870088495575231,4.0,Mark 4l: 4 boosted 2-leg|2
+Mark 4l: 4 boosted 2-leg,2026,3,-4.0,4.0,Mark 4l: 4 boosted 2-leg|3
+Mark 4l: 4 boosted 2-leg,2026,4,4.777691240468423,4.0,Mark 4l: 4 boosted 2-leg|4
+Mark 4l: 4 boosted 2-leg,2026,5,0.3189756441381477,4.0,Mark 4l: 4 boosted 2-leg|5
+Mark 4l: 4 boosted 2-leg,2026,6,-4.0,4.0,Mark 4l: 4 boosted 2-leg|6
+Mark 4l: 5/3/2/2 (the bet),2026,1,8.493938984629716,2.75,Mark 4l: 5/3/2/2 (the bet)|1
+Mark 4l: 5/3/2/2 (the bet),2026,2,16.242255575221243,2.75,Mark 4l: 5/3/2/2 (the bet)|2
+Mark 4l: 5/3/2/2 (the bet),2026,3,2.7880399999999987,2.75,Mark 4l: 5/3/2/2 (the bet)|3
+Mark 4l: 5/3/2/2 (the bet),2026,4,6.798735945020932,2.75,Mark 4l: 5/3/2/2 (the bet)|4
+Mark 4l: 5/3/2/2 (the bet),2026,5,-1.75,1.75,Mark 4l: 5/3/2/2 (the bet)|5
+Mark 4l: 5/3/2/2 (the bet),2026,6,-2.75,2.75,Mark 4l: 5/3/2/2 (the bet)|6
