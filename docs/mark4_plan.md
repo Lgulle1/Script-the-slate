@@ -174,3 +174,21 @@ Reusing legs puts several boosts on the same few outcomes; straights earn only t
 The 4 boosts are worth the most spread over different legs. Kept: each leg once. Also learned: building the same card a slightly different way (one leg
 per game across the whole card vs per parlay) moved the history from +101u to +38u, so these single-path numbers are fragile.
 Week page: a unit box (1 unit = $X) shows each parlay's stake in dollars and what it wins with the boost.
+
+## 2026-10-22: Mark 4i is the bet, Mark 4l dropped (before week 7's first game)
+
+Mark 4l = Mark 4i plus promotion-overreaction unders, which replaced the model's chance on flagged lines with the earlier-season hit rate (about 55.8%),
+so those legs went to the top of every card. Tested on the real 5/3/2/2 card, 2022 to 2026 week 6, every card on the same seasons (mark4/cards.py):
+
+| Overreaction strength (mark4/nudge.py) | Units | Staked | Return | 2025 on |
+|---|---|---|---|---|
+| 0 (Mark 4i) | +128.8 | 131.8 | +98% | +60.4 on 22.8 |
+| 0.25 | +96.3 | 138.5 | +70% | +37.1 on 23.0 |
+| 0.5 | +80.5 | 147.8 | +54% | +35.1 on 28.5 |
+| 0.75 | +83.9 | 149.8 | +56% | +28.7 on 29.5 |
+| 1 (Mark 4l) | +101.3 | 151.8 | +67% | +54.6 on 31.5 |
+
+Chosen forward from earlier seasons, the strength is 0 for 2025 and 2026. Every parlay the legs could build (2022-2026, 2021 masked): 4i beats 4l at
+2 legs (90%) and 5 legs (91%; 97% on 2025-26), level at 3 and 4. 4l's case was steadiness (up every season at every length; 4i lost 2024 at 3-5 legs).
+Not proof (under 95%), but every test that measures money on this card points the same way. The week 7 4l card is kept as
+records/cards/2026_wk07_card_mark4_v1_4l_20261022.csv; the live card is now Mark 4i (mark4/live.py VERSION).

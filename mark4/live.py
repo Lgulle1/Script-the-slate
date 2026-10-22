@@ -1,8 +1,10 @@
-"""Mark 4l live card (2026-10-21): the week's FanDuel lines -> Mark 4l chances -> the 5/3/2/2 boosted card.
+"""Mark 4 live card (2026-10-21): the week's FanDuel lines -> Mark 4i chances -> the 5/3/2/2 boosted card.
+
+The bet is Mark 4i from 2026-10-22 (mark4/nudge.py: the overreaction signal at any strength made less money on this card than none; Mark 4l = full override).
 
   Mark 3's picker (fixed models, no random hold-out) retrained on every graded line before the week
   -> Mark 4i: mixed with FanDuel's no-vig chance at the season's weights (records/lab/mark4i_weights.json, chosen from earlier seasons only)
-  -> Mark 4l: promotion-overreaction unders (role-change engine on this week's rosters and injury report) at the hit rate of earlier seasons
+  -> (VERSION "Mark 4l" only) promotion-overreaction unders at the hit rate of earlier seasons; flagged lines are still marked on the card
   -> legs: FanDuel's own lines only, edge >= 0 on the better side, ranked by expected value (chance x decimal price - 1), one per player
   -> card: 1 x 5-leg @ 0.25u, 1 x 3-leg @ 0.5u, 2 x 2-leg @ 1u, all boosted (30% profit boost), built long-first, never two legs of one game
 
@@ -26,6 +28,7 @@ from mark4 import rolechange as RC
 from mark4 import tournament as T
 
 PLAN = [(5, 1, 0.25), (3, 1, 0.5), (2, 2, 1.0)]
+VERSION = "Mark 4i"                              # the bet; "Mark 4l" adds the overreaction override
 LOG = config.ROOT / "records" / "lines" / "prop_lines_log.csv"
 OUTD = config.ROOT / "records" / "cards"
 MARKET_LABEL = {"rec": "Receptions", "rec_yds": "Receiving Yards", "rush_yds": "Rushing Yards", "rush_att": "Rushing Attempts", "pass_yds": "Passing Yards",
@@ -59,7 +62,8 @@ def main(argv=None):
         p4i = base
     p4i = p4i.copy()
     p4i[te] = w["model_weight"] * p3w + (1 - w["model_weight"]) * fair[te]
-    p4l = RC.mark4l(d, A, p4i)
+    flagged = RC.mark4l(d, A, p4i) != p4i                # promotion overreactions (shown, used only by Mark 4l)
+    p4l = np.where(flagged, RC.mark4l(d, A, p4i), p4i) if VERSION == "Mark 4l" else p4i
     # FanDuel's own lines this week (the import may carry another book where FanDuel had not posted a market yet)
     lg = pl.read_csv(LOG, infer_schema_length=0).filter((pl.col("book") == "FanDuel") & pl.col("game_id").str.starts_with(f"{a.season}_{a.week:02d}_"))
     fd = lg.select("game_id", "player_id", "market", line=pl.col("line").cast(pl.Float64)).unique()
@@ -71,7 +75,7 @@ def main(argv=None):
     rows = pl.DataFrame(dict(i=i, player=x["player_name"], team=x["team"], game_id=x["game_id"], gameday=x["gameday"].cast(pl.Utf8), market=x["market"],
                              line=x["line"], side=np.where(over, "Over", "Under"), chance=np.where(over, p, 1 - p), edge=np.where(over, eo, eu),
                              dec=np.where(over, A.dec_o[i], A.dec_u[i]), mark3=p3w[np.searchsorted(np.flatnonzero(te), i)], book=fair[i],
-                             history=x["history"].to_numpy(), overreaction=(p4l[i] != p4i[i])))
+                             history=x["history"].to_numpy(), overreaction=flagged[i]))
     rows = rows.with_columns(ev=pl.col("chance") * pl.col("dec") - 1, price=pl.Series(american(rows["dec"].to_numpy())).round(0))
     elig = rows.filter((pl.col("edge") >= 0) & (pl.col("history") >= F.CF.MIN_HISTORY)).sort("ev", descending=True)
     legs = [(r["chance"], r["edge"], r["dec"], np.nan, r["game_id"], r["player"], r["market"], r) for r in elig.iter_rows(named=True)]
@@ -97,9 +101,9 @@ def main(argv=None):
     path = OUTD / f"{a.season}_wk{a.week:02d}_card_mark4.csv"
     out.write_csv(path)
     path.with_name(path.stem + "_meta.json").write_text(json.dumps(dict(made_at_utc=datetime.now(timezone.utc).isoformat(timespec="seconds"), season=a.season, week=a.week,
-                                                                        version="Mark 4l", plan=PLAN, weights=w), indent=1))
+                                                                        version=VERSION, plan=PLAN, weights=w), indent=1))
     elig.drop("i").write_csv(OUTD / f"{a.season}_wk{a.week:02d}_legs_mark4.csv")
-    print(f"Mark 4l, {a.season} week {a.week}: {rows.height} FanDuel lines scored, {elig.height} with an edge (weights: Mark 3 {w['mark3_weight']}, model {w['model_weight']} vs the book), "
+    print(f"{VERSION}, {a.season} week {a.week}: {rows.height} FanDuel lines scored, {elig.height} with an edge (weights: Mark 3 {w['mark3_weight']}, model {w['model_weight']} vs the book), "
           f"{int(rows['overreaction'].sum())} promotion-overreaction lines")
     for pid, g in out.group_by("parlay", maintain_order=True):
         r0 = g.row(0, named=True)

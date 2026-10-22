@@ -27,8 +27,8 @@ CARDS = {
     "Blend: 4 boosted 2-leg": ("Blend", dict(rank="ev", sides="both", markets="all", edge=0.0), [(2, 4, True)], 0),
     "Blend: 4 boosted 3-leg": ("Blend", dict(rank="ev", sides="both", markets="all", edge=0.0), [(3, 4, True)], 0),
     # the live card (mark4/live.py PLAN): 5-leg @ 0.25u, 3-leg @ 0.5u, 2 x 2-leg @ 1u, all boosted; "bets" counts units staked
-    "Mark 4l: 5/3/2/2 (the bet)": ("Mark 4l", dict(rank="ev", sides="both", markets="all", edge=0.0), [(5, 1, True, .25), (3, 1, True, .5), (2, 2, True, 1.0)], 0),
-    "Mark 4i: 5/3/2/2": ("Mark 4i", dict(rank="ev", sides="both", markets="all", edge=0.0), [(5, 1, True, .25), (3, 1, True, .5), (2, 2, True, 1.0)], 0),
+    "Mark 4l: 5/3/2/2": ("Mark 4l", dict(rank="ev", sides="both", markets="all", edge=0.0), [(5, 1, True, .25), (3, 1, True, .5), (2, 2, True, 1.0)], 0),
+    "Mark 4i: 5/3/2/2 (the bet)": ("Mark 4i", dict(rank="ev", sides="both", markets="all", edge=0.0), [(5, 1, True, .25), (3, 1, True, .5), (2, 2, True, 1.0)], 0),
     "Mark 4l: 4 boosted 2-leg": ("Mark 4l", dict(rank="ev", sides="both", markets="all", edge=0.0), [(2, 4, True)], 0),
 }
 

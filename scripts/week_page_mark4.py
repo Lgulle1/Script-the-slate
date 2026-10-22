@@ -33,7 +33,7 @@ def main(argv=None):
         r0 = g.row(0, named=True)
         rows = []
         for n, r in enumerate(g.iter_rows(named=True), 1):
-            flag = '<p class="flag">Promotion overreaction: FanDuel raised this line far more than his role grew.</p>' if r["overreaction_under"] else ""
+            flag = '<p class="flag">Promotion overreaction flagged (FanDuel raised this line far more than his role grew); its chance is the model&rsquo;s own.</p>' if r["overreaction_under"] else ""
             rows.append(f'<div class="legrow"><span class="r">{n}</span><span class="who">{e(r["player"])}<span class="team">{e(str(r["team"]))}</span></span>'
                         f'<span class="price">{r["price"]:+d}</span><span class="bet"><b>{e(r["side"].upper())} {r["line"]:g}</b> {e(r["market"].lower())}</span>'
                         f'<span class="meta">{e(r["game"])} · {e(str(r["gameday"]))} · chance {r["chance"]:.1%} · edge {r["edge"]:+.1%}</span>{flag}</div>')
@@ -105,15 +105,15 @@ def main(argv=None):
   </script>
   <section class="panel">
     <h2>Mark 4 · every leg with an edge</h2>
-    <p class="lede">{legs_all_note} Chance = Mark 4l (Mark 3's picker mixed 50/50 with FanDuel's no-vig price, the 2026 weights chosen from earlier seasons only; promotion-overreaction
-    unders at the hit rate of earlier seasons). Book = FanDuel's own no-vig chance for the same side.</p>
+    <p class="lede">{legs_all_note} Chance = Mark 4i (Mark 3's picker mixed 50/50 with FanDuel's no-vig price, the 2026 weights chosen from earlier seasons only). Book = FanDuel's own no-vig chance for the same side.</p>
     <div class="scroll"><table><thead><tr><th>Status</th><th>Player</th><th>Bet</th><th class="num">FanDuel</th><th class="num">Mark 4 chance</th><th class="num">Book chance</th><th class="num">Edge</th><th>Game</th></tr></thead><tbody>{legrows}</tbody></table></div>
   </section>
   <section class="panel">
     <h2>Why Mark 4</h2>
-    <p class="lede">Played week by week 2022 to 2026 week 6 on this exact card: +106.8 units on 151.8 bet, up every season (+13, +22, +12, +25, +35). Every parlay its top legs could build made
-    money every season at every length from 2 to 5 legs (Mark 3: 4-5 leg parlays lost in 2024 and 2025). It beats FanDuel's own price on log loss in every season it was played forward
-    (2023-2026). Marks 1-3 stay on this page, tracked, not bet.</p>
+    <p class="lede">Played week by week 2022 to 2026 week 6 on this exact card: +128.8 units on 131.8 bet, up every season (+12, +50, +6, +29, +31), worst losing run 5.8 units. It made more than
+    every other version tested on this card, including Mark 4l (+101.3 on 151.8), which added promotion-overreaction unders: at every strength tried, that add-on made less money.
+    Every parlay its top legs could build made money in 2022, 2023, 2025 and 2026 at every length (3-5 leg parlays lost in 2024). It beats FanDuel's own price on log loss in every
+    season it was played forward (2023-2026). Marks 1-3 stay on this page, tracked, not bet.</p>
   </section>
   </div>
 '''

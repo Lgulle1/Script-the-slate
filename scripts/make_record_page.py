@@ -68,12 +68,12 @@ def grade(df: pl.DataFrame, season: int) -> pl.DataFrame:
 
 
 def mark4_weeks() -> dict:
-    """Mark 4 (Mark 4l) replay: {(season, week): ledger} of the exact live card (mark4/live.py PLAN) built each week from the forward chances
-    (records/lab/forward_p_Mark_4l_0.npy: picker and mix weights never saw the week they bet). Legs carry their side; parlays their stake and boosted profit."""
+    """Mark 4 (Mark 4i) replay: {(season, week): ledger} of the exact live card (mark4/live.py PLAN) built each week from the forward chances
+    (tournament.load_p("Mark 4i"): picker and mix weights never saw the week they bet). Legs carry their side; parlays their stake and boosted profit."""
     sys.path.insert(0, str(config.ROOT))
     from mark4 import forward as F, tournament as T, live as LV
     d, A, *_ = F.frame()
-    p = np.load(F.OUT / "forward_p_Mark_4l_0.npy")
+    p = T.load_p(LV.VERSION)
     if len(p) != d.height:
         print("WARNING: Mark 4 chances do not match the line table (rerun the forward build); Mark 4 replay left out")
         return {}
@@ -290,7 +290,7 @@ ul.notes{margin:0;padding-left:1.1rem;color:var(--muted);display:grid;gap:.35rem
 <div class="wrap">
 <header>
   <h1>Track Record</h1>
-  <p>Every betting setup we run, graded. Mark 4 (Mark 4l: Mark 3's picker mixed with FanDuel's price, plus promotion-overreaction unders, in 5/3/2/2 boosted parlays) is the bet from week 7 of 2026; its first graded week shows here after week 7 is played. Mark 3 (the bet 2026-10-16 to week 6), Mark 2 and Mark 1 are tracked beside it with no money on them. 1 unit = one bet; parlays include the 30% FanDuel boost; FanDuel's four markets (receptions, receiving yards, rush yards, pass yards).</p>
+  <p>Every betting setup we run, graded. Mark 4 (Mark 4i: Mark 3's picker mixed with FanDuel's price, in 5/3/2/2 boosted parlays) is the bet from week 7 of 2026; its first graded week shows here after week 7 is played. Mark 3 (the bet 2026-10-16 to week 6), Mark 2 and Mark 1 are tracked beside it with no money on them. 1 unit = one bet; parlays include the 30% FanDuel boost; FanDuel's four markets (receptions, receiving yards, rush yards, pass yards).</p>
   <nav class="tabs" role="tablist" aria-label="Marks" id="tabs"></nav>
 </header>
 <main id="view"></main>
@@ -309,7 +309,7 @@ const has = k => DATA.weeks.length && DATA.weeks[0][k];
 
 const MARKS = {
   mark4: {label: "Mark 4", role: "Bet", rc: "bet", keys: ["M4"], hidden: [],
-          what: "The bet from 2026 week 7. Mark 4l: Mark 3's picker mixed with FanDuel's own no-vig price (weights chosen from earlier seasons only), plus promotion-overreaction unders from the role-change engine. Legs ranked by expected value, over or under per leg, never two legs of one game; one 30% boost per parlay: 1 x 5-leg at 0.25u, 1 x 3-leg at 0.5u, 2 x 2-leg at 1u, built long-first. The weeks before week 7 are the replay of this exact card (the picker and the mix weights never saw the week they bet)."},
+          what: "The bet from 2026 week 7. Mark 4i: Mark 3's picker mixed with FanDuel's own no-vig price (weights chosen from earlier seasons only). Legs ranked by expected value, over or under per leg, never two legs of one game; one 30% boost per parlay: 1 x 5-leg at 0.25u, 1 x 3-leg at 0.5u, 2 x 2-leg at 1u, built long-first. The weeks before week 7 are the replay of this exact card (the picker and the mix weights never saw the week they bet)."},
   mark3: {label: "Mark 3", role: "Tracked", rc: "", keys: ["S", "SS", "C3"], seeded: "Mark 3",
           what: "Boosted 2-leg parlays from the schedule picker's top unders (up to 4 a week). Same projections as Mark 2; the picker also weighs rest, short weeks, division games, primetime and turf. Its straight bets and 3-leg parlays are tracked, not bet.",
           hidden: [["candidate schedule", "Mark 3 parlays, one seed"]]},
@@ -360,7 +360,7 @@ function overview() {
   const verdict = `<section class="verdict">
     <div class="eyebrow">The answer so far</div>
     <h2>Mark 4 is the bet from week 7. Mark 3 before it, still tracked.</h2>
-    <p>Mark 4 (Mark 4l) beats Mark 3 on the same weeks: on every parlay its legs could build it made money every season 2022–2026 at every length from 2 to 5 legs, and on the real 5/3/2/2 card it beat Mark 3's 98% of the time in week-by-week resampling. Its replay is in the Mark 4 tab; its live record starts with week 7. What follows is how Mark 3 became the bet before that.</p>
+    <p>Mark 4 (Mark 4i) beats Mark 3 on the same weeks: on the real 5/3/2/2 card, 2022 to 2026 week 6, it made +128.8 units on 131.8 bet, up every season, and came out ahead of Mark 3 in every one of 4,000 week-by-week resamples. Mark 4l (the same plus promotion-overreaction unders) made less, +101.3 on 151.8, at every strength of that add-on tried, so it was dropped on 2026-10-22 before week 7's first game. Its replay is in the Mark 4 tab; its live record starts with week 7. What follows is how Mark 3 became the bet before that.</p>
     <p>With the picker averaged over 5 random seeds, Mark 3's parlays returned ${s3.map(v => fmtPct(v)).join(" and ")} on seasons it never saw (two separate seed groups), against ${s2.map(v => fmtPct(v)).join(" and ")} for Mark 2: ${pr.join("% and ")}% likely to be truly better. On the week-by-week replay (2024–2026, fewer weeks) the two came out level${C ? ` (${fmtPct(C.replay.parlays.mark3.roi)} vs ${fmtPct(C.replay.parlays.mark2.roi)})` : ""}. Mark 3 was not worse anywhere and its straight bets did better on both, so it is the bet since 2026-10-16; live weeks keep checking it.</p>
   </section>`;
   const meter = p => `<div class="meter"><span>${Math.round(100 * p)}%</span><i style="--w:${Math.round(100 * p)}%"></i></div>`;

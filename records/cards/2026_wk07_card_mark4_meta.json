@@ -1,8 +1,8 @@
 {
- "made_at_utc": "2026-10-22T13:28:21+00:00",
+ "made_at_utc": "2026-10-22T19:04:03+00:00",
  "season": 2026,
  "week": 7,
- "version": "Mark 4l",
+ "version": "Mark 4i",
  "plan": [
   [
    5,
@@ -20,5 +20,8 @@
    1.0
   ]
  ],
- "note": "written after the fact from the card file time; later cards write this themselves"
+ "weights": {
+  "mark3_weight": 1.0,
+  "model_weight": 0.5
+ }
 }
