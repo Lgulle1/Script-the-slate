@@ -192,3 +192,20 @@ Chosen forward from earlier seasons, the strength is 0 for 2025 and 2026. Every 
 2 legs (90%) and 5 legs (91%; 97% on 2025-26), level at 3 and 4. 4l's case was steadiness (up every season at every length; 4i lost 2024 at 3-5 legs).
 Not proof (under 95%), but every test that measures money on this card points the same way. The week 7 4l card is kept as
 records/cards/2026_wk07_card_mark4_v1_4l_20261022.csv; the live card is now Mark 4i (mark4/live.py VERSION).
+
+## 2026-10-23: per-market settings and de-vig method tested (mark4/per_market.py): all rejected; leg-level proof
+
+One-size settings audited: the model-vs-book weight, the Mark 3 vs 4h weight, a bias correction, and the de-vig method. Each chosen forward per season
+(earlier seasons only, recency-weighted log loss), played on the real 5/3/2/2 card 2022 - 2026 week 6 and leg by leg (the week's top-12 legs, straight, at price):
+
+| Variant | Card | Legs | Chance better than Mark 4i (card / legs) |
+|---|---|---|---|
+| Mark 4i (one setting for every market) | +128.8 on 131.8 | +1.41% on 666 | - |
+| per-market weights | +39.1 on 170.5 | -0.83% on 806 | 1% / 17% |
+| per-market weights + bias | +35.6 on 213.5 | -5.38% on 935 | 0% / 3% |
+| de-vig chosen forward | same as Mark 4i: proportional is the most accurate every season | | |
+
+Per-market weights overfit the smaller samples and trust the model more where it is not better, so more fake edges reach the card.
+
+Leg-level proof (top-12 legs straight, weeks resampled, recency-weighted): Mark 4i makes money 95% (2025 on: +21.9% on 118 legs); Mark 4i beats Mark 3
+94%, Mark 4h 91%, Mark 4l 78%.
