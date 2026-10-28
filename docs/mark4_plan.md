@@ -209,3 +209,17 @@ Per-market weights overfit the smaller samples and trust the model more where it
 
 Leg-level proof (top-12 legs straight, weeks resampled, recency-weighted): Mark 4i makes money 95% (2025 on: +21.9% on 118 legs); Mark 4i beats Mark 3
 94%, Mark 4h 91%, Mark 4l 78%.
+
+## 2026-10-28: build order tested after week 7 (the 1u 2-leg got the weakest legs; Marks 1-2 won with their best two in a 2-leg)
+
+Mark 4i, same stakes, 2022 - 2026 week 6:
+
+| Build order | Units | Staked | 2025 on | Worst run | Chance better than long-first |
+|---|---|---|---|---|---|
+| long-first 5 / 3 / 2 / 2 (now) | +128.8 | 131.8 | +60.4 on 22.8 | 5.8 | - |
+| short-first 2 / 2 / 3 / 5 | +27.3 | 165.8 | +25.3 on 32.0 | 24.8 | 0% |
+| 2-legs, then 5, then 3 | +19.4 | 165.0 | +8.9 on 31.8 | 20.6 | 0% |
+| one 2-leg first, then 5 / 3 / 2 | +74.8 | 153.5 | +42.4 on 28.5 | 16.5 | 2% |
+
+Long-first stays. The best legs belong in the longest parlay: a parlay's edge compounds leg by leg and the 30% profit boost is worth most on the
+biggest payout. Long-first also stakes less in thin weeks (only the 0.25u 5-leg fills), which are the weak weeks.
