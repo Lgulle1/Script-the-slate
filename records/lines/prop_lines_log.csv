@@ -104068,3 +104068,1087 @@ captured_at,book,game_id,player_id,player_name,team,market,book_market,side,line
 2026-10-21T13:35:06+00:00,DraftKings,2026_07_TB_CAR,00-0039361,Bucky Irving,TB,rush_att,Rushing Attempts,under,15.5,-115,false,bettingpros_import,last
 2026-10-21T13:35:06+00:00,DraftKings,2026_07_TB_CAR,00-0036555,Chuba Hubbard,CAR,rush_att,Rushing Attempts,over,17.5,-101,false,bettingpros_import,last
 2026-10-21T13:35:06+00:00,DraftKings,2026_07_TB_CAR,00-0036555,Chuba Hubbard,CAR,rush_att,Rushing Attempts,under,17.5,-126,false,bettingpros_import,last
+2026-10-26T02:50:48+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,pass_cmp,Passing Completions,over,21.5,-114,false,bettingpros_import,open
+2026-10-26T02:50:48+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,pass_cmp,Passing Completions,under,21.5,-114,false,bettingpros_import,open
+2026-10-26T02:50:48+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,pass_yds,Passing Yards,over,250.5,-114,false,bettingpros_import,open
+2026-10-26T02:50:48+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,pass_yds,Passing Yards,under,250.5,-114,false,bettingpros_import,open
+2026-10-26T02:50:48+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,pass_cmp,Passing Completions,over,21.5,-102,false,bettingpros_import,open
+2026-10-26T02:50:48+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,pass_cmp,Passing Completions,under,21.5,-130,false,bettingpros_import,open
+2026-10-26T02:50:48+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,pass_yds,Passing Yards,over,258.5,-114,false,bettingpros_import,open
+2026-10-26T02:50:48+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,pass_yds,Passing Yards,under,258.5,-114,false,bettingpros_import,open
+2026-10-26T02:50:49+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,pass_att,Passing Attempts,over,35.5,-114,false,bettingpros_import,open
+2026-10-26T02:50:49+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,pass_att,Passing Attempts,under,35.5,-114,false,bettingpros_import,open
+2026-10-26T02:50:49+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,pass_att,Passing Attempts,over,35.5,-114,false,bettingpros_import,open
+2026-10-26T02:50:49+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,pass_att,Passing Attempts,under,35.5,-114,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,qb_rush_yds,Rushing Yards,over,9.5,-114,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,qb_rush_yds,Rushing Yards,under,9.5,-114,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rush_att,Rushing Attempts,over,15.5,-122,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rush_att,Rushing Attempts,under,15.5,-108,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rush_yds,Rushing Yards,over,70.5,-114,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rush_yds,Rushing Yards,under,70.5,-114,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,qb_rush_yds,Rushing Yards,over,5.5,-114,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,qb_rush_yds,Rushing Yards,under,5.5,-114,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rush_att,Rushing Attempts,over,13.5,-108,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rush_att,Rushing Attempts,under,13.5,-122,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rush_yds,Rushing Yards,over,49.5,-114,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rush_yds,Rushing Yards,under,49.5,-114,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0039811,MarShawn Lloyd,GB,rush_att,Rushing Attempts,over,6.5,-110,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0039811,MarShawn Lloyd,GB,rush_att,Rushing Attempts,under,6.5,-120,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0039811,MarShawn Lloyd,GB,rush_yds,Rushing Yards,over,19.5,-114,false,bettingpros_import,open
+2026-10-26T02:59:45+00:00,FanDuel,2026_08_CAR_GB,00-0039811,MarShawn Lloyd,GB,rush_yds,Rushing Yards,under,19.5,-114,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0038124,Christian Watson,GB,rec_yds,Receiving Yards,over,66.5,-114,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0038124,Christian Watson,GB,rec_yds,Receiving Yards,under,66.5,-114,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0038124,Christian Watson,GB,rec,Receptions,over,4.5,106,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0038124,Christian Watson,GB,rec,Receptions,under,4.5,-140,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rec_yds,Receiving Yards,over,14.5,-114,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rec_yds,Receiving Yards,under,14.5,-114,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rec,Receptions,over,2.5,-108,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rec,Receptions,under,2.5,-122,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0040667,Matthew Golden,GB,rec_yds,Receiving Yards,over,64.5,-114,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0040667,Matthew Golden,GB,rec_yds,Receiving Yards,under,64.5,-114,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0040667,Matthew Golden,GB,rec,Receptions,over,4.5,-148,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0040667,Matthew Golden,GB,rec,Receptions,under,4.5,112,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0040009,Savion Williams,GB,rec_yds,Receiving Yards,over,21.5,-114,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0040009,Savion Williams,GB,rec_yds,Receiving Yards,under,21.5,-114,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0040009,Savion Williams,GB,rec,Receptions,over,2.5,112,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0040009,Savion Williams,GB,rec,Receptions,under,2.5,-148,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0038996,Tucker Kraft,GB,rec_yds,Receiving Yards,over,41.5,-114,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0038996,Tucker Kraft,GB,rec_yds,Receiving Yards,under,41.5,-114,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0038996,Tucker Kraft,GB,rec,Receptions,over,4.5,106,false,bettingpros_import,open
+2026-10-26T03:04:15+00:00,FanDuel,2026_08_CAR_GB,00-0038996,Tucker Kraft,GB,rec,Receptions,under,4.5,-140,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rec_yds,Receiving Yards,over,13.5,-114,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rec_yds,Receiving Yards,under,13.5,-114,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rec,Receptions,over,2.5,134,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rec,Receptions,under,2.5,-180,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0031610,Darren Waller,CAR,rec_yds,Receiving Yards,over,18.5,-114,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0031610,Darren Waller,CAR,rec_yds,Receiving Yards,under,18.5,-114,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0031610,Darren Waller,CAR,rec,Receptions,over,2.5,120,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0031610,Darren Waller,CAR,rec,Receptions,under,2.5,-160,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0039491,Jalen Coker,CAR,rec_yds,Receiving Yards,over,62.5,-114,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0039491,Jalen Coker,CAR,rec_yds,Receiving Yards,under,62.5,-114,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0039491,Jalen Coker,CAR,rec,Receptions,over,4.5,-160,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0039491,Jalen Coker,CAR,rec,Receptions,under,4.5,120,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0040124,Tetairoa McMillan,CAR,rec_yds,Receiving Yards,over,73.5,-114,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0040124,Tetairoa McMillan,CAR,rec_yds,Receiving Yards,under,73.5,-114,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0040124,Tetairoa McMillan,CAR,rec,Receptions,over,5.5,106,false,bettingpros_import,open
+2026-10-26T03:15:22+00:00,FanDuel,2026_08_CAR_GB,00-0040124,Tetairoa McMillan,CAR,rec,Receptions,under,5.5,-140,false,bettingpros_import,open
+2026-10-27T05:30:07+00:00,FanDuel,2026_08_MIN_DET,00-0033106,Jared Goff,DET,pass_cmp,Passing Completions,over,23.5,-102,false,bettingpros_import,open
+2026-10-27T05:30:07+00:00,FanDuel,2026_08_MIN_DET,00-0033106,Jared Goff,DET,pass_cmp,Passing Completions,under,23.5,-130,false,bettingpros_import,open
+2026-10-27T05:30:07+00:00,FanDuel,2026_08_MIN_DET,00-0033106,Jared Goff,DET,pass_yds,Passing Yards,over,270.5,-114,false,bettingpros_import,open
+2026-10-27T05:30:07+00:00,FanDuel,2026_08_MIN_DET,00-0033106,Jared Goff,DET,pass_yds,Passing Yards,under,270.5,-114,false,bettingpros_import,open
+2026-10-27T05:30:07+00:00,FanDuel,2026_08_MIN_DET,00-0035228,Kyler Murray,MIN,pass_cmp,Passing Completions,over,20.5,-102,false,bettingpros_import,open
+2026-10-27T05:30:07+00:00,FanDuel,2026_08_MIN_DET,00-0035228,Kyler Murray,MIN,pass_cmp,Passing Completions,under,20.5,-130,false,bettingpros_import,open
+2026-10-27T05:30:07+00:00,FanDuel,2026_08_MIN_DET,00-0035228,Kyler Murray,MIN,pass_yds,Passing Yards,over,216.5,-114,false,bettingpros_import,open
+2026-10-27T05:30:07+00:00,FanDuel,2026_08_MIN_DET,00-0035228,Kyler Murray,MIN,pass_yds,Passing Yards,under,216.5,-114,false,bettingpros_import,open
+2026-10-27T05:30:08+00:00,FanDuel,2026_08_MIN_DET,00-0033106,Jared Goff,DET,pass_att,Passing Attempts,over,35.5,-108,false,bettingpros_import,open
+2026-10-27T05:30:08+00:00,FanDuel,2026_08_MIN_DET,00-0033106,Jared Goff,DET,pass_att,Passing Attempts,under,35.5,-122,false,bettingpros_import,open
+2026-10-27T05:30:08+00:00,FanDuel,2026_08_MIN_DET,00-0035228,Kyler Murray,MIN,pass_att,Passing Attempts,over,30.5,-114,false,bettingpros_import,open
+2026-10-27T05:30:08+00:00,FanDuel,2026_08_MIN_DET,00-0035228,Kyler Murray,MIN,pass_att,Passing Attempts,under,30.5,-114,false,bettingpros_import,open
+2026-10-27T05:35:04+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rec_yds,Receiving Yards,over,36.5,-114,false,bettingpros_import,open
+2026-10-27T05:35:04+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rec_yds,Receiving Yards,under,36.5,-114,false,bettingpros_import,open
+2026-10-27T05:35:04+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rush_att,Rushing Attempts,over,21.5,-138,false,bettingpros_import,open
+2026-10-27T05:35:04+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rush_att,Rushing Attempts,under,21.5,104,false,bettingpros_import,open
+2026-10-27T05:35:04+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rush_yds,Rushing Yards,over,86.5,-114,false,bettingpros_import,open
+2026-10-27T05:35:04+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rush_yds,Rushing Yards,under,86.5,-114,false,bettingpros_import,open
+2026-10-27T05:35:04+00:00,FanDuel,2026_08_MIN_DET,00-0036322,Justin Jefferson,MIN,rec_yds,Receiving Yards,over,72.5,-114,false,bettingpros_import,open
+2026-10-27T05:35:05+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rec,Receptions,over,4.5,-108,false,bettingpros_import,open
+2026-10-27T05:35:05+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rec,Receptions,under,4.5,-122,false,bettingpros_import,open
+2026-10-27T05:35:05+00:00,FanDuel,2026_08_MIN_DET,00-0036322,Justin Jefferson,MIN,rec_yds,Receiving Yards,under,72.5,-114,false,bettingpros_import,open
+2026-10-27T05:35:05+00:00,FanDuel,2026_08_MIN_DET,00-0036322,Justin Jefferson,MIN,rec,Receptions,over,5.5,-114,false,bettingpros_import,open
+2026-10-27T05:35:05+00:00,FanDuel,2026_08_MIN_DET,00-0036322,Justin Jefferson,MIN,rec,Receptions,under,5.5,-114,false,bettingpros_import,open
+2026-10-27T05:39:58+00:00,FanDuel,2026_08_MIN_DET,00-0036963,Amon-Ra St. Brown,DET,rec_yds,Receiving Yards,over,78.5,-114,false,bettingpros_import,open
+2026-10-27T05:39:58+00:00,FanDuel,2026_08_MIN_DET,00-0036963,Amon-Ra St. Brown,DET,rec_yds,Receiving Yards,under,78.5,-114,false,bettingpros_import,open
+2026-10-27T05:39:58+00:00,FanDuel,2026_08_MIN_DET,00-0036963,Amon-Ra St. Brown,DET,rec,Receptions,over,6.5,-148,false,bettingpros_import,open
+2026-10-27T05:39:58+00:00,FanDuel,2026_08_MIN_DET,00-0036963,Amon-Ra St. Brown,DET,rec,Receptions,under,6.5,112,false,bettingpros_import,open
+2026-10-27T05:39:58+00:00,FanDuel,2026_08_MIN_DET,00-0037240,Jameson Williams,DET,rec_yds,Receiving Yards,over,51.5,-114,false,bettingpros_import,open
+2026-10-27T05:39:58+00:00,FanDuel,2026_08_MIN_DET,00-0037240,Jameson Williams,DET,rec_yds,Receiving Yards,under,51.5,-114,false,bettingpros_import,open
+2026-10-27T05:39:58+00:00,FanDuel,2026_08_MIN_DET,00-0037240,Jameson Williams,DET,rec,Receptions,over,3.5,106,false,bettingpros_import,open
+2026-10-27T05:39:58+00:00,FanDuel,2026_08_MIN_DET,00-0037240,Jameson Williams,DET,rec,Receptions,under,3.5,-140,false,bettingpros_import,open
+2026-10-27T05:39:58+00:00,FanDuel,2026_08_MIN_DET,00-0039065,Sam LaPorta,DET,rec_yds,Receiving Yards,over,51.5,-114,false,bettingpros_import,open
+2026-10-27T05:39:58+00:00,FanDuel,2026_08_MIN_DET,00-0039065,Sam LaPorta,DET,rec_yds,Receiving Yards,under,51.5,-114,false,bettingpros_import,open
+2026-10-27T05:39:58+00:00,FanDuel,2026_08_MIN_DET,00-0039065,Sam LaPorta,DET,rec,Receptions,over,4.5,-148,false,bettingpros_import,open
+2026-10-27T05:39:58+00:00,FanDuel,2026_08_MIN_DET,00-0039065,Sam LaPorta,DET,rec,Receptions,under,4.5,112,false,bettingpros_import,open
+2026-10-27T05:44:51+00:00,FanDuel,2026_08_MIN_DET,00-0038994,Jordan Addison,MIN,rec_yds,Receiving Yards,over,37.5,-114,false,bettingpros_import,open
+2026-10-27T05:44:51+00:00,FanDuel,2026_08_MIN_DET,00-0038994,Jordan Addison,MIN,rec_yds,Receiving Yards,under,37.5,-114,false,bettingpros_import,open
+2026-10-27T05:44:51+00:00,FanDuel,2026_08_MIN_DET,00-0038994,Jordan Addison,MIN,rec,Receptions,over,3.5,112,false,bettingpros_import,open
+2026-10-27T05:44:51+00:00,FanDuel,2026_08_MIN_DET,00-0038994,Jordan Addison,MIN,rec,Receptions,under,3.5,-148,false,bettingpros_import,open
+2026-10-27T05:44:51+00:00,FanDuel,2026_08_MIN_DET,00-0035229,T.J. Hockenson,MIN,rec_yds,Receiving Yards,over,37.5,-114,false,bettingpros_import,open
+2026-10-27T05:44:51+00:00,FanDuel,2026_08_MIN_DET,00-0035229,T.J. Hockenson,MIN,rec_yds,Receiving Yards,under,37.5,-114,false,bettingpros_import,open
+2026-10-27T05:44:51+00:00,FanDuel,2026_08_MIN_DET,00-0035229,T.J. Hockenson,MIN,rec,Receptions,over,4.5,-112,false,bettingpros_import,open
+2026-10-27T05:44:51+00:00,FanDuel,2026_08_MIN_DET,00-0035229,T.J. Hockenson,MIN,rec,Receptions,under,4.5,-118,false,bettingpros_import,open
+2026-10-27T12:39:06+00:00,FanDuel,2026_08_CAR_GB,00-0037614,John Metchie III,CAR,rec_yds,Receiving Yards,over,15.5,-114,false,bettingpros_import,open
+2026-10-27T12:39:06+00:00,FanDuel,2026_08_CAR_GB,00-0037614,John Metchie III,CAR,rec_yds,Receiving Yards,under,15.5,-114,false,bettingpros_import,open
+2026-10-27T12:39:06+00:00,FanDuel,2026_08_CAR_GB,00-0037614,John Metchie III,CAR,rec,Receptions,over,1.5,-130,false,bettingpros_import,open
+2026-10-27T12:39:06+00:00,FanDuel,2026_08_CAR_GB,00-0037614,John Metchie III,CAR,rec,Receptions,under,1.5,-102,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0039918,Caleb Williams,CHI,pass_att,Passing Attempts,over,31.5,-130,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0039918,Caleb Williams,CHI,pass_att,Passing Attempts,under,31.5,-102,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0039918,Caleb Williams,CHI,pass_cmp,Passing Completions,over,19.5,-122,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0039918,Caleb Williams,CHI,pass_cmp,Passing Completions,under,19.5,-108,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0039918,Caleb Williams,CHI,pass_yds,Passing Yards,over,227.5,-114,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0039918,Caleb Williams,CHI,pass_yds,Passing Yards,under,227.5,-114,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0040126,Colston Loveland,CHI,rec_yds,Receiving Yards,over,42.5,-114,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0040126,Colston Loveland,CHI,rec_yds,Receiving Yards,under,42.5,-114,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0040126,Colston Loveland,CHI,rec,Receptions,over,4.5,116,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0040126,Colston Loveland,CHI,rec,Receptions,under,4.5,-154,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0038543,Jaxon Smith-Njigba,SEA,rec_yds,Receiving Yards,over,99.5,-114,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0038543,Jaxon Smith-Njigba,SEA,rec_yds,Receiving Yards,under,99.5,-114,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0038543,Jaxon Smith-Njigba,SEA,rec,Receptions,over,7.5,106,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0038543,Jaxon Smith-Njigba,SEA,rec,Receptions,under,7.5,-140,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0032464,Kalif Raymond,CHI,rec_yds,Receiving Yards,over,22.5,-114,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0032464,Kalif Raymond,CHI,rec_yds,Receiving Yards,under,22.5,-114,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0032464,Kalif Raymond,CHI,rec,Receptions,over,2.5,-102,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0032464,Kalif Raymond,CHI,rec,Receptions,under,2.5,-130,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0040735,Luther Burden III,CHI,rec_yds,Receiving Yards,over,52.5,-114,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0040735,Luther Burden III,CHI,rec_yds,Receiving Yards,under,52.5,-114,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0040735,Luther Burden III,CHI,rec,Receptions,over,4.5,100,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0040735,Luther Burden III,CHI,rec,Receptions,under,4.5,-132,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0039919,Rome Odunze,CHI,rec_yds,Receiving Yards,over,42.5,-114,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0039919,Rome Odunze,CHI,rec_yds,Receiving Yards,under,42.5,-114,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0039919,Rome Odunze,CHI,rec,Receptions,over,3.5,124,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0039919,Rome Odunze,CHI,rec,Receptions,under,3.5,-166,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0034869,Sam Darnold,SEA,pass_att,Passing Attempts,over,30.5,-122,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0034869,Sam Darnold,SEA,pass_att,Passing Attempts,under,30.5,-108,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0034869,Sam Darnold,SEA,pass_cmp,Passing Completions,over,20.5,104,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0034869,Sam Darnold,SEA,pass_cmp,Passing Completions,under,20.5,-138,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0034869,Sam Darnold,SEA,pass_yds,Passing Yards,over,233.5,-114,false,bettingpros_import,open
+2026-10-27T16:20:05+00:00,FanDuel,2026_08_CHI_SEA,00-0034869,Sam Darnold,SEA,pass_yds,Passing Yards,under,233.5,-114,false,bettingpros_import,open
+2026-10-27T20:56:15+00:00,FanDuel,2026_08_KC_DEN,00-0039732,Bo Nix,DEN,pass_att,Passing Attempts,over,33.5,-108,false,bettingpros_import,open
+2026-10-27T20:56:15+00:00,FanDuel,2026_08_KC_DEN,00-0039732,Bo Nix,DEN,pass_att,Passing Attempts,under,33.5,-122,false,bettingpros_import,open
+2026-10-27T20:56:15+00:00,FanDuel,2026_08_KC_DEN,00-0039732,Bo Nix,DEN,pass_cmp,Passing Completions,over,20.5,-114,false,bettingpros_import,open
+2026-10-27T20:56:15+00:00,FanDuel,2026_08_KC_DEN,00-0039732,Bo Nix,DEN,pass_cmp,Passing Completions,under,20.5,-114,false,bettingpros_import,open
+2026-10-27T20:56:15+00:00,FanDuel,2026_08_KC_DEN,00-0039732,Bo Nix,DEN,pass_yds,Passing Yards,over,206.5,-114,false,bettingpros_import,open
+2026-10-27T20:56:15+00:00,FanDuel,2026_08_KC_DEN,00-0039732,Bo Nix,DEN,pass_yds,Passing Yards,under,206.5,-114,false,bettingpros_import,open
+2026-10-27T20:56:15+00:00,FanDuel,2026_08_KC_DEN,00-0033873,Patrick Mahomes II,KC,pass_att,Passing Attempts,over,32.5,-130,false,bettingpros_import,open
+2026-10-27T20:56:15+00:00,FanDuel,2026_08_KC_DEN,00-0033873,Patrick Mahomes II,KC,pass_att,Passing Attempts,under,32.5,-102,false,bettingpros_import,open
+2026-10-27T20:56:15+00:00,FanDuel,2026_08_KC_DEN,00-0033873,Patrick Mahomes II,KC,pass_cmp,Passing Completions,over,20.5,-108,false,bettingpros_import,open
+2026-10-27T20:56:15+00:00,FanDuel,2026_08_KC_DEN,00-0033873,Patrick Mahomes II,KC,pass_cmp,Passing Completions,under,20.5,-122,false,bettingpros_import,open
+2026-10-27T20:56:15+00:00,FanDuel,2026_08_KC_DEN,00-0033873,Patrick Mahomes II,KC,pass_yds,Passing Yards,over,225.5,-114,false,bettingpros_import,open
+2026-10-27T21:00:55+00:00,FanDuel,2026_08_KC_DEN,00-0033873,Patrick Mahomes II,KC,pass_yds,Passing Yards,under,225.5,-114,false,bettingpros_import,open
+2026-10-27T21:05:35+00:00,FanDuel,2026_08_KC_DEN,00-0038134,Kenneth Walker III,KC,rush_yds,Rushing Yards,over,84.5,-114,false,bettingpros_import,open
+2026-10-27T21:05:35+00:00,FanDuel,2026_08_KC_DEN,00-0038134,Kenneth Walker III,KC,rush_yds,Rushing Yards,under,84.5,-114,false,bettingpros_import,open
+2026-10-27T21:05:36+00:00,FanDuel,2026_08_KC_DEN,00-0038134,Kenneth Walker III,KC,rush_att,Rushing Attempts,over,19.5,-114,false,bettingpros_import,open
+2026-10-27T21:10:34+00:00,FanDuel,2026_08_KC_DEN,00-0038134,Kenneth Walker III,KC,rush_att,Rushing Attempts,under,19.5,-114,false,bettingpros_import,open
+2026-10-27T21:29:29+00:00,FanDuel,2026_08_KC_DEN,00-0036158,J.K. Dobbins,DEN,rush_yds,Rushing Yards,over,30.5,-114,false,bettingpros_import,open
+2026-10-27T21:29:29+00:00,FanDuel,2026_08_KC_DEN,00-0036158,J.K. Dobbins,DEN,rush_yds,Rushing Yards,under,30.5,-114,false,bettingpros_import,open
+2026-10-27T21:29:29+00:00,FanDuel,2026_08_KC_DEN,00-0041496,Jonah Coleman,DEN,rush_yds,Rushing Yards,over,37.5,-114,false,bettingpros_import,open
+2026-10-27T21:29:29+00:00,FanDuel,2026_08_KC_DEN,00-0041496,Jonah Coleman,DEN,rush_yds,Rushing Yards,under,37.5,-114,false,bettingpros_import,open
+2026-10-27T21:43:46+00:00,FanDuel,2026_08_KC_DEN,00-0039732,Bo Nix,DEN,qb_rush_yds,Rushing Yards,over,13.5,-114,false,bettingpros_import,open
+2026-10-27T21:48:41+00:00,FanDuel,2026_08_KC_DEN,00-0039732,Bo Nix,DEN,qb_rush_yds,Rushing Yards,under,13.5,-114,false,bettingpros_import,open
+2026-10-27T21:48:41+00:00,FanDuel,2026_08_KC_DEN,00-0033873,Patrick Mahomes II,KC,qb_rush_yds,Rushing Yards,over,12.5,-114,false,bettingpros_import,open
+2026-10-27T21:48:41+00:00,FanDuel,2026_08_KC_DEN,00-0033873,Patrick Mahomes II,KC,qb_rush_yds,Rushing Yards,under,12.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,pass_cmp,Passing Completions,over,20.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,pass_cmp,Passing Completions,under,20.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,pass_yds,Passing Yards,over,252.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,pass_yds,Passing Yards,under,252.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034796,Lamar Jackson,BAL,pass_cmp,Passing Completions,over,19.5,-118,false,bettingpros_import,open
+2026-10-28T00:25:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034796,Lamar Jackson,BAL,pass_cmp,Passing Completions,under,19.5,-112,false,bettingpros_import,open
+2026-10-28T00:25:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034796,Lamar Jackson,BAL,pass_yds,Passing Yards,over,237.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034796,Lamar Jackson,BAL,pass_yds,Passing Yards,under,237.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:10+00:00,FanDuel,2026_08_BAL_BUF,00-0032764,Derrick Henry,BAL,rush_att,Rushing Attempts,over,18.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:10+00:00,FanDuel,2026_08_BAL_BUF,00-0032764,Derrick Henry,BAL,rush_att,Rushing Attempts,under,18.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:10+00:00,FanDuel,2026_08_BAL_BUF,00-0032764,Derrick Henry,BAL,rush_yds,Rushing Yards,under,83.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:10+00:00,FanDuel,2026_08_BAL_BUF,00-0037248,James Cook III,BUF,rush_att,Rushing Attempts,under,18.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:10+00:00,FanDuel,2026_08_BAL_BUF,00-0037248,James Cook III,BUF,rush_yds,Rushing Yards,over,90.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:10+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,pass_att,Passing Attempts,over,30.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:10+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,pass_att,Passing Attempts,under,30.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:10+00:00,FanDuel,2026_08_BAL_BUF,00-0034975,Justice Hill,BAL,rush_yds,Rushing Yards,under,10.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:10+00:00,FanDuel,2026_08_BAL_BUF,00-0034796,Lamar Jackson,BAL,pass_att,Passing Attempts,over,30.5,-114,false,bettingpros_import,open
+2026-10-28T00:25:10+00:00,FanDuel,2026_08_BAL_BUF,00-0034796,Lamar Jackson,BAL,pass_att,Passing Attempts,under,30.5,-114,false,bettingpros_import,open
+2026-10-28T00:32:52+00:00,FanDuel,2026_08_BAL_BUF,00-0032764,Derrick Henry,BAL,rush_yds,Rushing Yards,over,83.5,-114,false,bettingpros_import,open
+2026-10-28T00:32:52+00:00,FanDuel,2026_08_BAL_BUF,00-0037248,James Cook III,BUF,rush_yds,Rushing Yards,under,90.5,-114,false,bettingpros_import,open
+2026-10-28T00:32:52+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,qb_rush_yds,Rushing Yards,over,35.5,-114,false,bettingpros_import,open
+2026-10-28T00:32:52+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,qb_rush_yds,Rushing Yards,under,35.5,-114,false,bettingpros_import,open
+2026-10-28T00:32:52+00:00,FanDuel,2026_08_BAL_BUF,00-0034975,Justice Hill,BAL,rush_yds,Rushing Yards,over,10.5,-114,false,bettingpros_import,open
+2026-10-28T00:32:52+00:00,FanDuel,2026_08_BAL_BUF,00-0034796,Lamar Jackson,BAL,qb_rush_yds,Rushing Yards,over,24.5,-114,false,bettingpros_import,open
+2026-10-28T00:32:52+00:00,FanDuel,2026_08_BAL_BUF,00-0034796,Lamar Jackson,BAL,qb_rush_yds,Rushing Yards,under,24.5,-114,false,bettingpros_import,open
+2026-10-28T00:32:53+00:00,FanDuel,2026_08_BAL_BUF,00-0037248,James Cook III,BUF,rush_att,Rushing Attempts,over,18.5,-114,false,bettingpros_import,open
+2026-10-28T00:32:53+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,qb_rush_att,Rushing Attempts,over,7.5,106,false,bettingpros_import,open
+2026-10-28T00:32:53+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,qb_rush_att,Rushing Attempts,under,7.5,-140,false,bettingpros_import,open
+2026-10-28T00:32:53+00:00,FanDuel,2026_08_BAL_BUF,00-0034796,Lamar Jackson,BAL,qb_rush_att,Rushing Attempts,over,4.5,116,false,bettingpros_import,open
+2026-10-28T00:32:53+00:00,FanDuel,2026_08_BAL_BUF,00-0034796,Lamar Jackson,BAL,qb_rush_att,Rushing Attempts,under,4.5,-154,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0032764,Derrick Henry,BAL,rec_yds,Receiving Yards,over,6.5,-114,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0032764,Derrick Henry,BAL,rec_yds,Receiving Yards,under,6.5,-114,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0032764,Derrick Henry,BAL,rec,Receptions,over,1.5,148,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0032764,Derrick Henry,BAL,rec,Receptions,under,1.5,-200,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0040870,Ja'Kobi Lane,BAL,rec_yds,Receiving Yards,over,27.5,-114,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0040870,Ja'Kobi Lane,BAL,rec_yds,Receiving Yards,under,27.5,-114,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0040870,Ja'Kobi Lane,BAL,rec,Receptions,over,2.5,-148,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0040870,Ja'Kobi Lane,BAL,rec,Receptions,under,2.5,112,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0034975,Justice Hill,BAL,rec_yds,Receiving Yards,over,9.5,-114,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0034975,Justice Hill,BAL,rec_yds,Receiving Yards,under,9.5,-114,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0034975,Justice Hill,BAL,rec,Receptions,over,1.5,-138,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0034975,Justice Hill,BAL,rec,Receptions,under,1.5,104,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0034753,Mark Andrews,BAL,rec_yds,Receiving Yards,over,29.5,-114,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0034753,Mark Andrews,BAL,rec_yds,Receiving Yards,under,29.5,-114,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0034753,Mark Andrews,BAL,rec,Receptions,over,3.5,-108,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0034753,Mark Andrews,BAL,rec,Receptions,under,3.5,-122,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0036550,Rashod Bateman,BAL,rec_yds,Receiving Yards,over,26.5,-114,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0036550,Rashod Bateman,BAL,rec_yds,Receiving Yards,under,26.5,-114,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0036550,Rashod Bateman,BAL,rec,Receptions,over,2.5,-122,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0036550,Rashod Bateman,BAL,rec,Receptions,under,2.5,-108,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0039064,Zay Flowers,BAL,rec_yds,Receiving Yards,over,73.5,-114,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0039064,Zay Flowers,BAL,rec_yds,Receiving Yards,under,73.5,-114,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0039064,Zay Flowers,BAL,rec,Receptions,over,5.5,-130,false,bettingpros_import,open
+2026-10-28T00:40:36+00:00,FanDuel,2026_08_BAL_BUF,00-0039064,Zay Flowers,BAL,rec,Receptions,under,5.5,-102,false,bettingpros_import,open
+2026-10-28T00:48:24+00:00,FanDuel,2026_08_BAL_BUF,00-0034827,DJ Moore,BUF,rec_yds,Receiving Yards,over,54.5,-114,false,bettingpros_import,open
+2026-10-28T00:48:24+00:00,FanDuel,2026_08_BAL_BUF,00-0034827,DJ Moore,BUF,rec_yds,Receiving Yards,under,54.5,-114,false,bettingpros_import,open
+2026-10-28T00:48:24+00:00,FanDuel,2026_08_BAL_BUF,00-0038933,Dalton Kincaid,BUF,rec_yds,Receiving Yards,over,46.5,-114,false,bettingpros_import,open
+2026-10-28T00:48:24+00:00,FanDuel,2026_08_BAL_BUF,00-0038933,Dalton Kincaid,BUF,rec_yds,Receiving Yards,under,46.5,-114,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0034827,DJ Moore,BUF,rec,Receptions,over,4.5,116,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0034827,DJ Moore,BUF,rec,Receptions,under,4.5,-154,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0038933,Dalton Kincaid,BUF,rec,Receptions,over,3.5,-130,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0038933,Dalton Kincaid,BUF,rec,Receptions,under,3.5,-102,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0037248,James Cook III,BUF,rec_yds,Receiving Yards,over,9.5,-114,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0037248,James Cook III,BUF,rec_yds,Receiving Yards,under,9.5,-114,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0037248,James Cook III,BUF,rec,Receptions,over,1.5,-122,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0037248,James Cook III,BUF,rec,Receptions,under,1.5,-108,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0039901,Keon Coleman,BUF,rec_yds,Receiving Yards,over,37.5,-114,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0039901,Keon Coleman,BUF,rec_yds,Receiving Yards,under,37.5,-114,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0039901,Keon Coleman,BUF,rec,Receptions,over,2.5,-130,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0039901,Keon Coleman,BUF,rec,Receptions,under,2.5,-102,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0037261,Khalil Shakir,BUF,rec_yds,Receiving Yards,over,38.5,-114,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0037261,Khalil Shakir,BUF,rec_yds,Receiving Yards,under,38.5,-114,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0037261,Khalil Shakir,BUF,rec,Receptions,over,3.5,-148,false,bettingpros_import,open
+2026-10-28T00:48:25+00:00,FanDuel,2026_08_BAL_BUF,00-0037261,Khalil Shakir,BUF,rec,Receptions,under,3.5,112,false,bettingpros_import,open
+2026-10-28T02:46:52+00:00,FanDuel,2026_08_NE_MIA,00-0039874,Jaylen Wright,MIA,rush_yds,Rushing Yards,over,16.5,-114,false,bettingpros_import,open
+2026-10-28T02:46:52+00:00,FanDuel,2026_08_NE_MIA,00-0039874,Jaylen Wright,MIA,rush_yds,Rushing Yards,under,16.5,-114,false,bettingpros_import,open
+2026-10-28T02:46:52+00:00,FanDuel,2026_08_NE_MIA,00-0040198,Ollie Gordon II,MIA,rush_att,Rushing Attempts,over,15.5,-114,false,bettingpros_import,open
+2026-10-28T02:46:52+00:00,FanDuel,2026_08_NE_MIA,00-0040198,Ollie Gordon II,MIA,rush_att,Rushing Attempts,under,15.5,-114,false,bettingpros_import,open
+2026-10-28T02:46:52+00:00,FanDuel,2026_08_NE_MIA,00-0036875,Rhamondre Stevenson,NE,rush_att,Rushing Attempts,over,10.5,-122,false,bettingpros_import,open
+2026-10-28T02:46:52+00:00,FanDuel,2026_08_NE_MIA,00-0036875,Rhamondre Stevenson,NE,rush_att,Rushing Attempts,under,10.5,-108,false,bettingpros_import,open
+2026-10-28T02:46:52+00:00,FanDuel,2026_08_NE_MIA,00-0040734,TreVeyon Henderson,NE,rush_yds,Rushing Yards,over,28.5,-114,false,bettingpros_import,open
+2026-10-28T02:46:52+00:00,FanDuel,2026_08_NE_MIA,00-0040734,TreVeyon Henderson,NE,rush_yds,Rushing Yards,under,28.5,-114,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0035676,A.J. Brown,NE,rec,Receptions,over,4.5,-138,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0035676,A.J. Brown,NE,rec,Receptions,under,4.5,104,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0038621,DeMario Douglas,NE,rec_yds,Receiving Yards,over,31.5,-114,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0038621,DeMario Douglas,NE,rec_yds,Receiving Yards,under,31.5,-114,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0038621,DeMario Douglas,NE,rec,Receptions,over,2.5,-148,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0038621,DeMario Douglas,NE,rec,Receptions,under,2.5,112,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0033090,Hunter Henry,NE,rec_yds,Receiving Yards,over,39.5,-114,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0033090,Hunter Henry,NE,rec_yds,Receiving Yards,under,39.5,-114,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0033090,Hunter Henry,NE,rec,Receptions,over,3.5,-132,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0033090,Hunter Henry,NE,rec,Receptions,under,3.5,100,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0036875,Rhamondre Stevenson,NE,rec_yds,Receiving Yards,over,17.5,-114,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0036875,Rhamondre Stevenson,NE,rec_yds,Receiving Yards,under,17.5,-114,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0036875,Rhamondre Stevenson,NE,rec,Receptions,over,2.5,116,false,bettingpros_import,open
+2026-10-28T02:53:59+00:00,FanDuel,2026_08_NE_MIA,00-0036875,Rhamondre Stevenson,NE,rec,Receptions,under,2.5,-154,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0041523,Caleb Douglas,MIA,rec_yds,Receiving Yards,over,40.5,-114,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0041523,Caleb Douglas,MIA,rec_yds,Receiving Yards,under,40.5,-114,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0041523,Caleb Douglas,MIA,rec,Receptions,over,3.5,-108,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0041523,Caleb Douglas,MIA,rec,Receptions,under,3.5,-122,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0041525,Chris Bell,MIA,rec_yds,Receiving Yards,over,16.5,-114,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0041525,Chris Bell,MIA,rec_yds,Receiving Yards,under,16.5,-114,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0041525,Chris Bell,MIA,rec,Receptions,over,1.5,-122,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0041525,Chris Bell,MIA,rec,Receptions,under,1.5,-108,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0037252,Greg Dulcich,MIA,rec_yds,Receiving Yards,over,31.5,-114,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0037252,Greg Dulcich,MIA,rec_yds,Receiving Yards,under,31.5,-114,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0037252,Greg Dulcich,MIA,rec,Receptions,over,3.5,-130,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0037252,Greg Dulcich,MIA,rec,Receptions,under,3.5,-102,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0039880,Malik Washington,MIA,rec,Receptions,over,4.5,102,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0039880,Malik Washington,MIA,rec,Receptions,under,4.5,-136,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0040198,Ollie Gordon II,MIA,rec_yds,Receiving Yards,over,9.5,-114,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0040198,Ollie Gordon II,MIA,rec_yds,Receiving Yards,under,9.5,-114,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0040198,Ollie Gordon II,MIA,rec,Receptions,over,1.5,124,false,bettingpros_import,open
+2026-10-28T02:57:36+00:00,FanDuel,2026_08_NE_MIA,00-0040198,Ollie Gordon II,MIA,rec,Receptions,under,1.5,-166,false,bettingpros_import,open
+2026-10-28T06:23:11+00:00,FanDuel,2026_08_IND_JAX,00-0038611,Chris Rodriguez Jr.,JAX,rush_yds,Rushing Yards,over,23.5,-114,false,bettingpros_import,open
+2026-10-28T06:23:11+00:00,FanDuel,2026_08_IND_JAX,00-0035710,Daniel Jones,IND,pass_yds,Passing Yards,over,186.5,-114,false,bettingpros_import,open
+2026-10-28T06:23:11+00:00,FanDuel,2026_08_IND_JAX,00-0035710,Daniel Jones,IND,pass_yds,Passing Yards,under,186.5,-114,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0040719,Bhayshul Tuten,JAX,rec_yds,Receiving Yards,over,14.5,-114,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0040719,Bhayshul Tuten,JAX,rec_yds,Receiving Yards,under,14.5,-114,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0040719,Bhayshul Tuten,JAX,rec,Receptions,over,2.5,120,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0040719,Bhayshul Tuten,JAX,rec,Receptions,under,2.5,-160,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0040719,Bhayshul Tuten,JAX,rush_att,Rushing Attempts,over,15.5,-102,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0040719,Bhayshul Tuten,JAX,rush_att,Rushing Attempts,under,15.5,-130,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0038935,Brenton Strange,JAX,rec_yds,Receiving Yards,over,36.5,-114,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0038935,Brenton Strange,JAX,rec_yds,Receiving Yards,under,36.5,-114,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0038935,Brenton Strange,JAX,rec,Receptions,over,3.5,-130,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0038935,Brenton Strange,JAX,rec,Receptions,under,3.5,-102,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0038611,Chris Rodriguez Jr.,JAX,rush_att,Rushing Attempts,over,6.5,-102,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0038611,Chris Rodriguez Jr.,JAX,rush_att,Rushing Attempts,under,6.5,-130,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0038611,Chris Rodriguez Jr.,JAX,rush_yds,Rushing Yards,under,23.5,-114,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0034960,Jakobi Meyers,JAX,rec_yds,Receiving Yards,over,39.5,-114,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0034960,Jakobi Meyers,JAX,rec_yds,Receiving Yards,under,39.5,-114,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0034960,Jakobi Meyers,JAX,rec,Receptions,over,3.5,102,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0034960,Jakobi Meyers,JAX,rec,Receptions,under,3.5,-136,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0036223,Jonathan Taylor,IND,rec_yds,Receiving Yards,over,17.5,-114,false,bettingpros_import,open
+2026-10-28T06:23:12+00:00,FanDuel,2026_08_IND_JAX,00-0036223,Jonathan Taylor,IND,rec_yds,Receiving Yards,under,17.5,-114,false,bettingpros_import,open
+2026-10-28T06:27:54+00:00,FanDuel,2026_08_IND_JAX,00-0036223,Jonathan Taylor,IND,rec,Receptions,over,2.5,-122,false,bettingpros_import,open
+2026-10-28T06:27:54+00:00,FanDuel,2026_08_IND_JAX,00-0036223,Jonathan Taylor,IND,rec,Receptions,under,2.5,-108,false,bettingpros_import,open
+2026-10-28T06:27:54+00:00,FanDuel,2026_08_IND_JAX,00-0036223,Jonathan Taylor,IND,rush_att,Rushing Attempts,over,17.5,-114,false,bettingpros_import,open
+2026-10-28T06:27:54+00:00,FanDuel,2026_08_IND_JAX,00-0036223,Jonathan Taylor,IND,rush_att,Rushing Attempts,under,17.5,-114,false,bettingpros_import,open
+2026-10-28T06:27:54+00:00,FanDuel,2026_08_IND_JAX,00-0036223,Jonathan Taylor,IND,rush_yds,Rushing Yards,over,67.5,-114,false,bettingpros_import,open
+2026-10-28T06:27:54+00:00,FanDuel,2026_08_IND_JAX,00-0036223,Jonathan Taylor,IND,rush_yds,Rushing Yards,under,67.5,-114,false,bettingpros_import,open
+2026-10-28T06:27:54+00:00,FanDuel,2026_08_IND_JAX,00-0040128,Tyler Warren,IND,rec_yds,Receiving Yards,over,36.5,-114,false,bettingpros_import,open
+2026-10-28T06:27:54+00:00,FanDuel,2026_08_IND_JAX,00-0040128,Tyler Warren,IND,rec_yds,Receiving Yards,under,36.5,-114,false,bettingpros_import,open
+2026-10-28T06:27:54+00:00,FanDuel,2026_08_IND_JAX,00-0040128,Tyler Warren,IND,rec,Receptions,over,4.5,110,false,bettingpros_import,open
+2026-10-28T06:27:54+00:00,FanDuel,2026_08_IND_JAX,00-0040128,Tyler Warren,IND,rec,Receptions,under,4.5,-146,false,bettingpros_import,open
+2026-10-28T06:32:40+00:00,FanDuel,2026_08_IND_JAX,00-0035710,Daniel Jones,IND,pass_cmp,Passing Completions,over,19.5,100,false,bettingpros_import,open
+2026-10-28T06:32:40+00:00,FanDuel,2026_08_IND_JAX,00-0035710,Daniel Jones,IND,pass_cmp,Passing Completions,under,19.5,-132,false,bettingpros_import,open
+2026-10-28T06:32:40+00:00,FanDuel,2026_08_IND_JAX,00-0035710,Daniel Jones,IND,qb_rush_yds,Rushing Yards,over,8.5,-114,false,bettingpros_import,open
+2026-10-28T06:32:40+00:00,FanDuel,2026_08_IND_JAX,00-0035710,Daniel Jones,IND,qb_rush_yds,Rushing Yards,under,8.5,-114,false,bettingpros_import,open
+2026-10-28T06:32:40+00:00,FanDuel,2026_08_IND_JAX,00-0036971,Trevor Lawrence,JAX,qb_rush_yds,Rushing Yards,over,10.5,-114,false,bettingpros_import,open
+2026-10-28T06:32:40+00:00,FanDuel,2026_08_IND_JAX,00-0036971,Trevor Lawrence,JAX,qb_rush_yds,Rushing Yards,under,10.5,-114,false,bettingpros_import,open
+2026-10-28T06:32:41+00:00,FanDuel,2026_08_IND_JAX,00-0035710,Daniel Jones,IND,pass_att,Passing Attempts,over,32.5,102,false,bettingpros_import,open
+2026-10-28T06:32:41+00:00,FanDuel,2026_08_IND_JAX,00-0035710,Daniel Jones,IND,pass_att,Passing Attempts,under,32.5,-136,false,bettingpros_import,open
+2026-10-28T08:31:25+00:00,FanDuel,2026_08_CHI_SEA,00-0039918,Caleb Williams,CHI,qb_rush_yds,Rushing Yards,over,21.5,-114,false,bettingpros_import,open
+2026-10-28T08:31:25+00:00,FanDuel,2026_08_CHI_SEA,00-0039918,Caleb Williams,CHI,qb_rush_yds,Rushing Yards,under,21.5,-114,false,bettingpros_import,open
+2026-10-28T08:31:25+00:00,FanDuel,2026_08_CHI_SEA,00-0034869,Sam Darnold,SEA,qb_rush_yds,Rushing Yards,over,4.5,-114,false,bettingpros_import,open
+2026-10-28T08:31:25+00:00,FanDuel,2026_08_CHI_SEA,00-0034869,Sam Darnold,SEA,qb_rush_yds,Rushing Yards,under,4.5,-114,false,bettingpros_import,open
+2026-10-28T12:37:24+00:00,FanDuel,2026_08_BAL_BUF,00-0035689,Dawson Knox,BUF,rec_yds,Receiving Yards,over,7.5,-114,false,bettingpros_import,open
+2026-10-28T12:37:24+00:00,FanDuel,2026_08_BAL_BUF,00-0035689,Dawson Knox,BUF,rec_yds,Receiving Yards,under,7.5,-114,false,bettingpros_import,open
+2026-10-28T12:37:24+00:00,FanDuel,2026_08_BAL_BUF,00-0035537,Ty Johnson,BUF,rec_yds,Receiving Yards,over,15.5,-114,false,bettingpros_import,open
+2026-10-28T12:37:24+00:00,FanDuel,2026_08_BAL_BUF,00-0035537,Ty Johnson,BUF,rec_yds,Receiving Yards,under,15.5,-114,false,bettingpros_import,open
+2026-10-28T12:37:25+00:00,FanDuel,2026_08_BAL_BUF,00-0035689,Dawson Knox,BUF,rec,Receptions,over,1.5,152,false,bettingpros_import,open
+2026-10-28T12:37:25+00:00,FanDuel,2026_08_BAL_BUF,00-0035689,Dawson Knox,BUF,rec,Receptions,under,1.5,-205,false,bettingpros_import,open
+2026-10-28T12:37:25+00:00,FanDuel,2026_08_BAL_BUF,00-0035537,Ty Johnson,BUF,rec,Receptions,over,2.5,140,false,bettingpros_import,open
+2026-10-28T12:37:25+00:00,FanDuel,2026_08_BAL_BUF,00-0035537,Ty Johnson,BUF,rec,Receptions,under,2.5,-188,false,bettingpros_import,open
+2026-10-28T13:03:14+00:00,FanDuel,2026_08_BAL_BUF,00-0039792,Devontez Walker,BAL,rec_yds,Receiving Yards,over,4.5,-114,false,bettingpros_import,open
+2026-10-28T13:03:14+00:00,FanDuel,2026_08_BAL_BUF,00-0039792,Devontez Walker,BAL,rec_yds,Receiving Yards,under,4.5,-114,false,bettingpros_import,open
+2026-10-28T13:03:14+00:00,FanDuel,2026_08_BAL_BUF,00-0039792,Devontez Walker,BAL,rec,Receptions,over,0.5,-118,false,bettingpros_import,open
+2026-10-28T13:03:14+00:00,FanDuel,2026_08_BAL_BUF,00-0040887,Josh Cuevas,BAL,rec,Receptions,over,1.5,-118,false,bettingpros_import,open
+2026-10-28T13:03:14+00:00,FanDuel,2026_08_BAL_BUF,00-0040887,Josh Cuevas,BAL,rec,Receptions,under,1.5,-112,false,bettingpros_import,open
+2026-10-28T13:09:43+00:00,FanDuel,2026_08_BAL_BUF,00-0039792,Devontez Walker,BAL,rec,Receptions,under,0.5,-112,false,bettingpros_import,open
+2026-10-28T14:09:10+00:00,FanDuel,2026_08_KC_DEN,00-0036158,J.K. Dobbins,DEN,rush_att,Rushing Attempts,over,7.5,-114,false,bettingpros_import,open
+2026-10-28T14:09:10+00:00,FanDuel,2026_08_KC_DEN,00-0036158,J.K. Dobbins,DEN,rush_att,Rushing Attempts,under,7.5,-114,false,bettingpros_import,open
+2026-10-28T14:09:10+00:00,FanDuel,2026_08_KC_DEN,00-0041496,Jonah Coleman,DEN,rush_att,Rushing Attempts,over,10.5,-114,false,bettingpros_import,open
+2026-10-28T14:09:10+00:00,FanDuel,2026_08_KC_DEN,00-0041496,Jonah Coleman,DEN,rush_att,Rushing Attempts,under,10.5,-114,false,bettingpros_import,open
+2026-10-28T14:13:45+00:00,FanDuel,2026_08_KC_DEN,00-0038134,Kenneth Walker III,KC,rec_yds,Receiving Yards,over,18.5,-114,false,bettingpros_import,open
+2026-10-28T14:13:45+00:00,FanDuel,2026_08_KC_DEN,00-0038134,Kenneth Walker III,KC,rec_yds,Receiving Yards,under,18.5,-114,false,bettingpros_import,open
+2026-10-28T14:13:45+00:00,FanDuel,2026_08_KC_DEN,00-0038134,Kenneth Walker III,KC,rec,Receptions,over,3.5,140,false,bettingpros_import,open
+2026-10-28T14:13:45+00:00,FanDuel,2026_08_KC_DEN,00-0038134,Kenneth Walker III,KC,rec,Receptions,under,3.5,-188,false,bettingpros_import,open
+2026-10-28T14:13:45+00:00,FanDuel,2026_08_KC_DEN,00-0040730,RJ Harvey,DEN,rec_yds,Receiving Yards,over,23.5,-114,false,bettingpros_import,open
+2026-10-28T14:13:45+00:00,FanDuel,2026_08_KC_DEN,00-0040730,RJ Harvey,DEN,rec_yds,Receiving Yards,under,23.5,-114,false,bettingpros_import,open
+2026-10-28T14:13:45+00:00,FanDuel,2026_08_KC_DEN,00-0040730,RJ Harvey,DEN,rec,Receptions,over,3.5,-108,false,bettingpros_import,open
+2026-10-28T14:18:11+00:00,FanDuel,2026_08_KC_DEN,00-0040730,RJ Harvey,DEN,rec,Receptions,under,3.5,-122,false,bettingpros_import,open
+2026-10-28T14:22:29+00:00,FanDuel,2026_08_KC_DEN,00-0030506,Travis Kelce,KC,rec_yds,Receiving Yards,over,48.5,-114,false,bettingpros_import,open
+2026-10-28T14:22:29+00:00,FanDuel,2026_08_KC_DEN,00-0030506,Travis Kelce,KC,rec_yds,Receiving Yards,under,48.5,-114,false,bettingpros_import,open
+2026-10-28T14:22:29+00:00,FanDuel,2026_08_KC_DEN,00-0030506,Travis Kelce,KC,rec,Receptions,over,4.5,-120,false,bettingpros_import,open
+2026-10-28T14:22:29+00:00,FanDuel,2026_08_KC_DEN,00-0030506,Travis Kelce,KC,rec,Receptions,under,4.5,-110,false,bettingpros_import,open
+2026-10-28T14:26:50+00:00,FanDuel,2026_08_KC_DEN,00-0041496,Jonah Coleman,DEN,rec_yds,Receiving Yards,over,8.5,-114,false,bettingpros_import,open
+2026-10-28T14:26:50+00:00,FanDuel,2026_08_KC_DEN,00-0041496,Jonah Coleman,DEN,rec_yds,Receiving Yards,under,8.5,-114,false,bettingpros_import,open
+2026-10-28T14:26:50+00:00,FanDuel,2026_08_KC_DEN,00-0041496,Jonah Coleman,DEN,rec,Receptions,over,1.5,-148,false,bettingpros_import,open
+2026-10-28T14:26:50+00:00,FanDuel,2026_08_KC_DEN,00-0041496,Jonah Coleman,DEN,rec,Receptions,under,1.5,112,false,bettingpros_import,open
+2026-10-28T16:08:12+00:00,FanDuel,2026_08_LAC_LA,00-0036355,Justin Herbert,LAC,pass_att,Passing Attempts,over,31.5,-108,false,bettingpros_import,open
+2026-10-28T16:08:12+00:00,FanDuel,2026_08_LAC_LA,00-0036355,Justin Herbert,LAC,pass_att,Passing Attempts,under,31.5,-122,false,bettingpros_import,open
+2026-10-28T16:08:12+00:00,FanDuel,2026_08_LAC_LA,00-0036355,Justin Herbert,LAC,pass_cmp,Passing Completions,over,18.5,-125,false,bettingpros_import,open
+2026-10-28T16:08:12+00:00,FanDuel,2026_08_LAC_LA,00-0036355,Justin Herbert,LAC,pass_cmp,Passing Completions,under,18.5,-106,false,bettingpros_import,open
+2026-10-28T16:08:12+00:00,FanDuel,2026_08_LAC_LA,00-0036355,Justin Herbert,LAC,pass_yds,Passing Yards,over,201.5,-114,false,bettingpros_import,open
+2026-10-28T16:08:12+00:00,FanDuel,2026_08_LAC_LA,00-0036355,Justin Herbert,LAC,pass_yds,Passing Yards,under,201.5,-114,false,bettingpros_import,open
+2026-10-28T16:08:12+00:00,FanDuel,2026_08_LAC_LA,00-0026498,Matthew Stafford,LA,pass_att,Passing Attempts,over,34.5,-108,false,bettingpros_import,open
+2026-10-28T16:08:12+00:00,FanDuel,2026_08_LAC_LA,00-0026498,Matthew Stafford,LA,pass_att,Passing Attempts,under,34.5,-122,false,bettingpros_import,open
+2026-10-28T16:08:12+00:00,FanDuel,2026_08_LAC_LA,00-0026498,Matthew Stafford,LA,pass_cmp,Passing Completions,over,22.5,-120,false,bettingpros_import,open
+2026-10-28T16:08:12+00:00,FanDuel,2026_08_LAC_LA,00-0026498,Matthew Stafford,LA,pass_cmp,Passing Completions,under,22.5,-110,false,bettingpros_import,open
+2026-10-28T16:08:12+00:00,FanDuel,2026_08_LAC_LA,00-0026498,Matthew Stafford,LA,pass_yds,Passing Yards,over,248.5,-114,false,bettingpros_import,open
+2026-10-28T16:08:12+00:00,FanDuel,2026_08_LAC_LA,00-0026498,Matthew Stafford,LA,pass_yds,Passing Yards,under,248.5,-114,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0039738,Blake Corum,LA,rush_att,Rushing Attempts,over,10.5,-102,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0039738,Blake Corum,LA,rush_att,Rushing Attempts,under,10.5,-130,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0039738,Blake Corum,LA,rush_yds,Rushing Yards,over,43.5,-114,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0039738,Blake Corum,LA,rush_yds,Rushing Yards,under,43.5,-114,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0037840,Kyren Williams,LA,rush_att,Rushing Attempts,over,11.5,-114,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0037840,Kyren Williams,LA,rush_att,Rushing Attempts,under,11.5,-114,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0037840,Kyren Williams,LA,rush_yds,Rushing Yards,over,51.5,-114,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0037840,Kyren Williams,LA,rush_yds,Rushing Yards,under,51.5,-114,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0039915,Ladd McConkey,LAC,rec_yds,Receiving Yards,over,40.5,-114,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0039915,Ladd McConkey,LAC,rec_yds,Receiving Yards,under,40.5,-114,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0039915,Ladd McConkey,LAC,rec,Receptions,over,3.5,-112,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0039915,Ladd McConkey,LAC,rec,Receptions,under,3.5,-118,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0039075,Puka Nacua,LA,rec_yds,Receiving Yards,over,89.5,-114,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0039075,Puka Nacua,LA,rec_yds,Receiving Yards,under,89.5,-114,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0039075,Puka Nacua,LA,rec,Receptions,over,7.5,-125,false,bettingpros_import,open
+2026-10-28T16:16:01+00:00,FanDuel,2026_08_LAC_LA,00-0039075,Puka Nacua,LA,rec,Receptions,under,7.5,-106,false,bettingpros_import,open
+2026-10-28T16:23:29+00:00,FanDuel,2026_08_TEN_CIN,00-0038597,Chase Brown,CIN,rush_att,Rushing Attempts,over,13.5,-136,false,bettingpros_import,open
+2026-10-28T16:23:29+00:00,FanDuel,2026_08_TEN_CIN,00-0038597,Chase Brown,CIN,rush_att,Rushing Attempts,under,13.5,102,false,bettingpros_import,open
+2026-10-28T16:23:29+00:00,FanDuel,2026_08_TEN_CIN,00-0038597,Chase Brown,CIN,rush_yds,Rushing Yards,over,51.5,-114,false,bettingpros_import,open
+2026-10-28T16:23:29+00:00,FanDuel,2026_08_TEN_CIN,00-0038597,Chase Brown,CIN,rush_yds,Rushing Yards,under,51.5,-114,false,bettingpros_import,open
+2026-10-28T16:31:33+00:00,FanDuel,2026_08_TEN_CIN,00-0034829,Mike Gesicki,CIN,rec_yds,Receiving Yards,over,23.5,-114,false,bettingpros_import,open
+2026-10-28T16:31:33+00:00,FanDuel,2026_08_TEN_CIN,00-0034829,Mike Gesicki,CIN,rec_yds,Receiving Yards,under,23.5,-114,false,bettingpros_import,open
+2026-10-28T16:31:33+00:00,FanDuel,2026_08_TEN_CIN,00-0034829,Mike Gesicki,CIN,rec,Receptions,over,2.5,104,false,bettingpros_import,open
+2026-10-28T16:31:33+00:00,FanDuel,2026_08_TEN_CIN,00-0034829,Mike Gesicki,CIN,rec,Receptions,under,2.5,-138,false,bettingpros_import,open
+2026-10-28T17:12:34+00:00,FanDuel,2026_08_TEN_CIN,00-0040676,Cam Ward,TEN,qb_rush_yds,Rushing Yards,over,7.5,-114,false,bettingpros_import,open
+2026-10-28T17:12:34+00:00,FanDuel,2026_08_TEN_CIN,00-0040676,Cam Ward,TEN,qb_rush_yds,Rushing Yards,under,7.5,-114,false,bettingpros_import,open
+2026-10-28T17:12:34+00:00,FanDuel,2026_08_TEN_CIN,00-0036442,Joe Burrow,CIN,qb_rush_yds,Rushing Yards,over,5.5,-114,false,bettingpros_import,open
+2026-10-28T17:12:34+00:00,FanDuel,2026_08_TEN_CIN,00-0036442,Joe Burrow,CIN,qb_rush_yds,Rushing Yards,under,5.5,-114,false,bettingpros_import,open
+2026-10-28T18:01:37+00:00,BetMGM,2026_08_IND_JAX,00-0041132,Deion Burks,IND,rec,Receptions,over,0.5,-120,false,bettingpros_import,last
+2026-10-28T18:01:37+00:00,BetMGM,2026_08_IND_JAX,00-0041132,Deion Burks,IND,rec,Receptions,under,0.5,-110,false,bettingpros_import,last
+2026-10-28T19:34:00+00:00,FanDuel,2026_08_PHI_WAS,00-0039910,Jayden Daniels,WAS,pass_yds,Passing Yards,over,198.5,-114,false,bettingpros_import,open
+2026-10-28T19:34:00+00:00,FanDuel,2026_08_PHI_WAS,00-0039910,Jayden Daniels,WAS,pass_yds,Passing Yards,under,198.5,-114,false,bettingpros_import,open
+2026-10-28T19:34:00+00:00,FanDuel,2026_08_PHI_WAS,00-0038400,Tanner McKee,PHI,pass_yds,Passing Yards,over,203.5,-114,false,bettingpros_import,open
+2026-10-28T19:34:00+00:00,FanDuel,2026_08_PHI_WAS,00-0038400,Tanner McKee,PHI,pass_yds,Passing Yards,under,203.5,-114,false,bettingpros_import,open
+2026-10-28T19:34:00+00:00,FanDuel,2026_08_PHI_WAS,00-0038400,Tanner McKee,PHI,qb_rush_yds,Rushing Yards,over,2.5,-114,false,bettingpros_import,open
+2026-10-28T19:34:00+00:00,FanDuel,2026_08_PHI_WAS,00-0038400,Tanner McKee,PHI,qb_rush_yds,Rushing Yards,under,2.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:25+00:00,FanDuel,2026_08_PHI_WAS,00-0039910,Jayden Daniels,WAS,pass_cmp,Passing Completions,over,18.5,104,false,bettingpros_import,open
+2026-10-28T19:42:25+00:00,FanDuel,2026_08_PHI_WAS,00-0039910,Jayden Daniels,WAS,pass_cmp,Passing Completions,under,18.5,-138,false,bettingpros_import,open
+2026-10-28T19:42:25+00:00,FanDuel,2026_08_PHI_WAS,00-0033955,Jeremy McNichols,WAS,rush_yds,Rushing Yards,over,27.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:25+00:00,FanDuel,2026_08_PHI_WAS,00-0033955,Jeremy McNichols,WAS,rush_yds,Rushing Yards,under,27.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:25+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rush_yds,Rushing Yards,over,43.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:25+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rush_yds,Rushing Yards,under,43.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:25+00:00,FanDuel,2026_08_PHI_WAS,00-0038400,Tanner McKee,PHI,pass_cmp,Passing Completions,over,19.5,-122,false,bettingpros_import,open
+2026-10-28T19:42:25+00:00,FanDuel,2026_08_PHI_WAS,00-0038400,Tanner McKee,PHI,pass_cmp,Passing Completions,under,19.5,-108,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0041040,Antonio Williams,WAS,rec_yds,Receiving Yards,over,29.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0041040,Antonio Williams,WAS,rec_yds,Receiving Yards,under,29.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0041040,Antonio Williams,WAS,rec,Receptions,over,2.5,-136,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0041040,Antonio Williams,WAS,rec,Receptions,under,2.5,102,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037809,Chig Okonkwo,WAS,rec_yds,Receiving Yards,over,25.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037809,Chig Okonkwo,WAS,rec_yds,Receiving Yards,under,25.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037809,Chig Okonkwo,WAS,rec,Receptions,over,2.5,-168,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037809,Chig Okonkwo,WAS,rec,Receptions,under,2.5,126,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0036626,Dyami Brown,WAS,rec_yds,Receiving Yards,over,13.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0036626,Dyami Brown,WAS,rec_yds,Receiving Yards,under,13.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0036626,Dyami Brown,WAS,rec,Receptions,over,1.5,124,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0036626,Dyami Brown,WAS,rec,Receptions,under,1.5,-166,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0039910,Jayden Daniels,WAS,pass_att,Passing Attempts,over,30.5,102,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0039910,Jayden Daniels,WAS,pass_att,Passing Attempts,under,30.5,-136,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0039910,Jayden Daniels,WAS,qb_rush_att,Rushing Attempts,over,6.5,-154,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0039910,Jayden Daniels,WAS,qb_rush_att,Rushing Attempts,under,6.5,116,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0039910,Jayden Daniels,WAS,qb_rush_yds,Rushing Yards,over,36.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0039910,Jayden Daniels,WAS,qb_rush_yds,Rushing Yards,under,36.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rec_yds,Receiving Yards,over,9.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rec_yds,Receiving Yards,under,9.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rec,Receptions,over,2.5,144,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rec,Receptions,under,2.5,-194,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rush_att,Rushing Attempts,over,11.5,-122,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rush_att,Rushing Attempts,under,11.5,-108,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0031588,Stefon Diggs,WAS,rec_yds,Receiving Yards,over,42.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0031588,Stefon Diggs,WAS,rec_yds,Receiving Yards,under,42.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0031588,Stefon Diggs,WAS,rec,Receptions,over,4.5,132,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0031588,Stefon Diggs,WAS,rec,Receptions,under,4.5,-178,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0038400,Tanner McKee,PHI,pass_att,Passing Attempts,over,32.5,-122,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0038400,Tanner McKee,PHI,pass_att,Passing Attempts,under,32.5,-106,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037742,Treylon Burks,WAS,rec_yds,Receiving Yards,over,24.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037742,Treylon Burks,WAS,rec_yds,Receiving Yards,under,24.5,-114,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037742,Treylon Burks,WAS,rec,Receptions,over,1.5,-158,false,bettingpros_import,open
+2026-10-28T19:42:26+00:00,FanDuel,2026_08_PHI_WAS,00-0037742,Treylon Burks,WAS,rec,Receptions,under,1.5,118,false,bettingpros_import,open
+2026-10-28T19:59:23+00:00,FanDuel,2026_08_LV_NYJ,00-0030565,Geno Smith,NYJ,pass_att,Passing Attempts,over,29.5,-130,false,bettingpros_import,open
+2026-10-28T19:59:23+00:00,FanDuel,2026_08_LV_NYJ,00-0030565,Geno Smith,NYJ,pass_att,Passing Attempts,under,29.5,-102,false,bettingpros_import,open
+2026-10-28T19:59:23+00:00,FanDuel,2026_08_LV_NYJ,00-0030565,Geno Smith,NYJ,pass_cmp,Passing Completions,over,20.5,102,false,bettingpros_import,open
+2026-10-28T19:59:23+00:00,FanDuel,2026_08_LV_NYJ,00-0030565,Geno Smith,NYJ,pass_cmp,Passing Completions,under,20.5,-136,false,bettingpros_import,open
+2026-10-28T19:59:23+00:00,FanDuel,2026_08_LV_NYJ,00-0030565,Geno Smith,NYJ,qb_rush_yds,Rushing Yards,over,7.5,-108,false,bettingpros_import,open
+2026-10-28T19:59:23+00:00,FanDuel,2026_08_LV_NYJ,00-0030565,Geno Smith,NYJ,qb_rush_yds,Rushing Yards,under,7.5,-120,false,bettingpros_import,open
+2026-10-28T19:59:23+00:00,FanDuel,2026_08_LV_NYJ,00-0029604,Kirk Cousins,LV,pass_att,Passing Attempts,over,33.5,-106,false,bettingpros_import,open
+2026-10-28T19:59:23+00:00,FanDuel,2026_08_LV_NYJ,00-0029604,Kirk Cousins,LV,pass_att,Passing Attempts,under,33.5,-125,false,bettingpros_import,open
+2026-10-28T19:59:23+00:00,FanDuel,2026_08_LV_NYJ,00-0029604,Kirk Cousins,LV,pass_cmp,Passing Completions,over,20.5,-114,false,bettingpros_import,open
+2026-10-28T19:59:23+00:00,FanDuel,2026_08_LV_NYJ,00-0029604,Kirk Cousins,LV,pass_cmp,Passing Completions,under,20.5,-114,false,bettingpros_import,open
+2026-10-28T20:27:00+00:00,FanDuel,2026_08_TEN_CIN,00-0033526,Samaje Perine,CIN,rush_yds,Rushing Yards,over,24.5,-114,false,bettingpros_import,open
+2026-10-28T20:27:00+00:00,FanDuel,2026_08_TEN_CIN,00-0033526,Samaje Perine,CIN,rush_yds,Rushing Yards,under,24.5,-114,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0039338,Brock Bowers,LV,rec_yds,Receiving Yards,over,68.5,-114,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0039338,Brock Bowers,LV,rec_yds,Receiving Yards,under,68.5,-114,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0039338,Brock Bowers,LV,rec,Receptions,over,5.5,-130,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0039338,Brock Bowers,LV,rec,Receptions,under,5.5,-102,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0037740,Garrett Wilson,NYJ,rec_yds,Receiving Yards,over,52.5,-114,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0037740,Garrett Wilson,NYJ,rec_yds,Receiving Yards,under,52.5,-114,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0037740,Garrett Wilson,NYJ,rec,Receptions,over,4.5,-132,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0037740,Garrett Wilson,NYJ,rec,Receptions,under,4.5,100,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0041511,Omar Cooper Jr.,NYJ,rec_yds,Receiving Yards,over,39.5,-114,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0041511,Omar Cooper Jr.,NYJ,rec_yds,Receiving Yards,under,39.5,-114,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0041511,Omar Cooper Jr.,NYJ,rec,Receptions,over,3.5,118,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0041511,Omar Cooper Jr.,NYJ,rec,Receptions,under,3.5,-158,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0038563,Tre Tucker,LV,rec_yds,Receiving Yards,over,49.5,-114,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0038563,Tre Tucker,LV,rec_yds,Receiving Yards,under,49.5,-114,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0038563,Tre Tucker,LV,rec,Receptions,over,3.5,-130,false,bettingpros_import,open
+2026-10-28T20:33:51+00:00,FanDuel,2026_08_LV_NYJ,00-0038563,Tre Tucker,LV,rec,Receptions,under,3.5,-102,false,bettingpros_import,open
+2026-10-28T20:47:41+00:00,FanDuel,2026_08_LV_NYJ,00-0040122,Ashton Jeanty,LV,rec_yds,Receiving Yards,over,27.5,-114,false,bettingpros_import,open
+2026-10-28T20:47:41+00:00,FanDuel,2026_08_LV_NYJ,00-0040122,Ashton Jeanty,LV,rec_yds,Receiving Yards,under,27.5,-114,false,bettingpros_import,open
+2026-10-28T20:47:41+00:00,FanDuel,2026_08_LV_NYJ,00-0040122,Ashton Jeanty,LV,rec,Receptions,over,3.5,-125,false,bettingpros_import,open
+2026-10-28T20:47:41+00:00,FanDuel,2026_08_LV_NYJ,00-0040122,Ashton Jeanty,LV,rec,Receptions,under,3.5,-106,false,bettingpros_import,open
+2026-10-28T20:47:41+00:00,FanDuel,2026_08_LV_NYJ,00-0040122,Ashton Jeanty,LV,rush_att,Rushing Attempts,over,14.5,102,false,bettingpros_import,open
+2026-10-28T20:47:41+00:00,FanDuel,2026_08_LV_NYJ,00-0040122,Ashton Jeanty,LV,rush_att,Rushing Attempts,under,14.5,-136,false,bettingpros_import,open
+2026-10-28T20:47:41+00:00,FanDuel,2026_08_LV_NYJ,00-0040122,Ashton Jeanty,LV,rush_yds,Rushing Yards,over,50.5,-114,false,bettingpros_import,open
+2026-10-28T20:47:41+00:00,FanDuel,2026_08_LV_NYJ,00-0040122,Ashton Jeanty,LV,rush_yds,Rushing Yards,under,50.5,-114,false,bettingpros_import,open
+2026-10-28T20:47:41+00:00,FanDuel,2026_08_LV_NYJ,00-0040878,Mike Washington Jr.,LV,rush_yds,Rushing Yards,over,32.5,-114,false,bettingpros_import,open
+2026-10-28T20:47:41+00:00,FanDuel,2026_08_LV_NYJ,00-0040878,Mike Washington Jr.,LV,rush_yds,Rushing Yards,under,32.5,-114,false,bettingpros_import,open
+2026-10-28T20:47:46+00:00,FanDuel,2026_08_BAL_BUF,00-0039875,Ray Davis,BUF,rush_yds,Rushing Yards,over,9.5,-114,false,bettingpros_import,open
+2026-10-28T20:47:46+00:00,FanDuel,2026_08_BAL_BUF,00-0039875,Ray Davis,BUF,rush_yds,Rushing Yards,under,9.5,-114,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0039890,Adonai Mitchell,NYJ,rec_yds,Receiving Yards,over,22.5,-114,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0039890,Adonai Mitchell,NYJ,rec_yds,Receiving Yards,under,22.5,-114,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0039890,Adonai Mitchell,NYJ,rec,Receptions,over,1.5,-162,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0039890,Adonai Mitchell,NYJ,rec,Receptions,under,1.5,122,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0041032,Kenyon Sadiq,NYJ,rec_yds,Receiving Yards,over,16.5,-114,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0041032,Kenyon Sadiq,NYJ,rec_yds,Receiving Yards,under,16.5,-114,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0041032,Kenyon Sadiq,NYJ,rec,Receptions,over,1.5,-188,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0041032,Kenyon Sadiq,NYJ,rec,Receptions,under,1.5,140,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0040736,Mason Taylor,NYJ,rec_yds,Receiving Yards,over,20.5,-114,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0040736,Mason Taylor,NYJ,rec_yds,Receiving Yards,under,20.5,-114,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0040736,Mason Taylor,NYJ,rec,Receptions,over,2.5,-130,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0040736,Mason Taylor,NYJ,rec,Receptions,under,2.5,-102,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0039066,Michael Mayer,LV,rec_yds,Receiving Yards,over,24.5,-114,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0039066,Michael Mayer,LV,rec_yds,Receiving Yards,under,24.5,-114,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0039066,Michael Mayer,LV,rec,Receptions,over,2.5,-168,false,bettingpros_import,open
+2026-10-28T20:54:26+00:00,FanDuel,2026_08_LV_NYJ,00-0039066,Michael Mayer,LV,rec,Receptions,under,2.5,126,false,bettingpros_import,open
+2026-10-28T21:08:39+00:00,FanDuel,2026_08_ATL_TB,00-0040129,Emeka Egbuka,TB,rec_yds,Receiving Yards,over,53.5,-114,false,bettingpros_import,open
+2026-10-28T21:08:39+00:00,FanDuel,2026_08_ATL_TB,00-0040129,Emeka Egbuka,TB,rec_yds,Receiving Yards,under,53.5,-114,false,bettingpros_import,open
+2026-10-28T21:08:39+00:00,FanDuel,2026_08_ATL_TB,00-0040129,Emeka Egbuka,TB,rec,Receptions,over,4.5,-118,false,bettingpros_import,open
+2026-10-28T21:08:39+00:00,FanDuel,2026_08_ATL_TB,00-0040129,Emeka Egbuka,TB,rec,Receptions,under,4.5,-112,false,bettingpros_import,open
+2026-10-28T21:15:42+00:00,FanDuel,2026_08_ATL_TB,00-0038542,Bijan Robinson,ATL,rush_att,Rushing Attempts,over,18.5,-114,false,bettingpros_import,open
+2026-10-28T21:15:42+00:00,FanDuel,2026_08_ATL_TB,00-0038542,Bijan Robinson,ATL,rush_att,Rushing Attempts,under,18.5,-114,false,bettingpros_import,open
+2026-10-28T21:15:42+00:00,FanDuel,2026_08_ATL_TB,00-0038542,Bijan Robinson,ATL,rush_yds,Rushing Yards,over,82.5,-114,false,bettingpros_import,open
+2026-10-28T21:15:42+00:00,FanDuel,2026_08_ATL_TB,00-0038542,Bijan Robinson,ATL,rush_yds,Rushing Yards,under,82.5,-114,false,bettingpros_import,open
+2026-10-28T21:22:39+00:00,FanDuel,2026_08_ATL_TB,00-0033921,Chris Godwin Jr.,TB,rec_yds,Receiving Yards,over,29.5,-114,false,bettingpros_import,open
+2026-10-28T21:22:39+00:00,FanDuel,2026_08_ATL_TB,00-0033921,Chris Godwin Jr.,TB,rec_yds,Receiving Yards,under,29.5,-114,false,bettingpros_import,open
+2026-10-28T21:22:39+00:00,FanDuel,2026_08_ATL_TB,00-0033921,Chris Godwin Jr.,TB,rec,Receptions,over,3.5,-140,false,bettingpros_import,open
+2026-10-28T21:22:39+00:00,FanDuel,2026_08_ATL_TB,00-0033921,Chris Godwin Jr.,TB,rec,Receptions,under,3.5,106,false,bettingpros_import,open
+2026-10-28T21:51:02+00:00,FanDuel,2026_08_ARI_DAL,00-0033077,Dak Prescott,DAL,pass_att,Passing Attempts,over,33.5,-136,false,bettingpros_import,open
+2026-10-28T21:51:02+00:00,FanDuel,2026_08_ARI_DAL,00-0033077,Dak Prescott,DAL,pass_att,Passing Attempts,under,33.5,102,false,bettingpros_import,open
+2026-10-28T21:51:02+00:00,FanDuel,2026_08_ARI_DAL,00-0033077,Dak Prescott,DAL,pass_cmp,Passing Completions,over,22.5,-118,false,bettingpros_import,open
+2026-10-28T21:51:02+00:00,FanDuel,2026_08_ARI_DAL,00-0033077,Dak Prescott,DAL,pass_cmp,Passing Completions,under,22.5,-112,false,bettingpros_import,open
+2026-10-28T21:51:02+00:00,FanDuel,2026_08_ARI_DAL,00-0033077,Dak Prescott,DAL,qb_rush_yds,Rushing Yards,over,8.5,-114,false,bettingpros_import,open
+2026-10-28T21:51:02+00:00,FanDuel,2026_08_ARI_DAL,00-0033077,Dak Prescott,DAL,qb_rush_yds,Rushing Yards,under,8.5,-114,false,bettingpros_import,open
+2026-10-28T21:51:02+00:00,FanDuel,2026_08_ARI_DAL,00-0033119,Jacoby Brissett,ARI,pass_att,Passing Attempts,over,36.5,-114,false,bettingpros_import,open
+2026-10-28T21:51:02+00:00,FanDuel,2026_08_ARI_DAL,00-0033119,Jacoby Brissett,ARI,pass_att,Passing Attempts,under,36.5,-114,false,bettingpros_import,open
+2026-10-28T21:51:02+00:00,FanDuel,2026_08_ARI_DAL,00-0033119,Jacoby Brissett,ARI,pass_cmp,Passing Completions,over,23.5,-118,false,bettingpros_import,open
+2026-10-28T21:51:02+00:00,FanDuel,2026_08_ARI_DAL,00-0033119,Jacoby Brissett,ARI,pass_cmp,Passing Completions,under,23.5,-112,false,bettingpros_import,open
+2026-10-28T21:51:02+00:00,FanDuel,2026_08_ARI_DAL,00-0033119,Jacoby Brissett,ARI,qb_rush_yds,Rushing Yards,over,9.5,-114,false,bettingpros_import,open
+2026-10-28T21:51:02+00:00,FanDuel,2026_08_ARI_DAL,00-0033119,Jacoby Brissett,ARI,qb_rush_yds,Rushing Yards,under,9.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0039530,Brevyn Spann-Ford,DAL,rec_yds,Receiving Yards,over,15.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0039530,Brevyn Spann-Ford,DAL,rec_yds,Receiving Yards,under,15.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0039530,Brevyn Spann-Ford,DAL,rec,Receptions,over,1.5,-158,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0039530,Brevyn Spann-Ford,DAL,rec,Receptions,under,1.5,118,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0038041,Jake Ferguson,DAL,rec_yds,Receiving Yards,over,15.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0038041,Jake Ferguson,DAL,rec_yds,Receiving Yards,under,15.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0038041,Jake Ferguson,DAL,rec,Receptions,over,2.5,154,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0038041,Jake Ferguson,DAL,rec,Receptions,under,2.5,-210,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0036997,Javonte Williams,DAL,rec_yds,Receiving Yards,over,11.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0036997,Javonte Williams,DAL,rec_yds,Receiving Yards,under,11.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0036997,Javonte Williams,DAL,rush_att,Rushing Attempts,over,17.5,-120,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0036997,Javonte Williams,DAL,rush_att,Rushing Attempts,under,17.5,-110,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0033307,Kendrick Bourne,ARI,rec_yds,Receiving Yards,over,32.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0033307,Kendrick Bourne,ARI,rec_yds,Receiving Yards,under,32.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0033307,Kendrick Bourne,ARI,rec,Receptions,over,3.5,-102,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0033307,Kendrick Bourne,ARI,rec,Receptions,under,3.5,-130,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0038559,Michael Wilson,ARI,rec_yds,Receiving Yards,over,51.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0038559,Michael Wilson,ARI,rec_yds,Receiving Yards,under,51.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0039410,Ryan Flournoy,DAL,rec_yds,Receiving Yards,over,35.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0039410,Ryan Flournoy,DAL,rec_yds,Receiving Yards,under,35.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0037120,Tyler Goodson,DAL,rush_yds,Rushing Yards,over,19.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:18+00:00,FanDuel,2026_08_ARI_DAL,00-0037120,Tyler Goodson,DAL,rush_yds,Rushing Yards,under,19.5,-114,false,bettingpros_import,open
+2026-10-28T22:30:19+00:00,FanDuel,2026_08_ARI_DAL,00-0036997,Javonte Williams,DAL,rec,Receptions,over,1.5,-178,false,bettingpros_import,open
+2026-10-28T22:30:19+00:00,FanDuel,2026_08_ARI_DAL,00-0036997,Javonte Williams,DAL,rec,Receptions,under,1.5,132,false,bettingpros_import,open
+2026-10-28T22:30:19+00:00,FanDuel,2026_08_ARI_DAL,00-0038559,Michael Wilson,ARI,rec,Receptions,over,4.5,104,false,bettingpros_import,open
+2026-10-28T22:30:19+00:00,FanDuel,2026_08_ARI_DAL,00-0038559,Michael Wilson,ARI,rec,Receptions,under,4.5,-138,false,bettingpros_import,open
+2026-10-28T22:30:19+00:00,FanDuel,2026_08_ARI_DAL,00-0039410,Ryan Flournoy,DAL,rec,Receptions,over,3.5,118,false,bettingpros_import,open
+2026-10-28T22:30:19+00:00,FanDuel,2026_08_ARI_DAL,00-0039410,Ryan Flournoy,DAL,rec,Receptions,under,3.5,-158,false,bettingpros_import,open
+2026-10-28T23:17:49+00:00,FanDuel,2026_08_TEN_CIN,00-0040170,Elic Ayomanor,TEN,rec_yds,Receiving Yards,over,18.5,-114,false,bettingpros_import,open
+2026-10-28T23:17:49+00:00,FanDuel,2026_08_TEN_CIN,00-0040170,Elic Ayomanor,TEN,rec_yds,Receiving Yards,under,18.5,-114,false,bettingpros_import,open
+2026-10-28T23:17:49+00:00,FanDuel,2026_08_TEN_CIN,00-0040170,Elic Ayomanor,TEN,rec,Receptions,over,1.5,-138,false,bettingpros_import,open
+2026-10-28T23:17:49+00:00,FanDuel,2026_08_TEN_CIN,00-0040170,Elic Ayomanor,TEN,rec,Receptions,under,1.5,104,false,bettingpros_import,open
+2026-10-28T23:37:20+00:00,FanDuel,2026_08_TEN_CIN,00-0038597,Chase Brown,CIN,rec_yds,Receiving Yards,over,20.5,-114,false,bettingpros_import,open
+2026-10-28T23:37:20+00:00,FanDuel,2026_08_TEN_CIN,00-0038597,Chase Brown,CIN,rec_yds,Receiving Yards,under,20.5,-114,false,bettingpros_import,open
+2026-10-28T23:37:20+00:00,FanDuel,2026_08_TEN_CIN,00-0038597,Chase Brown,CIN,rec,Receptions,over,3.5,-114,false,bettingpros_import,open
+2026-10-28T23:37:20+00:00,FanDuel,2026_08_TEN_CIN,00-0038597,Chase Brown,CIN,rec,Receptions,under,3.5,-114,false,bettingpros_import,open
+2026-10-29T00:18:51+00:00,FanDuel,2026_08_TEN_CIN,00-0038115,Daniel Bellinger,TEN,rec_yds,Receiving Yards,over,9.5,-114,false,bettingpros_import,open
+2026-10-29T00:18:51+00:00,FanDuel,2026_08_TEN_CIN,00-0038115,Daniel Bellinger,TEN,rec_yds,Receiving Yards,under,9.5,-114,false,bettingpros_import,open
+2026-10-29T00:18:51+00:00,FanDuel,2026_08_TEN_CIN,00-0040785,Dohnte Meyers,CIN,rec_yds,Receiving Yards,over,18.5,-114,false,bettingpros_import,open
+2026-10-29T00:18:51+00:00,FanDuel,2026_08_TEN_CIN,00-0040785,Dohnte Meyers,CIN,rec_yds,Receiving Yards,under,18.5,-114,false,bettingpros_import,open
+2026-10-29T00:18:52+00:00,FanDuel,2026_08_TEN_CIN,00-0038115,Daniel Bellinger,TEN,rec,Receptions,over,1.5,124,false,bettingpros_import,open
+2026-10-29T00:18:52+00:00,FanDuel,2026_08_TEN_CIN,00-0038115,Daniel Bellinger,TEN,rec,Receptions,under,1.5,-166,false,bettingpros_import,open
+2026-10-29T00:18:52+00:00,FanDuel,2026_08_TEN_CIN,00-0040785,Dohnte Meyers,CIN,rec,Receptions,over,1.5,-188,false,bettingpros_import,open
+2026-10-29T00:18:52+00:00,FanDuel,2026_08_TEN_CIN,00-0040785,Dohnte Meyers,CIN,rec,Receptions,under,1.5,140,false,bettingpros_import,open
+2026-10-29T03:59:41+00:00,FanDuel,2026_08_CLE_PIT,00-0040784,Quinshon Judkins,CLE,rush_att,Rushing Attempts,over,13.5,-138,false,bettingpros_import,open
+2026-10-29T03:59:41+00:00,FanDuel,2026_08_CLE_PIT,00-0040784,Quinshon Judkins,CLE,rush_att,Rushing Attempts,under,13.5,104,false,bettingpros_import,open
+2026-10-29T04:08:49+00:00,FanDuel,2026_08_CLE_PIT,00-0033537,Deshaun Watson,CLE,qb_rush_att,Rushing Attempts,over,5.5,-114,false,bettingpros_import,open
+2026-10-29T04:08:49+00:00,FanDuel,2026_08_CLE_PIT,00-0033537,Deshaun Watson,CLE,qb_rush_att,Rushing Attempts,under,5.5,-114,false,bettingpros_import,open
+2026-10-29T04:08:49+00:00,FanDuel,2026_08_CLE_PIT,00-0033537,Deshaun Watson,CLE,qb_rush_yds,Rushing Yards,over,25.5,-114,false,bettingpros_import,open
+2026-10-29T04:08:49+00:00,FanDuel,2026_08_CLE_PIT,00-0033537,Deshaun Watson,CLE,qb_rush_yds,Rushing Yards,under,25.5,-114,false,bettingpros_import,open
+2026-10-29T04:08:49+00:00,FanDuel,2026_08_CLE_PIT,00-0037228,Jaylen Warren,PIT,rush_att,Rushing Attempts,over,13.5,-138,false,bettingpros_import,open
+2026-10-29T04:08:49+00:00,FanDuel,2026_08_CLE_PIT,00-0037228,Jaylen Warren,PIT,rush_att,Rushing Attempts,under,13.5,104,false,bettingpros_import,open
+2026-10-29T04:08:49+00:00,FanDuel,2026_08_CLE_PIT,00-0036139,Rico Dowdle,PIT,rush_att,Rushing Attempts,over,6.5,-148,false,bettingpros_import,open
+2026-10-29T04:08:49+00:00,FanDuel,2026_08_CLE_PIT,00-0036139,Rico Dowdle,PIT,rush_att,Rushing Attempts,under,6.5,112,false,bettingpros_import,open
+2026-10-29T04:08:49+00:00,FanDuel,2026_08_CLE_PIT,00-0036139,Rico Dowdle,PIT,rush_yds,Rushing Yards,over,24.5,-114,false,bettingpros_import,open
+2026-10-29T04:08:49+00:00,FanDuel,2026_08_CLE_PIT,00-0036139,Rico Dowdle,PIT,rush_yds,Rushing Yards,under,24.5,-114,false,bettingpros_import,open
+2026-10-29T09:19:11+00:00,FanDuel,2026_08_CAR_GB,00-0040644,Trevor Etienne,CAR,rush_yds,Rushing Yards,over,8.5,-113,false,bettingpros_import,open
+2026-10-29T09:19:11+00:00,FanDuel,2026_08_CAR_GB,00-0040644,Trevor Etienne,CAR,rush_yds,Rushing Yards,under,8.5,-113,false,bettingpros_import,open
+2026-10-29T09:31:08+00:00,FanDuel,2026_08_CAR_GB,00-0038840,Brycen Tremayne,CAR,rec_yds,Receiving Yards,over,6.5,-113,false,bettingpros_import,open
+2026-10-29T09:31:08+00:00,FanDuel,2026_08_CAR_GB,00-0038840,Brycen Tremayne,CAR,rec_yds,Receiving Yards,under,6.5,-113,false,bettingpros_import,open
+2026-10-29T09:31:08+00:00,FanDuel,2026_08_CAR_GB,00-0038840,Brycen Tremayne,CAR,rec,Receptions,over,0.5,-168,false,bettingpros_import,open
+2026-10-29T09:31:08+00:00,FanDuel,2026_08_CAR_GB,00-0038840,Brycen Tremayne,CAR,rec,Receptions,under,0.5,126,false,bettingpros_import,open
+2026-10-29T09:31:08+00:00,FanDuel,2026_08_CAR_GB,00-0040187,Mitchell Evans,CAR,rec_yds,Receiving Yards,over,6.5,-113,false,bettingpros_import,open
+2026-10-29T09:31:08+00:00,FanDuel,2026_08_CAR_GB,00-0040187,Mitchell Evans,CAR,rec_yds,Receiving Yards,under,6.5,-113,false,bettingpros_import,open
+2026-10-29T09:31:08+00:00,FanDuel,2026_08_CAR_GB,00-0040187,Mitchell Evans,CAR,rec,Receptions,over,0.5,-270,false,bettingpros_import,open
+2026-10-29T09:31:08+00:00,FanDuel,2026_08_CAR_GB,00-0040187,Mitchell Evans,CAR,rec,Receptions,under,0.5,194,false,bettingpros_import,open
+2026-10-29T09:43:05+00:00,FanDuel,2026_08_CAR_GB,00-0040009,Savion Williams,GB,rush_yds,Rushing Yards,over,3.5,-113,false,bettingpros_import,open
+2026-10-29T09:43:05+00:00,FanDuel,2026_08_CAR_GB,00-0040009,Savion Williams,GB,rush_yds,Rushing Yards,under,3.5,-113,false,bettingpros_import,open
+2026-10-29T11:26:57+00:00,Caesars,2026_08_ATL_TB,00-0036919,Kenny Gainwell,TB,rec_yds,Receiving Yards,over,12.5,-112,false,bettingpros_import,last
+2026-10-29T11:26:57+00:00,Caesars,2026_08_ATL_TB,00-0036919,Kenny Gainwell,TB,rec_yds,Receiving Yards,under,12.5,-118,false,bettingpros_import,last
+2026-10-29T11:41:16+00:00,DraftKings,2026_08_ATL_TB,00-0039361,Bucky Irving,TB,rec_yds,Receiving Yards,over,15.5,-113,false,bettingpros_import,last
+2026-10-29T11:41:16+00:00,DraftKings,2026_08_ATL_TB,00-0039361,Bucky Irving,TB,rec_yds,Receiving Yards,under,15.5,-111,false,bettingpros_import,last
+2026-10-29T11:41:16+00:00,DraftKings,2026_08_ATL_TB,00-0039361,Bucky Irving,TB,rec,Receptions,over,2.5,101,false,bettingpros_import,last
+2026-10-29T11:41:16+00:00,DraftKings,2026_08_ATL_TB,00-0039361,Bucky Irving,TB,rec,Receptions,under,2.5,-129,false,bettingpros_import,last
+2026-10-29T11:41:16+00:00,DraftKings,2026_08_ATL_TB,00-0037741,Jahan Dotson,ATL,rec_yds,Receiving Yards,over,22.5,-112,false,bettingpros_import,last
+2026-10-29T11:41:16+00:00,DraftKings,2026_08_ATL_TB,00-0037741,Jahan Dotson,ATL,rec_yds,Receiving Yards,under,22.5,-112,false,bettingpros_import,last
+2026-10-29T11:41:16+00:00,DraftKings,2026_08_ATL_TB,00-0037741,Jahan Dotson,ATL,rec,Receptions,over,1.5,-166,false,bettingpros_import,last
+2026-10-29T11:41:16+00:00,DraftKings,2026_08_ATL_TB,00-0037741,Jahan Dotson,ATL,rec,Receptions,under,1.5,129,false,bettingpros_import,last
+2026-10-29T11:41:16+00:00,DraftKings,2026_08_CLE_PIT,00-0040784,Quinshon Judkins,CLE,rec_yds,Receiving Yards,over,11.5,-112,false,bettingpros_import,last
+2026-10-29T11:41:16+00:00,DraftKings,2026_08_CLE_PIT,00-0040784,Quinshon Judkins,CLE,rec_yds,Receiving Yards,under,11.5,-112,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,pass_cmp,Passing Completions,over,21.5,-130,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,pass_cmp,Passing Completions,under,21.5,-102,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,pass_yds,Passing Yards,over,252.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,pass_yds,Passing Yards,under,252.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,qb_rush_yds,Rushing Yards,over,9.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,qb_rush_yds,Rushing Yards,under,9.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0038124,Christian Watson,GB,rec_yds,Receiving Yards,over,72.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0038124,Christian Watson,GB,rec_yds,Receiving Yards,under,72.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0038124,Christian Watson,GB,rec,Receptions,over,4.5,-130,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0038124,Christian Watson,GB,rec,Receptions,under,4.5,-102,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rec_yds,Receiving Yards,over,15.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rec_yds,Receiving Yards,under,15.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rush_att,Rushing Attempts,over,16.5,-106,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rush_att,Rushing Attempts,under,16.5,-125,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rush_yds,Rushing Yards,over,67.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rush_yds,Rushing Yards,under,67.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0031610,Darren Waller,CAR,rec_yds,Receiving Yards,over,19.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0031610,Darren Waller,CAR,rec_yds,Receiving Yards,under,19.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0031610,Darren Waller,CAR,rec,Receptions,over,2.5,134,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0031610,Darren Waller,CAR,rec,Receptions,under,2.5,-180,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039491,Jalen Coker,CAR,rec_yds,Receiving Yards,over,62.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039491,Jalen Coker,CAR,rec_yds,Receiving Yards,under,62.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0037614,John Metchie III,CAR,rec_yds,Receiving Yards,over,15.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0037614,John Metchie III,CAR,rec_yds,Receiving Yards,under,15.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,pass_cmp,Passing Completions,over,21.5,-125,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,pass_cmp,Passing Completions,under,21.5,-106,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,pass_yds,Passing Yards,over,262.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,pass_yds,Passing Yards,under,262.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,qb_rush_yds,Rushing Yards,over,5.5,-102,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,qb_rush_yds,Rushing Yards,under,5.5,-125,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rec_yds,Receiving Yards,over,17.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rec_yds,Receiving Yards,under,17.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rec,Receptions,over,2.5,-136,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rec,Receptions,under,2.5,102,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rush_att,Rushing Attempts,over,14.5,-138,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rush_att,Rushing Attempts,under,14.5,104,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rush_yds,Rushing Yards,over,58.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0035700,Josh Jacobs,GB,rush_yds,Rushing Yards,under,58.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039811,MarShawn Lloyd,GB,rec_yds,Receiving Yards,over,4.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039811,MarShawn Lloyd,GB,rec_yds,Receiving Yards,under,4.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039811,MarShawn Lloyd,GB,rush_att,Rushing Attempts,over,5.5,104,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039811,MarShawn Lloyd,GB,rush_att,Rushing Attempts,under,5.5,-138,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039811,MarShawn Lloyd,GB,rush_yds,Rushing Yards,over,16.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0039811,MarShawn Lloyd,GB,rush_yds,Rushing Yards,under,16.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0040667,Matthew Golden,GB,rec_yds,Receiving Yards,over,59.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0040667,Matthew Golden,GB,rec_yds,Receiving Yards,under,59.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0040009,Savion Williams,GB,rec_yds,Receiving Yards,over,24.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0040009,Savion Williams,GB,rec_yds,Receiving Yards,under,24.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0040009,Savion Williams,GB,rec,Receptions,over,2.5,-110,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0040009,Savion Williams,GB,rec,Receptions,under,2.5,-120,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0040124,Tetairoa McMillan,CAR,rec_yds,Receiving Yards,over,71.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0040124,Tetairoa McMillan,CAR,rec_yds,Receiving Yards,under,71.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0040124,Tetairoa McMillan,CAR,rec,Receptions,over,5.5,112,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0040124,Tetairoa McMillan,CAR,rec,Receptions,under,5.5,-148,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0037005,Tommy Tremble,CAR,rec_yds,Receiving Yards,over,15.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0037005,Tommy Tremble,CAR,rec_yds,Receiving Yards,under,15.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0038996,Tucker Kraft,GB,rec_yds,Receiving Yards,over,46.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0038996,Tucker Kraft,GB,rec_yds,Receiving Yards,under,46.5,-113,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0038996,Tucker Kraft,GB,rec,Receptions,over,4.5,-118,false,bettingpros_import,last
+2026-10-29T11:43:56+00:00,FanDuel,2026_08_CAR_GB,00-0038996,Tucker Kraft,GB,rec,Receptions,under,4.5,-112,false,bettingpros_import,last
+2026-10-29T11:43:57+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,pass_att,Passing Attempts,over,35.5,-130,false,bettingpros_import,last
+2026-10-29T11:43:57+00:00,FanDuel,2026_08_CAR_GB,00-0039150,Bryce Young,CAR,pass_att,Passing Attempts,under,35.5,-102,false,bettingpros_import,last
+2026-10-29T11:43:57+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rec,Receptions,over,2.5,-102,false,bettingpros_import,last
+2026-10-29T11:43:57+00:00,FanDuel,2026_08_CAR_GB,00-0036555,Chuba Hubbard,CAR,rec,Receptions,under,2.5,-130,false,bettingpros_import,last
+2026-10-29T11:43:57+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,pass_att,Passing Attempts,over,35.5,-108,false,bettingpros_import,last
+2026-10-29T11:43:57+00:00,FanDuel,2026_08_CAR_GB,00-0036264,Jordan Love,GB,pass_att,Passing Attempts,under,35.5,-122,false,bettingpros_import,last
+2026-10-29T11:43:57+00:00,FanDuel,2026_08_CAR_GB,00-0039811,MarShawn Lloyd,GB,rec,Receptions,over,1.5,162,false,bettingpros_import,last
+2026-10-29T11:43:57+00:00,FanDuel,2026_08_CAR_GB,00-0039811,MarShawn Lloyd,GB,rec,Receptions,under,1.5,-220,false,bettingpros_import,last
+2026-10-29T11:43:57+00:00,FanDuel,2026_08_CAR_GB,00-0040667,Matthew Golden,GB,rec,Receptions,over,4.5,-118,false,bettingpros_import,last
+2026-10-29T11:43:57+00:00,FanDuel,2026_08_CAR_GB,00-0040667,Matthew Golden,GB,rec,Receptions,under,4.5,-112,false,bettingpros_import,last
+2026-10-29T11:43:57+00:00,FanDuel,2026_08_CAR_GB,00-0037005,Tommy Tremble,CAR,rec,Receptions,over,2.5,134,false,bettingpros_import,last
+2026-10-29T11:43:57+00:00,FanDuel,2026_08_CAR_GB,00-0037005,Tommy Tremble,CAR,rec,Receptions,under,2.5,-180,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0039890,Adonai Mitchell,NYJ,rec_yds,Receiving Yards,over,21.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0039890,Adonai Mitchell,NYJ,rec_yds,Receiving Yards,under,21.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0039890,Adonai Mitchell,NYJ,rec,Receptions,over,1.5,-154,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0039890,Adonai Mitchell,NYJ,rec,Receptions,under,1.5,116,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0040122,Ashton Jeanty,LV,rush_att,Rushing Attempts,over,13.5,-128,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0040122,Ashton Jeanty,LV,rush_att,Rushing Attempts,under,13.5,-104,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0040122,Ashton Jeanty,LV,rush_yds,Rushing Yards,over,49.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0040122,Ashton Jeanty,LV,rush_yds,Rushing Yards,under,49.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0039338,Brock Bowers,LV,rec_yds,Receiving Yards,over,69.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0039338,Brock Bowers,LV,rec_yds,Receiving Yards,under,69.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0039338,Brock Bowers,LV,rec,Receptions,over,5.5,-138,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0039338,Brock Bowers,LV,rec,Receptions,under,5.5,104,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0037740,Garrett Wilson,NYJ,rec_yds,Receiving Yards,over,55.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0037740,Garrett Wilson,NYJ,rec_yds,Receiving Yards,under,55.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0037740,Garrett Wilson,NYJ,rec,Receptions,over,4.5,-154,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0037740,Garrett Wilson,NYJ,rec,Receptions,under,4.5,116,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0030565,Geno Smith,NYJ,pass_yds,Passing Yards,over,219.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0030565,Geno Smith,NYJ,pass_yds,Passing Yards,under,219.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0029604,Kirk Cousins,LV,pass_yds,Passing Yards,over,239.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0029604,Kirk Cousins,LV,pass_yds,Passing Yards,under,239.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0040736,Mason Taylor,NYJ,rec_yds,Receiving Yards,over,22.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0040736,Mason Taylor,NYJ,rec_yds,Receiving Yards,under,22.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0040736,Mason Taylor,NYJ,rec,Receptions,over,2.5,-138,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0040736,Mason Taylor,NYJ,rec,Receptions,under,2.5,104,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0039066,Michael Mayer,LV,rec_yds,Receiving Yards,over,25.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0039066,Michael Mayer,LV,rec_yds,Receiving Yards,under,25.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0040878,Mike Washington Jr.,LV,rush_yds,Rushing Yards,over,31.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0040878,Mike Washington Jr.,LV,rush_yds,Rushing Yards,under,31.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0041511,Omar Cooper Jr.,NYJ,rec_yds,Receiving Yards,over,41.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0041511,Omar Cooper Jr.,NYJ,rec_yds,Receiving Yards,under,41.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0041511,Omar Cooper Jr.,NYJ,rec,Receptions,over,3.5,114,false,bettingpros_import,last
+2026-10-29T11:44:00+00:00,FanDuel,2026_08_LV_NYJ,00-0041511,Omar Cooper Jr.,NYJ,rec,Receptions,under,3.5,-148,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0040676,Cam Ward,TEN,pass_cmp,Passing Completions,over,20.5,100,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0040676,Cam Ward,TEN,pass_cmp,Passing Completions,under,20.5,-132,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0040676,Cam Ward,TEN,pass_yds,Passing Yards,over,196.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0040676,Cam Ward,TEN,pass_yds,Passing Yards,under,196.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0041438,Carnell Tate,TEN,rec_yds,Receiving Yards,over,51.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0041438,Carnell Tate,TEN,rec_yds,Receiving Yards,under,51.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0040584,Gunnar Helm,TEN,rec_yds,Receiving Yards,over,15.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0040584,Gunnar Helm,TEN,rec_yds,Receiving Yards,under,15.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0036900,Ja'Marr Chase,CIN,rec_yds,Receiving Yards,over,80.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0036900,Ja'Marr Chase,CIN,rec_yds,Receiving Yards,under,80.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0036442,Joe Burrow,CIN,pass_cmp,Passing Completions,over,25.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0036442,Joe Burrow,CIN,pass_cmp,Passing Completions,under,25.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0036442,Joe Burrow,CIN,pass_yds,Passing Yards,over,269.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0036442,Joe Burrow,CIN,pass_yds,Passing Yards,under,269.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0034829,Mike Gesicki,CIN,rec_yds,Receiving Yards,over,24.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0034829,Mike Gesicki,CIN,rec_yds,Receiving Yards,under,24.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0033526,Samaje Perine,CIN,rush_yds,Rushing Yards,over,23.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0033526,Samaje Perine,CIN,rush_yds,Rushing Yards,under,23.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0036410,Tee Higgins,CIN,rec_yds,Receiving Yards,over,68.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0036410,Tee Higgins,CIN,rec_yds,Receiving Yards,under,68.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0035261,Tony Pollard,TEN,rush_att,Rushing Attempts,over,16.5,102,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0035261,Tony Pollard,TEN,rush_att,Rushing Attempts,under,16.5,-136,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0035261,Tony Pollard,TEN,rush_yds,Rushing Yards,over,66.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0035261,Tony Pollard,TEN,rush_yds,Rushing Yards,under,66.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0038117,Wan'Dale Robinson,TEN,rec_yds,Receiving Yards,over,38.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:04+00:00,FanDuel,2026_08_TEN_CIN,00-0038117,Wan'Dale Robinson,TEN,rec_yds,Receiving Yards,under,38.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0040676,Cam Ward,TEN,pass_att,Passing Attempts,over,33.5,-112,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0040676,Cam Ward,TEN,pass_att,Passing Attempts,under,33.5,-118,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0041438,Carnell Tate,TEN,rec,Receptions,over,4.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0041438,Carnell Tate,TEN,rec,Receptions,under,4.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0040584,Gunnar Helm,TEN,rec,Receptions,over,2.5,116,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0040584,Gunnar Helm,TEN,rec,Receptions,under,2.5,-154,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0036900,Ja'Marr Chase,CIN,rec,Receptions,over,6.5,-138,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0036900,Ja'Marr Chase,CIN,rec,Receptions,under,6.5,104,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0036442,Joe Burrow,CIN,pass_att,Passing Attempts,over,37.5,100,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0036442,Joe Burrow,CIN,pass_att,Passing Attempts,under,37.5,-132,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0036410,Tee Higgins,CIN,rec,Receptions,over,5.5,128,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0036410,Tee Higgins,CIN,rec,Receptions,under,5.5,-172,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0038117,Wan'Dale Robinson,TEN,rec,Receptions,over,4.5,102,false,bettingpros_import,last
+2026-10-29T11:44:05+00:00,FanDuel,2026_08_TEN_CIN,00-0038117,Wan'Dale Robinson,TEN,rec,Receptions,under,4.5,-136,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034827,DJ Moore,BUF,rec_yds,Receiving Yards,over,55.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034827,DJ Moore,BUF,rec_yds,Receiving Yards,under,55.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0032764,Derrick Henry,BAL,rush_att,Rushing Attempts,over,18.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0032764,Derrick Henry,BAL,rush_att,Rushing Attempts,under,18.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0032764,Derrick Henry,BAL,rush_yds,Rushing Yards,over,80.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0032764,Derrick Henry,BAL,rush_yds,Rushing Yards,under,80.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0040870,Ja'Kobi Lane,BAL,rec_yds,Receiving Yards,over,29.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0040870,Ja'Kobi Lane,BAL,rec_yds,Receiving Yards,under,29.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0037248,James Cook III,BUF,rush_yds,Rushing Yards,over,86.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0037248,James Cook III,BUF,rush_yds,Rushing Yards,under,86.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,pass_cmp,Passing Completions,over,20.5,-108,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,pass_cmp,Passing Completions,under,20.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,pass_yds,Passing Yards,over,247.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,pass_yds,Passing Yards,under,247.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0040887,Josh Cuevas,BAL,rec_yds,Receiving Yards,over,10.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0040887,Josh Cuevas,BAL,rec_yds,Receiving Yards,under,10.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034975,Justice Hill,BAL,rec_yds,Receiving Yards,over,10.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034975,Justice Hill,BAL,rec_yds,Receiving Yards,under,10.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0039901,Keon Coleman,BUF,rec_yds,Receiving Yards,over,29.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0039901,Keon Coleman,BUF,rec_yds,Receiving Yards,under,29.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034796,Lamar Jackson,BAL,qb_rush_yds,Rushing Yards,over,25.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034796,Lamar Jackson,BAL,qb_rush_yds,Rushing Yards,under,25.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034753,Mark Andrews,BAL,rec_yds,Receiving Yards,over,30.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0034753,Mark Andrews,BAL,rec_yds,Receiving Yards,under,30.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0036550,Rashod Bateman,BAL,rec_yds,Receiving Yards,over,24.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0036550,Rashod Bateman,BAL,rec_yds,Receiving Yards,under,24.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0039875,Ray Davis,BUF,rush_yds,Rushing Yards,over,4.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0039875,Ray Davis,BUF,rush_yds,Rushing Yards,under,4.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0039064,Zay Flowers,BAL,rec_yds,Receiving Yards,over,81.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:09+00:00,FanDuel,2026_08_BAL_BUF,00-0039064,Zay Flowers,BAL,rec_yds,Receiving Yards,under,81.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0034827,DJ Moore,BUF,rec,Receptions,over,4.5,104,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0034827,DJ Moore,BUF,rec,Receptions,under,4.5,-138,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0040870,Ja'Kobi Lane,BAL,rec,Receptions,over,2.5,-132,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0040870,Ja'Kobi Lane,BAL,rec,Receptions,under,2.5,100,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,pass_att,Passing Attempts,over,30.5,-108,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0034857,Josh Allen,BUF,pass_att,Passing Attempts,under,30.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0040887,Josh Cuevas,BAL,rec,Receptions,over,1.5,102,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0040887,Josh Cuevas,BAL,rec,Receptions,under,1.5,-136,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0034975,Justice Hill,BAL,rec,Receptions,over,1.5,-154,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0034975,Justice Hill,BAL,rec,Receptions,under,1.5,116,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0039901,Keon Coleman,BUF,rec,Receptions,over,2.5,114,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0039901,Keon Coleman,BUF,rec,Receptions,under,2.5,-152,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0036550,Rashod Bateman,BAL,rec,Receptions,over,2.5,104,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0036550,Rashod Bateman,BAL,rec,Receptions,under,2.5,-138,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0039064,Zay Flowers,BAL,rec,Receptions,over,6.5,120,false,bettingpros_import,last
+2026-10-29T11:44:10+00:00,FanDuel,2026_08_BAL_BUF,00-0039064,Zay Flowers,BAL,rec,Receptions,under,6.5,-160,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0036358,CeeDee Lamb,DAL,rec_yds,Receiving Yards,over,78.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0036358,CeeDee Lamb,DAL,rec_yds,Receiving Yards,under,78.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0036358,CeeDee Lamb,DAL,rec,Receptions,over,6.5,-106,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0036358,CeeDee Lamb,DAL,rec,Receptions,under,6.5,-125,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0033077,Dak Prescott,DAL,pass_cmp,Passing Completions,over,22.5,-125,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0033077,Dak Prescott,DAL,pass_cmp,Passing Completions,under,22.5,-106,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0033077,Dak Prescott,DAL,pass_yds,Passing Yards,over,278.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0033077,Dak Prescott,DAL,pass_yds,Passing Yards,under,278.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0037247,George Pickens,DAL,rec_yds,Receiving Yards,over,65.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0037247,George Pickens,DAL,rec_yds,Receiving Yards,under,65.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0037247,George Pickens,DAL,rec,Receptions,over,4.5,-110,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0037247,George Pickens,DAL,rec,Receptions,under,4.5,-120,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0033119,Jacoby Brissett,ARI,pass_yds,Passing Yards,over,258.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0033119,Jacoby Brissett,ARI,pass_yds,Passing Yards,under,258.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0038041,Jake Ferguson,DAL,rec_yds,Receiving Yards,over,14.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0038041,Jake Ferguson,DAL,rec_yds,Receiving Yards,under,14.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0038041,Jake Ferguson,DAL,rec,Receptions,over,1.5,-188,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0038041,Jake Ferguson,DAL,rec,Receptions,under,1.5,140,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0036997,Javonte Williams,DAL,rush_yds,Rushing Yards,over,78.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0036997,Javonte Williams,DAL,rush_yds,Rushing Yards,under,78.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0038559,Michael Wilson,ARI,rec_yds,Receiving Yards,over,54.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0038559,Michael Wilson,ARI,rec_yds,Receiving Yards,under,54.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0037744,Trey McBride,ARI,rec_yds,Receiving Yards,over,70.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:13+00:00,FanDuel,2026_08_ARI_DAL,00-0037744,Trey McBride,ARI,rec_yds,Receiving Yards,under,70.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:14+00:00,FanDuel,2026_08_ARI_DAL,00-0038559,Michael Wilson,ARI,rec,Receptions,over,4.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:14+00:00,FanDuel,2026_08_ARI_DAL,00-0038559,Michael Wilson,ARI,rec,Receptions,under,4.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:14+00:00,FanDuel,2026_08_ARI_DAL,00-0037744,Trey McBride,ARI,rec,Receptions,over,7.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:14+00:00,FanDuel,2026_08_ARI_DAL,00-0037744,Trey McBride,ARI,rec,Receptions,under,7.5,-108,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0023459,Aaron Rodgers,PIT,pass_cmp,Passing Completions,over,21.5,-104,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0023459,Aaron Rodgers,PIT,pass_cmp,Passing Completions,under,21.5,-128,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0023459,Aaron Rodgers,PIT,pass_yds,Passing Yards,over,218.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0023459,Aaron Rodgers,PIT,pass_yds,Passing Yards,under,218.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0035640,DK Metcalf,PIT,rec_yds,Receiving Yards,over,55.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0035640,DK Metcalf,PIT,rec_yds,Receiving Yards,under,55.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0035640,DK Metcalf,PIT,rec,Receptions,over,4.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0035640,DK Metcalf,PIT,rec,Receptions,under,4.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0038558,Darnell Washington,PIT,rec_yds,Receiving Yards,over,21.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0038558,Darnell Washington,PIT,rec_yds,Receiving Yards,under,21.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0038558,Darnell Washington,PIT,rec,Receptions,over,2.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0038558,Darnell Washington,PIT,rec,Receptions,under,2.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0041037,Denzel Boston,CLE,rec_yds,Receiving Yards,over,50.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0041037,Denzel Boston,CLE,rec_yds,Receiving Yards,under,50.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0041037,Denzel Boston,CLE,rec,Receptions,over,3.5,104,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0041037,Denzel Boston,CLE,rec,Receptions,under,3.5,-138,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0033537,Deshaun Watson,CLE,pass_cmp,Passing Completions,over,19.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0033537,Deshaun Watson,CLE,pass_cmp,Passing Completions,under,19.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0033537,Deshaun Watson,CLE,pass_yds,Passing Yards,over,210.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0033537,Deshaun Watson,CLE,pass_yds,Passing Yards,under,210.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0041489,Germie Bernard,PIT,rec_yds,Receiving Yards,over,46.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0041489,Germie Bernard,PIT,rec_yds,Receiving Yards,under,46.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0041489,Germie Bernard,PIT,rec,Receptions,over,4.5,-136,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0041489,Germie Bernard,PIT,rec,Receptions,under,4.5,102,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0040663,Harold Fannin Jr.,CLE,rec_yds,Receiving Yards,over,35.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0040663,Harold Fannin Jr.,CLE,rec_yds,Receiving Yards,under,35.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0040663,Harold Fannin Jr.,CLE,rec,Receptions,over,3.5,-138,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0040663,Harold Fannin Jr.,CLE,rec,Receptions,under,3.5,104,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0037228,Jaylen Warren,PIT,rec_yds,Receiving Yards,over,25.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0037228,Jaylen Warren,PIT,rec_yds,Receiving Yards,under,25.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0037228,Jaylen Warren,PIT,rush_yds,Rushing Yards,over,64.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0037228,Jaylen Warren,PIT,rush_yds,Rushing Yards,under,64.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0036407,Jerry Jeudy,CLE,rec_yds,Receiving Yards,over,23.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0036407,Jerry Jeudy,CLE,rec_yds,Receiving Yards,under,23.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0036407,Jerry Jeudy,CLE,rec,Receptions,over,2.5,124,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0036407,Jerry Jeudy,CLE,rec,Receptions,under,2.5,-166,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0041547,KC Concepcion Jr.,CLE,rec_yds,Receiving Yards,over,45.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0041547,KC Concepcion Jr.,CLE,rec_yds,Receiving Yards,under,45.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0041547,KC Concepcion Jr.,CLE,rec,Receptions,over,4.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0041547,KC Concepcion Jr.,CLE,rec,Receptions,under,4.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0036894,Pat Freiermuth,PIT,rec_yds,Receiving Yards,over,24.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0036894,Pat Freiermuth,PIT,rec_yds,Receiving Yards,under,24.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0036894,Pat Freiermuth,PIT,rec,Receptions,over,2.5,-154,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0040784,Quinshon Judkins,CLE,rush_yds,Rushing Yards,over,47.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0040784,Quinshon Judkins,CLE,rush_yds,Rushing Yards,under,47.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0036139,Rico Dowdle,PIT,rush_yds,Rushing Yards,over,25.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:17+00:00,FanDuel,2026_08_CLE_PIT,00-0036139,Rico Dowdle,PIT,rush_yds,Rushing Yards,under,25.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:18+00:00,FanDuel,2026_08_CLE_PIT,00-0023459,Aaron Rodgers,PIT,pass_att,Passing Attempts,over,33.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:18+00:00,FanDuel,2026_08_CLE_PIT,00-0023459,Aaron Rodgers,PIT,pass_att,Passing Attempts,under,33.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:18+00:00,FanDuel,2026_08_CLE_PIT,00-0033537,Deshaun Watson,CLE,pass_att,Passing Attempts,over,30.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:18+00:00,FanDuel,2026_08_CLE_PIT,00-0033537,Deshaun Watson,CLE,pass_att,Passing Attempts,under,30.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:18+00:00,FanDuel,2026_08_CLE_PIT,00-0037228,Jaylen Warren,PIT,rec,Receptions,over,2.5,-148,false,bettingpros_import,last
+2026-10-29T11:44:18+00:00,FanDuel,2026_08_CLE_PIT,00-0037228,Jaylen Warren,PIT,rec,Receptions,under,2.5,112,false,bettingpros_import,last
+2026-10-29T11:44:18+00:00,FanDuel,2026_08_CLE_PIT,00-0036894,Pat Freiermuth,PIT,rec,Receptions,under,2.5,116,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0040719,Bhayshul Tuten,JAX,rush_yds,Rushing Yards,over,61.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0040719,Bhayshul Tuten,JAX,rush_yds,Rushing Yards,under,61.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0038935,Brenton Strange,JAX,rec_yds,Receiving Yards,over,37.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0038935,Brenton Strange,JAX,rec_yds,Receiving Yards,under,37.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0038935,Brenton Strange,JAX,rec,Receptions,over,3.5,-138,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0038935,Brenton Strange,JAX,rec,Receptions,under,3.5,104,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0038611,Chris Rodriguez Jr.,JAX,rush_att,Rushing Attempts,over,6.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0038611,Chris Rodriguez Jr.,JAX,rush_att,Rushing Attempts,under,6.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0038611,Chris Rodriguez Jr.,JAX,rush_yds,Rushing Yards,over,26.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0038611,Chris Rodriguez Jr.,JAX,rush_yds,Rushing Yards,under,26.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0035710,Daniel Jones,IND,pass_yds,Passing Yards,over,188.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0035710,Daniel Jones,IND,pass_yds,Passing Yards,under,188.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0034960,Jakobi Meyers,JAX,rec,Receptions,over,3.5,104,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0034960,Jakobi Meyers,JAX,rec,Receptions,under,3.5,-138,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0036223,Jonathan Taylor,IND,rush_att,Rushing Attempts,over,16.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0036223,Jonathan Taylor,IND,rush_att,Rushing Attempts,under,16.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0036223,Jonathan Taylor,IND,rush_yds,Rushing Yards,over,63.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0036223,Jonathan Taylor,IND,rush_yds,Rushing Yards,under,63.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0038606,Parker Washington,JAX,rec_yds,Receiving Yards,over,65.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0038606,Parker Washington,JAX,rec_yds,Receiving Yards,under,65.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0038606,Parker Washington,JAX,rec,Receptions,over,4.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0038606,Parker Washington,JAX,rec,Receptions,under,4.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0036971,Trevor Lawrence,JAX,pass_att,Passing Attempts,over,30.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0036971,Trevor Lawrence,JAX,pass_att,Passing Attempts,under,30.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0036971,Trevor Lawrence,JAX,pass_cmp,Passing Completions,over,19.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0036971,Trevor Lawrence,JAX,pass_cmp,Passing Completions,under,19.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0036971,Trevor Lawrence,JAX,pass_yds,Passing Yards,over,242.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:20+00:00,FanDuel,2026_08_IND_JAX,00-0036971,Trevor Lawrence,JAX,pass_yds,Passing Yards,under,242.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0036963,Amon-Ra St. Brown,DET,rec_yds,Receiving Yards,over,77.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0036963,Amon-Ra St. Brown,DET,rec_yds,Receiving Yards,under,77.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rec_yds,Receiving Yards,over,33.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rec_yds,Receiving Yards,under,33.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rush_att,Rushing Attempts,over,21.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rush_att,Rushing Attempts,under,21.5,-108,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0037240,Jameson Williams,DET,rec,Receptions,over,3.5,102,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0037240,Jameson Williams,DET,rec,Receptions,under,3.5,-136,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0033106,Jared Goff,DET,pass_cmp,Passing Completions,over,22.5,-106,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0033106,Jared Goff,DET,pass_cmp,Passing Completions,under,22.5,-125,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0033106,Jared Goff,DET,pass_yds,Passing Yards,over,259.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0033106,Jared Goff,DET,pass_yds,Passing Yards,under,259.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0038994,Jordan Addison,MIN,rec_yds,Receiving Yards,over,38.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0038994,Jordan Addison,MIN,rec_yds,Receiving Yards,under,38.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0036322,Justin Jefferson,MIN,rec_yds,Receiving Yards,over,76.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0036322,Justin Jefferson,MIN,rec_yds,Receiving Yards,under,76.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0036322,Justin Jefferson,MIN,rec,Receptions,over,5.5,-148,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0036322,Justin Jefferson,MIN,rec,Receptions,under,5.5,112,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0035228,Kyler Murray,MIN,pass_cmp,Passing Completions,over,19.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0035228,Kyler Murray,MIN,pass_cmp,Passing Completions,under,19.5,-108,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0035228,Kyler Murray,MIN,pass_yds,Passing Yards,over,224.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0035228,Kyler Murray,MIN,pass_yds,Passing Yards,under,224.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0039065,Sam LaPorta,DET,rec_yds,Receiving Yards,over,49.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0039065,Sam LaPorta,DET,rec_yds,Receiving Yards,under,49.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0039065,Sam LaPorta,DET,rec,Receptions,over,4.5,-128,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0039065,Sam LaPorta,DET,rec,Receptions,under,4.5,-104,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0035229,T.J. Hockenson,MIN,rec_yds,Receiving Yards,over,38.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:23+00:00,FanDuel,2026_08_MIN_DET,00-0035229,T.J. Hockenson,MIN,rec_yds,Receiving Yards,under,38.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:24+00:00,FanDuel,2026_08_MIN_DET,00-0036963,Amon-Ra St. Brown,DET,rec,Receptions,over,6.5,-154,false,bettingpros_import,last
+2026-10-29T11:44:24+00:00,FanDuel,2026_08_MIN_DET,00-0036963,Amon-Ra St. Brown,DET,rec,Receptions,under,6.5,116,false,bettingpros_import,last
+2026-10-29T11:44:24+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rec,Receptions,over,4.5,102,false,bettingpros_import,last
+2026-10-29T11:44:24+00:00,FanDuel,2026_08_MIN_DET,00-0039139,Jahmyr Gibbs,DET,rec,Receptions,under,4.5,-136,false,bettingpros_import,last
+2026-10-29T11:44:24+00:00,FanDuel,2026_08_MIN_DET,00-0033106,Jared Goff,DET,pass_att,Passing Attempts,over,34.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:24+00:00,FanDuel,2026_08_MIN_DET,00-0033106,Jared Goff,DET,pass_att,Passing Attempts,under,34.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:24+00:00,FanDuel,2026_08_MIN_DET,00-0038994,Jordan Addison,MIN,rec,Receptions,over,3.5,120,false,bettingpros_import,last
+2026-10-29T11:44:24+00:00,FanDuel,2026_08_MIN_DET,00-0038994,Jordan Addison,MIN,rec,Receptions,under,3.5,-160,false,bettingpros_import,last
+2026-10-29T11:44:24+00:00,FanDuel,2026_08_MIN_DET,00-0035228,Kyler Murray,MIN,pass_att,Passing Attempts,over,31.5,-108,false,bettingpros_import,last
+2026-10-29T11:44:24+00:00,FanDuel,2026_08_MIN_DET,00-0035228,Kyler Murray,MIN,pass_att,Passing Attempts,under,31.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0034855,Baker Mayfield,TB,pass_cmp,Passing Completions,over,20.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0034855,Baker Mayfield,TB,pass_cmp,Passing Completions,under,20.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0034855,Baker Mayfield,TB,pass_yds,Passing Yards,over,216.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0034855,Baker Mayfield,TB,pass_yds,Passing Yards,under,216.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0038542,Bijan Robinson,ATL,rush_att,Rushing Attempts,over,18.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0038542,Bijan Robinson,ATL,rush_att,Rushing Attempts,under,18.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0038542,Bijan Robinson,ATL,rush_yds,Rushing Yards,over,80.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0038542,Bijan Robinson,ATL,rush_yds,Rushing Yards,under,80.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0039361,Bucky Irving,TB,rush_att,Rushing Attempts,over,15.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0039361,Bucky Irving,TB,rush_att,Rushing Attempts,under,15.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0039361,Bucky Irving,TB,rush_yds,Rushing Yards,over,68.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0039361,Bucky Irving,TB,rush_yds,Rushing Yards,under,68.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0039917,Michael Penix Jr.,ATL,pass_cmp,Passing Completions,over,19.5,-125,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0039917,Michael Penix Jr.,ATL,pass_cmp,Passing Completions,under,19.5,-106,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0039917,Michael Penix Jr.,ATL,pass_yds,Passing Yards,over,232.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:26+00:00,FanDuel,2026_08_ATL_TB,00-0039917,Michael Penix Jr.,ATL,pass_yds,Passing Yards,under,232.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0034855,Baker Mayfield,TB,pass_att,Passing Attempts,over,30.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0034855,Baker Mayfield,TB,pass_att,Passing Attempts,under,30.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0038542,Bijan Robinson,ATL,rec_yds,Receiving Yards,over,26.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0038542,Bijan Robinson,ATL,rec_yds,Receiving Yards,under,26.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0038542,Bijan Robinson,ATL,rec,Receptions,over,3.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0038542,Bijan Robinson,ATL,rec,Receptions,under,3.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0033921,Chris Godwin Jr.,TB,rec,Receptions,over,3.5,-136,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0033921,Chris Godwin Jr.,TB,rec,Receptions,under,3.5,102,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0037238,Drake London,ATL,rec_yds,Receiving Yards,over,79.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0037238,Drake London,ATL,rec_yds,Receiving Yards,under,79.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0037238,Drake London,ATL,rec,Receptions,over,6.5,104,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0037238,Drake London,ATL,rec,Receptions,under,6.5,-138,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0040129,Emeka Egbuka,TB,rec_yds,Receiving Yards,over,49.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0040129,Emeka Egbuka,TB,rec_yds,Receiving Yards,under,49.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0040129,Emeka Egbuka,TB,rec,Receptions,over,4.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0040129,Emeka Egbuka,TB,rec,Receptions,under,4.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0036970,Kyle Pitts Sr.,ATL,rec_yds,Receiving Yards,over,35.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0036970,Kyle Pitts Sr.,ATL,rec_yds,Receiving Yards,under,35.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0036970,Kyle Pitts Sr.,ATL,rec,Receptions,over,3.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0036970,Kyle Pitts Sr.,ATL,rec,Receptions,under,3.5,-106,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0039917,Michael Penix Jr.,ATL,pass_att,Passing Attempts,over,31.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:27+00:00,FanDuel,2026_08_ATL_TB,00-0039917,Michael Penix Jr.,ATL,pass_att,Passing Attempts,under,31.5,-108,false,bettingpros_import,last
+2026-10-29T11:44:29+00:00,FanDuel,2026_08_LAC_LA,00-0026498,Matthew Stafford,LA,pass_cmp,Passing Completions,over,22.5,-108,false,bettingpros_import,last
+2026-10-29T11:44:29+00:00,FanDuel,2026_08_LAC_LA,00-0026498,Matthew Stafford,LA,pass_cmp,Passing Completions,under,22.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:30+00:00,FanDuel,2026_08_LAC_LA,00-0037840,Kyren Williams,LA,rush_att,Rushing Attempts,over,13.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:30+00:00,FanDuel,2026_08_LAC_LA,00-0037840,Kyren Williams,LA,rush_att,Rushing Attempts,under,13.5,-108,false,bettingpros_import,last
+2026-10-29T11:44:30+00:00,FanDuel,2026_08_LAC_LA,00-0037840,Kyren Williams,LA,rush_yds,Rushing Yards,over,58.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:30+00:00,FanDuel,2026_08_LAC_LA,00-0037840,Kyren Williams,LA,rush_yds,Rushing Yards,under,58.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:30+00:00,FanDuel,2026_08_LAC_LA,00-0039915,Ladd McConkey,LAC,rec_yds,Receiving Yards,over,42.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:30+00:00,FanDuel,2026_08_LAC_LA,00-0039915,Ladd McConkey,LAC,rec_yds,Receiving Yards,under,42.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:30+00:00,FanDuel,2026_08_LAC_LA,00-0039915,Ladd McConkey,LAC,rec,Receptions,over,3.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:30+00:00,FanDuel,2026_08_LAC_LA,00-0039915,Ladd McConkey,LAC,rec,Receptions,under,3.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:30+00:00,FanDuel,2026_08_LAC_LA,00-0026498,Matthew Stafford,LA,pass_att,Passing Attempts,over,33.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:30+00:00,FanDuel,2026_08_LAC_LA,00-0026498,Matthew Stafford,LA,pass_att,Passing Attempts,under,33.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0039732,Bo Nix,DEN,qb_rush_yds,Rushing Yards,over,15.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0039732,Bo Nix,DEN,qb_rush_yds,Rushing Yards,under,15.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0036158,J.K. Dobbins,DEN,rush_att,Rushing Attempts,over,7.5,-106,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0036158,J.K. Dobbins,DEN,rush_att,Rushing Attempts,under,7.5,-125,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0036158,J.K. Dobbins,DEN,rush_yds,Rushing Yards,over,22.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0036158,J.K. Dobbins,DEN,rush_yds,Rushing Yards,under,22.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0041496,Jonah Coleman,DEN,rush_yds,Rushing Yards,over,38.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0041496,Jonah Coleman,DEN,rush_yds,Rushing Yards,under,38.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0038134,Kenneth Walker III,KC,rush_att,Rushing Attempts,over,18.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0038134,Kenneth Walker III,KC,rush_att,Rushing Attempts,under,18.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0038134,Kenneth Walker III,KC,rush_yds,Rushing Yards,over,86.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0038134,Kenneth Walker III,KC,rush_yds,Rushing Yards,under,86.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0040730,RJ Harvey,DEN,rec_yds,Receiving Yards,over,21.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0040730,RJ Harvey,DEN,rec_yds,Receiving Yards,under,21.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0040730,RJ Harvey,DEN,rec,Receptions,over,3.5,102,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0040730,RJ Harvey,DEN,rec,Receptions,under,3.5,-136,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0030506,Travis Kelce,KC,rec_yds,Receiving Yards,over,46.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0030506,Travis Kelce,KC,rec_yds,Receiving Yards,under,46.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0030506,Travis Kelce,KC,rec,Receptions,over,4.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:32+00:00,FanDuel,2026_08_KC_DEN,00-0030506,Travis Kelce,KC,rec,Receptions,under,4.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0035676,A.J. Brown,NE,rec_yds,Receiving Yards,over,56.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0035676,A.J. Brown,NE,rec_yds,Receiving Yards,under,56.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0035676,A.J. Brown,NE,rec,Receptions,over,4.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0035676,A.J. Brown,NE,rec,Receptions,under,4.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0041523,Caleb Douglas,MIA,rec_yds,Receiving Yards,over,39.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0041523,Caleb Douglas,MIA,rec_yds,Receiving Yards,under,39.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0041523,Caleb Douglas,MIA,rec,Receptions,over,3.5,124,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0041523,Caleb Douglas,MIA,rec,Receptions,under,3.5,-166,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0039851,Drake Maye,NE,pass_att,Passing Attempts,over,30.5,-108,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0039851,Drake Maye,NE,pass_att,Passing Attempts,under,30.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0039851,Drake Maye,NE,pass_cmp,Passing Completions,over,20.5,-108,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0039851,Drake Maye,NE,pass_cmp,Passing Completions,under,20.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0039851,Drake Maye,NE,pass_yds,Passing Yards,over,237.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0039851,Drake Maye,NE,pass_yds,Passing Yards,under,237.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0039851,Drake Maye,NE,qb_rush_yds,Rushing Yards,over,24.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0039851,Drake Maye,NE,qb_rush_yds,Rushing Yards,under,24.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0037252,Greg Dulcich,MIA,rec_yds,Receiving Yards,over,28.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0037252,Greg Dulcich,MIA,rec_yds,Receiving Yards,under,28.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0037252,Greg Dulcich,MIA,rec,Receptions,over,3.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0037252,Greg Dulcich,MIA,rec,Receptions,under,3.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0033090,Hunter Henry,NE,rec,Receptions,over,3.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0033090,Hunter Henry,NE,rec,Receptions,under,3.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0039880,Malik Washington,MIA,rec_yds,Receiving Yards,over,40.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0039880,Malik Washington,MIA,rec_yds,Receiving Yards,under,40.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0038128,Malik Willis,MIA,pass_att,Passing Attempts,over,27.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0038128,Malik Willis,MIA,pass_att,Passing Attempts,under,27.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0038128,Malik Willis,MIA,pass_cmp,Passing Completions,over,16.5,-130,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0038128,Malik Willis,MIA,pass_cmp,Passing Completions,under,16.5,-102,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0038128,Malik Willis,MIA,pass_yds,Passing Yards,over,185.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0038128,Malik Willis,MIA,pass_yds,Passing Yards,under,185.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0038128,Malik Willis,MIA,qb_rush_yds,Rushing Yards,over,35.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0038128,Malik Willis,MIA,qb_rush_yds,Rushing Yards,under,35.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0040198,Ollie Gordon II,MIA,rush_yds,Rushing Yards,over,60.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0040198,Ollie Gordon II,MIA,rush_yds,Rushing Yards,under,60.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0036875,Rhamondre Stevenson,NE,rush_yds,Rushing Yards,over,46.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0036875,Rhamondre Stevenson,NE,rush_yds,Rushing Yards,under,46.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0040734,TreVeyon Henderson,NE,rush_yds,Rushing Yards,over,26.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:36+00:00,FanDuel,2026_08_NE_MIA,00-0040734,TreVeyon Henderson,NE,rush_yds,Rushing Yards,under,26.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:39+00:00,FanDuel,2026_08_PHI_WAS,00-0037809,Chig Okonkwo,WAS,rec_yds,Receiving Yards,over,30.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:39+00:00,FanDuel,2026_08_PHI_WAS,00-0037809,Chig Okonkwo,WAS,rec_yds,Receiving Yards,under,30.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:39+00:00,FanDuel,2026_08_PHI_WAS,00-0033955,Jeremy McNichols,WAS,rush_yds,Rushing Yards,over,23.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:39+00:00,FanDuel,2026_08_PHI_WAS,00-0033955,Jeremy McNichols,WAS,rush_yds,Rushing Yards,under,23.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:39+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rush_att,Rushing Attempts,over,12.5,-108,false,bettingpros_import,last
+2026-10-29T11:44:39+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rush_att,Rushing Attempts,under,12.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:39+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rush_yds,Rushing Yards,over,44.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:39+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rush_yds,Rushing Yards,under,44.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:39+00:00,FanDuel,2026_08_PHI_WAS,00-0038400,Tanner McKee,PHI,pass_cmp,Passing Completions,over,20.5,-108,false,bettingpros_import,last
+2026-10-29T11:44:39+00:00,FanDuel,2026_08_PHI_WAS,00-0038400,Tanner McKee,PHI,pass_cmp,Passing Completions,under,20.5,-122,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0041040,Antonio Williams,WAS,rec_yds,Receiving Yards,over,32.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0041040,Antonio Williams,WAS,rec_yds,Receiving Yards,under,32.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0041040,Antonio Williams,WAS,rec,Receptions,over,3.5,124,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0041040,Antonio Williams,WAS,rec,Receptions,under,3.5,-166,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0037809,Chig Okonkwo,WAS,rec,Receptions,over,3.5,120,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0037809,Chig Okonkwo,WAS,rec,Receptions,under,3.5,-160,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rec_yds,Receiving Yards,over,10.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rec_yds,Receiving Yards,under,10.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rec,Receptions,over,2.5,130,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0037256,Rachaad White,WAS,rec,Receptions,under,2.5,-174,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0037742,Treylon Burks,WAS,rec_yds,Receiving Yards,over,22.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0037742,Treylon Burks,WAS,rec_yds,Receiving Yards,under,22.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0037742,Treylon Burks,WAS,rec,Receptions,over,1.5,-136,false,bettingpros_import,last
+2026-10-29T11:44:40+00:00,FanDuel,2026_08_PHI_WAS,00-0037742,Treylon Burks,WAS,rec,Receptions,under,1.5,102,false,bettingpros_import,last
+2026-10-29T11:44:42+00:00,FanDuel,2026_08_CHI_SEA,00-0040735,Luther Burden III,CHI,rec_yds,Receiving Yards,over,50.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:42+00:00,FanDuel,2026_08_CHI_SEA,00-0040735,Luther Burden III,CHI,rec_yds,Receiving Yards,under,50.5,-114,false,bettingpros_import,last
+2026-10-29T11:44:42+00:00,FanDuel,2026_08_CHI_SEA,00-0040735,Luther Burden III,CHI,rec,Receptions,over,4.5,118,false,bettingpros_import,last
+2026-10-29T11:44:42+00:00,FanDuel,2026_08_CHI_SEA,00-0040735,Luther Burden III,CHI,rec,Receptions,under,4.5,-158,false,bettingpros_import,last
