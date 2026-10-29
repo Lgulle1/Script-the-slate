@@ -5,7 +5,9 @@
   1. refresh the data and store the live predictions (run_weekly.py --refresh): new injury report, new inactives, new lines for games that have not started;
   2. stop if the injury report is older than MAX_AGE_HOURS (the refresh must have worked) and print who is out around the teams playing;
   3. warn if FanDuel lines for the week in prop_lines_log.csv are older than LINES_WARN_HOURS (send fresh ones);
-  4. build Mark 2's card (week_card.py), Mark 3's card (schedule_picker.py), Mark 4's card (mark4/live.py, the bet), the week page and the Track Record.
+  4. rebuild the line study when it lacks this week's lines or last week's results (scripts/line_study.py build), and carry the saved forward chances
+     onto the rebuilt table by line (mark4/remap_forward.py; 2026-10-29: week 8's first build found no week 8 rows);
+  5. build Mark 2's card (week_card.py), Mark 3's card (schedule_picker.py), Mark 4's card (mark4/live.py, the bet), the week page and the Track Record.
 Run it again the morning of the games, after the inactive lists (about 90 minutes before kickoff): the page says how old the injury report is.
 """
 import argparse
@@ -60,6 +62,16 @@ def main():
         print(f"\nlatest FanDuel line for week {a.week}: {last:%Y-%m-%d %H:%M} UTC ({hrs:.1f} hours old)" + ("  <-- send fresh lines" if hrs > LINES_WARN_HOURS else ""))
     else:
         print(f"\nNO FanDuel lines for week {a.week} in the log: import the week's file first (scripts/import_bettingpros.py).")
+    ls = config.PROCESSED_DIR / "line_study_sel.parquet"
+    st = pl.read_parquet(ls).filter(pl.col("season") == a.season)
+    have = st.filter(pl.col("week") == a.week).height
+    ungraded = st.filter((pl.col("week") == a.week - 1) & pl.col("won").is_null()).height
+    if have == 0 or ungraded:
+        print(f"\nline study: {have} lines for week {a.week}, {ungraded} ungraded in week {a.week - 1}: rebuilding it")
+        prev = ls.with_name("line_study_sel.prev.parquet")
+        prev.write_bytes(ls.read_bytes())
+        run([py, "scripts/line_study.py", "build"])
+        run([py, "-m", "mark4.remap_forward", str(prev)])
     run([py, "scripts/week_card.py", "--season", str(a.season), "--week", str(a.week), "--books", str(a.books)])
     run([py, "scripts/schedule_picker.py", "--season", str(a.season), "--week", str(a.week)])
     run([py, "-m", "mark4.live", "--season", str(a.season), "--week", str(a.week)])          # Mark 4: the bet from 2026 week 7
