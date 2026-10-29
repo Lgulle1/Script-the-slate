@@ -1,0 +1,9 @@
+{
+ "made_at_utc": "2026-10-29T11:59:39+00:00",
+ "season": 2026,
+ "week": 8,
+ "version": "A + B + C, locked setup (records/cards/locked_setup.json)",
+ "picks": 2,
+ "trained_on": "every graded line before the week",
+ "comp_book_for_attempts": "Caesars"
+}
